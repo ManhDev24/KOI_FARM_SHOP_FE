@@ -5,7 +5,7 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import "./register.css";
+import "./Register.css";
 const validationSchema = yup.object().shape({
   fullName: yup.string().required("Họ và Tên là bắt buộc"),
   email: yup
