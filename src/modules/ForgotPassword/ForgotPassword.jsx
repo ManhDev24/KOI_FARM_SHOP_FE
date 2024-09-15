@@ -1,15 +1,10 @@
 import React from "react";
-import { Button, Col, Form, Input, Row, Checkbox } from "antd";
-import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
-import { Controller, useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
 import * as yup from "yup";
-import "./login.css";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useMutation } from "@tanstack/react-query";
-import { LoginAPi } from "../../apis/Login.api";
-import { toast } from "react-toastify";
-import axios from "axios";
+import { Controller, useForm } from "react-hook-form";
+import { Button, Col, Form, Input, Row, Checkbox } from "antd";
+import { Link } from "react-router-dom";
+import "./ForgotPassword.css";
 
 const validationSchema = yup.object().shape({
   email: yup
@@ -17,64 +12,22 @@ const validationSchema = yup.object().shape({
     .required("Email là bắt buộc")
     .email("Email không hợp lệ")
     .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Email không hợp lệ"),
-  password: yup
-    .string()
-    .required("Mật khẩu là bắt buộc")
-    .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
-    .matches(
-      /[!@#$%^&*(),.?":{}|<>]/,
-      "Mật khẩu phải chứa ít nhất một ký tự đặc biệt"
-    ),
 });
 
-const Login = () => {
+const ForgotPassword = () => {
   const {
     handleSubmit,
     control,
     formState: { errors },
   } = useForm({
-    defaultValues: { email: "", password: "" },
+    defaultValues: { email: "" },
     resolver: yupResolver(validationSchema),
     criteriaMode: "all",
     mode: "onBlur",
   });
-
-  // const { mutate: handleLogin, isLoading } = useMutation({
-  //   mutationFn: (payload) => LoginAPi.login(payload),
-  //   onSuccess: (data) => {
-  //     toast.success("Đăng nhập thành công");
-  //   },
-  //   onError: (error) => {
-  //     const errorMessage = error?.message || "An unexpected error occurred";
-  //     toast.error(errorMessage);
-  //   },
-  // });
-
-  // const onSubmit = (data) => {
-  //   handleLogin(data);
-  //   console.log(data);
-  // };
-  const onSubmit = async (data) => {
-    try {
-      const response = await axios.get("http://localhost:9999/users");
-      const users = response.data;
-      console.log("users: ", users);
-      const user = users.find(
-        (user) => user.email === data.email && user.password === data.password
-      );
-      if (user) {
-        toast.success("Login successful!");
-        setIsLoginModalOpen(false);
-        const { password, ...dataSaveToLocal } = user;
-        setLocalStorage("user", dataSaveToLocal);
-      } else {
-        toast.error("Invalid email or password.");
-      }
-    } catch (error) {
-      throw new Error(error);
-    }
+  const onSubmit = (data) => {
+    console.log("data: ", data);
   };
-
   return (
     <div
       style={{ backgroundColor: "#DDBCBC" }}
@@ -86,7 +39,7 @@ const Login = () => {
           borderRadius: "20px",
           boxShadow: "8px 8px #A68E8E",
         }}
-        className="w-[1250px] h-[600px] grid grid-cols-1 xl:grid-cols-2 lg:grid-cols-1 gap-1 loginForm"
+        className="w-[1250px] h-[600px] grid grid-cols-1 xl:grid-cols-2 lg:grid-cols-1 gap-1"
       >
         <div className="content-left w-full h-full rounded-xl">
           <div
@@ -95,10 +48,10 @@ const Login = () => {
           >
             <div>
               <p
-                style={{ fontSize: "32px", marginLeft: "10px" }}
+                style={{ fontSize: "32px", marginLeft: "30px" }}
                 className="text-center font-normal text-black"
               >
-                Đăng nhập
+                Quên mật khẩu
               </p>
             </div>
             <div className="me-10">
@@ -169,41 +122,6 @@ const Login = () => {
                   )}
                 </Col>
                 <Col span={24}>
-                  <label
-                    style={{ fontSize: "20px", marginLeft: "8px" }}
-                    className="text-xs text-black font-normal"
-                  >
-                    Mật Khẩu
-                  </label>
-                  <Controller
-                    name="password"
-                    control={control}
-                    render={({ field }) => (
-                      <Input.Password
-                        style={{
-                          width: "404px",
-                          borderRadius: "15px",
-                          marginTop: "10px",
-                        }}
-                        {...field}
-                        type="password"
-                        size="large"
-                        className="mt-1"
-                        placeholder="Nhập mật khẩu"
-                        status={errors.password ? "error" : ""}
-                        iconRender={(visible) =>
-                          visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
-                        }
-                      />
-                    )}
-                  />
-                  {errors.password && (
-                    <p className="text-xs text-red-600">
-                      {errors.password.message}
-                    </p>
-                  )}
-                </Col>
-                <Col span={24}>
                   <Button
                     className="text-white"
                     style={{
@@ -214,28 +132,21 @@ const Login = () => {
                     }}
                     htmlType="submit"
                   >
-                    <p className="text-white font-normal text-xl">Đăng nhập</p>
+                    <p className="text-white font-normal text-xl">
+                      Đổi mật khẩu
+                    </p>
                   </Button>
                 </Col>
-                <Col span={12} className="flex">
-                  <Checkbox></Checkbox>
-                  <p className="text-black font-normal text-base ms-2">
-                    Nhớ mật khẩu
-                  </p>
-                </Col>
-                <Col span={12}>
-                  <Link
-                    to="/forgotPassword"
-                    className="text-black font-normal text-base"
-                  >
-                    Quên mật khẩu?
-                  </Link>
-                </Col>
+
                 <Col span={24}>
                   <p className="text-black font-normal text-base ms-2 text-center me-20">
-                    Chưa có tài khoản?{" "}
-                    <Link to="/register" style={{ color: "#EA4444" }}>
-                      Đăng ký
+                    Quay về?
+                    <Link
+                      className="px-2"
+                      to="/login"
+                      style={{ color: "#EA4444" }}
+                    >
+                      Đăng nhập
                     </Link>
                   </p>
                 </Col>
@@ -274,4 +185,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ForgotPassword;

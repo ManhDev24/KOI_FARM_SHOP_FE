@@ -1,5 +1,6 @@
 import React from "react";
 import { Button, Col, Form, Input, Row, Checkbox } from "antd";
+import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -52,7 +53,11 @@ const Register = () => {
       className="w-full h-screen flex justify-center items-center"
     >
       <div
-        style={{ backgroundColor: "white", borderRadius: "20px",boxShadow: "8px 8px #A68E8E" }}
+        style={{
+          backgroundColor: "white",
+          borderRadius: "20px",
+          boxShadow: "8px 8px #A68E8E",
+        }}
         className="w-[1250px] h-[750px] grid grid-cols-1 xl:grid-cols-2 lg:grid-cols-1 gap-1 loginForm"
       >
         <div className="content-left w-full h-full  rounded-xl">
@@ -62,7 +67,7 @@ const Register = () => {
           >
             <div>
               <p
-                style={{ fontSize: "32px" , marginLeft:"50px" }}
+                style={{ fontSize: "32px", marginLeft: "50px" }}
                 className="text-center font-normal text-black"
               >
                 Đăng ký tài khoản
@@ -178,18 +183,21 @@ const Register = () => {
                     name="password"
                     control={control}
                     render={({ field }) => (
-                      <Input
+                      <Input.Password
                         style={{
                           width: "404px",
                           borderRadius: "15px",
                           marginTop: "10px",
                         }}
                         {...field}
-                        type="password" // Use 'password' type for security
+                        type="password"
                         size="large"
                         className="mt-1"
                         placeholder="Nhập mật khẩu"
                         status={errors.password ? "error" : ""}
+                        iconRender={(visible) =>
+                          visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                        }
                       />
                     )}
                   />
@@ -210,18 +218,21 @@ const Register = () => {
                     name="confirmPassword"
                     control={control}
                     render={({ field }) => (
-                      <Input
+                      <Input.Password
                         style={{
                           width: "404px",
                           borderRadius: "15px",
                           marginTop: "10px",
                         }}
                         {...field}
-                        type="password" // Use 'password' type for security
+                        type="password"
                         size="large"
                         className="mt-1"
-                        placeholder="Nhập lại mật khẩu"
-                        status={errors.confirmPassword ? "error" : ""}
+                        placeholder="Nhập mật khẩu"
+                        status={errors.password ? "error" : ""}
+                        iconRender={(visible) =>
+                          visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                        }
                       />
                     )}
                   />
