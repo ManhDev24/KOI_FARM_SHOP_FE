@@ -1,0 +1,28 @@
+
+.btn {
+  list-style-type: none; /* Removes bullet points */
+  margin: 0 0; /* Adds margin for spacing */
+  padding: 0; /* Optional padding */
+    
+}
+
+.cate-font{
+    background-color: #FBDADA !important;
+    color: #EA4444 !important;
+    font-size: 20px ;
+    font-weight: bold;
+    text-align: left;
+    border-radius: 10px;
+    margin-right: 14px !important;
+    padding: 0;
+}
+.ant-btn-dangerous.loginButton{
+
+    background-color: #EA4444 !important;
+}
+.ant-btn-dangerous.registerButton{
+    color: #EA4444;
+    font-family: Arial;
+    border: 2px solid #EA4444;
+    background-color: #FFFFFF !important;
+}
