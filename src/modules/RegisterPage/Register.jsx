@@ -1,12 +1,12 @@
 import React from "react";
 import { Button, Col, Form, Input, Row, Checkbox } from "antd";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
+import * as yup from "yup";
 import { Link } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import "./Register.css";
+import './Register.css'
 const validationSchema = yup.object().shape({
   fullName: yup.string().required("Họ và Tên là bắt buộc"),
   email: yup
@@ -68,12 +68,12 @@ const Register = () => {
             <div>
               <p
                 style={{ fontSize: "32px", marginLeft: "50px" }}
-                className="text-center font-normal text-black"
+                className="text-center font-normal text-black titleForm"
               >
                 Đăng ký tài khoản
               </p>
             </div>
-            <div className="me-10">
+            <div className="me-10 logoForm">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="48"

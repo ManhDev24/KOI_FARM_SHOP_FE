@@ -96,12 +96,12 @@ const Login = () => {
             <div>
               <p
                 style={{ fontSize: "32px", marginLeft: "10px" }}
-                className="text-center font-normal text-black"
+                className="text-center font-normal text-black titleForm"
               >
                 Đăng nhập
               </p>
             </div>
-            <div className="me-10">
+            <div className="me-10 logoForm">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="48"
