@@ -41,7 +41,7 @@ const ForgotPassword = () => {
         }}
         className="w-[1250px] h-[600px] grid grid-cols-1 xl:grid-cols-2 lg:grid-cols-1 gap-1"
       >
-        <div className="content-left w-full h-full rounded-xl">
+        <div className="content-left w-full h-full rounded-xl flex flex-col items-center justify-center mt-10">
           <div
             style={{ marginTop: "59px" }}
             className="content-left-top flex justify-around"
