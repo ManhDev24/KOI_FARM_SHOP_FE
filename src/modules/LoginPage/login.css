@@ -13,7 +13,7 @@
   }
 }
 
-@media only screen and (max-width:601px){
+@media only screen and (max-width: 601px) {
   .content-left-top {
     display: block;
   }

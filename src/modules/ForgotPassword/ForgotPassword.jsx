@@ -49,12 +49,12 @@ const ForgotPassword = () => {
             <div>
               <p
                 style={{ fontSize: "32px", marginLeft: "30px" }}
-                className="text-center font-normal text-black"
+                className="text-center font-normal text-black titleForm"
               >
                 Quên mật khẩu
               </p>
             </div>
-            <div className="me-10">
+            <div className="me-10 logoForm">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="48"

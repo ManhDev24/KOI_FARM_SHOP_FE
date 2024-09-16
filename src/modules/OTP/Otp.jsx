@@ -44,12 +44,12 @@ const Otp = () => {
             <div>
               <p
                 style={{ fontSize: "32px", marginLeft: "20px" }}
-                className="text-center font-normal text-black"
+                className="text-center font-normal text-black titleForm"
               >
                 Mã OTP
               </p>
             </div>
-            <div className="me-10">
+            <div className="me-10 logoForm">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="48"
