@@ -8,10 +8,10 @@ const HomePage = () => {
       <div>
         <Banner />
         <Introduction />
-        );
+        
       </div>
     </>
-  )
+  );
 
 }
 
