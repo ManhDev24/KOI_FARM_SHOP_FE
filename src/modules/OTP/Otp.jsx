@@ -5,7 +5,7 @@ import { Controller, useForm } from "react-hook-form";
 import { Button, Col, Form, Input, Row, Checkbox } from "antd";
 import { Link } from "react-router-dom";
 const validationSchema = yup.object().shape({
-  otp: yup.string().required("OTP là bắt buộc"),
+  otp: yup.string().required("OTP là bắt buộc").max(6, "Tối đa là 6 chữ số"),
 });
 const Otp = () => {
   const {
@@ -105,9 +105,9 @@ const Otp = () => {
                 </Col>
                 <Col span={24}>
                   <p className="text-black font-normal text-base ms-2 text-center me-20">
-                    Quay trở lại? 
-                    <Link to="/login" style={{ color: "#EA4444" }}>
-                      Đăng nhập
+                    Chưa gửi được mã?
+                    <Link to="" style={{ color: "#EA4444" }}>
+                      Gửi lại
                     </Link>
                   </p>
                 </Col>
