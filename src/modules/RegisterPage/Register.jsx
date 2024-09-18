@@ -60,7 +60,7 @@ const Register = () => {
           borderRadius: "20px",
           boxShadow: "8px 8px #A68E8E",
         }}
-        className="w-[1250px] h-[800px] grid grid-cols-1 xl:grid-cols-2 lg:grid-cols-1 gap-1 loginForm"
+        className="w-[1250px] h-[850px] grid grid-cols-1 xl:grid-cols-2 lg:grid-cols-1 gap-1 loginForm"
       >
         <div className="content-left w-full h-full  rounded-xl">
           <div
@@ -75,7 +75,6 @@ const Register = () => {
                 Đăng ký tài khoản
               </p>
             </div>
-           
           </div>
           <div className="flex justify-center items-center mt-2">
             <Form
@@ -297,7 +296,7 @@ const Register = () => {
               top: 100,
               left: 0,
               bottom: 0,
-              height: "600px",
+              height: "70%",
               width: "1px",
               backgroundColor: "black",
             }}
