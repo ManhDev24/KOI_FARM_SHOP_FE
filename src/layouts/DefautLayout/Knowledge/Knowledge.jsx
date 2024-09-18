@@ -93,7 +93,7 @@ const Knowledge = () => {
             </Flex>
 
             <div className='my-[80px] flex justify-center'>
-                <Flex justify='center' horizontal className='grid grid-cols-3  w-[950px] grid gap-4 md:gap-6 lg:gap-10'>
+                <Flex justify='center' horizontal className='grid grid-cols-3  w-[950px] gap-4 md:gap-6 lg:gap-10'>
                     {cardData.map((card, index) => (
                         <Flex key={index} justify='center' vertical className='w-[250px] h-[645px] mx-10 shadows1'>
                             {/* Tag */}
@@ -105,7 +105,6 @@ const Knowledge = () => {
                                     <img src={card.imgSrc} className='w-[250px] h-[354px] rounded-t-[8px] box-border' alt="" />
                                 </div>
                             </Row>
-                            
                             <Flex horizontal>
                                 <Flex className='grid col-span-3'>
                                     <Row className='flex flex-col w-[250px] h-[290px] bg-[#FFFFFF] border border-t-0 border-x-2 border-b-2 border-[#FA4444]'>
