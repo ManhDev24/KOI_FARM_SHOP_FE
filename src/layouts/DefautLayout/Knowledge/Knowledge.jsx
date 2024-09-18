@@ -89,7 +89,7 @@ const Knowledge = () => {
 
             {/* Image */}
             <Flex justify='center'>
-                <img src="/img/asagiBanner.jpg" alt="" className='w-[2000px] h-[525px]' />
+                <img src="./img/asagiBanner.jpg" alt="" className='w-[2000px] h-[525px]' />
             </Flex>
 
             <div className='my-[80px] flex justify-center'>
