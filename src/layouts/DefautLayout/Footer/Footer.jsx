@@ -2,7 +2,7 @@ import React from 'react';
 import './Footer.css';
 const Footer = () => {
   return (
-    <div className='w-full h-[494px] grid grid-cols-3  box-border border-t-2 border-t-red-500 pt-[90px]' style={{ fontFamily: 'Arial' }}>
+    <div className='w-full h-[30vh] grid grid-cols-3  box-border border-t-2 border-t-red-500 pt-[90px]' style={{ fontFamily: 'Arial' }}>
       <div className='containers'>
         <div className='font-bold'>
           CÔNG TY TNHH TMDV FARM KOI
