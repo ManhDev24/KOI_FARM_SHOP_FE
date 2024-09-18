@@ -19,14 +19,14 @@ const Introduction = () => {
 
               </Col>
               <Col span={15} >
-                <p className=' textfonts w-full'  >
+                <div className=' textfonts w-full'  >
                   <h1 className='text-[32px] font-bold textfont ps-10 w-[200px] item '>KOI FARM</h1>
                   <p className='indent-4'>
                     Hiện nay, nhu cầu của khách hàng về thiết kế thi công cảnh Quan phong thủy ngày càng trở nên đa dạng hơn.
                     Chính vì vậy, có không ít các đơn vị đã gia nhập vào lĩnh vực này nhằm phục vụ được lượng cầu của khách hàng. Góp mặt trong số lượng lớn các đơn vị này, Koi Farm chúng tôi cũng hy vọng sẽ mang tới sự đáp ứng tối ưu nhất những mong muốn của mọi người.
                   </p>
 
-                </p>
+                </div> 
                 <Link to="#">
                   <Button type='primary' className="w-[160px] font-bold h-[50px] box-border m-auto rounded-[10px] ms-10 mt-10 shadows">
                     <span>
