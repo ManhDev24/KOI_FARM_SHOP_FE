@@ -2,6 +2,7 @@ import HomePage from "../components/HomePage/HomePage";
 import DefaultLayout from "../layouts/DefautLayout/DefaultLayout";
 import ChangePassword from "../modules/ChangePassword/ChangePassword";
 import ForgotPassword from "../modules/ForgotPassword/ForgotPassword";
+import ListFish from "../modules/ListFish/ListFish";
 import Login from "../modules/LoginPage/Login";
 import Otp from "../modules/OTP/Otp";
 import Register from "../modules/RegisterPage/Register";
@@ -37,6 +38,11 @@ export const publicRoutes = [
     component: ForgotPassword,
     layout: null,
   },
+  {
+    path: "/koiList",
+    component:ListFish,
+    layout: DefaultLayout,
+  }
 ];
 
 export const privateRoutes = [];
