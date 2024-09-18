@@ -3,8 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 const banners = [
   "/img/banner1.jpg", 
-  "/img/banner2.png",  
-  "/img/banner3.jpg"  
+  "/img/banner2.png"
 ];
 
 const Banner = () => {
@@ -27,12 +26,12 @@ const Banner = () => {
     }, []);
 
     return (
-        <div className='relative w-full h-[716px] bg'>
+        <div className='relative w-full h-[900px] flex justify-center'>
         
             <img
                 src={banners[currentBannerIndex]}
                 alt={`Banner ${currentBannerIndex + 1}`}
-                className="w-full h-full object-cover"
+                className="w-[2000px] h-[900px] object-cover"
             />
             
         
@@ -41,7 +40,7 @@ const Banner = () => {
                     <button
                         key={index}
                         onClick={() => changeBanner(index)}
-                        className={`px-4 py-2 rounded ${currentBannerIndex === index ? 'bg-red-600 text-white' : 'bg-[#FFFFFF] text-white'}`}
+                        className={`px-4 py-[2px]  ${currentBannerIndex === index ? 'bg-red-600 text-white' : 'bg-[#FFFFFF] text-white'}`}
                     >
                        
                     </button>

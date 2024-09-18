@@ -1,20 +1,28 @@
 import React from 'react';
 import { Button, Dropdown, Menu } from 'antd';
 import './navbar.css';
-
+import { Link } from 'react-router-dom';
 const Navbar = () => {
   // Define menu items for dropdowns
   const menu = (
     <Menu>
-      <Menu.Item key="1">Option 1</Menu.Item>
-      <Menu.Item key="2">Option 2</Menu.Item>
+      <Menu.Item key="1">Cá Koi Showa</Menu.Item>
+      <Menu.Item key="2">Cá Koi Shusui</Menu.Item>
+      <Menu.Item key="3">Cá Koi Kohaku</Menu.Item>
+      <Menu.Item key="4">Cá Koi Hi Utsuri</Menu.Item>
+    </Menu>
+  );
+  const news = (
+    <Menu>
+      <Menu.Item key="1">Kiến thức Cá Koi</Menu.Item>
+      <Menu.Item key="2">Cá Koi</Menu.Item>
       <Menu.Item key="3">Option 3</Menu.Item>
     </Menu>
   );
 
   return (
     <>
-      <div className='Navbar grid grid-cols-6 w-full h-[150px]'>
+      <div className='Navbar grid grid-cols-6   w-full h-[150px] '>
         <div className='w-full h-full flex flex-col justify-center col-span-1'>
           <div className='logo w-[90px] h-[90px] container ms-10'>
             <img src="./img/logo.png" alt="Logo" />
@@ -25,7 +33,7 @@ const Navbar = () => {
         <div className='categories col-span-4 h-[150px]'>
           <ul className='flex flex-row items-center h-[150px]'>
             <li className='me-x'>
-              <Dropdown overlay={menu} trigger={['click']}>
+              <Dropdown overlay={menu} trigger={['hover']}>
                 <Button type="primary" danger className='cate-font ps-1 w-auto h-[42px] box-border'>
                   Cá Koi Nhật
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -35,7 +43,7 @@ const Navbar = () => {
               </Dropdown>
             </li>
             <li className='me-x'>
-              <Dropdown overlay={menu} trigger={['click']}>
+              <Dropdown overlay={news} trigger={['hover']}>
                 <Button type="primary" danger className='cate-font ps-1 w-auto h-[42px] box-border'>
                   Tin tức
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -45,7 +53,7 @@ const Navbar = () => {
               </Dropdown>
             </li>
             <li className='me-x'>
-              <Dropdown overlay={menu} trigger={['click']}>
+              <Dropdown overlay={menu} trigger={['hover']}>
                 <Button type="primary" danger className='cate-font ps-1 h-[42px] box-border'>
                   Ký gửi
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -97,14 +105,19 @@ const Navbar = () => {
             </svg>
           </div></button>
           <div className='pe-2'>
-            <Button type="primary" danger className='loginButton text-[20px] rounded-[10px] w-[124px] h-[42px] box-border'>
-              Đăng Nhập
-            </Button>
+            <Link to="/login">
+              <Button type="primary" danger className='loginButton text-[20px] rounded-[10px] w-[124px] h-[42px] box-border'>
+                Đăng Nhập
+              </Button>
+            </Link>
           </div>
           <div className='pe-5'>
-            <Button type="primary" danger className='registerButton text-[20px] rounded-[10px] w-[124px] h-[42px] box-border'>
-              Đăng ký
-            </Button>
+            <Link to="register">
+              <Button type="primary" danger className='registerButton text-[20px] rounded-[10px] w-[124px] h-[42px] box-border'>
+                Đăng ký
+              </Button>
+
+            </Link>
           </div>
         </div>
       </div>
