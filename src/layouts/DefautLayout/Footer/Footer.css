@@ -1,21 +1,21 @@
-/* Footer Container */
+
 .containers {
     padding: 0 10%;
   }
   
-  /* Align text to the left */
-  .text-left {
+
+  .text-lefts {
     text-align: left;
     margin-top: 10px;
   }
   
-  /* Font styling for bold text */
+
   .font-bold {
     margin-bottom: 15px;
   }
   
-  /* Align items in the policy section */
-  .flex-col.items-center {
+
+  .flex-col.items-centers {
     align-items: flex-start;
   }
   

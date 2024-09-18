@@ -176,10 +176,10 @@ const ChangePassword = () => {
                     </p>
                   </Button>
                 </Col>
-               
+
                 <Col span={24}>
                   <p className="text-black font-normal text-base ms-2 text-center me-20">
-                    Bạn đã thay đổi mật khẩu? 
+                    Bạn đã thay đổi mật khẩu?
                     <Link to="/login" style={{ color: "#EA4444" }}>
                       Đăng nhập
                     </Link>

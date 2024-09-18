@@ -7,7 +7,7 @@ const Footer = () => {
         <div className='font-bold'>
           CÔNG TY TNHH TMDV FARM KOI
         </div>
-        <div className='text-left'>
+        <div className='text-lefts'>
           <div>Hotline: 9999999999</div>
           <div>Email: admin@farmkoi.com</div>
           <div>Địa chỉ: 299 Tên Lửa, Bình Trị Đông B, Bình Tân, Hồ Chí Minh</div>
@@ -15,7 +15,7 @@ const Footer = () => {
       </div>
       <div >
         <div className='font-bold'> CHÍNH SÁCH</div>
-        <div className='flex flex-col items-center text-left'>
+        <div className='flex flex-col items-centers text-left'>
           <div>Chính sách bảo mật thông tin</div>
           <div>Chính sách thanh toán</div>
           <div>Chính sách giao hàng</div>

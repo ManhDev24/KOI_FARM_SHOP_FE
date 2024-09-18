@@ -26,4 +26,7 @@
       border: 2px solid #EA4444;
       background-color: #FFFFFF !important;
   }
+  .ant-btn-dangerous.registerButton:hover{
+   color: #EA4444 !important;
+}
   
