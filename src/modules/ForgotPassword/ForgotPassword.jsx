@@ -31,7 +31,7 @@ const ForgotPassword = () => {
   return (
     <div
       style={{ backgroundColor: "#DDBCBC" }}
-      className="w-full h-screen flex justify-center items-center"
+      className="w-full h-screen flex justify-center items-center "
     >
       <div
         style={{
@@ -39,7 +39,7 @@ const ForgotPassword = () => {
           borderRadius: "20px",
           boxShadow: "8px 8px #A68E8E",
         }}
-        className="w-[1250px] h-[600px] grid grid-cols-1 xl:grid-cols-2 lg:grid-cols-1 gap-1"
+        className="w-[1250px] h-[700px] grid grid-cols-1 xl:grid-cols-2 lg:grid-cols-1 gap-1"
       >
         <div className="content-left w-full h-full rounded-xl flex flex-col items-center justify-center mt-10">
           <div
@@ -54,7 +54,6 @@ const ForgotPassword = () => {
                 Quên mật khẩu
               </p>
             </div>
-          
           </div>
           <div className="flex justify-center items-center mt-10">
             <Form

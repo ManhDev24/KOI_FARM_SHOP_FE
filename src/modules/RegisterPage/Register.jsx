@@ -2,13 +2,15 @@ import React from "react";
 import { Button, Col, Form, Input, Row, Checkbox } from "antd";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import * as yup from "yup";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { jwtDecode } from "jwt-decode";
 import { GoogleLogin } from "@react-oauth/google";
 import "./Register.css";
+import { useMutation } from "@tanstack/react-query";
+import { AuthApi } from "../../apis/Auth.api";
 const validationSchema = yup.object().shape({
   fullName: yup.string().required("Họ và Tên là bắt buộc"),
   email: yup
@@ -46,8 +48,21 @@ const Register = () => {
     mode: "onBlur",
   });
 
+  const { mutate: handleRegister, isPending } = useMutation({
+    mutationFn: (payload) => AuthApi.register(payload),
+    onSuccess: (data) => {
+      toast.success("Đăng ký thành công");
+    },
+    onError: (error) => {
+      const errorMessage = error?.message || "Đã có lỗi xử lý vui lòng thử lại";
+      toast.error(errorMessage);
+    },
+  });
+
   const onSubmit = (data) => {
-    console.log("data: ", data);
+    const { confirmPassword, ...payload } = data;
+    handleRegister(payload);
+    // console.log("payload: ", payload);
   };
   return (
     <div
@@ -60,7 +75,7 @@ const Register = () => {
           borderRadius: "20px",
           boxShadow: "8px 8px #A68E8E",
         }}
-        className="w-[1250px] h-[850px] grid grid-cols-1 xl:grid-cols-2 lg:grid-cols-1 gap-1 loginForm"
+        className="w-[1250px] h-[750px] grid grid-cols-1 xl:grid-cols-2 lg:grid-cols-1 gap-1 loginForm"
       >
         <div className="content-left w-full h-full  rounded-xl">
           <div
@@ -82,7 +97,7 @@ const Register = () => {
               layout="vertical"
               onFinish={handleSubmit(onSubmit)}
             >
-              <Row gutter={[48, 30]}>
+              <Row gutter={[48, 15]}>
                 <Col span={24}>
                   <label
                     style={{ fontSize: "20px", marginLeft: "8px" }}
