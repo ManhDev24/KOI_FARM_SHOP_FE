@@ -1,6 +1,7 @@
 import { Button, Col, Flex, Row } from 'antd';
 import React from 'react';
 import './introduction.css';
+import { Link } from 'react-router-dom';
 
 const cardData = [
     {
@@ -9,7 +10,7 @@ const cardData = [
         title: 'SHOWA KOI',
         seller: 'Hoàng Tiến Đạt',
         gender: 'Koi cái',
-        age: '18+',
+        age: '2',
         size: '80cm',
         origin: 'Nhật Bổn',
         type: 'Cá Koi Showa',
@@ -21,7 +22,7 @@ const cardData = [
         title: 'SHOWA KOI',
         seller: 'Hoàng Tiến Đạt',
         gender: 'Koi cái',
-        age: '18+',
+        age: '2',
         size: '80cm',
         origin: 'Nhật Bổn',
         type: 'Cá Koi Showa',
@@ -33,7 +34,7 @@ const cardData = [
         title: 'SHOWA KOI',
         seller: 'Hoàng Tiến Đạt',
         gender: 'Koi cái',
-        age: '18+',
+        age: '2',
         size: '80cm',
         origin: 'Nhật Bổn',
         type: 'Cá Koi Showa',
@@ -45,7 +46,7 @@ const cardData = [
         title: 'SHOWA KOI',
         seller: 'Hoàng Tiến Đạt',
         gender: 'Koi cái',
-        age: '18+',
+        age: '2',
         size: '80cm',
         origin: 'Nhật Bổn',
         type: 'Cá Koi Showa',
@@ -57,7 +58,7 @@ const cardData = [
         title: 'SHOWA KOI',
         seller: 'Hoàng Tiến Đạt',
         gender: 'Koi cái',
-        age: '18+',
+        age: '2',
         size: '80cm',
         origin: 'Nhật Bổn',
         type: 'Cá Koi Showa',
@@ -69,13 +70,13 @@ const cardData = [
         title: 'SHOWA KOI',
         seller: 'Hoàng Tiến Đạt',
         gender: 'Koi cái',
-        age: '18+',
+        age: '2',
         size: '80cm',
         origin: 'Nhật Bổn',
         type: 'Cá Koi Showa',
         price: '300.000 đ'
     },
-   
+
 ];
 
 const Knowledge = () => {
@@ -83,7 +84,7 @@ const Knowledge = () => {
         <>
             <Flex justify='center'>
                 <div className='w-[950px] h-[50px] bg-white text-[36px] text-[#FA4444] text-center border border-3 border-[#FA4444] my-[80px]'>
-                    <span>KIẾN THỨC CÁ KOI</span>
+                    <span className='h-[38px]'>KIẾN THỨC CÁ KOI</span>
                 </div>
             </Flex>
 
@@ -93,9 +94,10 @@ const Knowledge = () => {
             </Flex>
 
             <div className='my-[80px] flex justify-center'>
-                <Flex justify='center' horizontal className='grid grid-cols-3  w-[950px] gap-4 md:gap-6 lg:gap-10'>
+                <Flex justify='center' horizontal className='grid w-[950px]' style={{ gridTemplateColumns: "repeat(3, minmax(auto, 1fr))" }}
+                >
                     {cardData.map((card, index) => (
-                        <Flex key={index} justify='center' vertical className='w-[250px] h-[645px] mx-10 shadows1'>
+                        <Flex key={index} justify='center' vertical className='w-[250px] h-[645px] mx-10 mb-10 shadows1'>
                             {/* Tag */}
                             <Row>
                                 <div className='absolute w-[86px] bg-[#FFFFFF] rounded-ee-[10px] rounded-tl-[5px] text-center text-[#FA4444]'>
@@ -124,9 +126,13 @@ const Knowledge = () => {
                                                 <div className='my-[10px] text-[20px] font-bold'>
                                                     {card.price}
                                                 </div>
-                                                <Button className='w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]'>
-                                                    Đặt Mua
-                                                </Button>
+
+                                                <Link to="/product">
+                                                    <Button className='w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]'>
+                                                        Đặt Mua
+                                                    </Button>
+                                                </Link>
+
                                             </div>
                                         </div>
                                     </Row>

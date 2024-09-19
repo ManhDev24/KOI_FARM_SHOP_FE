@@ -11,14 +11,14 @@ const Categories = () => {
             </Flex>
             <Flex justify='center'>
                 <Row className='my-[80px] w-[950px] h-[500px] justify-around'>
-                    <Col className='w-[240px] '>
-                        <img src="/img/bengoi.png" alt="" className='h-[570px]' />
+                    <Col className=''>
+                        <img src="/img/bengoi.png" alt="" className='w-[240px] h-[580px]' />
                     </Col>
-                    <Col className='w-[240px]'>
-                        <img src="/img/SHUSUI.png" alt="" className='h-[570px]' />
+                    <Col className=''>
+                        <img src="/img/SHUSUI.png" alt="" className='w-[240px] h-[580px]' />
                     </Col>
                     <Col className=' ' >
-                        <img src="/img/asagi.jpg" alt="" className='h-[570px]' />
+                        <img src="/img/asagi.jpg" alt="" className='w-[240px] h-[580px]' />
                     </Col>
                 </Row>
             </Flex>
