@@ -97,7 +97,7 @@ const Login = () => {
             <div>
               <p
                 style={{ fontSize: "32px", marginLeft: "10px" }}
-                className="text-center font-normal text-black titleForm me-20"
+                className="text-center font-normal text-black titleForm pe-10"
               >
                 Đăng nhập
               </p>
@@ -205,7 +205,7 @@ const Login = () => {
                     Quên mật khẩu?
                   </Link>
                 </Col>
-                <Col span={21}>
+                <Col className="pr-0" span={21}>
                   <div className="flex w-full items-center">
                     <div
                       data-orientation="horizontal"

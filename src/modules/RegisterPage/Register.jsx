@@ -85,7 +85,7 @@ const Register = () => {
             <div>
               <p
                 style={{ fontSize: "32px", marginLeft: "50px" }}
-                className="text-center font-normal text-black titleForm me-20"
+                className="text-center font-normal text-black titleForm  pe-20"
               >
                 Đăng ký tài khoản
               </p>
@@ -246,12 +246,12 @@ const Register = () => {
                     <p className="text-white font-normal text-xl">Đăng ký</p>
                   </Button>
                 </Col>
-                <Col span={21}>
+                <Col className="pr-0" span={21}>
                   <div className="flex w-full items-center">
                     <div
                       data-orientation="horizontal"
                       role="none"
-                      className="bg-border-1 bg-slate-400	h-[1px] w-full flex-1  "
+                      className="bg-border-1 bg-slate-400	h-[1px] w-full flex-1 "
                     />
                     <span
                       className="text-xs leading-xs text-secondary flex-none p-2 py-1.5 uppercase"
