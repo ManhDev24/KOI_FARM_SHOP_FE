@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Col, Form, Input, Row, Checkbox } from "antd";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import { Controller, useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import "./login.css";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -11,6 +11,10 @@ import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 import { GoogleLogin } from "@react-oauth/google";
 import axios from "axios";
+import { setLocalStorage } from "../../utils/LocalStorage";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../Redux/Slices/Auth_Slice";
+import { AuthApi } from "../../apis/Auth.api";
 
 const validationSchema = yup.object().shape({
   email: yup
@@ -29,6 +33,8 @@ const validationSchema = yup.object().shape({
 });
 
 const Login = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const {
     handleSubmit,
     control,
@@ -40,40 +46,24 @@ const Login = () => {
     mode: "onBlur",
   });
 
-  // const { mutate: handleLogin, isLoading } = useMutation({
-  //   mutationFn: (payload) => LoginAPi.login(payload),
-  //   onSuccess: (data) => {
-  //     toast.success("Đăng nhập thành công");
-  //   },
-  //   onError: (error) => {
-  //     const errorMessage = error?.message || "An unexpected error occurred";
-  //     toast.error(errorMessage);
-  //   },
-  // });
+  const { mutate: handleLogin, isLoading } = useMutation({
+    mutationFn: (payload) => AuthApi.login(payload),
+    onSuccess: (data) => {
+      setLocalStorage("user", data.content);
+      dispatch(setUser(data));
+      toast.success("Đăng nhập thành công");
+      navigate("/");
+    },
+    onError: (error) => {
+      const errorMessage =
+        error?.message || "Đã có lỗi xử lý vui lòng thử lại !!!";
+      toast.error(errorMessage);
+    },
+  });
 
-  // const onSubmit = (data) => {
-  //   handleLogin(data);
-  //   console.log(data);
-  // };
-  const onSubmit = async (data) => {
-    try {
-      const response = await axios.get("http://localhost:9999/users");
-      const users = response.data;
-      console.log("users: ", users);
-      const user = users.find(
-        (user) => user.email === data.email && user.password === data.password
-      );
-      if (user) {
-        toast.success("Login successful!");
-        setIsLoginModalOpen(false);
-        const { password, ...dataSaveToLocal } = user;
-        setLocalStorage("user", dataSaveToLocal);
-      } else {
-        toast.error("Invalid email or password.");
-      }
-    } catch (error) {
-      throw new Error(error);
-    }
+  const onSubmit = (data) => {
+    handleLogin(data);
+    // console.log(data);
   };
 
   return (
