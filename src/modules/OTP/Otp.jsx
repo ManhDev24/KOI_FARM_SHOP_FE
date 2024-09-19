@@ -4,6 +4,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
 import { Button, Col, Form, Input, Row, Checkbox } from "antd";
 import { Link } from "react-router-dom";
+import "./otp.css";
 const validationSchema = yup.object().shape({
   otp: yup.string().required("OTP là bắt buộc").max(6, "Tối đa là 6 chữ số"),
 });
@@ -26,7 +27,7 @@ const Otp = () => {
   return (
     <div
       style={{ backgroundColor: "#DDBCBC" }}
-      className="w-full h-screen flex justify-center items-center"
+      className="w-full h-full flex justify-center items-center"
     >
       <div
         style={{
@@ -34,7 +35,7 @@ const Otp = () => {
           borderRadius: "20px",
           boxShadow: "8px 8px #A68E8E",
         }}
-        className="w-[1250px] h-[600px] grid grid-cols-1 xl:grid-cols-2 lg:grid-cols-1 gap-1"
+        className="w-[1250px] h-[700px] grid grid-cols-1 xl:grid-cols-2 lg:grid-cols-1 gap-1"
       >
         <div className="content-left w-full h-full rounded-xl flex flex-col items-center justify-center mt-10">
           <div
