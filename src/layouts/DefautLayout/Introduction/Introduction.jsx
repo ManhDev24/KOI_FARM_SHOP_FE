@@ -7,7 +7,7 @@ const Introduction = () => {
     <>
       <Flex justify='center'>
         <div className='w-[950px] h-[50px] bg-white text-[36px] text-[#FA4444] text-center border border-3 border-[#FA4444] mt-[80px] '>
-          <span>GIỚI THIỆU</span>
+          <span style={{ fontFamily: 'Merriweather, serif'}>GIỚI THIỆU</span>
         </div>
       </Flex>
       <div className='w-[950px] h-[400px] my-[80px] m-auto bg-[#FFFFFFF]'>

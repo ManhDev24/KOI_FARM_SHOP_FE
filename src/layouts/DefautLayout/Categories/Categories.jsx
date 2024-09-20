@@ -6,7 +6,7 @@ const Categories = () => {
         < >
             <Flex justify='center'>
                 <div className='w-[950px] h-[50px] bg-white text-[36px] text-[#FA4444] text-center border border-3 border-[#FA4444] mt-0 '>
-                    <span>DANH MỤC CÁ KOI</span>
+                    <span style={{ fontFamily: 'Merriweather, serif'}>DANH MỤC CÁ KOI</span>
                 </div>
             </Flex>
             <Flex justify='center'>
