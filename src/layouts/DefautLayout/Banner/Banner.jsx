@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 
 
 const banners = [
-  "/img/banner1.jpg", 
-  "/img/banner2.png"
+
+  "./img/5.png",
+  "./img/6.webp",
 ];
 
 const Banner = () => {
@@ -26,12 +27,12 @@ const Banner = () => {
     }, []);
 
     return (
-        <div className='relative w-full h-[900px] flex justify-center'>
+        <div className='relative w-full max-h-[700px] flex justify-center'>
         
             <img
                 src={banners[currentBannerIndex]}
                 alt={`Banner ${currentBannerIndex + 1}`}
-                className="w-[2000px] h-[900px] object-cover"
+                className="w-full max-w-[2000px] max-h-[700px] object-cover"
             />
             
         
