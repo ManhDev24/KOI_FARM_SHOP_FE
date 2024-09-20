@@ -32,7 +32,7 @@ const Banner = () => {
             <img
                 src={banners[currentBannerIndex]}
                 alt={`Banner ${currentBannerIndex + 1}`}
-                className="w-full max-w-[2000px] max-h-[700px] object-cover"
+                className=" w-[2000px] h-[700px] object-cover"
             />
             
         

@@ -84,7 +84,7 @@ const Knowledge = () => {
         <>
             <Flex justify='center'>
                 <div className='w-[950px] h-[50px] bg-white text-[36px] text-[#FA4444] text-center border border-3 border-[#FA4444] my-[80px]'>
-                    <span className='h-[38px]'>KIẾN THỨC CÁ KOI</span>
+                    <span className='h-[38px]' style={{ fontFamily: 'Merriweather, serif'}}>KIẾN THỨC CÁ KOI</span>
                 </div>
             </Flex>
 
