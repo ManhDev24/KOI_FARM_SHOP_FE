@@ -5,7 +5,6 @@ import Categories from '../../layouts/DefautLayout/Categories/Categories';
 import Knowledge from '../../layouts/DefautLayout/Knowledge/Knowledge';
 
 
-
 const HomePage = () => {
   return (
     <>

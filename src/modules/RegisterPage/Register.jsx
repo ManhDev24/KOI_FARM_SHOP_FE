@@ -2,11 +2,15 @@ import React from "react";
 import { Button, Col, Form, Input, Row, Checkbox } from "antd";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import * as yup from "yup";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { yupResolver } from "@hookform/resolvers/yup";
-import './Register.css'
+import { jwtDecode } from "jwt-decode";
+import { GoogleLogin } from "@react-oauth/google";
+import "./Register.css";
+import { useMutation } from "@tanstack/react-query";
+import { AuthApi } from "../../apis/Auth.api";
 const validationSchema = yup.object().shape({
   fullName: yup.string().required("Họ và Tên là bắt buộc"),
   email: yup
@@ -44,8 +48,21 @@ const Register = () => {
     mode: "onBlur",
   });
 
+  const { mutate: handleRegister, isPending } = useMutation({
+    mutationFn: (payload) => AuthApi.register(payload),
+    onSuccess: (data) => {
+      toast.success("Đăng ký thành công");
+    },
+    onError: (error) => {
+      const errorMessage = error?.message || "Đã có lỗi xử lý vui lòng thử lại";
+      toast.error(errorMessage);
+    },
+  });
+
   const onSubmit = (data) => {
-    console.log("data: ", data);
+    const { confirmPassword, ...payload } = data;
+    handleRegister(payload);
+    // console.log("payload: ", payload);
   };
   return (
     <div
@@ -68,46 +85,19 @@ const Register = () => {
             <div>
               <p
                 style={{ fontSize: "32px", marginLeft: "50px" }}
-                className="text-center font-normal text-black titleForm"
+                className="text-center font-normal text-black titleForm me-20"
               >
                 Đăng ký tài khoản
               </p>
             </div>
-            <div className="me-10 logoForm">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="48"
-                height="48"
-                viewBox="0 0 48 48"
-                fill="none"
-                className="me-10 cursor-pointer"
-              >
-                <path
-                  d="M43.611 20.083H42V20H24V28H35.303C33.654 32.657 29.223 36 24 36C17.373 36 12 30.627 12 24C12 17.373 17.373 12 24 12C27.059 12 29.842 13.154 31.961 15.039L37.618 9.382C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24C4 35.045 12.955 44 24 44C35.045 44 44 35.045 44 24C44 22.659 43.862 21.35 43.611 20.083Z"
-                  fill="#FFC107"
-                />
-                <path
-                  d="M6.30603 14.691L12.877 19.51C14.655 15.108 18.961 12 24 12C27.059 12 29.842 13.154 31.961 15.039L37.618 9.382C34.046 6.053 29.268 4 24 4C16.318 4 9.65603 8.337 6.30603 14.691Z"
-                  fill="#FF3D00"
-                />
-                <path
-                  d="M24 44C29.166 44 33.86 42.023 37.409 38.808L31.219 33.57C29.1439 35.1491 26.6076 36.0028 24 36C18.798 36 14.381 32.683 12.717 28.054L6.19501 33.079C9.50501 39.556 16.227 44 24 44Z"
-                  fill="#4CAF50"
-                />
-                <path
-                  d="M43.611 20.083H42V20H24V28H35.303C34.5142 30.2164 33.0934 32.1532 31.216 33.571L31.219 33.569L37.409 38.807C36.971 39.205 44 34 44 24C44 22.659 43.862 21.35 43.611 20.083Z"
-                  fill="#1976D2"
-                />
-              </svg>
-            </div>
           </div>
-          <div className="flex justify-center items-center mt-10">
+          <div className="flex justify-center items-center mt-2">
             <Form
               className="w-[450px] h-[524px]"
               layout="vertical"
               onFinish={handleSubmit(onSubmit)}
             >
-              <Row gutter={[48, 30]}>
+              <Row gutter={[48, 15]}>
                 <Col span={24}>
                   <label
                     style={{ fontSize: "20px", marginLeft: "8px" }}
@@ -256,7 +246,43 @@ const Register = () => {
                     <p className="text-white font-normal text-xl">Đăng ký</p>
                   </Button>
                 </Col>
-
+                <Col span={21}>
+                  <div className="flex w-full items-center">
+                    <div
+                      data-orientation="horizontal"
+                      role="none"
+                      className="bg-border-1 bg-slate-400	h-[1px] w-full flex-1  "
+                    />
+                    <span
+                      className="text-xs leading-xs text-secondary flex-none p-2 py-1.5 uppercase"
+                      data-id="TextBody"
+                    >
+                      Or
+                    </span>
+                    <div
+                      data-orientation="horizontal"
+                      role="none"
+                      className="bg-border-1 bg-slate-400 h-[1px] w-full flex-1"
+                    />
+                  </div>
+                </Col>
+                <Col span={24}>
+                  <div className="flex justify-center items-center ms-2 me-20">
+                    <GoogleLogin
+                      onSuccess={(credentialResponse) => {
+                        const decoded = jwtDecode(
+                          credentialResponse?.credential
+                        );
+                        console.log("decoded: ", decoded);
+                        toast.success("Login successful");
+                      }}
+                      onError={() => {
+                        toast.error("Login Failed");
+                        console.log("Login Failed");
+                      }}
+                    />
+                  </div>
+                </Col>
                 <Col span={24}>
                   <p className="text-black font-normal text-base ms-2 text-center me-20">
                     Đã có tài khoản?{" "}
@@ -285,7 +311,7 @@ const Register = () => {
               top: 100,
               left: 0,
               bottom: 0,
-              height: "600px",
+              height: "70%",
               width: "1px",
               backgroundColor: "black",
             }}
