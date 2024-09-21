@@ -1,10 +1,21 @@
 import { Breadcrumb, Button, Input, Table } from "antd";
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "./Cart.css";
 const Cart = () => {
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+
+  const onSelectChange = (newSelectedRowKeys) => {
+    console.log("selectedRowKeys changed: ", newSelectedRowKeys);
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+  };
   const data = [
     {
+      id: "1",
       imgSrc: "img/SOWA.webp",
       title: "SHOWA KOI",
       seller: "Hoàng Tiến Đạt",
@@ -16,6 +27,7 @@ const Cart = () => {
       quantity: 1,
     },
     {
+      id: "2",
       imgSrc: "./img/SOWA.webp",
       title: "Long Thần KOI",
       seller: "Phạm Tiến Mạnh",
@@ -27,6 +39,7 @@ const Cart = () => {
       quantity: 1,
     },
     {
+      id: "3",
       imgSrc: "img/SOWA.webp",
       title: "SHOWA KOI",
       seller: "Hoàng Tiến Đạt",
@@ -38,6 +51,7 @@ const Cart = () => {
       quantity: 1,
     },
     {
+      id: "4",
       imgSrc: "img/SOWA.webp",
       title: "SHOWA KOI",
       seller: "Hoàng Tiến Đạt",
@@ -184,9 +198,8 @@ const Cart = () => {
         <div className="cart grid grid-cols-12 mb-5 container">
           <div className="col-span-8">
             <Table
-              rowSelection={{
-                type: "checkbox",
-              }}
+              rowKey="id"
+              rowSelection={rowSelection}
               columns={columns}
               dataSource={data}
               pagination={false}

@@ -167,9 +167,8 @@ const Navbar = () => {
         </div>
 
         <div className="w-full h-full flex justify-center items-center">
-          <Link to="cart">
+          <Link to="/cart">
             <button className="relative left-[-30px] flex justify-end items-center">
-              {" "}
               <div
                 style={{
                   width: "100%",
