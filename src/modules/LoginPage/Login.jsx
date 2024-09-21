@@ -219,6 +219,7 @@ const Login = () => {
                   <div className="flex justify-center items-center ms-2 me-20">
                     <GoogleLogin
                       onSuccess={(credentialResponse) => {
+                        console.log('credentialResponse: ', credentialResponse);
                         const decoded = jwtDecode(
                           credentialResponse?.credential
                         );
