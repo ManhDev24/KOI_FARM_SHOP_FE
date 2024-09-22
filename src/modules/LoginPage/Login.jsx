@@ -225,6 +225,19 @@ const Login = () => {
                         );
                         console.log("decoded: ", decoded);
                         toast.success("Login successful");
+                         <GoogleLogin
+                      onSuccess={(credentialResponse) => {
+                        const decoded = jwtDecode(
+                          credentialResponse?.credential
+                        );
+                        console.log("decoded: ", decoded);
+                        toast.success("Login successful");
+                      }}
+                      onError={() => {
+                        toast.error("Login Failed");
+                        console.log("Login Failed");
+                      }}
+                    />
                       }}
                       onError={() => {
                         toast.error("Login Failed");
