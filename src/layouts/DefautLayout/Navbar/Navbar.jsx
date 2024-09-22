@@ -131,7 +131,7 @@ const Navbar = () => {
 
           </ul>
         </div>
-        <div className=" flex lg-col items-center">
+        <div className=" flex lg-col items-center lg:">
 
           <input
             type="search"

@@ -1,0 +1,19 @@
+.ant-checkbox-inner {
+  background-color: rgba(234, 68, 68, 0.2);
+  border-color: #ea4444;
+}
+
+/* Thay đổi màu của checkbox khi được chọn */
+.ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #ea4444;
+  border-color: #ea4444;
+}
+.ant-checkbox-checked .ant-checkbox-inner:hover {
+  background-color: #ea4444;
+  border-color: #ea4444;
+}
+
+/* Thay đổi màu của dấu check */
+.ant-checkbox-checked .ant-checkbox-inner::after {
+  border-color: white;
+}

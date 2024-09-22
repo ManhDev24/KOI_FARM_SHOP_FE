@@ -1,5 +1,6 @@
 import HomePage from "../components/HomePage/HomePage";
 import DefaultLayout from "../layouts/DefautLayout/DefaultLayout";
+import Cart from "../modules/Cart/Cart";
 import ChangePassword from "../modules/ChangePassword/ChangePassword";
 import ForgotPassword from "../modules/ForgotPassword/ForgotPassword";
 import ListFish from "../modules/ListFish/ListFish";
@@ -40,9 +41,14 @@ export const publicRoutes = [
   },
   {
     path: "/koiList",
-    component:ListFish,
+    component: ListFish,
     layout: DefaultLayout,
-  }
+  },
+  {
+    path: "/cart",
+    component: Cart,
+    layout: DefaultLayout,
+  },
 ];
 
 export const privateRoutes = [];
