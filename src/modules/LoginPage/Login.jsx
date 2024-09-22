@@ -49,7 +49,8 @@ const Login = () => {
   const { mutate: handleLogin, isLoading } = useMutation({
     mutationFn: (payload) => AuthApi.login(payload),
     onSuccess: (data) => {
-      setLocalStorage("user", data.content);
+      console.log('data: ', data);
+      setLocalStorage("user", data.data);
       dispatch(setUser(data));
       toast.success("Đăng nhập thành công");
       navigate("/");

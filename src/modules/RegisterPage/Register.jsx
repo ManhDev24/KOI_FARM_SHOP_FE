@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Button, Col, Form, Input, Row, Checkbox } from "antd";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import * as yup from "yup";
@@ -11,6 +11,8 @@ import { GoogleLogin } from "@react-oauth/google";
 import "./Register.css";
 import { useMutation } from "@tanstack/react-query";
 import { AuthApi } from "../../apis/Auth.api";
+import { useDispatch } from "react-redux";
+import { saveEmail } from "../../Redux/Slices/Auth_Slice";
 const validationSchema = yup.object().shape({
   fullName: yup.string().required("Họ và Tên là bắt buộc"),
   email: yup
@@ -32,6 +34,8 @@ const validationSchema = yup.object().shape({
     .oneOf([yup.ref("password"), null], "Mật khẩu xác nhận không khớp"),
 });
 const Register = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate()
   const {
     handleSubmit,
     control,
@@ -51,7 +55,11 @@ const Register = () => {
   const { mutate: handleRegister, isPending } = useMutation({
     mutationFn: (payload) => AuthApi.register(payload),
     onSuccess: (data) => {
+      console.log("data: ", data);
+      console.log("Email from response:", data.data.email);
+      dispatch(saveEmail(data.data.email));
       toast.success("Đăng ký thành công");
+      navigate("/otp");
     },
     onError: (error) => {
       const errorMessage = error?.message || "Đã có lỗi xử lý vui lòng thử lại";
@@ -288,6 +296,16 @@ const Register = () => {
                     Đã có tài khoản?{" "}
                     <Link to="/login" style={{ color: "#EA4444" }}>
                       Đăng nhập
+                    </Link>
+                  </p>
+                  <p className="text-black font-normal text-base ms-2 text-center me-20">
+                    Nhập
+                    <Link
+                      className="ms-2"
+                      style={{ color: "#EA4444" }}
+                      to="/otp"
+                    >
+                      OTP
                     </Link>
                   </p>
                 </Col>
