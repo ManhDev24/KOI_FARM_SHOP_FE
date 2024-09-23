@@ -13,6 +13,7 @@ import { useMutation } from "@tanstack/react-query";
 import { AuthApi } from "../../apis/Auth.api";
 import { useDispatch } from "react-redux";
 import { saveEmail } from "../../Redux/Slices/Auth_Slice";
+import LoadingModal from "../Modal/LoadingModal";
 const validationSchema = yup.object().shape({
   fullName: yup.string().required("Họ và Tên là bắt buộc"),
   email: yup
@@ -67,6 +68,25 @@ const Register = () => {
     },
   });
 
+
+  const { mutate: loginWithGoogle, isPending: googleLoad } = useMutation({
+    mutationFn: (payload) => AuthApi.loginWithGoogle(payload),
+    onSuccess: (data) => {
+      setLocalStorage("user", data.data);
+      dispatch(setUser(data));
+      toast.success("Đăng nhập thành công");
+      navigate("/");
+    },
+    onError: (error) => {
+      const errorMessage =
+        error?.message || "Đã có lỗi xảy ra vui lòng thử lại !!!";
+      toast.error(errorMessage);
+    },
+  });
+  const handleLoginWithGoogle = (data) => {
+    console.log("data: ", data);
+    loginWithGoogle(data);
+  };
   const onSubmit = (data) => {
     const { confirmPassword, ...payload } = data;
     handleRegister(payload);
@@ -77,6 +97,8 @@ const Register = () => {
       style={{ backgroundColor: "#DDBCBC" }}
       className="w-full h-screen flex justify-center items-center"
     >
+      {isPending && <LoadingModal isLoading={true} />}
+      {googleLoad && <LoadingModal isLoading={true} />}
       <div
         style={{
           backgroundColor: "white",
@@ -277,12 +299,15 @@ const Register = () => {
                 <Col span={24}>
                   <div className="flex justify-center items-center ms-2 me-20">
                     <GoogleLogin
+
                       onSuccess={(credentialResponse) => {
+
                         const decoded = jwtDecode(
                           credentialResponse?.credential
                         );
+                        handleLoginWithGoogle(decoded);
                         console.log("decoded: ", decoded);
-                        toast.success("Login successful");
+
                       }}
                       onError={() => {
                         toast.error("Login Failed");

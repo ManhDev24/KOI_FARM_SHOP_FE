@@ -15,6 +15,7 @@ import { setLocalStorage } from "../../utils/LocalStorage";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../Redux/Slices/Auth_Slice";
 import { AuthApi } from "../../apis/Auth.api";
+import LoadingModal from "../Modal/LoadingModal";
 
 const validationSchema = yup.object().shape({
   email: yup
@@ -76,9 +77,7 @@ const Login = () => {
       toast.error(errorMessage);
     },
   });
-  if (googleLoad || loginLoad) {
-    return <div>Loading...</div>;
-  }
+  
   const handleLoginWithGoogle = (data) => {
     console.log("data: ", data);
     loginWithGoogle(data);
@@ -93,6 +92,7 @@ const Login = () => {
       style={{ backgroundColor: "#DDBCBC" }}
       className="w-full h-screen flex justify-center items-center"
     >
+      {(googleLoad || loginLoad) && <LoadingModal isLoading={true} />}
       <div
         style={{
           backgroundColor: "white",

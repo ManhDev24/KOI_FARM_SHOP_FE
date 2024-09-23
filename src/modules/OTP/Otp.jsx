@@ -9,6 +9,7 @@ import { useMutation } from "@tanstack/react-query";
 import { AuthApi } from "../../apis/Auth.api";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
+import LoadingModal from "../Modal/LoadingModal";
 const validationSchema = yup.object().shape({
   otp: yup.string().required("OTP là bắt buộc").max(6, "Tối đa là 6 chữ số"),
 });
@@ -31,7 +32,7 @@ const Otp = () => {
     console.log("data: ", data);
   };
 
-  const { mutate: handleOtp, isLoading } = useMutation({
+  const { mutate: handleOtp, isPending: isLoading } = useMutation({
     mutationFn: (otp) => AuthApi.otpVerify(otp, emailRegister),
     onSuccess: (data) => {
       console.log("data: ", data);
@@ -43,11 +44,13 @@ const Otp = () => {
       toast.error(errorMessage);
     },
   });
+  
   return (
     <div
       style={{ backgroundColor: "#DDBCBC" }}
       className="w-full h-screen flex justify-center items-center "
     >
+       {isLoading && <LoadingModal isLoading={true} />}
       <div
         style={{
           backgroundColor: "white",
