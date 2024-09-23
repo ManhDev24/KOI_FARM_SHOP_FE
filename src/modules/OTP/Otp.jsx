@@ -167,7 +167,7 @@ const Otp = () => {
                     </Link>
                   </p>
                 </Col>
-                <Col span={24}>
+                {/* <Col span={24}>
                   <p className="text-black font-normal text-base ms-2 text-center me-20">
                     Chưa nhận được mã
                     <span
@@ -178,7 +178,7 @@ const Otp = () => {
                       Gửi lại
                     </span>
                   </p>
-                </Col>
+                </Col> */}
               </Row>
             </Form>
           </div>
