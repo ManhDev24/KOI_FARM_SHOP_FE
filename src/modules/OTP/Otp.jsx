@@ -3,19 +3,29 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
 import { Button, Col, Form, Input, Row, Checkbox } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./otp.css";
 import { useMutation } from "@tanstack/react-query";
 import { AuthApi } from "../../apis/Auth.api";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import LoadingModal from "../Modal/LoadingModal";
+
+import { useDispatch, useSelector } from "react-redux";
+import {
+  isAllowedToAccessForgotPassword,  saveOtpToken,} from "../../Redux/Slices/Auth_Slice";
+import { setLocalStorage } from "../../utils/LocalStorage";
+
 const validationSchema = yup.object().shape({
   otp: yup.string().required("OTP là bắt buộc").max(6, "Tối đa là 6 chữ số"),
 });
 const Otp = () => {
   const emailRegister = useSelector((state) => state.auth.email);
-  console.log('emailRegister: ', emailRegister);
+  const isResetPassword = useSelector((state) => state.auth.isResetPassword);
+  console.log("isResetPassword: ", isResetPassword);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  console.log("emailRegister: ", emailRegister);
   const {
     handleSubmit,
     control,
@@ -35,8 +45,16 @@ const Otp = () => {
   const { mutate: handleOtp, isPending: isLoading } = useMutation({
     mutationFn: (otp) => AuthApi.otpVerify(otp, emailRegister),
     onSuccess: (data) => {
-      console.log("data: ", data);
-      toast.success("Xác nhận OTP thành công vui lòng đăng nhập");
+      console.log("data OTP: ", data);
+      if (isResetPassword) {
+        toast.success("Xac nhận otp thành công");
+        dispatch(saveOtpToken(data.data));
+        setLocalStorage("otpToken", data.data);
+        dispatch(isAllowedToAccessForgotPassword(true));
+        navigate("/changePassword");
+      } else {
+        toast.success("Xác nhận OTP thành công vui lòng đăng nhập");
+      }
     },
     onError: (error) => {
       const errorMessage =
@@ -44,13 +62,30 @@ const Otp = () => {
       toast.error(errorMessage);
     },
   });
-  
+
+
+  const { mutate: resendOtp, isPending } = useMutation({
+    mutationFn: () => AuthApi.resendOtp(emailRegister),
+    onSuccess: (data) => {
+      toast.success("Gửi otp thành công");
+    },
+    onError: (error) => {
+      const errorMessage =
+        error?.message || "Đã có lỗi xử lý vui lòng thử lại !!!";
+      toast.error(errorMessage);
+    },
+  });
+  const handleResendOtp = () => {
+    resendOtp();
+    console.log("emailRegister: ", emailRegister);
+  };
+
   return (
     <div
       style={{ backgroundColor: "#DDBCBC" }}
       className="w-full h-screen flex justify-center items-center "
     >
-       {isLoading && <LoadingModal isLoading={true} />}
+      {isLoading && <LoadingModal isLoading={true} />}
       <div
         style={{
           backgroundColor: "white",
@@ -137,6 +172,18 @@ const Otp = () => {
                     </Link>
                   </p>
                 </Col>
+                {/* <Col span={24}>
+                  <p className="text-black font-normal text-base ms-2 text-center me-20">
+                    Chưa nhận được mã
+                    <span
+                      style={{ color: "#EA4444" }}
+                      className="cursor-pointer px-2"
+                      onClick={handleResendOtp}
+                    >
+                      Gửi lại
+                    </span>
+                  </p>
+                </Col> */}
               </Row>
             </Form>
           </div>
