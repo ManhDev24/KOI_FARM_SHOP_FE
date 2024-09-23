@@ -7,7 +7,7 @@ import { getLocalStorage } from "../../../utils/LocalStorage";
 import { useDispatch } from "react-redux";
 import { signOut } from "../../../Redux/Slices/Auth_Slice";
 const Navbar = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   // Define menu items for dropdowns
   const koiMenuItems = [
     { key: "1", label: "Cá Koi Showa" },
@@ -22,16 +22,17 @@ const Navbar = () => {
     { key: "3", label: "Option 3" },
   ];
 
-  const handelSignOut = ()=>{
-    dispatch(signOut())
-  }
-  const profile = [
+  const profileMenuItems = [
     { key: "5", label: "Profile" },
     { key: "6", label: "Thông tin cá nhân" },
     { key: "7", label: "Settings" },
-    { key: "8", label: "Đăng xuất" },
+    { key: "8", label: "Đăng xuất", onClick: () => handleSignOut() },
   ];
-  
+
+  const handleSignOut = () => {
+    dispatch(signOut());
+    window.location.reload();
+  };
 
   const userlogged = getLocalStorage("user");
 
@@ -227,10 +228,7 @@ const Navbar = () => {
               <span>
                 <ul>
                   <li>
-                    <Dropdown
-                      menu={{ items: profile }}
-                      trigger={["hover"]}
-                    >
+                    <Dropdown menu={{ items: profileMenuItems }} trigger={["hover"]}>
                       <Button className="logoutButton text-[#FA4444] border-[1px] border-[#FA4444] w-[24] h-[42px]">
                         <img
                           src="./img/Vector.png"
