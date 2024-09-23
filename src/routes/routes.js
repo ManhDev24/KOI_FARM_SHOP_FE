@@ -2,6 +2,7 @@ import HomePage from "../components/HomePage/HomePage";
 import DefaultLayout from "../layouts/DefautLayout/DefaultLayout";
 import Cart from "../modules/Cart/Cart";
 import ChangePassword from "../modules/ChangePassword/ChangePassword";
+import Error from "../modules/ErrorPage/Error";
 import ForgotPassword from "../modules/ForgotPassword/ForgotPassword";
 import ListFish from "../modules/ListFish/ListFish";
 import Login from "../modules/LoginPage/Login";
@@ -47,6 +48,16 @@ export const publicRoutes = [
   {
     path: "/cart",
     component: Cart,
+    layout: DefaultLayout,
+  },
+  {
+    path: "/error",
+    component: Error,
+    layout: DefaultLayout,
+  },
+  {
+    path: "/*",
+    component: Error,
     layout: DefaultLayout,
   },
 ];

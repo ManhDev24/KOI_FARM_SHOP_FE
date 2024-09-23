@@ -31,3 +31,8 @@ input[type="search"]::-webkit-search-cancel-button {
 
     
 }
+@media (min-width:1420px) {
+   .gr-col{
+    grid-template-columns: min(7, minmax(0,1fr)) !important ;
+   }
+}
