@@ -67,12 +67,12 @@ const Login = () => {
     onSuccess: (data) => {
       setLocalStorage("user", data.data);
       dispatch(setUser(data));
-      toast.success("Đăng nhập này");
+      toast.success("Đăng nhập thành công");
       navigate("/");
     },
     onError: (error) => {
       const errorMessage =
-        error?.message || "Đã có lỗi xử lý vui không thử được !!!";
+        error?.message || "Đã có lỗi xảy ra vui lòng thử lại !!!";
       toast.error(errorMessage);
     },
   });
