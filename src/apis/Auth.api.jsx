@@ -55,5 +55,15 @@ export const AuthApi = {
       throw new Error(error.response.data.message);
     }
   },
-  
+  changePassword: async (email,data) => {
+    try {
+      const response = await fetcher.post(
+        `http://localhost:8080/koifarm/changePassword/${email}`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
 };

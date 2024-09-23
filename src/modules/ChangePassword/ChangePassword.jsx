@@ -3,8 +3,12 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
 import { Button, Col, Form, Input, Row, Checkbox } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./ChangePassword.css";
+import { useSelector } from "react-redux";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+import { AuthApi } from "../../apis/Auth.api";
 const validationSchema = yup.object().shape({
   password: yup
     .string()
@@ -21,6 +25,8 @@ const validationSchema = yup.object().shape({
 });
 
 const ChangePassword = () => {
+  const emailRegister = useSelector((state) => state.auth.email);
+  const navigate = useNavigate();
   const {
     handleSubmit,
     control,
@@ -32,8 +38,25 @@ const ChangePassword = () => {
     mode: "onBlur",
   });
 
+  const { mutate: changePassword, isPending } = useMutation({
+    mutationFn: (data) => AuthApi.changePassword(emailRegister, data),
+    onSuccess: (data) => {
+      toast.success("Đổi mật khẩu thành công");
+      navigate("/login");
+    },
+    onError: (error) => {
+      const errorMessage = error?.message || "Đã có lỗi xử lý vui thúy bạn !!!";
+      toast.error(errorMessage);
+    },
+  });
+
   const onSubmit = (data) => {
-    console.log("data: ", data);
+    const transformedData = {
+      password: data.password,
+      repeatPassword: data.confirmPassword,
+    };
+    console.log("transformedData: ", transformedData);
+    changePassword(transformedData);
   };
   return (
     <div

@@ -3,18 +3,22 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
 import { Button, Col, Form, Input, Row, Checkbox } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./otp.css";
 import { useMutation } from "@tanstack/react-query";
 import { AuthApi } from "../../apis/Auth.api";
 import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { isAllowedToAccessForgotPassword } from "../../Redux/Slices/Auth_Slice";
 const validationSchema = yup.object().shape({
   otp: yup.string().required("OTP là bắt buộc").max(6, "Tối đa là 6 chữ số"),
 });
 const Otp = () => {
   const emailRegister = useSelector((state) => state.auth.email);
-  console.log('emailRegister: ', emailRegister);
+  const isResetPassword = useSelector((state) => state.auth.isResetPassword);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  console.log("emailRegister: ", emailRegister);
   const {
     handleSubmit,
     control,
@@ -35,7 +39,13 @@ const Otp = () => {
     mutationFn: (otp) => AuthApi.otpVerify(otp, emailRegister),
     onSuccess: (data) => {
       console.log("data: ", data);
-      toast.success("Xác nhận OTP thành công vui lòng đăng nhập");
+      if (isResetPassword) {
+        toast.success("Xac nhận otp thành công");
+        dispatch(isAllowedToAccessForgotPassword(true));
+        navigate("/changePassword");
+      } else {
+        toast.success("Xác nhận OTP thành công vui lòng đăng nhập");
+      }
     },
     onError: (error) => {
       const errorMessage =
