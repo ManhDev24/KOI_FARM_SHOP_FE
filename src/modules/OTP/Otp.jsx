@@ -20,6 +20,7 @@ const validationSchema = yup.object().shape({
 const Otp = () => {
   const emailRegister = useSelector((state) => state.auth.email);
   const isResetPassword = useSelector((state) => state.auth.isResetPassword);
+  console.log("isResetPassword: ", isResetPassword);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   console.log("emailRegister: ", emailRegister);
@@ -43,9 +44,10 @@ const Otp = () => {
     mutationFn: (otp) => AuthApi.otpVerify(otp, emailRegister),
     onSuccess: (data) => {
       console.log("data OTP: ", data);
-      setLocalStorage("otp", data.data);
       if (isResetPassword) {
         toast.success("Xac nhận otp thành công");
+        dispatch(saveOtpToken(data.data));
+        setLocalStorage("otpToken", data.data);
         dispatch(isAllowedToAccessForgotPassword(true));
         navigate("/changePassword");
       } else {
@@ -58,6 +60,22 @@ const Otp = () => {
       toast.error(errorMessage);
     },
   });
+
+  const { mutate: resendOtp, isPending } = useMutation({
+    mutationFn: () => AuthApi.resendOtp(emailRegister),
+    onSuccess: (data) => {
+      toast.success("Gửi otp thành công");
+    },
+    onError: (error) => {
+      const errorMessage =
+        error?.message || "Đã có lỗi xử lý vui lòng thử lại !!!";
+      toast.error(errorMessage);
+    },
+  });
+  const handleResendOtp = () => {
+    resendOtp();
+    console.log("emailRegister: ", emailRegister);
+  };
   return (
     <div
       style={{ backgroundColor: "#DDBCBC" }}
@@ -147,6 +165,18 @@ const Otp = () => {
                     >
                       Đăng nhập
                     </Link>
+                  </p>
+                </Col>
+                <Col span={24}>
+                  <p className="text-black font-normal text-base ms-2 text-center me-20">
+                    Chưa nhận được mã
+                    <span
+                      style={{ color: "#EA4444" }}
+                      className="cursor-pointer px-2"
+                      onClick={handleResendOtp}
+                    >
+                      Gửi lại
+                    </span>
                   </p>
                 </Col>
               </Row>

@@ -1,4 +1,6 @@
+import { useSelector } from "react-redux";
 import fetcher from "./Fetcher";
+import { getLocalStorage } from "../utils/LocalStorage";
 
 export const AuthApi = {
   login: async (data) => {
@@ -55,11 +57,27 @@ export const AuthApi = {
       throw new Error(error.response.data.message);
     }
   },
-  changePassword: async (email,data) => {
+  changePassword: async (email, data) => {
     try {
+      const token = getLocalStorage("otpToken"); // Retrieve the token
       const response = await fetcher.post(
         `http://localhost:8080/koifarm/changePassword/${email}`,
-        data
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
+  resendOtp: async (email) => {
+    try {
+      const response = await fetcher.post(
+        `http://localhost:8080/koifarm/resend-otp?email=${email}`
       );
       return response.data;
     } catch (error) {
