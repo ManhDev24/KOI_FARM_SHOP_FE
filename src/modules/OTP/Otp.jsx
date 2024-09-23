@@ -8,13 +8,13 @@ import "./otp.css";
 import { useMutation } from "@tanstack/react-query";
 import { AuthApi } from "../../apis/Auth.api";
 import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
-import LoadingModal from "../Modal/LoadingModal";
-
 import { useDispatch, useSelector } from "react-redux";
 import {
-  isAllowedToAccessForgotPassword,  saveOtpToken,} from "../../Redux/Slices/Auth_Slice";
+  isAllowedToAccessForgotPassword,
+  saveOtpToken,
+} from "../../Redux/Slices/Auth_Slice";
 import { setLocalStorage } from "../../utils/LocalStorage";
+import LoadingModal from "../Modal/LoadingModal";
 
 const validationSchema = yup.object().shape({
   otp: yup.string().required("OTP là bắt buộc").max(6, "Tối đa là 6 chữ số"),
