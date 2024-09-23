@@ -9,7 +9,11 @@ import { useMutation } from "@tanstack/react-query";
 import { AuthApi } from "../../apis/Auth.api";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
-import { isAllowedToAccessForgotPassword } from "../../Redux/Slices/Auth_Slice";
+import {
+  isAllowedToAccessForgotPassword,
+  saveOtpToken,
+} from "../../Redux/Slices/Auth_Slice";
+import { setLocalStorage } from "../../utils/LocalStorage";
 const validationSchema = yup.object().shape({
   otp: yup.string().required("OTP là bắt buộc").max(6, "Tối đa là 6 chữ số"),
 });
@@ -38,7 +42,8 @@ const Otp = () => {
   const { mutate: handleOtp, isLoading } = useMutation({
     mutationFn: (otp) => AuthApi.otpVerify(otp, emailRegister),
     onSuccess: (data) => {
-      console.log("data: ", data);
+      console.log("data OTP: ", data);
+      setLocalStorage("otp", data.data);
       if (isResetPassword) {
         toast.success("Xac nhận otp thành công");
         dispatch(isAllowedToAccessForgotPassword(true));
