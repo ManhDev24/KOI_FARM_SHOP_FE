@@ -8,7 +8,7 @@ const data = getLocalStorage("user");
 const fetcher = axios.create({
   headers: {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${token}` || `Bearer ${data.accessToken}`,
+    Authorization: `Bearer ${token}`,
   },
 });
 
