@@ -9,7 +9,7 @@ import { useMutation } from "@tanstack/react-query";
 import { AuthApi } from "../../apis/Auth.api";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
-import { saveEmail, saveIsResetPassword } from "../../Redux/Slices/Auth_Slice";
+// import { saveEmail, saveIsResetPassword } from "../../Redux/Slices/Auth_Slice";
 
 const validationSchema = yup.object().shape({
   email: yup

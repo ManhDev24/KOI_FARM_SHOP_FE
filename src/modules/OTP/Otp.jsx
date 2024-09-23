@@ -14,6 +14,8 @@ import {
   saveOtpToken,
 } from "../../Redux/Slices/Auth_Slice";
 import { setLocalStorage } from "../../utils/LocalStorage";
+import LoadingModal from "../Modal/LoadingModal";
+
 const validationSchema = yup.object().shape({
   otp: yup.string().required("OTP là bắt buộc").max(6, "Tối đa là 6 chữ số"),
 });
@@ -40,7 +42,7 @@ const Otp = () => {
     console.log("data: ", data);
   };
 
-  const { mutate: handleOtp, isLoading } = useMutation({
+  const { mutate: handleOtp, isPending: isLoading } = useMutation({
     mutationFn: (otp) => AuthApi.otpVerify(otp, emailRegister),
     onSuccess: (data) => {
       console.log("data OTP: ", data);
@@ -61,6 +63,7 @@ const Otp = () => {
     },
   });
 
+
   const { mutate: resendOtp, isPending } = useMutation({
     mutationFn: () => AuthApi.resendOtp(emailRegister),
     onSuccess: (data) => {
@@ -76,11 +79,13 @@ const Otp = () => {
     resendOtp();
     console.log("emailRegister: ", emailRegister);
   };
+
   return (
     <div
       style={{ backgroundColor: "#DDBCBC" }}
       className="w-full h-screen flex justify-center items-center "
     >
+      {isLoading && <LoadingModal isLoading={true} />}
       <div
         style={{
           backgroundColor: "white",
