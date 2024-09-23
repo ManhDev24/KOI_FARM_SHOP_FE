@@ -6,6 +6,7 @@ const userLocalStorage = getLocalStorage("user");
 const initialState = {
   currentUser: userLocalStorage,
   email: "",
+  otpToken: "",
   isResetPassword: false,
   isAllowedToAccessForgotPassword: false,
 };
@@ -30,6 +31,9 @@ const authSlice = createSlice({
     isAllowedToAccessForgotPassword: (state, action) => {
       state.isAllowedToAccessForgotPassword = action.payload;
     },
+    saveOtpToken: (state, action) => {
+      state.otpToken = action.payload;
+    },
   },
 });
 export const {
@@ -39,6 +43,7 @@ export const {
   isResetPassword,
   saveIsResetPassword,
   isAllowedToAccessForgotPassword,
+  saveOtpToken,
 } = authSlice.actions;
 
 export default authSlice.reducer;
