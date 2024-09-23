@@ -1,14 +1,20 @@
-import React from "react";
+import React, { useContext } from "react";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
 import { Button, Col, Form, Input, Row, Checkbox } from "antd";
 import { Link } from "react-router-dom";
 import "./otp.css";
+import { useMutation } from "@tanstack/react-query";
+import { AuthApi } from "../../apis/Auth.api";
+import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 const validationSchema = yup.object().shape({
   otp: yup.string().required("OTP là bắt buộc").max(6, "Tối đa là 6 chữ số"),
 });
 const Otp = () => {
+  const emailRegister = useSelector((state) => state.auth.email);
+  console.log('emailRegister: ', emailRegister);
   const {
     handleSubmit,
     control,
@@ -21,13 +27,26 @@ const Otp = () => {
   });
 
   const onSubmit = (data) => {
+    handleOtp(data.otp);
     console.log("data: ", data);
   };
 
+  const { mutate: handleOtp, isLoading } = useMutation({
+    mutationFn: (otp) => AuthApi.otpVerify(otp, emailRegister),
+    onSuccess: (data) => {
+      console.log("data: ", data);
+      toast.success("Xác nhận OTP thành công vui lòng đăng nhập");
+    },
+    onError: (error) => {
+      const errorMessage =
+        error?.message || "Đã có lỗi xử lý vui lòng thử lại !!!";
+      toast.error(errorMessage);
+    },
+  });
   return (
     <div
       style={{ backgroundColor: "#DDBCBC" }}
-      className="w-full h-full flex justify-center items-center"
+      className="w-full h-screen flex justify-center items-center "
     >
       <div
         style={{
@@ -44,13 +63,12 @@ const Otp = () => {
           >
             <div>
               <p
-                style={{ fontSize: "32px", marginLeft: "20px" }}
+                style={{ fontSize: "32px", marginLeft: "30px" }}
                 className="text-center font-normal text-black titleForm me-20"
               >
-                Mã OTP
+                OTP
               </p>
             </div>
-            
           </div>
           <div className="flex justify-center items-center mt-10">
             <Form
@@ -62,7 +80,7 @@ const Otp = () => {
                 <Col span={24}>
                   <label
                     style={{ fontSize: "20px", marginLeft: "8px" }}
-                    className="text-xs text-black font-normal me-3"
+                    className="text-xs text-black font-normal"
                   >
                     OTP
                   </label>
@@ -77,10 +95,10 @@ const Otp = () => {
                           marginTop: "10px",
                         }}
                         {...field}
-                        type="text" // Use 'password' type for security
+                        type="text"
                         size="large"
                         className="mt-1"
-                        placeholder="Nhập mật khẩu"
+                        placeholder="Nhập OTP"
                         status={errors.otp ? "error" : ""}
                       />
                     )}
@@ -89,7 +107,6 @@ const Otp = () => {
                     <p className="text-xs text-red-600">{errors.otp.message}</p>
                   )}
                 </Col>
-
                 <Col span={24}>
                   <Button
                     className="text-white"
@@ -104,11 +121,16 @@ const Otp = () => {
                     <p className="text-white font-normal text-xl">Nhập OTP</p>
                   </Button>
                 </Col>
+
                 <Col span={24}>
                   <p className="text-black font-normal text-base ms-2 text-center me-20">
-                    Chưa gửi được mã?
-                    <Link to="" style={{ color: "#EA4444" }}>
-                      Gửi lại
+                    Quay về?
+                    <Link
+                      className="px-2"
+                      to="/login"
+                      style={{ color: "#EA4444" }}
+                    >
+                      Đăng nhập
                     </Link>
                   </p>
                 </Col>

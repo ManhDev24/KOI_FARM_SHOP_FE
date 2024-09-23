@@ -3,8 +3,13 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
 import { Button, Col, Form, Input, Row, Checkbox } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./ForgotPassword.css";
+import { useMutation } from "@tanstack/react-query";
+import { AuthApi } from "../../apis/Auth.api";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { saveEmail } from "../../Redux/Slices/Auth_Slice";
 
 const validationSchema = yup.object().shape({
   email: yup
@@ -15,6 +20,8 @@ const validationSchema = yup.object().shape({
 });
 
 const ForgotPassword = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const {
     handleSubmit,
     control,
@@ -25,8 +32,23 @@ const ForgotPassword = () => {
     criteriaMode: "all",
     mode: "onBlur",
   });
+
+  const { mutate: handleSendEmail, isPending } = useMutation({
+    mutationFn: (payload) => AuthApi.forgotEmail(payload),
+
+    onSuccess: (result) => {
+      console.log("result: ", result);
+      toast.success("Gửi email thành công vui lòng nhập otp");
+      navigate("/otp");
+    },
+    onError: (error) => {
+      const errorMessage = error?.message || "Đã có lỗi xử lý vui lòng thử lại";
+      toast.error(errorMessage);
+    },
+  });
   const onSubmit = (data) => {
-    console.log("data: ", data);
+    handleSendEmail(data.email);
+    dispatch(saveEmail(data.email));
   };
   return (
     <div

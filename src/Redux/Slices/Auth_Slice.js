@@ -1,10 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getLocalStorage } from "../../utils/LocalStorage";
+import { getLocalStorage, removeLocalStorage } from "../../utils/LocalStorage";
 
 const userLocalStorage = getLocalStorage("user");
 
 const initialState = {
   currentUser: userLocalStorage,
+  email: "",
 };
 
 const authSlice = createSlice({
@@ -16,9 +17,13 @@ const authSlice = createSlice({
     },
     signOut: (state, action) => {
       state.currentUser = null;
+      removeLocalStorage("user");
+    },
+    saveEmail: (state, action) => {
+      state.email = action.payload;
     },
   },
 });
-export const { setUser, signOut } = authSlice.actions;
+export const { setUser, signOut, saveEmail } = authSlice.actions;
 
 export default authSlice.reducer;

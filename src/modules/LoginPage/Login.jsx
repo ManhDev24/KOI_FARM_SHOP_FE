@@ -46,10 +46,11 @@ const Login = () => {
     mode: "onBlur",
   });
 
-  const { mutate: handleLogin, isLoading } = useMutation({
+  const { mutate: handleLogin, isPending: loginLoad } = useMutation({
     mutationFn: (payload) => AuthApi.login(payload),
     onSuccess: (data) => {
-      setLocalStorage("user", data.content);
+      console.log("data: ", data);
+      setLocalStorage("user", data.data);
       dispatch(setUser(data));
       toast.success("Đăng nhập thành công");
       navigate("/");
@@ -61,6 +62,27 @@ const Login = () => {
     },
   });
 
+  const { mutate: loginWithGoogle, isPending: googleLoad } = useMutation({
+    mutationFn: (payload) => AuthApi.loginWithGoogle(payload),
+    onSuccess: (data) => {
+      setLocalStorage("user", data.data);
+      dispatch(setUser(data));
+      toast.success("Đăng nhập thành công");
+      navigate("/");
+    },
+    onError: (error) => {
+      const errorMessage =
+        error?.message || "Đã có lỗi xảy ra vui lòng thử lại !!!";
+      toast.error(errorMessage);
+    },
+  });
+  if (googleLoad || loginLoad) {
+    return <div>Loading...</div>;
+  }
+  const handleLoginWithGoogle = (data) => {
+    console.log("data: ", data);
+    loginWithGoogle(data);
+  };
   const onSubmit = (data) => {
     handleLogin(data);
     // console.log(data);
@@ -219,28 +241,20 @@ const Login = () => {
                   <div className="flex justify-center items-center ms-2 me-20">
                     <GoogleLogin
                       onSuccess={(credentialResponse) => {
-                        console.log('credentialResponse: ', credentialResponse);
-                        const decoded = jwtDecode(
-                          credentialResponse?.credential
-                        );
-                        console.log("decoded: ", decoded);
-                        toast.success("Login successful");
-                         <GoogleLogin
-                      onSuccess={(credentialResponse) => {
-                        const decoded = jwtDecode(
-                          credentialResponse?.credential
-                        );
-                        console.log("decoded: ", decoded);
-                        toast.success("Login successful");
+                        if (credentialResponse?.credential) {
+                          const decoded = jwtDecode(
+                            credentialResponse.credential
+                          );
+                          handleLoginWithGoogle(decoded);
+                          console.log("Decoded token: ", decoded);
+                        } else {
+                          toast.error(
+                            "Google login failed: Invalid credentials"
+                          );
+                        }
                       }}
                       onError={() => {
-                        toast.error("Login Failed");
-                        console.log("Login Failed");
-                      }}
-                    />
-                      }}
-                      onError={() => {
-                        toast.error("Login Failed");
+                        toast.error("Google login failed");
                         console.log("Login Failed");
                       }}
                     />
