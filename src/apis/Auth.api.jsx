@@ -44,4 +44,16 @@ export const AuthApi = {
       throw new Error(error.response.data.message);
     }
   },
+  loginWithGoogle: async (data) => {
+    try {
+      const response = await fetcher.post(
+        "http://localhost:8080/koifarm/signingoogle",
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
+  
 };
