@@ -2,8 +2,14 @@ import React from "react";
 import { Breadcrumb } from "antd";
 import { Link } from "react-router-dom";
 import { Button, Dropdown, Flex, Row } from "antd";
+import { useQuery } from "@tanstack/react-query";
+import FishApi from "../../apis/Fish.api";
+import LoadingModal from "../Modal/LoadingModal";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../../Redux/Slices/Cart_Slice";
 
 const ListFish = () => {
+  const dispatch = useDispatch();
   const cardData = [
     {
       tag: "Đang bán",
@@ -78,7 +84,29 @@ const ListFish = () => {
       price: "300.000 đ",
     },
   ];
+  const handleAddToCart = (fish) => {
+    dispatch(
+      addToCart({
+        ...fish,
+        quantity: 1,
+      })
+    );
+  };
+  const {
+    data: KoiList,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["KoiList"],
+    queryFn: FishApi.getListFish,
+  });
 
+  if (isLoading) {
+    return <LoadingModal />;
+  }
+  if (isError) {
+    return <h1>Error</h1>;
+  }
   const CategoryItem = [
     {
       key: "1",
@@ -449,9 +477,9 @@ const ListFish = () => {
             horizontal
             className="grid grid-cols-3  justify-center w-[1110px] gap-4 md:gap-6 lg:gap-10"
           >
-            {cardData.map((card, index) => (
+            {KoiList.map((card, index) => (
               <Flex
-                key={index}
+                key={card.id}
                 justify="center"
                 vertical
                 className="w-[250px] h-[645px] mx-10 shadows1"
@@ -492,7 +520,12 @@ const ListFish = () => {
                           <div className="my-[10px] text-[20px] font-bold">
                             {card.price}
                           </div>
-                          <Button className="w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]">
+                          <Button
+                            onClick={() => {
+                              handleAddToCart(card);
+                            }}
+                            className="w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]"
+                          >
                             Đặt Mua
                           </Button>
                         </div>
