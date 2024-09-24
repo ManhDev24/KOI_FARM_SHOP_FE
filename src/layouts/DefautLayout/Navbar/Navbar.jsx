@@ -4,10 +4,11 @@ import { Button, Dropdown, Menu } from "antd";
 import "./navbar.css";
 import { Link } from "react-router-dom";
 import { getLocalStorage } from "../../../utils/LocalStorage";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { signOut } from "../../../Redux/Slices/Auth_Slice";
 const Navbar = () => {
   const dispatch = useDispatch();
+  const { items } = useSelector((state) => state.cart);
   // Define menu items for dropdowns
   const koiMenuItems = [
     { key: "1", label: "Cá Koi Showa" },
@@ -219,6 +220,16 @@ const Navbar = () => {
                     fill="#EA4444"
                   />
                 </svg>
+                <div
+                  style={{
+                    top: "-15px",
+                    right: "-12px",
+                    border: "1px #EA4444 solid",
+                  }}
+                  className="rounded-full  w-[18px] h-[18px] absolute flex justify-center items-center "
+                >
+                  <p className="text-sm text-center text-[#EA4444]">{items?.length}</p>
+                </div>
               </div>
             </button>
           </Link>
@@ -228,7 +239,10 @@ const Navbar = () => {
               <span>
                 <ul>
                   <li>
-                    <Dropdown menu={{ items: profileMenuItems }} trigger={["hover"]}>
+                    <Dropdown
+                      menu={{ items: profileMenuItems }}
+                      trigger={["hover"]}
+                    >
                       <Button className="logoutButton text-[#FA4444] border-[1px] border-[#FA4444] w-[24] h-[42px]">
                         <img
                           src="./img/Vector.png"

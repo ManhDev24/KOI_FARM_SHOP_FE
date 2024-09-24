@@ -27,7 +27,7 @@ const Introduction = () => {
                   </p>
 
                 </div> 
-                <Link to="#">
+                <Link to="/koiList">
                   <Button type='primary' className="w-[160px] font-bold h-[50px] box-border m-auto rounded-[10px] ms-10 mt-10 shadows">
                     <span>
                       XEM CHI TIẾT
