@@ -9,7 +9,8 @@ import { useMutation } from "@tanstack/react-query";
 import { AuthApi } from "../../apis/Auth.api";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
-// import { saveEmail, saveIsResetPassword } from "../../Redux/Slices/Auth_Slice";
+import { saveEmail, saveIsResetPassword } from "../../Redux/Slices/Auth_Slice";
+import LoadingModal from "../Modal/LoadingModal";
 
 const validationSchema = yup.object().shape({
   email: yup
@@ -33,20 +34,22 @@ const ForgotPassword = () => {
     mode: "onBlur",
   });
 
-  const { mutate: handleSendEmail, isPending } = useMutation({
-    mutationFn: (payload) => AuthApi.forgotEmail(payload),
+  const { mutate: handleSendEmail, isPending: forgotPasswordLoad } =
+    useMutation({
+      mutationFn: (payload) => AuthApi.forgotEmail(payload),
 
-    onSuccess: (result) => {
-      console.log("result: ", result);
-      toast.success("Gửi email thành công vui lòng nhập otp");
-      dispatch(saveIsResetPassword(true));
-      navigate("/otp");
-    },
-    onError: (error) => {
-      const errorMessage = error?.message || "Đã có lỗi xử lý vui lòng thử lại";
-      toast.error(errorMessage);
-    },
-  });
+      onSuccess: (result) => {
+        console.log("result: ", result);
+        toast.success("Gửi email thành công vui lòng nhập otp");
+        dispatch(saveIsResetPassword(true));
+        navigate("/otp");
+      },
+      onError: (error) => {
+        const errorMessage =
+          error?.message || "Đã có lỗi xử lý vui lòng thử lại";
+        toast.error(errorMessage);
+      },
+    });
   const onSubmit = (data) => {
     handleSendEmail(data.email);
     dispatch(saveEmail(data.email));
@@ -56,6 +59,7 @@ const ForgotPassword = () => {
       style={{ backgroundColor: "#DDBCBC" }}
       className="w-full h-screen flex justify-center items-center "
     >
+      {forgotPasswordLoad && <LoadingModal isLoading={true} />}
       <div
         style={{
           backgroundColor: "white",
