@@ -1,35 +1,37 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
+  setLocalStorage,
   getLocalStorage,
   removeLocalStorage,
-  setLocalStorage,
-} from "../../utils/LocalStorage";
+} from "../../utils/LocalStorage.js";
 
 const initialState = {
-  items: [], // Each item will have { id, price, quantity }
+  items: getLocalStorage("cartItems") || [],
   total: 0,
 };
+
+// Calculate total based on the initial items if available
+initialState.total = initialState.items.reduce(
+  (acc, item) => acc + item.price * item.quantity,
+  0
+);
 
 const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
     addToCart: (state, action) => {
-      const newItem = action.payload;
-      const existingItem = state.items.find((item) => item.id === newItem.id);
+      // Your logic for adding to cart
+      const itemToAdd = action.payload;
+      const existingItem = state.items.find((item) => item.id === itemToAdd.id);
 
       if (existingItem) {
-        // Increase quantity if item already exists in the cart
         existingItem.quantity += 1;
       } else {
-        // Add new item with quantity of 1 if it doesn't exist
-        state.items.push({ ...newItem, quantity: 1 });
+        state.items.push({ ...itemToAdd, quantity: 1 });
       }
 
-      // Update total price
-      state.total += newItem.price;
-
-      // Persist cart items in local storage
+      state.total += itemToAdd.price;
       setLocalStorage("cartItems", state.items);
     },
     removeFromCart: (state, action) => {
@@ -42,17 +44,12 @@ const cartSlice = createSlice({
         const existingItem = state.items[index];
 
         if (existingItem.quantity > 1) {
-          // Decrease quantity if more than 1
           existingItem.quantity -= 1;
         } else {
-          // Remove item if quantity is 1
           state.items.splice(index, 1);
         }
 
-        // Update total price
         state.total -= itemToRemove.price;
-
-        // Handle local storage update
         if (state.items.length > 0) {
           setLocalStorage("cartItems", state.items);
         } else {
@@ -63,5 +60,6 @@ const cartSlice = createSlice({
   },
 });
 
+// Export actions and reducer
 export const { addToCart, removeFromCart } = cartSlice.actions;
 export default cartSlice.reducer;
