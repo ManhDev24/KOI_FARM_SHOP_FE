@@ -116,7 +116,7 @@ const Cart = () => {
         },
       }),
       render: (data) => (
-        <div>
+        <div className="flex justify-center items-center">
           <Input
             style={{ border: "1px solid #EA4444" }}
             className="w-[60px] h-[30px] text-center"
@@ -135,7 +135,7 @@ const Cart = () => {
       }),
       render: (data) => (
         <div>
-          <div className="">
+          <div className="flex justify-end">
             <p>{data.price}</p>
           </div>
         </div>
