@@ -2,8 +2,12 @@ import { Breadcrumb, Button, Input, Table } from "antd";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "./Cart.css";
+import { useDispatch, useSelector } from "react-redux";
+import { removeFromCart } from "../../Redux/Slices/Cart_Slice";
 const Cart = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const dispatch = useDispatch();
+  const items = useSelector((state) => state.cart.items);
 
   const onSelectChange = (newSelectedRowKeys) => {
     console.log("selectedRowKeys changed: ", newSelectedRowKeys);
@@ -63,6 +67,10 @@ const Cart = () => {
       quantity: 1,
     },
   ];
+  const handleDelete = (fish) => {
+    console.log('fish: ', fish.id);
+    dispatch(removeFromCart(fish));
+  };
   const columns = [
     {
       title: "Ảnh",
@@ -143,6 +151,7 @@ const Cart = () => {
       render: (data) => (
         <div>
           <div
+            onClick={() => handleDelete(data)}
             style={{ border: "1px solid #EA4444" }}
             className="w-[60px] h-[30px] flex justify-center items-center cursor-pointer"
           >
@@ -201,7 +210,7 @@ const Cart = () => {
               rowKey="id"
               rowSelection={rowSelection}
               columns={columns}
-              dataSource={data}
+              dataSource={items}
               pagination={false}
             />
           </div>
