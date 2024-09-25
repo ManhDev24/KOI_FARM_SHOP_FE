@@ -84,7 +84,7 @@ const Knowledge = () => {
         <>
             <Flex justify='center'>
                 <div className='w-[950px] h-[50px] bg-white text-[36px] text-[#FA4444] text-center border border-3 border-[#FA4444] my-[80px]'>
-                    <span className='h-[38px]' style={{ fontFamily: 'Merriweather, serif'}}>KIẾN THỨC CÁ KOI</span>
+                    <span className='h-[38px]' style={{ fontFamily: 'Merriweather, serif' }}>KIẾN THỨC CÁ KOI</span>
                 </div>
             </Flex>
 
@@ -97,10 +97,11 @@ const Knowledge = () => {
                 <Flex justify='center' horizontal className='grid w-[950px]' style={{ gridTemplateColumns: "repeat(3, minmax(auto, 1fr))" }}
                 >
                     {cardData.map((card, index) => (
-                        <Flex key={index} justify='center' vertical className='w-[250px] h-[645px] mx-10 mb-10 shadows1'>
+                        <Flex key={index} justify='center' vertical className='w-[250px] h-[645px] mx-10 mb-10 '>
                             {/* Tag */}
                             <Row>
-                                <div className='absolute w-[86px] bg-[#FFFFFF] rounded-ee-[10px] rounded-tl-[5px] text-center text-[#FA4444]'>
+                                <div className='absolute w-[86px] bg-[#FFFFFF] rounded-ee-[10px] 
+                                rounded-tl-[5px] text-center text-[#FA4444]'>
                                     {card.tag}
                                 </div>
                                 <div className='rounded-[10px]'>
@@ -109,7 +110,8 @@ const Knowledge = () => {
                             </Row>
                             <Flex horizontal>
                                 <Flex className='grid col-span-3'>
-                                    <Row className='flex flex-col w-[250px] h-[290px] bg-[#FFFFFF] border border-t-0 border-x-2 border-b-2 border-[#FA4444]'>
+                                    <Row className='flex flex-col w-[250px] h-[290px] bg-[#FFFFFF] border border-t-0 border-x-2 border-b-2
+                                     border-[#FA4444] rounded-b-[10px]'>
                                         <h1 className='my-0 mx-auto text-[#FA4444] font-bold text-[20px]'>
                                             {card.title}
                                         </h1>
