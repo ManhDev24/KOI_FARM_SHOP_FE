@@ -3,6 +3,7 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
 import { Button, Col, Form, Input, Row, Checkbox } from "antd";
+import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import "./ChangePassword.css";
 import { useSelector } from "react-redux";
@@ -130,18 +131,21 @@ const ChangePassword = () => {
                     name="password"
                     control={control}
                     render={({ field }) => (
-                      <Input
+                      <Input.Password
                         style={{
                           width: "404px",
                           borderRadius: "15px",
                           marginTop: "10px",
                         }}
                         {...field}
-                        type="password" // Use 'password' type for security
+                        type="password"
                         size="large"
                         className="mt-1"
                         placeholder="Nhập mật khẩu"
                         status={errors.password ? "error" : ""}
+                        iconRender={(visible) =>
+                          visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                        }
                       />
                     )}
                   />
@@ -162,18 +166,21 @@ const ChangePassword = () => {
                     name="confirmPassword"
                     control={control}
                     render={({ field }) => (
-                      <Input
+                      <Input.Password
                         style={{
                           width: "404px",
                           borderRadius: "15px",
                           marginTop: "10px",
                         }}
                         {...field}
-                        type="text"
+                        type="password"
                         size="large"
                         className="mt-1"
-                        placeholder="Nhập lại mật khẩu"
-                        status={errors.confirmPassword ? "error" : ""}
+                        placeholder="Nhập mật khẩu"
+                        status={errors.password ? "error" : ""}
+                        iconRender={(visible) =>
+                          visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                        }
                       />
                     )}
                   />
