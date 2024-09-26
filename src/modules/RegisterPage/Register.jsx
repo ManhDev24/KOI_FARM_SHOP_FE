@@ -12,8 +12,9 @@ import "./Register.css";
 import { useMutation } from "@tanstack/react-query";
 import { AuthApi } from "../../apis/Auth.api";
 import { useDispatch } from "react-redux";
-import { saveEmail } from "../../Redux/Slices/Auth_Slice";
+import { saveEmail, setUser } from "../../Redux/Slices/Auth_Slice";
 import LoadingModal from "../Modal/LoadingModal";
+import { setLocalStorage } from "../../utils/LocalStorage";
 const validationSchema = yup.object().shape({
   fullName: yup.string().required("Họ và Tên là bắt buộc"),
   email: yup
@@ -36,7 +37,7 @@ const validationSchema = yup.object().shape({
 });
 const Register = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const {
     handleSubmit,
     control,
@@ -67,7 +68,6 @@ const Register = () => {
       toast.error(errorMessage);
     },
   });
-
 
   const { mutate: loginWithGoogle, isPending: googleLoad } = useMutation({
     mutationFn: (payload) => AuthApi.loginWithGoogle(payload),
@@ -299,15 +299,12 @@ const Register = () => {
                 <Col span={24}>
                   <div className="flex justify-center items-center ms-2 me-20">
                     <GoogleLogin
-
                       onSuccess={(credentialResponse) => {
-
                         const decoded = jwtDecode(
                           credentialResponse?.credential
                         );
                         handleLoginWithGoogle(decoded);
                         console.log("decoded: ", decoded);
-
                       }}
                       onError={() => {
                         toast.error("Login Failed");
