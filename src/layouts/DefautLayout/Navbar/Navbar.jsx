@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { Button, Dropdown, Menu } from "antd";
 import "./navbar.css";
@@ -6,80 +6,61 @@ import { Link } from "react-router-dom";
 import { getLocalStorage } from "../../../utils/LocalStorage";
 import { useDispatch, useSelector } from "react-redux";
 import { signOut } from "../../../Redux/Slices/Auth_Slice";
+import FishApi from "../../../apis/Fish.api";
+import logo from '/img/logo.png';
 const Navbar = () => {
   const dispatch = useDispatch();
 
-  const { items } = useSelector((state) => state.cart);
-  const cart = getLocalStorage("cartItems");
 
-  const koiMenuItems = [
-    {
-      key: "1",
-      label: (
-        <a target="_self" rel="noopener noreferrer" href="/cakoi">
-          Cá Koi Showa
-        </a>
-      ),
-    },
-    {
-      key: "2",
-      label: (
-        <a target="_self" rel="noopener noreferrer" href="/cakoi">
-          Cá Koi Shusui
-        </a>
-      ),
-    },
-    {
-      key: "3",
-      label: (
-        <a target="_self" rel="noopener noreferrer" href="/cakoi">
-          Cá Koi...
-        </a>
-      ),
-    },
-    {
-      key: "4",
-      label: (
-        <a target="_self" rel="noopener noreferrer" href="/cakoi">
-          Cá Koi ...
-        </a>
-      ),
-    },
-  ];
-  const koiConsignItems = [
-    {
-      key: "1",
-      label: (
-        <a target="_self" rel="noopener noreferrer" href="/cakoi">
-          Cá Koi Showa
-        </a>
-      ),
-    },
-    {
-      key: "2",
-      label: (
-        <a target="_self" rel="noopener noreferrer" href="/cakoi">
-          Cá Koi Shusui
-        </a>
-      ),
-    },
-    {
-      key: "3",
-      label: (
-        <a target="_self" rel="noopener noreferrer" href="/cakoi">
-          Cá Koi...
-        </a>
-      ),
-    },
-    {
-      key: "4",
-      label: (
-        <a target="_self" rel="noopener noreferrer" href="/cakoi">
-          Cá Koi ...
-        </a>
-      ),
-    },
-  ];
+  const { items } = useSelector((state) => state.cart);
+
+  // Define menu items for dropdowns
+
+  const [koiMenuItems, setKoiMenuItems] = useState([]); // State lưu trữ các mục menu
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+
+  const fetchKoiCategories = async () => {
+    try {
+      const categoriesArray = await FishApi.getCategories(); // Nhận mảng dữ liệu
+
+
+      if (Array.isArray(categoriesArray)) {
+        const menuItems = categoriesArray.map((item) => ({
+          key: item.id.toString(),
+          label: (
+            <a href={`/cakoi/${item.id}`}>
+              {item.categoryName}
+            </a>
+          ),
+        }));
+
+        setKoiMenuItems(menuItems); // Cập nhật state menu items
+      } else {
+        console.error("categoriesArray không phải là mảng:", categoriesArray);
+        setError("Dữ liệu nhận được không phải là mảng như mong đợi.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy danh mục:", error);
+      setError(error.message || "Đã xảy ra lỗi khi lấy danh mục.");
+    } finally {
+      setLoading(false); // Tắt trạng thái loading
+    }
+  };
+
+
+  useEffect(() => {
+
+
+    fetchKoiCategories(); // Gọi hàm bất đồng bộ
+  }, []);
+
+  // Hiển thị loading hoặc error nếu có
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+
+
 
   const newsMenuItems = [
     {
@@ -157,7 +138,7 @@ const Navbar = () => {
         >
           <div className="logo w-[90px]  h-[90px] container ms-[50px]">
             <Link to="/">
-              <img src="./img/logo.png" alt="Logo" className="ms-[4px]" />
+              <img src={logo} alt="Logo" className="ms-[4px]" />
             </Link>
 
             <div
@@ -177,10 +158,12 @@ const Navbar = () => {
         </div>
 
         {/* //cate */}
-        <div
-          className="categories md:col-span-12 lg:col-span-12 xl:grid xl:grid-cols-1 xl:ms-[50px] xl:col-span-5 
-        2xl:col-span-4  lg:flex lg:items-center lg:justify-center lg:h-[150px] lg:w-full md:w-full md:h-[200px] sm:h-[200px]"
-        >
+
+        <div className="categories md:col-span-12 md:w-full md:h-[200px]
+          lg:col-span-12  lg:flex lg:items-center lg:justify-center lg:h-[150px] lg:w-full 
+          xl:grid xl:grid-cols-1 xl:ms-[50px] xl:col-span-5 
+          2xl:col-span-4  sm:h-[200px]">
+
           <ul className="flex flex-col md:flex-row items-center justify-center md:h-[200px] lg:h-[150px]">
             <li className="me-x">
               <Dropdown menu={{ items: koiMenuItems }} trigger={["hover"]}>
