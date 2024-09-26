@@ -4,11 +4,12 @@ import { Link } from "react-router-dom";
 import "./Cart.css";
 import { useDispatch, useSelector } from "react-redux";
 import { removeFromCart } from "../../Redux/Slices/Cart_Slice";
+import { getLocalStorage } from "../../utils/LocalStorage";
 const Cart = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const dispatch = useDispatch();
   const items = useSelector((state) => state.cart.items);
-
+  const onCart = getLocalStorage("cartItems");
   const onSelectChange = (newSelectedRowKeys) => {
     console.log("selectedRowKeys changed: ", newSelectedRowKeys);
     setSelectedRowKeys(newSelectedRowKeys);
@@ -68,7 +69,7 @@ const Cart = () => {
     },
   ];
   const handleDelete = (fish) => {
-    console.log('fish: ', fish.id);
+    console.log("fish: ", fish.id);
     dispatch(removeFromCart(fish));
   };
   const columns = [
@@ -115,7 +116,7 @@ const Cart = () => {
         },
       }),
       render: (data) => (
-        <div>
+        <div className="flex justify-center items-center">
           <Input
             style={{ border: "1px solid #EA4444" }}
             className="w-[60px] h-[30px] text-center"
@@ -134,7 +135,7 @@ const Cart = () => {
       }),
       render: (data) => (
         <div>
-          <div className="">
+          <div className="flex justify-end">
             <p>{data.price}</p>
           </div>
         </div>
@@ -210,7 +211,7 @@ const Cart = () => {
               rowKey="id"
               rowSelection={rowSelection}
               columns={columns}
-              dataSource={items}
+              dataSource={onCart}
               pagination={false}
             />
           </div>
