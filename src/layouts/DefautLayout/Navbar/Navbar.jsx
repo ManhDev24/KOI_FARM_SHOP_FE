@@ -331,9 +331,7 @@ const Navbar = () => {
                   }}
                   className="rounded-full  w-[18px] h-[18px] absolute flex justify-center items-center "
                 >
-                  <p className="text-sm text-center text-[#EA4444]">
-                    {cart?.length || 0}
-                  </p>
+                   <p className="text-sm text-center text-[#EA4444]">{items?.length}</p>
                 </div>
               </div>
             </button>
