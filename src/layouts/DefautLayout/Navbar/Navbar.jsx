@@ -11,6 +11,7 @@ import logo from '/img/logo.png';
 const Navbar = () => {
   const dispatch = useDispatch();
 
+
   const { items } = useSelector((state) => state.cart);
   // Define menu items for dropdowns
 
