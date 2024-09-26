@@ -13,6 +13,7 @@ const Navbar = () => {
 
 
   const { items } = useSelector((state) => state.cart);
+
   // Define menu items for dropdowns
 
   const [koiMenuItems, setKoiMenuItems] = useState([]); // State lưu trữ các mục menu
@@ -63,37 +64,55 @@ const Navbar = () => {
 
   const newsMenuItems = [
     {
-      key: "1", label: (<a target="_self" rel="noopener noreferrer" href="/cakoi">
-        Kiến thức cá Koi
-      </a>)
+      key: "1",
+      label: (
+        <a target="_self" rel="noopener noreferrer" href="/cakoi">
+          Kiến thức cá Koi
+        </a>
+      ),
     },
     {
-      key: "2", label: (<a target="_self" rel="noopener noreferrer" href="/cakoi">
-        Tin tức cá Koi
-      </a>)
+      key: "2",
+      label: (
+        <a target="_self" rel="noopener noreferrer" href="/cakoi">
+          Tin tức cá Koi
+        </a>
+      ),
     },
     {
-      key: "3", label: (<a target="_self" rel="noopener noreferrer" href="/cakoi">
-        Tin tức nội bộ
-      </a>)
+      key: "3",
+      label: (
+        <a target="_self" rel="noopener noreferrer" href="/cakoi">
+          Tin tức nội bộ
+        </a>
+      ),
     },
   ];
 
   const profileMenuItems = [
     {
-      key: "5", label: (<a target="_self" rel="noopener noreferrer" href="/profile">
-        Thông tin cá nhân
-      </a>)
+      key: "5",
+      label: (
+        <a target="_self" rel="noopener noreferrer" href="/profile">
+          Thông tin cá nhân
+        </a>
+      ),
     },
     {
-      key: "6", label: (<a target="_self" rel="noopener noreferrer" href="/setting">
-        Lịch sử mua hàng
-      </a>)
+      key: "6",
+      label: (
+        <a target="_self" rel="noopener noreferrer" href="/setting">
+          Lịch sử mua hàng
+        </a>
+      ),
     },
     {
-      key: "7", label: (<a target="_self" rel="noopener noreferrer" href="/setting">
-        Cài đặt
-      </a>)
+      key: "7",
+      label: (
+        <a target="_self" rel="noopener noreferrer" href="/setting">
+          Cài đặt
+        </a>
+      ),
     },
     { key: "8", label: "Đăng xuất", onClick: () => handleSignOut() },
   ];
@@ -108,11 +127,15 @@ const Navbar = () => {
   return (
     <>
       {/* //navbar */}
-      <div className="Navbar md:h-[400px] lg:h-[400px] xl:grid-cols-10  grid lg:grid-cols-10  2xl:grid-cols-8   
-      w-full h-[150px]  lg:w-full xl:h-[150px]   sm:h-[300px] sm:col-span-1">
+      <div
+        className="Navbar md:h-[400px] lg:h-[400px] xl:grid-cols-10  grid lg:grid-cols-10  2xl:grid-cols-8   
+      w-full h-[150px]  lg:w-full xl:h-[150px]   sm:h-[300px] sm:col-span-1"
+      >
         {/* //logo */}
-        <div className="w-full h-full md:col-span-12 lg:col-span-12 xl:col-span-1 flex flex-col justify-center
-         col-span-1  sm:col-span-12 items-center">
+        <div
+          className="w-full h-full md:col-span-12 lg:col-span-12 xl:col-span-1 flex flex-col justify-center
+         col-span-1  sm:col-span-12 items-center"
+        >
           <div className="logo w-[90px]  h-[90px] container ms-[50px]">
             <Link to="/">
               <img src={logo} alt="Logo" className="ms-[4px]" />
@@ -135,10 +158,12 @@ const Navbar = () => {
         </div>
 
         {/* //cate */}
+
         <div className="categories md:col-span-12 md:w-full md:h-[200px]
           lg:col-span-12  lg:flex lg:items-center lg:justify-center lg:h-[150px] lg:w-full 
           xl:grid xl:grid-cols-1 xl:ms-[50px] xl:col-span-5 
           2xl:col-span-4  sm:h-[200px]">
+
           <ul className="flex flex-col md:flex-row items-center justify-center md:h-[200px] lg:h-[150px]">
             <li className="me-x">
               <Dropdown menu={{ items: koiMenuItems }} trigger={["hover"]}>
@@ -225,8 +250,10 @@ const Navbar = () => {
         </div>
 
         {/* //search */}
-        <div className="flex items-center justify-center md:col-span-12 lg:w-[80vw] md:w-[70vw] lg:col-span-12 
-        xl:w-[400px] xl:col-span-1 2xl:col-span-1 max-w-full relative">
+        <div
+          className="flex items-center justify-center md:col-span-12 lg:w-[80vw] md:w-[70vw] lg:col-span-12 
+        xl:w-[400px] xl:col-span-1 2xl:col-span-1 max-w-full relative"
+        >
           <input
             type="search"
             className="block h-[42px] flex-auto w-full border rounded-[10px] border-solid 
@@ -304,7 +331,9 @@ const Navbar = () => {
                   }}
                   className="rounded-full  w-[18px] h-[18px] absolute flex justify-center items-center "
                 >
-                  <p className="text-sm text-center text-[#EA4444]">{items?.length}</p>
+                  <p className="text-sm text-center text-[#EA4444]">
+                    {cart?.length || 0}
+                  </p>
                 </div>
               </div>
             </button>
