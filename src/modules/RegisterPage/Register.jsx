@@ -12,8 +12,9 @@ import "./Register.css";
 import { useMutation } from "@tanstack/react-query";
 import { AuthApi } from "../../apis/Auth.api";
 import { useDispatch } from "react-redux";
-import { saveEmail } from "../../Redux/Slices/Auth_Slice";
+import { saveEmail, setUser } from "../../Redux/Slices/Auth_Slice";
 import LoadingModal from "../Modal/LoadingModal";
+import { setLocalStorage } from "../../utils/LocalStorage";
 const validationSchema = yup.object().shape({
   fullName: yup.string().required("Họ và Tên là bắt buộc"),
   email: yup
