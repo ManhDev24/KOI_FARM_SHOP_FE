@@ -10,6 +10,13 @@ import { addToCart } from "../../Redux/Slices/Cart_Slice";
 
 const ListFish = () => {
   const dispatch = useDispatch();
+
+
+  const ListFishByCategory = () => {
+    const fishData = FishApi.getFishListFromCategory();
+    console.log(fishData.data);
+  }
+  ListFishByCategory()
   const cardData = [
     {
       tag: "Đang bán",
