@@ -24,8 +24,8 @@ const Navbar = () => {
   const fetchKoiCategories = async () => {
     try {
       const categoriesArray = await FishApi.getCategories(); // Nhận mảng dữ liệu
-
-
+      // const catefind =  await FishApi.getFishListFromCategory(id,pageNo,pageSize);
+     
       if (Array.isArray(categoriesArray)) {
         const menuItems = categoriesArray.map((item) => ({
           key: item.id.toString(),
@@ -268,8 +268,8 @@ const Navbar = () => {
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="32"
-              height="32"
+              width="24"
+              height="24"
               viewBox="0 0 32 32"
               fill="none"
             >
