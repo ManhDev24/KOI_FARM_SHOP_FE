@@ -24,8 +24,8 @@ const Navbar = () => {
   const fetchKoiCategories = async () => {
     try {
       const categoriesArray = await FishApi.getCategories(); // Nhận mảng dữ liệu
-
-
+      // const catefind =  await FishApi.getFishListFromCategory(id,pageNo,pageSize);
+     
       if (Array.isArray(categoriesArray)) {
         const menuItems = categoriesArray.map((item) => ({
           key: item.id.toString(),

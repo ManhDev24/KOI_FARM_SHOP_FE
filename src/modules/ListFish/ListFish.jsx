@@ -9,14 +9,11 @@ import { useDispatch } from "react-redux";
 import { addToCart } from "../../Redux/Slices/Cart_Slice";
 
 const ListFish = () => {
-  const dispatch = useDispatch();
-
-
   const ListFishByCategory = () => {
-    const fishData = FishApi.getFishListFromCategory();
+    const fishData = FishApi.getFishListFromCategory(1, 1, 5);
     console.log(fishData.data);
   }
-  ListFishByCategory()
+  ListFishByCategory(1, 1, 4);
   const cardData = [
     {
       tag: "Đang bán",

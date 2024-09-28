@@ -42,11 +42,10 @@ export const FishApi = {
       }
     }
   },
-  getFishListFromCategory: async () => {
+  getFishListFromCategory: async (id, pageNo, pageSize) => {
     try {
-      const response = await fetcher.get(`http://localhost:8080/koifarm/koifish/category?categoryId=1&page=1&pageSize=5`);
-     
-      return response.data.data;
+      const response = await fetcher.get(`http://localhost:8080/koifarm/koifish/category?categoryId=${id}&page=${pageNo}&pageSize=${pageSize}`)
+      throw new Error("Có lỗi xảy ra khi gọi API"); // Trả về lỗi chung nếu không có thông tin chi tiết
     } catch (error) {
       if (error.response && error.response.data) {
         throw new Error(error.response.data.message); // Trả về lỗi chi tiết từ API nếu có
@@ -54,6 +53,7 @@ export const FishApi = {
         throw new Error("Có lỗi xảy ra khi gọi API"); // Trả về lỗi chung nếu không có thông tin chi tiết
       }
     }
+
   },
 };
 

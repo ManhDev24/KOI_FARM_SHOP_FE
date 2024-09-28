@@ -6,6 +6,7 @@ import Error from "../modules/ErrorPage/Error";
 import ForgotPassword from "../modules/ForgotPassword/ForgotPassword";
 import ListFish from "../modules/ListFish/ListFish";
 import Login from "../modules/LoginPage/Login";
+import ComparisonModal from "../modules/Modal/ComparisonModal";
 import Otp from "../modules/OTP/Otp";
 import Profile from "../modules/Profile/Profile";
 import Register from "../modules/RegisterPage/Register";
@@ -64,6 +65,11 @@ export const publicRoutes = [
   {
     path: "/profile",
     component: Profile,
+    layout: DefaultLayout,
+  },
+  {
+    path: "/compare",
+    component: ComparisonModal,
     layout: DefaultLayout,
   },
 ];
