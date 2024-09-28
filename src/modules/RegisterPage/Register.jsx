@@ -320,16 +320,6 @@ const Register = () => {
                       Đăng nhập
                     </Link>
                   </p>
-                  <p className="text-black font-normal text-base ms-2 text-center me-20">
-                    Nhập
-                    <Link
-                      className="ms-2"
-                      style={{ color: "#EA4444" }}
-                      to="/otp"
-                    >
-                      OTP
-                    </Link>
-                  </p>
                 </Col>
               </Row>
             </Form>
