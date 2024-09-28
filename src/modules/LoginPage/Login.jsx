@@ -77,7 +77,7 @@ const Login = () => {
       toast.error(errorMessage);
     },
   });
-  
+
   const handleLoginWithGoogle = (data) => {
     console.log("data: ", data);
     loginWithGoogle(data);
