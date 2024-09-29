@@ -1,5 +1,5 @@
-import React from "react";
-import { Breadcrumb } from "antd";
+import React, { useState } from "react";
+import { Breadcrumb, Col, Input, Pagination, Slider } from "antd";
 import { Link } from "react-router-dom";
 import { Button, Dropdown, Flex, Row } from "antd";
 import { useQuery } from "@tanstack/react-query";
@@ -9,85 +9,23 @@ import { useDispatch } from "react-redux";
 import { addToCart } from "../../Redux/Slices/Cart_Slice";
 
 const ListFish = () => {
-  const ListFishByCategory = () => {
-    const fishData = FishApi.getFishListFromCategory(1, 1, 5);
-    console.log(fishData.data);
-  }
-  ListFishByCategory(1, 1, 4);
-  const cardData = [
-    {
-      tag: "Đang bán",
-      imgSrc: "img/SOWA.webp",
-      title: "SHOWA KOI",
-      seller: "Hoàng Tiến Đạt",
-      gender: "Koi cái",
-      age: "18+",
-      size: "80cm",
-      origin: "Nhật Bổn",
-      type: "Cá Koi Showa",
-      price: "300.000 đ",
-    },
-    {
-      tag: "Đang bán",
-      imgSrc: "img/SOWA.webp",
-      title: "SHOWA KOI",
-      seller: "Hoàng Tiến Đạt",
-      gender: "Koi cái",
-      age: "18+",
-      size: "80cm",
-      origin: "Nhật Bổn",
-      type: "Cá Koi Showa",
-      price: "300.000 đ",
-    },
-    {
-      tag: "Đang bán",
-      imgSrc: "img/SOWA.webp",
-      title: "SHOWA KOI",
-      seller: "Hoàng Tiến Đạt",
-      gender: "Koi cái",
-      age: "18+",
-      size: "80cm",
-      origin: "Nhật Bổn",
-      type: "Cá Koi Showa",
-      price: "300.000 đ",
-    },
-    {
-      tag: "Đang bán",
-      imgSrc: "img/SOWA.webp",
-      title: "SHOWA KOI",
-      seller: "Hoàng Tiến Đạt",
-      gender: "Koi cái",
-      age: "18+",
-      size: "80cm",
-      origin: "Nhật Bổn",
-      type: "Cá Koi Showa",
-      price: "300.000 đ",
-    },
-    {
-      tag: "Đang bán",
-      imgSrc: "img/SOWA.webp",
-      title: "SHOWA KOI",
-      seller: "Hoàng Tiến Đạt",
-      gender: "Koi cái",
-      age: "18+",
-      size: "80cm",
-      origin: "Nhật Bổn",
-      type: "Cá Koi Showa",
-      price: "300.000 đ",
-    },
-    {
-      tag: "Đang bán",
-      imgSrc: "img/SOWA.webp",
-      title: "SHOWA KOI",
-      seller: "Hoàng Tiến Đạt",
-      gender: "Koi cái",
-      age: "18+",
-      size: "80cm",
-      origin: "Nhật Bổn",
-      type: "Cá Koi Showa",
-      price: "300.000 đ",
-    },
-  ];
+  const [selectedCategory, setSelectedCategory] = useState("Danh mục");
+  console.log("selectedCategory: ", selectedCategory);
+  const [selectedGender, setSelectedGender] = useState(1);
+  const [selectDate, setSelectDate] = useState(1);
+  const [selectAge, setSelectAge] = useState(1);
+  const [selectPrice, setSelectPrice] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [currentSize, setCurrentSize] = useState(100);
+  console.log("currentSize: ", currentSize);
+  const [currentPrice, setCurrentPrice] = useState(300000);
+  console.log("currentPrice: ", currentPrice);
+  const [genderFilter, setGenderFilter] = useState(0);
+  const [sortField, setSortField] = useState(0);
+  const [sortDirection, setSortDirection] = useState(0);
+  const dispatch = useDispatch();
+  const [pageSize, setPageSize] = useState(9);
+
   const handleAddToCart = (fish) => {
     dispatch(
       addToCart({
@@ -98,34 +36,158 @@ const ListFish = () => {
   };
   const {
     data: KoiList,
-    isLoading,
-    isError,
+    isLoading: isLoadingKoiList,
+    isError: isErrorLoadingKoiList,
   } = useQuery({
-    queryKey: ["KoiList"],
-    queryFn: FishApi.getListFish,
+    queryKey: ["KoiList", currentPage],
+    queryFn: () => FishApi.getListFish(currentPage),
+    keepPreviousData: true,
   });
-
-  if (isLoading) {
+  const {
+    data: koiListFIlter,
+    isLoading: isLoadingKoiListFilter,
+    isError: isErrorLoadingKoiListFilter,
+  } = useQuery({
+    queryKey: [
+      "koiListFilter",
+      currentPage,
+      selectedCategory,
+      selectedGender,
+      selectDate,
+      selectAge,
+      selectPrice,
+      "age",
+      sortDirection,
+      "price",
+    ],
+    queryFn: () =>
+      FishApi.getFilteredKoiFish(
+        selectedCategory,
+        selectedGender,
+        0,
+        currentSize,
+        0,
+        currentPrice,
+        "age",
+        selectAge,
+        "price",
+        selectPrice,
+        currentPage,
+        pageSize
+      ),
+    keepPreviousData: true,
+  });
+  console.log("koiListFIlter: ", koiListFIlter);
+  const koiResponseList = KoiList?.koiFishReponseList;
+  const updateKoiList = koiResponseList?.map((item) => {
+    return {
+      ...item,
+      koiImage: "./img/showa2.jpg",
+    };
+  });
+  const totalPage = KoiList?.totalElements;
+  console.log("updateKoiList: ", updateKoiList);
+  if (isLoadingKoiList) {
     return <LoadingModal />;
   }
-  if (isError) {
+  if (isErrorLoadingKoiList) {
     return <h1>Error</h1>;
   }
+  const generateMarks = () => {
+    const marks = {};
+    marks[300000] = "300K";
+    for (let i = 1000000; i <= 100000000; i += 10000000) {
+      marks[i] = `${(i / 1000000).toFixed(0)}M`;
+    }
+    return marks;
+  };
   const CategoryItem = [
     {
-      key: "1",
-      label: "Demo1",
+      key: "Koi showa",
+      label: "Koi showa",
+      value: "1",
     },
     {
-      key: "2",
-      label: "Demo2",
+      key: "Koi asagi",
+      label: "Koi asagi",
+      value: "2",
     },
     {
-      key: "3",
-      label: "Demo3",
+      key: "Koi karashi",
+      label: "Koi karashi",
+      value: "3",
+    },
+    {
+      key: "Koi Benikoi",
+      label: "Koi Benikoi",
+      value: "4",
     },
   ];
 
+  const newDateFilterCategoryItem = [
+    {
+      key: "latest",
+      label: "Ngày Mới nhất",
+      value: "1",
+    },
+    {
+      key: "oldest",
+      label: "Ngày Cũ nhất",
+      value: "2",
+    },
+  ];
+  const priceCategoryItem = [
+    {
+      key: "HighestPrices",
+      label: "Giá từ thấp đến cao",
+      value: "1",
+    },
+    {
+      key: "LowestPrices",
+      label: "Giá từ cao đến thấp",
+      value: "2",
+    },
+  ];
+  const ageCategoryItem = [
+    {
+      key: "HighestAge",
+      label: "Tuổi từ Cao đến Thấp",
+      value: "1",
+    },
+    {
+      key: "LowestAge",
+      label: "Tuổi từ Thấp đến Cao",
+      value: "2",
+    },
+  ];
+  const genderCategoryItem = [
+    {
+      key: "Koi Cái",
+      label: "Koi Cái",
+      value: "0",
+    },
+    {
+      key: "Koi Đực",
+      label: "Koi Đực",
+      value: "1",
+    },
+  ];
+
+  const handleMenuClickCategory = (item) => {
+    setSelectedCategory(item.value);
+  };
+  const handleMenuClickGender = (item) => {
+    setSelectedGender(+item.value);
+  };
+  const handleMenuClickDate = (item) => {
+    setSelectDate(item.value);
+  };
+  const handleMenuClickAge = (item) => {
+    setSelectAge(item.value);
+  };
+  const handleMenuClickPrice = (item) => {
+    setSelectPrice(item.value);
+  };
   return (
     <div className="ListFish ">
       <div className="filter flex justify-center items-center  mb-5">
@@ -150,396 +212,421 @@ const ListFish = () => {
           </Breadcrumb>
         </div>
       </div>
-      <div className="flex justify-center items-center mb-3 filter">
-        <div
-          style={{
-            border: "1px solid black",
-            borderRadius: "10px",
-            boxShadow: "10px 10px 4px 0 rgba(0, 0, 0, 0.25)",
-          }}
-          className="w-[850px] h-[320px]"
-        >
-          <div className="m-3">
-            <div className="filter name">
-              <p className="text-xl font-bold">Tìm kiếm Nâng cao</p>
-            </div>
-            <div className="grid grid-cols-3 gap-5 mt-4">
-              <div className="dropdown_filter">
-                <Dropdown
-                  menu={{
-                    items: CategoryItem,
-                  }}
-                  arrow
-                >
-                  <Button
-                    style={{ borderRadius: "10px", border: "1px solid black" }}
-                    className="h-[50px] w-[250px] text-xl flex justify-between"
-                  >
-                    <div className="text-center text-xl font-bold flex justify-center items-center  m-0 ">
-                      <p>Danh mục</p>
-                    </div>
-                    <div>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                      >
-                        <path
-                          d="M17.5002 4.16664L2.50017 4.16664C2.34831 4.16712 2.19944 4.209 2.06961 4.28779C1.93978 4.36658 1.83389 4.47928 1.76334 4.61377C1.6928 4.74826 1.66027 4.89944 1.66925 5.05104C1.67824 5.20265 1.7284 5.34893 1.81434 5.47414L9.31434 16.3075C9.62517 16.7566 10.3735 16.7566 10.6852 16.3075L18.1852 5.47414C18.272 5.34919 18.3229 5.20283 18.3324 5.05098C18.3418 4.89912 18.3095 4.74758 18.2389 4.6128C18.1683 4.47803 18.0621 4.36518 17.9319 4.28652C17.8016 4.20786 17.6523 4.1664 17.5002 4.16664Z"
-                          fill="#EA4444"
-                        />
-                      </svg>
-                    </div>
-                  </Button>
-                </Dropdown>
+      <div className="grid grid-cols-12 gap-2 mt-20">
+        <div className="flex  items-start justify-end filter col-span-3">
+          <div
+            style={{
+              border: "1px solid black",
+              borderRadius: "10px",
+              boxShadow: "10px 10px 4px 0 rgba(0, 0, 0, 0.25)",
+            }}
+            className="w-[280px] h-[920px]  "
+          >
+            <div className="flex flex-col justify-center items-center mt-2">
+              <div className="filter name">
+                <p className="text-xl font-bold">Tìm kiếm Nâng cao</p>
               </div>
-              <div className="dropdown_filter">
-                <Dropdown
-                  menu={{
-                    items: CategoryItem,
-                  }}
-                  arrow
-                >
-                  <Button
-                    style={{ borderRadius: "10px", border: "1px solid black" }}
-                    className="h-[50px] w-[250px] text-xl flex justify-between"
+              <div className="grid grid-cols-1 gap-5 ">
+                <div className="dropdown_filter">
+                  <Dropdown
+                    menu={{
+                      items: CategoryItem.map((item) => ({
+                        ...item,
+                        key: item.key,
+                        label: item.label,
+                        onClick: () => handleMenuClickCategory(item),
+                      })),
+                    }}
+                    arrow
                   >
-                    <div className="text-center text-xl font-bold flex justify-center items-center  m-0 ">
-                      <p>Danh mục</p>
-                    </div>
-                    <div>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                      >
-                        <path
-                          d="M17.5002 4.16664L2.50017 4.16664C2.34831 4.16712 2.19944 4.209 2.06961 4.28779C1.93978 4.36658 1.83389 4.47928 1.76334 4.61377C1.6928 4.74826 1.66027 4.89944 1.66925 5.05104C1.67824 5.20265 1.7284 5.34893 1.81434 5.47414L9.31434 16.3075C9.62517 16.7566 10.3735 16.7566 10.6852 16.3075L18.1852 5.47414C18.272 5.34919 18.3229 5.20283 18.3324 5.05098C18.3418 4.89912 18.3095 4.74758 18.2389 4.6128C18.1683 4.47803 18.0621 4.36518 17.9319 4.28652C17.8016 4.20786 17.6523 4.1664 17.5002 4.16664Z"
-                          fill="#EA4444"
-                        />
-                      </svg>
-                    </div>
-                  </Button>
-                </Dropdown>
-              </div>
-              <div className="dropdown_filter">
-                <Dropdown
-                  menu={{
-                    items: CategoryItem,
-                  }}
-                  arrow
-                >
-                  <Button
-                    style={{ borderRadius: "10px", border: "1px solid black" }}
-                    className="h-[50px] w-[250px] text-xl flex justify-between"
+                    <Button
+                      style={{
+                        borderRadius: "10px",
+                        border: "1px solid black",
+                      }}
+                      className="h-[50px] w-[250px] text-xl flex justify-between"
+                    >
+                      <div className="text-center text-xl font-bold flex justify-center items-center m-0">
+                        <p>
+                          {selectedCategory === "1"
+                            ? "Koi showa"
+                            : selectedCategory === "2"
+                            ? "Koi asagi"
+                            : selectedCategory === "3"
+                            ? "Koi karashi"
+                            : "Koi Benikoi"}
+                        </p>
+                      </div>
+                      <div>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          viewBox="0 0 20 20"
+                          fill="none"
+                        >
+                          <path
+                            d="M17.5002 4.16664L2.50017 4.16664C2.34831 4.16712 2.19944 4.209 2.06961 4.28779C1.93978 4.36658 1.83389 4.47928 1.76334 4.61377C1.6928 4.74826 1.66027 4.89944 1.66925 5.05104C1.67824 5.20265 1.7284 5.34893 1.81434 5.47414L9.31434 16.3075C9.62517 16.7566 10.3735 16.7566 10.6852 16.3075L18.1852 5.47414C18.272 5.34919 18.3229 5.20283 18.3324 5.05098C18.3418 4.89912 18.3095 4.74758 18.2389 4.6128C18.1683 4.47803 18.0621 4.36518 17.9319 4.28652C17.8016 4.20786 17.6523 4.1664 17.5002 4.16664Z"
+                            fill="#EA4444"
+                          />
+                        </svg>
+                      </div>
+                    </Button>
+                  </Dropdown>
+                </div>
+                <div className="dropdown_filter">
+                  <Dropdown
+                    menu={{
+                      items: CategoryItem,
+                    }}
+                    arrow
                   >
-                    <div className="text-center text-xl font-bold flex justify-center items-center  m-0 ">
-                      <p>Danh mục</p>
-                    </div>
-                    <div>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                      >
-                        <path
-                          d="M17.5002 4.16664L2.50017 4.16664C2.34831 4.16712 2.19944 4.209 2.06961 4.28779C1.93978 4.36658 1.83389 4.47928 1.76334 4.61377C1.6928 4.74826 1.66027 4.89944 1.66925 5.05104C1.67824 5.20265 1.7284 5.34893 1.81434 5.47414L9.31434 16.3075C9.62517 16.7566 10.3735 16.7566 10.6852 16.3075L18.1852 5.47414C18.272 5.34919 18.3229 5.20283 18.3324 5.05098C18.3418 4.89912 18.3095 4.74758 18.2389 4.6128C18.1683 4.47803 18.0621 4.36518 17.9319 4.28652C17.8016 4.20786 17.6523 4.1664 17.5002 4.16664Z"
-                          fill="#EA4444"
-                        />
-                      </svg>
-                    </div>
-                  </Button>
-                </Dropdown>
-              </div>
-              <div className="dropdown_filter">
-                <Dropdown
-                  menu={{
-                    items: CategoryItem,
-                  }}
-                  arrow
-                >
-                  <Button
-                    style={{ borderRadius: "10px", border: "1px solid black" }}
-                    className="h-[50px] w-[250px] text-xl flex justify-between"
+                    <Button
+                      style={{
+                        borderRadius: "10px",
+                        border: "1px solid black",
+                      }}
+                      className="h-[50px] w-[250px] text-xl flex justify-between"
+                    >
+                      <div className="text-center text-xl font-bold flex justify-center items-center  m-0 ">
+                        <p>Nguồn gốc</p>
+                      </div>
+                      <div>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          viewBox="0 0 20 20"
+                          fill="none"
+                        >
+                          <path
+                            d="M17.5002 4.16664L2.50017 4.16664C2.34831 4.16712 2.19944 4.209 2.06961 4.28779C1.93978 4.36658 1.83389 4.47928 1.76334 4.61377C1.6928 4.74826 1.66027 4.89944 1.66925 5.05104C1.67824 5.20265 1.7284 5.34893 1.81434 5.47414L9.31434 16.3075C9.62517 16.7566 10.3735 16.7566 10.6852 16.3075L18.1852 5.47414C18.272 5.34919 18.3229 5.20283 18.3324 5.05098C18.3418 4.89912 18.3095 4.74758 18.2389 4.6128C18.1683 4.47803 18.0621 4.36518 17.9319 4.28652C17.8016 4.20786 17.6523 4.1664 17.5002 4.16664Z"
+                            fill="#EA4444"
+                          />
+                        </svg>
+                      </div>
+                    </Button>
+                  </Dropdown>
+                </div>
+                <div className="dropdown_filter">
+                  <Dropdown
+                    menu={{
+                      items: genderCategoryItem.map((item) => ({
+                        ...item,
+                        key: item.key,
+                        label: item.label,
+                        onClick: () => handleMenuClickGender(item),
+                      })),
+                    }}
+                    arrow
                   >
-                    <div className="text-center text-xl font-bold flex justify-center items-center  m-0 ">
-                      <p>Danh mục</p>
-                    </div>
-                    <div>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                      >
-                        <path
-                          d="M17.5002 4.16664L2.50017 4.16664C2.34831 4.16712 2.19944 4.209 2.06961 4.28779C1.93978 4.36658 1.83389 4.47928 1.76334 4.61377C1.6928 4.74826 1.66027 4.89944 1.66925 5.05104C1.67824 5.20265 1.7284 5.34893 1.81434 5.47414L9.31434 16.3075C9.62517 16.7566 10.3735 16.7566 10.6852 16.3075L18.1852 5.47414C18.272 5.34919 18.3229 5.20283 18.3324 5.05098C18.3418 4.89912 18.3095 4.74758 18.2389 4.6128C18.1683 4.47803 18.0621 4.36518 17.9319 4.28652C17.8016 4.20786 17.6523 4.1664 17.5002 4.16664Z"
-                          fill="#EA4444"
-                        />
-                      </svg>
-                    </div>
-                  </Button>
-                </Dropdown>
-              </div>
-              <div className="dropdown_filter">
-                <Dropdown
-                  menu={{
-                    items: CategoryItem,
-                  }}
-                  arrow
-                >
-                  <Button
-                    style={{ borderRadius: "10px", border: "1px solid black" }}
-                    className="h-[50px] w-[250px] text-xl flex justify-between"
+                    <Button
+                      style={{
+                        borderRadius: "10px",
+                        border: "1px solid black",
+                      }}
+                      className="h-[50px] w-[250px] text-xl flex justify-between"
+                    >
+                      <div className="text-center text-xl font-bold flex justify-center items-center m-0">
+                        <p>{selectedGender ? "Koi Đực" : "Koi Cái"}</p>
+                      </div>
+                      <div>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          viewBox="0 0 20 20"
+                          fill="none"
+                        >
+                          <path
+                            d="M17.5002 4.16664L2.50017 4.16664C2.34831 4.16712 2.19944 4.209 2.06961 4.28779C1.93978 4.36658 1.83389 4.47928 1.76334 4.61377C1.6928 4.74826 1.66027 4.89944 1.66925 5.05104C1.67824 5.20265 1.7284 5.34893 1.81434 5.47414L9.31434 16.3075C9.62517 16.7566 10.3735 16.7566 10.6852 16.3075L18.1852 5.47414C18.272 5.34919 18.3229 5.20283 18.3324 5.05098C18.3418 4.89912 18.3095 4.74758 18.2389 4.6128C18.1683 4.47803 18.0621 4.36518 17.9319 4.28652C17.8016 4.20786 17.6523 4.1664 17.5002 4.16664Z"
+                            fill="#EA4444"
+                          />
+                        </svg>
+                      </div>
+                    </Button>
+                  </Dropdown>
+                </div>
+                <div className="dropdown_filter">
+                  <Dropdown
+                    menu={{
+                      items: newDateFilterCategoryItem.map((item) => ({
+                        ...item,
+                        key: item.key,
+                        label: item.label,
+                        onClick: () => handleMenuClickDate(item),
+                      })),
+                    }}
+                    arrow
                   >
-                    <div className="text-center text-xl font-bold flex justify-center items-center  m-0 ">
-                      <p>Danh mục</p>
-                    </div>
-                    <div>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                      >
-                        <path
-                          d="M17.5002 4.16664L2.50017 4.16664C2.34831 4.16712 2.19944 4.209 2.06961 4.28779C1.93978 4.36658 1.83389 4.47928 1.76334 4.61377C1.6928 4.74826 1.66027 4.89944 1.66925 5.05104C1.67824 5.20265 1.7284 5.34893 1.81434 5.47414L9.31434 16.3075C9.62517 16.7566 10.3735 16.7566 10.6852 16.3075L18.1852 5.47414C18.272 5.34919 18.3229 5.20283 18.3324 5.05098C18.3418 4.89912 18.3095 4.74758 18.2389 4.6128C18.1683 4.47803 18.0621 4.36518 17.9319 4.28652C17.8016 4.20786 17.6523 4.1664 17.5002 4.16664Z"
-                          fill="#EA4444"
-                        />
-                      </svg>
-                    </div>
-                  </Button>
-                </Dropdown>
-              </div>
-              <div className="dropdown_filter">
-                <Dropdown
-                  menu={{
-                    items: CategoryItem,
-                  }}
-                  arrow
-                >
-                  <Button
-                    style={{ borderRadius: "10px", border: "1px solid black" }}
-                    className="h-[50px] w-[250px] text-xl flex justify-between"
+                    <Button
+                      style={{
+                        borderRadius: "10px",
+                        border: "1px solid black",
+                      }}
+                      className="h-[50px] w-[250px] text-xl flex justify-between"
+                    >
+                      <div className="text-center text-xl font-bold flex justify-center items-center  m-0 ">
+                        <p>
+                          {selectDate == 1 ? "Ngày mới nhất" : "Ngày cũ nhất"}
+                        </p>
+                      </div>
+                      <div>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          viewBox="0 0 20 20"
+                          fill="none"
+                        >
+                          <path
+                            d="M17.5002 4.16664L2.50017 4.16664C2.34831 4.16712 2.19944 4.209 2.06961 4.28779C1.93978 4.36658 1.83389 4.47928 1.76334 4.61377C1.6928 4.74826 1.66027 4.89944 1.66925 5.05104C1.67824 5.20265 1.7284 5.34893 1.81434 5.47414L9.31434 16.3075C9.62517 16.7566 10.3735 16.7566 10.6852 16.3075L18.1852 5.47414C18.272 5.34919 18.3229 5.20283 18.3324 5.05098C18.3418 4.89912 18.3095 4.74758 18.2389 4.6128C18.1683 4.47803 18.0621 4.36518 17.9319 4.28652C17.8016 4.20786 17.6523 4.1664 17.5002 4.16664Z"
+                            fill="#EA4444"
+                          />
+                        </svg>
+                      </div>
+                    </Button>
+                  </Dropdown>
+                </div>
+                <div className="dropdown_filter">
+                  <Dropdown
+                    menu={{
+                      items: ageCategoryItem.map((item) => ({
+                        ...item,
+                        key: item.key,
+                        label: item.label,
+                        onClick: () => handleMenuClickAge(item),
+                      })),
+                    }}
+                    arrow
                   >
-                    <div className="text-center text-xl font-bold flex justify-center items-center  m-0 ">
-                      <p>Danh mục</p>
-                    </div>
-                    <div>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                      >
-                        <path
-                          d="M17.5002 4.16664L2.50017 4.16664C2.34831 4.16712 2.19944 4.209 2.06961 4.28779C1.93978 4.36658 1.83389 4.47928 1.76334 4.61377C1.6928 4.74826 1.66027 4.89944 1.66925 5.05104C1.67824 5.20265 1.7284 5.34893 1.81434 5.47414L9.31434 16.3075C9.62517 16.7566 10.3735 16.7566 10.6852 16.3075L18.1852 5.47414C18.272 5.34919 18.3229 5.20283 18.3324 5.05098C18.3418 4.89912 18.3095 4.74758 18.2389 4.6128C18.1683 4.47803 18.0621 4.36518 17.9319 4.28652C17.8016 4.20786 17.6523 4.1664 17.5002 4.16664Z"
-                          fill="#EA4444"
-                        />
-                      </svg>
-                    </div>
-                  </Button>
-                </Dropdown>
-              </div>
-              <div className="dropdown_filter">
-                <Dropdown
-                  menu={{
-                    items: CategoryItem,
-                  }}
-                  arrow
-                >
-                  <Button
-                    style={{ borderRadius: "10px", border: "1px solid black" }}
-                    className="h-[50px] w-[250px] text-xl flex justify-between"
+                    <Button
+                      style={{
+                        borderRadius: "10px",
+                        border: "1px solid black",
+                      }}
+                      className="h-[50px] w-[250px] text-xl flex justify-between"
+                    >
+                      <div className="text-center text-xl font-bold flex justify-center items-center  m-0 ">
+                        <p>
+                          {selectAge == 1
+                            ? "Tuổi từ cao đến thấp"
+                            : "Tuổi từ thấp đến cao"}
+                        </p>
+                      </div>
+                      <div>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          viewBox="0 0 20 20"
+                          fill="none"
+                        >
+                          <path
+                            d="M17.5002 4.16664L2.50017 4.16664C2.34831 4.16712 2.19944 4.209 2.06961 4.28779C1.93978 4.36658 1.83389 4.47928 1.76334 4.61377C1.6928 4.74826 1.66027 4.89944 1.66925 5.05104C1.67824 5.20265 1.7284 5.34893 1.81434 5.47414L9.31434 16.3075C9.62517 16.7566 10.3735 16.7566 10.6852 16.3075L18.1852 5.47414C18.272 5.34919 18.3229 5.20283 18.3324 5.05098C18.3418 4.89912 18.3095 4.74758 18.2389 4.6128C18.1683 4.47803 18.0621 4.36518 17.9319 4.28652C17.8016 4.20786 17.6523 4.1664 17.5002 4.16664Z"
+                            fill="#EA4444"
+                          />
+                        </svg>
+                      </div>
+                    </Button>
+                  </Dropdown>
+                </div>
+                <div className="dropdown_filter">
+                  <Dropdown
+                    menu={{
+                      items: priceCategoryItem.map((item) => ({
+                        ...item,
+                        key: item.key,
+                        label: item.label,
+                        onClick: () => handleMenuClickPrice(item),
+                      })),
+                    }}
+                    arrow
                   >
-                    <div className="text-center text-xl font-bold flex justify-center items-center  m-0 ">
-                      <p>Danh mục</p>
-                    </div>
-                    <div>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                      >
-                        <path
-                          d="M17.5002 4.16664L2.50017 4.16664C2.34831 4.16712 2.19944 4.209 2.06961 4.28779C1.93978 4.36658 1.83389 4.47928 1.76334 4.61377C1.6928 4.74826 1.66027 4.89944 1.66925 5.05104C1.67824 5.20265 1.7284 5.34893 1.81434 5.47414L9.31434 16.3075C9.62517 16.7566 10.3735 16.7566 10.6852 16.3075L18.1852 5.47414C18.272 5.34919 18.3229 5.20283 18.3324 5.05098C18.3418 4.89912 18.3095 4.74758 18.2389 4.6128C18.1683 4.47803 18.0621 4.36518 17.9319 4.28652C17.8016 4.20786 17.6523 4.1664 17.5002 4.16664Z"
-                          fill="#EA4444"
-                        />
-                      </svg>
-                    </div>
-                  </Button>
-                </Dropdown>
-              </div>
-              <div className="dropdown_filter">
-                <Dropdown
-                  menu={{
-                    items: CategoryItem,
-                  }}
-                  arrow
-                >
-                  <Button
-                    style={{ borderRadius: "10px", border: "1px solid black" }}
-                    className="h-[50px] w-[250px] text-xl flex justify-between"
-                  >
-                    <div className="text-center text-xl font-bold flex justify-center items-center  m-0 ">
-                      <p>Danh mục</p>
-                    </div>
-                    <div>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                      >
-                        <path
-                          d="M17.5002 4.16664L2.50017 4.16664C2.34831 4.16712 2.19944 4.209 2.06961 4.28779C1.93978 4.36658 1.83389 4.47928 1.76334 4.61377C1.6928 4.74826 1.66027 4.89944 1.66925 5.05104C1.67824 5.20265 1.7284 5.34893 1.81434 5.47414L9.31434 16.3075C9.62517 16.7566 10.3735 16.7566 10.6852 16.3075L18.1852 5.47414C18.272 5.34919 18.3229 5.20283 18.3324 5.05098C18.3418 4.89912 18.3095 4.74758 18.2389 4.6128C18.1683 4.47803 18.0621 4.36518 17.9319 4.28652C17.8016 4.20786 17.6523 4.1664 17.5002 4.16664Z"
-                          fill="#EA4444"
-                        />
-                      </svg>
-                    </div>
-                  </Button>
-                </Dropdown>
-              </div>
-              <div className="dropdown_filter">
-                <Dropdown
-                  menu={{
-                    items: CategoryItem,
-                  }}
-                  arrow
-                >
-                  <Button
-                    style={{ borderRadius: "10px", border: "1px solid black" }}
-                    className="h-[50px] w-[250px] text-xl flex justify-between"
-                  >
-                    <div className="text-center text-xl font-bold flex justify-center items-center  m-0 ">
-                      <p>Danh mục</p>
-                    </div>
-                    <div>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                      >
-                        <path
-                          d="M17.5002 4.16664L2.50017 4.16664C2.34831 4.16712 2.19944 4.209 2.06961 4.28779C1.93978 4.36658 1.83389 4.47928 1.76334 4.61377C1.6928 4.74826 1.66027 4.89944 1.66925 5.05104C1.67824 5.20265 1.7284 5.34893 1.81434 5.47414L9.31434 16.3075C9.62517 16.7566 10.3735 16.7566 10.6852 16.3075L18.1852 5.47414C18.272 5.34919 18.3229 5.20283 18.3324 5.05098C18.3418 4.89912 18.3095 4.74758 18.2389 4.6128C18.1683 4.47803 18.0621 4.36518 17.9319 4.28652C17.8016 4.20786 17.6523 4.1664 17.5002 4.16664Z"
-                          fill="#EA4444"
-                        />
-                      </svg>
-                    </div>
-                  </Button>
-                </Dropdown>
-              </div>
-            </div>
-            <div className="mt-3 flex justify-between items-center">
-              <div>
-                <p className="text-xl font-bold m-0">Kết quả tìm kiếm:200</p>
-              </div>
-              <div>
-                <Button
-                  style={{ border: "1px solid #EA4444", borderRadius: "10px" }}
-                  className="me-3 w-[148px] h-[50px]"
-                >
-                  <p
-                    style={{ color: "#EA4444", background: "#FFFFFF" }}
-                    className="text-xl font-bold m-0"
-                  >
-                    Khôi phục
-                  </p>
-                </Button>
-                <Button
-                  style={{ background: "#EA4444", borderRadius: "10px" }}
-                  className=" w-[148px] h-[50px]"
-                >
-                  <p className="text-xl font-bold m-0 text-white">Tìm kiếm</p>
-                </Button>
+                    <Button
+                      style={{
+                        borderRadius: "10px",
+                        border: "1px solid black",
+                      }}
+                      className="h-[50px] w-[250px] text-xl flex justify-between"
+                    >
+                      <div className="text-center text-xl font-bold flex justify-center items-center  m-0 ">
+                        <p>
+                          {selectPrice == 1
+                            ? "Giá từ cao đến thấp"
+                            : "Giá từ thấp đến cao"}
+                        </p>
+                      </div>
+                      <div>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          viewBox="0 0 20 20"
+                          fill="none"
+                        >
+                          <path
+                            d="M17.5002 4.16664L2.50017 4.16664C2.34831 4.16712 2.19944 4.209 2.06961 4.28779C1.93978 4.36658 1.83389 4.47928 1.76334 4.61377C1.6928 4.74826 1.66027 4.89944 1.66925 5.05104C1.67824 5.20265 1.7284 5.34893 1.81434 5.47414L9.31434 16.3075C9.62517 16.7566 10.3735 16.7566 10.6852 16.3075L18.1852 5.47414C18.272 5.34919 18.3229 5.20283 18.3324 5.05098C18.3418 4.89912 18.3095 4.74758 18.2389 4.6128C18.1683 4.47803 18.0621 4.36518 17.9319 4.28652C17.8016 4.20786 17.6523 4.1664 17.5002 4.16664Z"
+                            fill="#EA4444"
+                          />
+                        </svg>
+                      </div>
+                    </Button>
+                  </Dropdown>
+                </div>
+                <div className="dropdown_filter">
+                  <div>
+                    <div className="text-xl font-bold">Kích thước (cm)</div>
+                    <Slider
+                      marks={{
+                        0: "1 cm",
+                        20: "20 cm",
+                        40: "40 cm",
+                        60: "60 cm",
+                        80: "80 cm",
+                        100: "100 cm",
+                      }}
+                      trackStyle={{ backgroundColor: "#EA4444" }}
+                      handleStyle={{ borderColor: "#EA4444" }}
+                      dotStyle={{ borderColor: "#EA4444" }}
+                      activeDotStyle={{ borderColor: "#EA4444" }}
+                      railStyle={{ backgroundColor: "#ffcccc" }}
+                      onChange={(value) => setCurrentSize(value)}
+                    />
+                  </div>
+                </div>
+                <div className="dropdown_filter">
+                  <div>
+                    <div className="text-xl font-bold">Giá bán</div>
+                    <Slider
+                      min={300000}
+                      max={1000000000}
+                      defaultValue={300000}
+                      step={10000}
+                      trackStyle={{ backgroundColor: "#EA4444" }}
+                      handleStyle={{ borderColor: "#EA4444" }}
+                      dotStyle={{ borderColor: "#EA4444" }}
+                      activeDotStyle={{ borderColor: "#EA4444" }}
+                      railStyle={{ backgroundColor: "#ffcccc" }}
+                      onChange={(value) => setCurrentPrice(value)}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1">
+                  <div className="mb-3">
+                    <p className="text-xl font-bold">Giá thấp nhất:</p>
+                    <Input
+                      value={new Intl.NumberFormat("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      }).format(300000)}
+                      readOnly
+                    />
+                  </div>
+                  <div>
+                    <p className="text-xl font-bold">Giá cao nhất:</p>
+                    <Input
+                      value={new Intl.NumberFormat("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      }).format(currentPrice)}
+                      readOnly
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div
-        className="w-[1110px] mx-auto my-0 pb-1 pt-1 mb-3"
-        style={{ boxShadow: "0px 4px 4px 0px rgba(0, 0, 0, 0.25)" }}
-      >
-        <div className="my-[80px] flex justify-center p-3">
-          <Flex
-            justify="center"
-            horizontal
-            className="grid grid-cols-3  justify-center w-[1110px] gap-4 md:gap-6 lg:gap-10"
-          >
-            {KoiList.map((card, index) => (
-              <Flex
-                key={card.id}
+        <div
+          className="w-[1110px] mx-auto my-0 pb-1 pt-1 mb-3 list-fish col-span-9 "
+          style={{ boxShadow: "4px 4px 4px 4px rgba(0, 0, 0, 0.25)" }}
+        >
+          <div className="my-[80px] flex justify-center items-start ">
+            <Flex className="justify-center ">
+              <Row
+                gutter={[16, 16]}
                 justify="center"
-                vertical
-                className="w-[250px] h-[645px] mx-10 shadows1"
+                className="w-[950px] grid grid-cols-3"
               >
-                {/* Tag */}
-                <Row>
-                  <div className="absolute w-[86px] bg-[#FFFFFF] rounded-ee-[10px] rounded-tl-[5px] text-center text-[#FA4444]">
-                    {card.tag}
-                  </div>
-                  <div className="rounded-[10px]">
-                    <img
-                      src={card.imgSrc}
-                      className="w-[250px] h-[354px] rounded-t-[8px] box-border"
-                      alt=""
-                    />
-                  </div>
-                </Row>
-                <Flex horizontal>
-                  <Flex className="grid col-span-3">
-                    <Row className="flex flex-col w-[250px] h-[290px] bg-[#FFFFFF] border border-t-0 border-x-2 border-b-2 border-[#FA4444]">
-                      <h1 className="my-0 mx-auto text-[#FA4444] font-bold text-[20px]">
-                        {card.title}
-                      </h1>
-                      <div className="my-[10px] mx-[10px]">
-                        <Flex
-                          align="flex-start"
-                          justify="space-around"
-                          vertical
+                {updateKoiList?.map((card) => {
+                  return (
+                    <Col
+                      key={card.id}
+                      className="w-[250px] h-[645px] mx-10 mb-10"
+                    >
+                      <div className="relative w-[250px]">
+                        <div
+                          className="absolute w-[86px] 
+                                                bg-[#FFFFFF] rounded-ee-[10px] 
+                                                rounded-tl-[5px] text-center 
+                                                text-[#FA4444]"
                         >
-                          <div className="h-7">Người bán: {card.seller}</div>
-                          <div className="h-6">Giới tính: {card.gender}</div>
-                          <div className="h-6">Tuổi: {card.age}</div>
-                          <div className="h-6">Kích thước: {card.size}</div>
-                          <div className="h-6">Nguồn gốc: {card.origin}</div>
-                          <div className="h-6">Giống: {card.type}</div>
-                        </Flex>
-                        <div align="center">
-                          <div className="my-[10px] text-[20px] font-bold">
-                            {card.price}
-                          </div>
-                          <Button
-                            onClick={() => {
-                              handleAddToCart(card);
-                            }}
-                            className="w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]"
-                          >
-                            Đặt Mua
-                          </Button>
+                          {card.status ? "Đang bán" : "Đã bán"}
+                        </div>
+                        <div className="rounded-[10px]">
+                          <img
+                            src={card.koiImage}
+                            className="w-[250px] h-[354px] rounded-t-[8px] box-border"
+                            alt={card.category}
+                            style={{ width: "250px" }}
+                          />
                         </div>
                       </div>
-                    </Row>
-                  </Flex>
-                </Flex>
-              </Flex>
-            ))}
-          </Flex>
+                      <div className="flex flex-col w-[250px] h-[300px] bg-[#FFFFFF] border border-t-0 border-x-2 border-b-2 border-[#FA4444] rounded-b-[10px]">
+                        <h1 className="my-0 mx-auto text-[#FA4444] font-bold text-[20px]">
+                          {card.categoryName}
+                        </h1>
+                        <div className="my-[10px] mx-[10px]  ">
+                          <div className="flex flex-col ">
+                            <div className="h-7 text-lg font-bold flex justify-center text-[#FA4444] ">
+                              {card.category} {card.size} cm {card.age} tuổi
+                            </div>
+                            <div className="h-7">Người bán: {card.origin}</div>
+                            <div className="h-6">
+                              Giới tính: {card.gender ? "Koi Đực" : "Koi Cái"}
+                            </div>
+                            <div className="h-6">Tuổi: {card.age}</div>
+                            <div className="h-6">Kích thước: {card.size}cm</div>
+                            <div className="h-6">Nguồn gốc: {card.origin}</div>
+                            <div className="h-6">Giống: {card.category}</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="my-[10px] text-[20px] font-bold">
+                              {new Intl.NumberFormat("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              }).format(card.price)}
+                            </div>
+
+                            <Link>
+                              <Button
+                                onClick={() => {
+                                  handleAddToCart(card);
+                                }}
+                                className="w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]"
+                              >
+                                Đặt Mua
+                              </Button>
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    </Col>
+                  );
+                })}
+              </Row>
+            </Flex>
+          </div>
+          <div className="pagination flex justify-end mb-3 me-3">
+            <Pagination
+              defaultCurrent={currentPage}
+              total={totalPage}
+              onChange={(page) => {
+                setCurrentPage(page);
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>
