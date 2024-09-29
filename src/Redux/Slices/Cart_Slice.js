@@ -10,14 +10,16 @@ const initialState = {
   total: 0,
 };
 
-initialState.total = initialState.items.reduce(
-  (acc, item) => acc + item.price,
-  0
-);
+const caculateTotalPrice = (items) => {
+  return items.reduce((total, item) => total + item.price, 0);
+};
 
 const cartSlice = createSlice({
   name: "cart",
-  initialState,
+  initialState: {
+    ...initialState,
+    total: caculateTotalPrice(initialState.items),
+  },
   reducers: {
     addToCart: (state, action) => {
       const itemToAdd = action.payload;
