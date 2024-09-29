@@ -9,16 +9,15 @@ import { useDispatch } from "react-redux";
 import { addToCart } from "../../Redux/Slices/Cart_Slice";
 
 const ListFish = () => {
-  const [selectedCategory, setSelectedCategory] = useState("Danh mục");
-  console.log("selectedCategory: ", selectedCategory);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [isFiltered, setIsFiltered] = useState(false);
   const [selectedGender, setSelectedGender] = useState(1);
   const [selectDate, setSelectDate] = useState(1);
   const [selectAge, setSelectAge] = useState(1);
   const [selectPrice, setSelectPrice] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
-  const [currentSize, setCurrentSize] = useState(100);
-  console.log("currentSize: ", currentSize);
-  const [currentPrice, setCurrentPrice] = useState(300000);
+  const [currentSize, setCurrentSize] = useState(100); // chiều dài max của cá
+  const [currentPrice, setCurrentPrice] = useState(1000000000); // tiền max của cá
   console.log("currentPrice: ", currentPrice);
   const [genderFilter, setGenderFilter] = useState(0);
   const [sortField, setSortField] = useState(0);
@@ -44,7 +43,7 @@ const ListFish = () => {
     keepPreviousData: true,
   });
   const {
-    data: koiListFIlter,
+    data: koiListFilter,
     isLoading: isLoadingKoiListFilter,
     isError: isErrorLoadingKoiListFilter,
   } = useQuery({
@@ -59,6 +58,8 @@ const ListFish = () => {
       "age",
       sortDirection,
       "price",
+      currentSize,
+      currentPrice,
     ],
     queryFn: () =>
       FishApi.getFilteredKoiFish(
@@ -66,7 +67,7 @@ const ListFish = () => {
         selectedGender,
         0,
         currentSize,
-        0,
+        300000,
         currentPrice,
         "age",
         selectAge,
@@ -75,9 +76,12 @@ const ListFish = () => {
         currentPage,
         pageSize
       ),
+    enabled: isFiltered,
     keepPreviousData: true,
   });
-  console.log("koiListFIlter: ", koiListFIlter);
+  koiListFilter;
+  console.log("koiListFilter: ", koiListFilter);
+
   const koiResponseList = KoiList?.koiFishReponseList;
   const updateKoiList = koiResponseList?.map((item) => {
     return {
@@ -85,22 +89,22 @@ const ListFish = () => {
       koiImage: "./img/showa2.jpg",
     };
   });
-  const totalPage = KoiList?.totalElements;
-  console.log("updateKoiList: ", updateKoiList);
+  const koiToDisplay = isFiltered
+    ? koiListFilter?.koiFishReponseList
+    : updateKoiList;
+  const totalPage = isFiltered
+    ? koiListFilter?.totalElements
+    : KoiList?.totalElements;
+  console.log("koiToDisplay: ", koiToDisplay);
+
+  console.log("koiToDisplay: ", koiToDisplay);
   if (isLoadingKoiList) {
     return <LoadingModal />;
   }
   if (isErrorLoadingKoiList) {
     return <h1>Error</h1>;
   }
-  const generateMarks = () => {
-    const marks = {};
-    marks[300000] = "300K";
-    for (let i = 1000000; i <= 100000000; i += 10000000) {
-      marks[i] = `${(i / 1000000).toFixed(0)}M`;
-    }
-    return marks;
-  };
+
   const CategoryItem = [
     {
       key: "Koi showa",
@@ -175,18 +179,23 @@ const ListFish = () => {
 
   const handleMenuClickCategory = (item) => {
     setSelectedCategory(item.value);
+    setIsFiltered(true);
   };
   const handleMenuClickGender = (item) => {
     setSelectedGender(+item.value);
+    setIsFiltered(true);
   };
   const handleMenuClickDate = (item) => {
     setSelectDate(item.value);
+    setIsFiltered(true);
   };
   const handleMenuClickAge = (item) => {
     setSelectAge(item.value);
+    setIsFiltered(true);
   };
   const handleMenuClickPrice = (item) => {
     setSelectPrice(item.value);
+    setIsFiltered(true);
   };
   return (
     <div className="ListFish ">
@@ -491,7 +500,10 @@ const ListFish = () => {
                       dotStyle={{ borderColor: "#EA4444" }}
                       activeDotStyle={{ borderColor: "#EA4444" }}
                       railStyle={{ backgroundColor: "#ffcccc" }}
-                      onChange={(value) => setCurrentSize(value)}
+                      onAfterChange={(value) => {
+                        setCurrentSize(value);
+                        setIsFiltered(true);
+                      }}
                     />
                   </div>
                 </div>
@@ -508,7 +520,10 @@ const ListFish = () => {
                       dotStyle={{ borderColor: "#EA4444" }}
                       activeDotStyle={{ borderColor: "#EA4444" }}
                       railStyle={{ backgroundColor: "#ffcccc" }}
-                      onChange={(value) => setCurrentPrice(value)}
+                      onAfterChange={(value) => {
+                        setCurrentPrice(value);
+                        setIsFiltered(true);
+                      }}
                     />
                   </div>
                 </div>
@@ -526,6 +541,7 @@ const ListFish = () => {
                   <div>
                     <p className="text-xl font-bold">Giá cao nhất:</p>
                     <Input
+                      min={310000}
                       value={new Intl.NumberFormat("vi-VN", {
                         style: "currency",
                         currency: "VND",
@@ -549,7 +565,7 @@ const ListFish = () => {
                 justify="center"
                 className="w-[950px] grid grid-cols-3"
               >
-                {updateKoiList?.map((card) => {
+                {koiToDisplay?.map((card) => {
                   return (
                     <Col
                       key={card.id}
