@@ -8,7 +8,8 @@ import { getLocalStorage } from "../../utils/LocalStorage";
 const Cart = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const dispatch = useDispatch();
-  const items = useSelector((state) => state.cart.items);
+  const totalPrice = useSelector((state) => state.cart.total);
+  console.log("totalPrice: ", totalPrice);
   const onCart = getLocalStorage("cartItems");
   const onSelectChange = (newSelectedRowKeys) => {
     console.log("selectedRowKeys changed: ", newSelectedRowKeys);
@@ -75,7 +76,7 @@ const Cart = () => {
   const columns = [
     {
       title: "Ảnh",
-      dataIndex: "imgSrc",
+      dataIndex: "koiImage",
       onHeaderCell: () => ({
         style: {
           backgroundColor: "rgba(234, 68, 68, 0.20)",
@@ -98,7 +99,7 @@ const Cart = () => {
       render: (data) => (
         <div>
           <h3 style={{ color: "#EA4444" }} className="text-xl font-medium">
-            {data.title} {data.size} {data.age} tuổi
+            {data.category} {data.size} {data.age} tuổi
           </h3>
           <p>Giới tính: {data.gender}</p>
           <p>Người bán: {data.seller}</p>
@@ -136,7 +137,12 @@ const Cart = () => {
       render: (data) => (
         <div>
           <div className="flex justify-end">
-            <p>{data.price}</p>
+            <p>
+              {data.price.toLocaleString("vi-VN", {
+                style: "currency",
+                currency: "VND",
+              })}
+            </p>
           </div>
         </div>
       ),
@@ -259,7 +265,14 @@ const Cart = () => {
                       </span>
                     </div>
                     <div>
-                      <span className="text-lg font-bold">1.000.000</span>
+                      <span className="text-lg font-bold">
+                        {totalPrice
+                          ? totalPrice.toLocaleString("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                            })
+                          : ""}
+                      </span>
                     </div>
                   </div>
                   <div className="flex justify-between">
@@ -286,7 +299,14 @@ const Cart = () => {
                         </span>
                       </div>
                       <div className="text-center">
-                        <span className="text-xl font-bold">1.000.000 VNĐ</span>
+                        <span className="text-xl font-bold">
+                          {totalPrice
+                            ? totalPrice.toLocaleString("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              })
+                            : ""}
+                        </span>
                       </div>
                     </div>
                   </div>

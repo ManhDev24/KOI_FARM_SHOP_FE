@@ -6,7 +6,7 @@ export const AuthApi = {
   login: async (data) => {
     try {
       const response = await fetcher.post(
-        "http://localhost:8080/koifarm/signin",
+        "http://localhost:8080/koifarm/login/signin",
         data
       );
       return response.data;
@@ -17,7 +17,7 @@ export const AuthApi = {
   register: async (data) => {
     try {
       const response = await fetcher.post(
-        "http://localhost:8080/koifarm/register",
+        "http://localhost:8080/koifarm/account/register",
         data
       );
       return response.data;
@@ -39,7 +39,7 @@ export const AuthApi = {
     try {
       console.log("email: ", email);
       const response = await fetcher.post(
-        `http://localhost:8080/koifarm/forgotPassword/${email}`
+        `http://localhost:8080/koifarm/login/forgotPassword/${email}`
       );
       return response.data;
     } catch (error) {
@@ -49,7 +49,7 @@ export const AuthApi = {
   loginWithGoogle: async (data) => {
     try {
       const response = await fetcher.post(
-        "http://localhost:8080/koifarm/signingoogle",
+        "http://localhost:8080/koifarm/login/signingoogle",
         data
       );
       return response.data;
@@ -61,7 +61,7 @@ export const AuthApi = {
     try {
       const token = getLocalStorage("otpToken"); // Retrieve the token
       const response = await fetcher.post(
-        `http://localhost:8080/koifarm/changePassword/${email}`,
+        `http://localhost:8080/koifarm/login/changePassword/${email}`,
         data,
         {
           headers: {

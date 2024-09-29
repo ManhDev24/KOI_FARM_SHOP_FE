@@ -1,32 +1,28 @@
 import fetcher from "./Fetcher";
 
 export const FishApi = {
-  // Lấy danh sách cá Koi theo danh mục và số trang
-  getListFish: async (id, page) => {
+  getListFish: async (currentPage, pageSize = 9) => {
     try {
-      const response = await fetcher.get(`http://localhost:9999/ListFish`);
-      return response.data;
+      const response = await fetcher.get(
+        `http://localhost:8080/koifarm/koifish/allkoi?page=${currentPage}&pageSize=${pageSize}`
+      );
+      return response.data.data;
     } catch (error) {
-      if (error.response && error.response.data) {
-        throw new Error(error.response.data.message); // Trả về lỗi chi tiết từ API nếu có
-      } else {
-        throw new Error("Có lỗi xảy ra khi gọi API"); // Trả về lỗi chung nếu không có thông tin chi tiết
-      }
+      throw new Error(error.response.data.message);
     }
   },
 
-  // Lấy danh sách danh mục cá Koi
   getCategories: async () => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/homepage1`
+        `http://localhost:8080/koifarm/getListCategory`
       );
-      return response.data.data; // Trả về dữ liệu từ API
+      return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {
-        throw new Error(error.response.data.message); // Trả về lỗi chi tiết từ API nếu có
+        throw new Error(error.response.data.message);
       } else {
-        throw new Error("Có lỗi xảy ra khi gọi API"); // Trả về lỗi chung nếu không có thông tin chi tiết
+        throw new Error("Có lỗi xảy ra khi gọi API");
       }
     }
   },
@@ -40,27 +36,35 @@ export const FishApi = {
       return response.data.data;
     } catch (error) {
       if (error.response && error.response.data) {
-        throw new Error(error.response.data.message); // Trả về lỗi chi tiết từ API nếu có
+        throw new Error(error.response.data.message);
       } else {
-        throw new Error("Có lỗi xảy ra khi gọi API"); // Trả về lỗi chung nếu không có thông tin chi tiết
+        throw new Error("Có lỗi xảy ra khi gọi API");
       }
     }
   },
-
-  getFishListFromCategory: async (id, pageNo, pageSize) => {
+  getFilteredKoiFish: async (
+    categoryID,
+    gender,
+    minSize,
+    maxSize,
+    minPrice,
+    maxPrice,
+    sortField1,
+    sortDirection1,
+    sortField2,
+    sortDirection2,
+    page,
+    pageSize
+  ) => {
     try {
-      const response = await fetcher.get(`http://localhost:8080/koifarm/koifish/category?categoryId=${id}&page=${pageNo}&pageSize=${pageSize}`)
-      throw new Error("Có lỗi xảy ra khi gọi API"); // Trả về lỗi chung nếu không có thông tin chi tiết
+      const response = await fetcher.get(
+        `http://localhost:8080/koifarm/koifish/filter?categoryID=${categoryID}&gender=${gender}&minSize=${minSize}&maxSize=${maxSize}&minPrice=${minPrice}&maxPrice=${maxPrice}&sortField1=${sortField1}&sortDirection1=${sortDirection1}&sortField2=${sortField2}&sortDirection2=${sortDirection2}&page=${page}&pageSize=${pageSize}`
+      );
+      return response.data.data;
     } catch (error) {
-      if (error.response && error.response.data) {
-        throw new Error(error.response.data.message); // Trả về lỗi chi tiết từ API nếu có
-      } else {
-        throw new Error("Có lỗi xảy ra khi gọi API"); // Trả về lỗi chung nếu không có thông tin chi tiết
-      }
+      throw new Error(error.response.data.message);
     }
-
   },
-
 };
 
 export default FishApi;
