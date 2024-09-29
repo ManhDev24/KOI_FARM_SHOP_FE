@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { signOut } from "../../../Redux/Slices/Auth_Slice";
 import FishApi from "../../../apis/Fish.api";
 import logo from '/img/logo.png';
+import Vector from '/img/Vector.png';
 const Navbar = () => {
   const dispatch = useDispatch();
 
@@ -348,7 +349,7 @@ const Navbar = () => {
                     >
                       <Button className="logoutButton text-[#FA4444] border-[1px] border-[#FA4444] w-[24] h-[42px]">
                         <img
-                          src="./img/Vector.png"
+                          src={Vector}
                           width={30}
                           height={30}
                           className="p-0"
