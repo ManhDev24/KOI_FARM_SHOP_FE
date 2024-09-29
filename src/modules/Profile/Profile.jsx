@@ -1,15 +1,194 @@
 import { Breadcrumb, Button } from 'antd';
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import Avt from '/img/uploadavt.png';
+import { Input, Form as AntForm } from 'antd';
+import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
+import { useForm, Controller } from 'react-hook-form';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { AuthApi } from '../../apis/Auth.api';
+
+// Yup schema để xác thực dữ liệu
+const schema = yup.object().shape({
+  name: yup.string()
+    .required('Vui lòng nhập họ và tên') // Bắt buộc nhập
+    .min(3, 'Tên quá ngắn!') // Tên phải có ít nhất 3 ký tự
+    .matches(/^[A-Za-zÀ-ỹ\s]+$/, 'Họ và tên không được chứa số hoặc ký tự đặc biệt'), // Không chứa số và ký tự đặc biệt
+
+  email: yup.string()
+    .required('Vui lòng nhập email') // Bắt buộc nhập
+    .email('Email không hợp lệ'), // Kiểm tra định dạng email
+
+  // Validate mật khẩu cũ
+  password: yup.string()
+    .required('Vui lòng nhập mật khẩu cũ'), // Bắt buộc nhập mật khẩu cũ
+
+  // Validate mật khẩu mới
+  newPassword: yup.string()
+    .required('Vui lòng nhập mật khẩu mới') // Bắt buộc nhập
+    .min(8, 'Mật khẩu phải có ít nhất 8 ký tự') // Mật khẩu mới phải có ít nhất 8 ký tự
+    .matches(/[A-Z]/, 'Mật khẩu phải chứa ít nhất một chữ cái in hoa')
+    .matches(/[a-z]/, 'Mật khẩu phải chứa ít nhất một chữ cái thường')
+    .matches(/[0-9]/, 'Mật khẩu phải chứa ít nhất một chữ số')
+    .matches(/[!@#$%^&*(),.?":{}|<>]/, 'Mật khẩu phải chứa ít nhất một ký tự đặc biệt')
+    .notOneOf([yup.ref('password')], 'Mật khẩu mới không được giống mật khẩu cũ'),
+
+  // Xác nhận mật khẩu mới
+  confirmPassword: yup.string()
+    .required('Vui lòng xác nhận mật khẩu')
+    .oneOf([yup.ref('newPassword')], 'Xác nhận mật khẩu không khớp'),
+
+  address: yup.string()
+    .required('Vui lòng nhập địa chỉ')
+    .min(10, 'Địa chỉ phải có ít nhất 10 ký tự'),
+
+  phone: yup.string()
+    .required('Vui lòng nhập số điện thoại')
+    .matches(/^[0-9]+$/, 'Số điện thoại chỉ chứa số')
+    .min(10, 'Số điện thoại phải có ít nhất 10 chữ số')
+    .max(15, 'Số điện thoại không được vượt quá 15 chữ số'),
+});
+
 
 const Profile = () => {
+  const { control, handleSubmit, trigger, formState: { errors }, getValues, setValue, setError } = useForm({
+    resolver: yupResolver(schema),
+  });
+  
+  const [initialData, setInitialData] = useState({
+    name: 'Hoàng Tiến Đạt',
+    email: 'dathtse170150@fpt.edu.vn',
+    password: 'password123', // Mật khẩu cũ ban đầu (dữ liệu đã lưu)
+    address: '299, Tên lửa, Bình Trị Đông B, Bình Tân, TP. Hồ Chí Minh',
+    phone: '098*****13',
+  });
+
+  const [isEditing, setIsEditing] = useState({
+    name: false,
+    email: false,
+    password: false,
+    address: false,
+    phone: false,
+  });
+
+  const [oldPasswordCorrect, setOldPasswordCorrect] = useState(false); // Trạng thái kiểm tra mật khẩu cũ
+  const [requireOldPasswordAgain, setRequireOldPasswordAgain] = useState(false); // Trạng thái yêu cầu nhập lại mật khẩu cũ
+  const [passwordChanged, setPasswordChanged] = useState(false);
+  // Hàm này sẽ được gọi khi submit form và lưu thông tin
+  const handleSave = async (field) => {
+    // Chỉ validate trường hiện tại
+    const isValid = await trigger(field); // Kích hoạt validate cho trường đang chỉnh sửa
+
+    if (isValid) {
+      const value = getValues(field);
+      setInitialData((prevData) => ({
+        ...prevData,
+        [field]: value,
+      }));
+      setIsEditing((prevState) => ({
+        ...prevState,
+        [field]: false,
+      }));
+      setValue(field, value);
+    }
+  };
+
+  const handleCancel = (field) => {
+    setValue(field, initialData[field]);
+    setIsEditing((prevState) => ({
+      ...prevState,
+      [field]: false,
+    }));
+  };
+
+  // Kiểm tra mật khẩu cũ trước khi đổi mật khẩu
+  const handleOldPasswordSubmit = () => {
+    const oldPassword = getValues('password');
+    if (oldPassword === initialData.password) {
+      setOldPasswordCorrect(true); // Cho phép hiển thị form nhập mật khẩu mới
+    } else {
+      setError('password', {
+        type: 'manual',
+        message: 'Mật khẩu cũ không chính xác',
+      });
+      setOldPasswordCorrect(false);
+    }
+  };
+  // Sau khi người dùng lưu mật khẩu mới thành công
+  const handleSavePassword = async () => {
+    const isValidNewPassword = await trigger('newPassword'); // Kiểm tra tính hợp lệ của mật khẩu mới
+    const isValidConfirmPassword = await trigger('confirmPassword'); // Kiểm tra tính hợp lệ của xác nhận mật khẩu
+
+    if (isValidNewPassword && isValidConfirmPassword) {
+      const newPassword = getValues('newPassword'); // Lấy giá trị mật khẩu mới
+      setInitialData((prevData) => ({
+        ...prevData,
+        password: newPassword, // Lưu mật khẩu mới vào initialData
+      }));
+      setPasswordChanged(true); // Đánh dấu là đã đổi mật khẩu
+      setOldPasswordCorrect(false); // Reset trạng thái mật khẩu cũ
+      setIsEditing((prevState) => ({
+        ...prevState,
+        password: false, // Tắt form chỉnh sửa mật khẩu
+      }));
+    }
+  };
+  const renderFormItem = (label, fieldName, placeholder, isPassword = false) => (
+    <AntForm.Item
+      label={label}
+      validateStatus={errors[fieldName] ? 'error' : ''}
+      help={errors[fieldName]?.message}
+    >
+      {isEditing[fieldName] && (
+        <>
+          <Controller
+            name={fieldName}
+            control={control}
+            render={({ field }) => (
+              isPassword ? (
+                <Input.Password
+                  {...field}
+                  placeholder={placeholder}
+                  iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                />
+              ) : (
+                <Input {...field} placeholder={placeholder} />
+              )
+            )}
+          />
+          <Button
+            type="primary"
+            onClick={async () => {
+              const isValid = await trigger(fieldName); // Chỉ trigger validate cho trường hiện tại
+              if (isValid) {
+                handleSave(fieldName);
+              }
+            }}
+          >
+            Lưu thay đổi
+          </Button>
+          <Button onClick={() => handleCancel(fieldName)}>Hủy</Button>
+        </>
+      )}
+      {!isEditing[fieldName] && (
+        <>
+          <div className="text-black text-xl font-['Arial'] w-full">{initialData[fieldName]}</div>
+          <Button type="link" onClick={() => setIsEditing((prevState) => ({ ...prevState, [fieldName]: true }))}>
+            Chỉnh sửa
+          </Button>
+        </>
+      )}
+    </AntForm.Item>
+  );
+
   return (
     <>
-      <div className='w-full '>
+      <div className='w-full'>
         <div className='w-[950px] mx-auto my-0'>
           <Breadcrumb
             separator=">"
-            className="flex  items-center font-bold text-lg m-3"
+            className="flex items-center font-bold text-lg m-3"
           >
             <Breadcrumb.Item>
               <Link to="/" style={{ color: "#EA4444" }} className="">
@@ -24,116 +203,229 @@ const Profile = () => {
           </Breadcrumb>
         </div>
       </div>
-      <div className='w-full flex justify-center ' >
-        <div className="w-[1250px] h-[712px] pl-[37px] pr-14 py-[71px] shadow  gap-[23px] flex justify-center items-center col-span-2">
-          {/* avatar
-           */}
-          <div className="w-full h-full flex flex-col items-end pt-[15px] rounded-[10px] ">
-            <div className="w-full h-[50px] ">
-              <div className="text-black text-2xl h-[50px] flex items-center   font-['Arial'] ps-2 shadow">Ảnh Đại Diện</div>
-            </div>
-            <div className="w-full h-[315px] bg-white shadow flex justify-center items-center" >
-              <div className='flex flex-col'>
-                <img src="./img/avatar.svg" alt="" className="inline-block h-[200px] w-[200px] rounded-full ring-2 ring-lime-100" />
 
+      <div className='w-full
+       flex 
+       justify-center'>
+        <div className="w-[1250px] 
+        h-[712px] 
+        pl-[37px] 
+        pr-14 
+        py-[71px] 
+        shadow 
+        gap-[23px] 
+        flex 
+        justify-center
+         items-center 
+         col-span-2">
+          <div className="
+          w-full 
+          h-full 
+          flex 
+          flex-col 
+          items-end 
+          pt-[15px] 
+          rounded-[10px]">
+            <div className="w-full h-[50px]">
+              <div className="
+              text-black 
+              text-2xl 
+              h-[50px] 
+              flex 
+              items-center 
+              font-['Arial'] 
+              ps-2 shadow">
+                Ảnh Đại Diện
+              </div>
+            </div>
+            <div className="
+            w-full
+            h-[315px]
+            bg-white 
+            shadow 
+            flex 
+            justify-center 
+            items-center">
+              <div className='flex flex-col'>
+                <img
+                  src="./img/avatar.svg"
+                  alt=""
+                  className="
+                inline-block 
+                h-[200px] 
+                w-[200px] 
+                rounded-full 
+                ring-2 
+                ring-lime-100"
+                />
                 <div className='mt-10'>
-                  <div className="w-full flex justify-center text-black text-xl font-bold font-['Arial']">
-                    <Button>
-                      Tải ảnh lên
-                      <img src="./img/uploadavt.png" alt="" height={25} width={25} />
-                    </Button>
+                  <div className="
+                  w-full 
+                  flex 
+                  justify-center 
+                  text-black 
+                  text-xl 
+                  font-bold 
+                  font-['Arial']"
+                  >
+                    <div className="mb-1">
+                      <div className="
+                      file-input-wrapped 
+                      flex 
+                      justify-center 
+                      items-center">
+                        <div>
+                          <input
+                            type="file"
+                            id="file-input"
+                            name="ImageStyle"
+                            className="file-input-class"
+                            accept="image/*"
+                            style={{ display: 'none' }}
+                          /></div>
+                        <label htmlFor="file-input"
+                          className="
+                        upload-button 
+                        flex 
+                        justify-center 
+                        items-center 
+                        px-2
+                        rounded-[10px]
+                        bg-[#FFFFFF] 
+                        border-2 
+                        border-[#FA4444]">
+                          <img src={Avt} width={20} alt="" />
+                          <p>Cập nhật ảnh đại diện</p>
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
+          {/* Thông tin cá nhân */}
+          <div className="
+          w-[699px] 
+          h-[570px] 
+          mt-[30px] 
+          relative 
+          flex-col 
+          flex shadow">
+            <div className="w-[654px]">
+              <div
+                className="
+                text-black 
+                  text-2xl 
+                  h-[50px] 
+                  flex 
+                  items-center 
+                  w-full 
+                  ms-2 
+                  font-['Arial']
+                  ">
 
-          {/* info */}
-          <div className="w-[699px] h-[570px] mt-[30px] relative flex-col flex shadow">
-
-            <div className="w-[654px]  ">
-              <div className="text-black text-2xl h-[50px] flex items-center w-full ms-2  font-['Arial']">Thông tin cá nhân</div>
-            </div>
-            <div className="h-[579px] px-[62px] py-9 pt-0 flex-col justify-start items-start gap-1 inline-flex">
-              <div className="w-[486px]">
-                <div className="w-[486px] flex-row justify-start items-start inline-flex">
-                  <div className="text-black text-xl  font-['Arial'] w-full">Họ và tên:</div>
-
-                  <div className="text-black text-xl  font-['Arial'] col w-full">Hoàng Tiến Đạt
-                  </div>
-                  <div className=' w-full flex justify-end'>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" >
-                      <path d="M17.8383 6.75703L16.1203 5.03906L7.61953 13.5375L7.25391 15.6234L9.3375 15.2555L17.8383 6.75703Z" fill="#EA4444" fill-opacity="0.15" />
-                      <path d="M20.625 19.5938H3.375C2.96016 19.5938 2.625 19.9289 2.625 20.3438V21.1875C2.625 21.2906 2.70937 21.375 2.8125 21.375H21.1875C21.2906 21.375 21.375 21.2906 21.375 21.1875V20.3438C21.375 19.9289 21.0398 19.5938 20.625 19.5938ZM6.03984 17.625C6.08672 17.625 6.13359 17.6203 6.18047 17.6133L10.1227 16.9219C10.1695 16.9125 10.2141 16.8914 10.2469 16.8563L20.182 6.92109C20.2038 6.89941 20.221 6.87366 20.2328 6.8453C20.2445 6.81695 20.2506 6.78656 20.2506 6.75586C20.2506 6.72516 20.2445 6.69477 20.2328 6.66642C20.221 6.63806 20.2038 6.61231 20.182 6.59063L16.2867 2.69297C16.2422 2.64844 16.1836 2.625 16.1203 2.625C16.057 2.625 15.9984 2.64844 15.9539 2.69297L6.01875 12.6281C5.98359 12.6633 5.9625 12.7055 5.95312 12.7523L5.26172 16.6945C5.23892 16.8201 5.24707 16.9493 5.28545 17.071C5.32384 17.1927 5.39132 17.3032 5.48203 17.393C5.63672 17.543 5.83125 17.625 6.03984 17.625ZM7.61953 13.5375L16.1203 5.03906L17.8383 6.75703L9.3375 15.2555L7.25391 15.6234L7.61953 13.5375Z" fill="#EA4444" />
-                    </svg>
-                  </div>
-
-                </div>
-              </div>
-              <div className="w-[486px] ">
-                <div className="w-[486px]   flex justify-start items-start ">
-                  <div className="text-black text-xl w-full font-['Arial']">Email:</div>
-                  <div className="text-black text-base w-full font-['Arial']">dathtse170150@fpt.edu.vn
-                  </div>
-                  <div className=' w-full flex justify-end'>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" >
-                      <path d="M17.8383 6.75703L16.1203 5.03906L7.61953 13.5375L7.25391 15.6234L9.3375 15.2555L17.8383 6.75703Z" fill="#EA4444" fill-opacity="0.15" />
-                      <path d="M20.625 19.5938H3.375C2.96016 19.5938 2.625 19.9289 2.625 20.3438V21.1875C2.625 21.2906 2.70937 21.375 2.8125 21.375H21.1875C21.2906 21.375 21.375 21.2906 21.375 21.1875V20.3438C21.375 19.9289 21.0398 19.5938 20.625 19.5938ZM6.03984 17.625C6.08672 17.625 6.13359 17.6203 6.18047 17.6133L10.1227 16.9219C10.1695 16.9125 10.2141 16.8914 10.2469 16.8563L20.182 6.92109C20.2038 6.89941 20.221 6.87366 20.2328 6.8453C20.2445 6.81695 20.2506 6.78656 20.2506 6.75586C20.2506 6.72516 20.2445 6.69477 20.2328 6.66642C20.221 6.63806 20.2038 6.61231 20.182 6.59063L16.2867 2.69297C16.2422 2.64844 16.1836 2.625 16.1203 2.625C16.057 2.625 15.9984 2.64844 15.9539 2.69297L6.01875 12.6281C5.98359 12.6633 5.9625 12.7055 5.95312 12.7523L5.26172 16.6945C5.23892 16.8201 5.24707 16.9493 5.28545 17.071C5.32384 17.1927 5.39132 17.3032 5.48203 17.393C5.63672 17.543 5.83125 17.625 6.03984 17.625ZM7.61953 13.5375L16.1203 5.03906L17.8383 6.75703L9.3375 15.2555L7.25391 15.6234L7.61953 13.5375Z" fill="#EA4444" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-              <div className="flex-col justify-start items-start flex">
-                <div className="w-[486px]  flex">
-
-                  <div className=" text-black text-xl w-full font-['Arial']">Mật khẩu:</div>
-                  <div className=" text-black text-xl w-full text-center font-['Arial']">**********
-
-                  </div>
-                  <div className=' w-full flex justify-end'>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" >
-                      <path d="M17.8383 6.75703L16.1203 5.03906L7.61953 13.5375L7.25391 15.6234L9.3375 15.2555L17.8383 6.75703Z" fill="#EA4444" fill-opacity="0.15" />
-                      <path d="M20.625 19.5938H3.375C2.96016 19.5938 2.625 19.9289 2.625 20.3438V21.1875C2.625 21.2906 2.70937 21.375 2.8125 21.375H21.1875C21.2906 21.375 21.375 21.2906 21.375 21.1875V20.3438C21.375 19.9289 21.0398 19.5938 20.625 19.5938ZM6.03984 17.625C6.08672 17.625 6.13359 17.6203 6.18047 17.6133L10.1227 16.9219C10.1695 16.9125 10.2141 16.8914 10.2469 16.8563L20.182 6.92109C20.2038 6.89941 20.221 6.87366 20.2328 6.8453C20.2445 6.81695 20.2506 6.78656 20.2506 6.75586C20.2506 6.72516 20.2445 6.69477 20.2328 6.66642C20.221 6.63806 20.2038 6.61231 20.182 6.59063L16.2867 2.69297C16.2422 2.64844 16.1836 2.625 16.1203 2.625C16.057 2.625 15.9984 2.64844 15.9539 2.69297L6.01875 12.6281C5.98359 12.6633 5.9625 12.7055 5.95312 12.7523L5.26172 16.6945C5.23892 16.8201 5.24707 16.9493 5.28545 17.071C5.32384 17.1927 5.39132 17.3032 5.48203 17.393C5.63672 17.543 5.83125 17.625 6.03984 17.625ZM7.61953 13.5375L16.1203 5.03906L17.8383 6.75703L9.3375 15.2555L7.25391 15.6234L7.61953 13.5375Z" fill="#EA4444" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-              <div className="w-[486px] flex">
-                <div className="w-[486px] flex justify-start items-start">
-                  <div className="text-black text-xl w-[200px]  font-['Arial']">Địa chỉ:</div>
-                  <div className=" text-black text-base w-full font-['Arial']">  299, Tên lửa,Bình Trị Đông B, Bình Tân, TP. Hồ Chí Minh </div>
-                  <div className=' w-[50px] flex justify-end'>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" >
-                      <path d="M17.8383 6.75703L16.1203 5.03906L7.61953 13.5375L7.25391 15.6234L9.3375 15.2555L17.8383 6.75703Z" fill="#EA4444" fill-opacity="0.15" />
-                      <path d="M20.625 19.5938H3.375C2.96016 19.5938 2.625 19.9289 2.625 20.3438V21.1875C2.625 21.2906 2.70937 21.375 2.8125 21.375H21.1875C21.2906 21.375 21.375 21.2906 21.375 21.1875V20.3438C21.375 19.9289 21.0398 19.5938 20.625 19.5938ZM6.03984 17.625C6.08672 17.625 6.13359 17.6203 6.18047 17.6133L10.1227 16.9219C10.1695 16.9125 10.2141 16.8914 10.2469 16.8563L20.182 6.92109C20.2038 6.89941 20.221 6.87366 20.2328 6.8453C20.2445 6.81695 20.2506 6.78656 20.2506 6.75586C20.2506 6.72516 20.2445 6.69477 20.2328 6.66642C20.221 6.63806 20.2038 6.61231 20.182 6.59063L16.2867 2.69297C16.2422 2.64844 16.1836 2.625 16.1203 2.625C16.057 2.625 15.9984 2.64844 15.9539 2.69297L6.01875 12.6281C5.98359 12.6633 5.9625 12.7055 5.95312 12.7523L5.26172 16.6945C5.23892 16.8201 5.24707 16.9493 5.28545 17.071C5.32384 17.1927 5.39132 17.3032 5.48203 17.393C5.63672 17.543 5.83125 17.625 6.03984 17.625ZM7.61953 13.5375L16.1203 5.03906L17.8383 6.75703L9.3375 15.2555L7.25391 15.6234L7.61953 13.5375Z" fill="#EA4444" />
-                    </svg>
-                  </div>
-                </div>
-
-
-              </div>
-              <div className="w-[486px] flex">
-                <div className="w-[486px]  flex-row justify-start items-start inline-flex">
-                  <div className="text-black text-xl w-full font-['Arial']">Số điện thoại:</div>
-                  <div className="text-black text-x w-full font-['Arial'] ">098*****13</div>
-                  <div className=' w-full flex justify-end'>
-
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" className='relative' >
-                      <path d="M17.8383 6.75703L16.1203 5.03906L7.61953 13.5375L7.25391 15.6234L9.3375 15.2555L17.8383 6.75703Z" fill="#EA4444" fill-opacity="0.15" />
-                      <path d="M20.625 19.5938H3.375C2.96016 19.5938 2.625 19.9289 2.625 20.3438V21.1875C2.625 21.2906 2.70937 21.375 2.8125 21.375H21.1875C21.2906 21.375 21.375 21.2906 21.375 21.1875V20.3438C21.375 19.9289 21.0398 19.5938 20.625 19.5938ZM6.03984 17.625C6.08672 17.625 6.13359 17.6203 6.18047 17.6133L10.1227 16.9219C10.1695 16.9125 10.2141 16.8914 10.2469 16.8563L20.182 6.92109C20.2038 6.89941 20.221 6.87366 20.2328 6.8453C20.2445 6.81695 20.2506 6.78656 20.2506 6.75586C20.2506 6.72516 20.2445 6.69477 20.2328 6.66642C20.221 6.63806 20.2038 6.61231 20.182 6.59063L16.2867 2.69297C16.2422 2.64844 16.1836 2.625 16.1203 2.625C16.057 2.625 15.9984 2.64844 15.9539 2.69297L6.01875 12.6281C5.98359 12.6633 5.9625 12.7055 5.95312 12.7523L5.26172 16.6945C5.23892 16.8201 5.24707 16.9493 5.28545 17.071C5.32384 17.1927 5.39132 17.3032 5.48203 17.393C5.63672 17.543 5.83125 17.625 6.03984 17.625ZM7.61953 13.5375L16.1203 5.03906L17.8383 6.75703L9.3375 15.2555L7.25391 15.6234L7.61953 13.5375Z" fill="#EA4444" />
-                    </svg>
-
-                  </div>
-
-                </div>
+                Thông tin cá nhân
               </div>
             </div>
+            <AntForm
+              layout="vertical"
+              style={{
+                width: '400px',
+                margin: '0 auto'
+              }}>
+              {/* Họ và tên */}
+              {renderFormItem('Họ và tên', 'name', 'Nhập họ và tên')}
+
+              {/* Email */}
+              {renderFormItem('Email', 'email', 'Nhập email')}
+
+              {/* Mật khẩu */}
+
+              // Hiển thị form mật khẩu
+              <AntForm.Item
+                label="Mật khẩu"
+                validateStatus={errors.password ? 'error' : ''}
+                help={errors.password?.message}>
+                {!isEditing.password ? (
+                  <Button
+                    type="link"
+                    onClick={() => setIsEditing((prevState) => ({ ...prevState, password: true }))}>
+                    Chỉnh sửa mật khẩu
+                  </Button>
+                ) : !oldPasswordCorrect ? (
+                  <>
+                    {!passwordChanged ? (
+                      <>
+                        <Controller
+                          name="password"
+                          control={control}
+                          render={({ field }) => (
+                            <Input.Password
+                              {...field}
+                              placeholder="Nhập mật khẩu cũ"
+                              iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                            />
+                          )}
+                        />
+                        <Button type="primary" onClick={handleOldPasswordSubmit}>Xác nhận mật khẩu cũ</Button>
+                        <Button onClick={() => handleCancel('password')}>Hủy</Button>
+                      </>
+                    ) : (
+                      <Button type="link" onClick={() => setPasswordChanged(false)}>
+                        Đổi lại mật khẩu
+                      </Button>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <AntForm.Item label="Mật khẩu mới" validateStatus={errors.newPassword ? 'error' : ''} help={errors.newPassword?.message}>
+                      <Controller
+                        name="newPassword"
+                        control={control}
+                        render={({ field }) => (
+                          <Input.Password
+                            {...field}
+                            placeholder="Nhập mật khẩu mới"
+                            iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                          />
+                        )}
+                      />
+                    </AntForm.Item>
+
+                    <AntForm.Item label="Xác nhận mật khẩu mới" validateStatus={errors.confirmPassword ? 'error' : ''}
+                      help={errors.confirmPassword?.message}>
+                      <Controller
+                        name="confirmPassword"
+                        control={control}
+                        render={({ field }) => (
+                          <Input.Password
+                            {...field}
+                            placeholder="Xác nhận mật khẩu mới"
+                            iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                          />
+                        )}
+                      />
+                    </AntForm.Item>
+
+                    <Button type="primary" onClick={handleSavePassword}>Lưu thay đổi</Button>
+                    <Button onClick={() => handleCancel('password')}>Hủy</Button>
+                  </>
+                )}
+              </AntForm.Item>
+
+              {/* Địa chỉ */}
+              {renderFormItem('Địa chỉ', 'address', 'Nhập địa chỉ')}
+
+              {/* Số điện thoại */}
+              {renderFormItem('Số điện thoại', 'phone', 'Nhập số điện thoại')}
+            </AntForm>
           </div>
         </div>
-      </div >
+      </div>
     </>
-  )
-}
+  );
+};
 
-export default Profile
+export default Profile;
