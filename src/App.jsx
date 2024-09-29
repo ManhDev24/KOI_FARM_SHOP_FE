@@ -10,7 +10,6 @@ import ComparisonModal from "./modules/Modal/ComparisonModal";
 // Import the ComparisonModal component
 
 function App() {
-
   // Check if user is authenticated by checking local storage
   const isAuth = () => {
     return !!getLocalStorage("user");
@@ -22,15 +21,11 @@ function App() {
 
   return (
     <div className="">
-      
-
       <Routes>
         {publicRoutes.map((route, index) => {
-          // Use the layout specified in the route, or fallback to React.Fragment
           const Layout = route.layout || React.Fragment;
           const Component = route.component;
 
-          // Redirect authenticated users away from login, register, or OTP routes
           if (
             isAuth() &&
             (route.path === "/login" ||
@@ -48,7 +43,6 @@ function App() {
             );
           }
 
-          // Restrict access to changePassword if not allowed
           if (
             route.path === "/changePassword" &&
             !isAllowedToAccessForgotPassword
