@@ -84,13 +84,15 @@ export const AuthApi = {
       throw new Error(error.response.data.message);
     }
   },
-  userProfile:async(id)=>{
+  userProfile: async (email) => {
     try {
-      const response = await fetcher.post(
-        `http://localhost:8080/koifarm/profile/${id}`
+      const response = await fetcher.get(
+        `http://localhost:8080/koifarm/account/profile/${email}`
       );
+      const data = response.data();
+      console.log(data)
     } catch (error) {
-      
+
     }
   }
 };

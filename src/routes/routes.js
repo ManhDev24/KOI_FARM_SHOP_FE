@@ -10,6 +10,17 @@ import ComparisonModal from "../modules/Modal/ComparisonModal";
 import Otp from "../modules/OTP/Otp";
 import Profile from "../modules/Profile/Profile";
 import Register from "../modules/RegisterPage/Register";
+import { getLocalStorage } from "../utils/LocalStorage";
+const fetchEmail = () => {
+  const dataProfile = getLocalStorage('user'); // Get 'user' from localStorage
+  if (dataProfile && dataProfile.email) {
+    return dataProfile.email; // Return email if found
+  } else {
+    console.error("No user profile found in localStorage");
+    return null;
+  }
+};
+
 
 export const publicRoutes = [
   {
@@ -63,7 +74,7 @@ export const publicRoutes = [
     layout: DefaultLayout,
   },
   {
-    path: "/profile",
+    path: `/profile/${fetchEmail()}`,
     component: Profile,
     layout: DefaultLayout,
   },
