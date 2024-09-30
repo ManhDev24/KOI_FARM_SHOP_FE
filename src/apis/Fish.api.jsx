@@ -1,12 +1,30 @@
 import fetcher from "./Fetcher";
 
 export const FishApi = {
-  getListFish: async (currentPage, pageSize = 9) => {
+  getListFish: async ( currentPage, pageSize = 9) => {
     try {
       const response = await fetcher.get(
         `http://localhost:8080/koifarm/koifish/allkoi?page=${currentPage}&pageSize=${pageSize}`
       );
       return response.data.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
+  getListFishByCategory: async (categoryID, currentPage=1, pageSize = 9) => {
+    try {
+      // if (categoryID) {
+        // Call the filter API if categoryID is provided
+        response = await fetcher.get(
+          `http://localhost:8080/koifarm/koifish/filter?categoryID=${categoryID}&page=${currentPage}&pageSize=${pageSize}`
+        );
+      // } else {
+      //   // Call the all koi fish API if no categoryID is provided
+      //   response = await fetcher.get(
+      //     `http://localhost:8080/koifarm/koifish/allkoi?page=${currentPage}&pageSize=${pageSize}`
+      //   );
+      // }
+      return response.data;
     } catch (error) {
       throw new Error(error.response.data.message);
     }
