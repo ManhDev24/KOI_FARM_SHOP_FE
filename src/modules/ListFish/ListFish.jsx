@@ -107,10 +107,6 @@ const ListFish = () => {
 
   const CategoryItem = [
     {
-      key: "Danh mục",
-      label: "Danh mục",
-    },
-    {
       key: "Koi showa",
       label: "Koi showa",
       value: "1",
