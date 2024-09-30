@@ -10,7 +10,7 @@ import { addToCart } from "../../Redux/Slices/Cart_Slice";
 import { toast } from "react-toastify";
 
 const ListFish = () => {
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("1");
   const [isFiltered, setIsFiltered] = useState(false);
   const [selectedGender, setSelectedGender] = useState(1);
   const [selectDate, setSelectDate] = useState(1);
@@ -106,6 +106,10 @@ const ListFish = () => {
   }
 
   const CategoryItem = [
+    {
+      key: "Danh mục",
+      label: "Danh mục",
+    },
     {
       key: "Koi showa",
       label: "Koi showa",
@@ -263,7 +267,9 @@ const ListFish = () => {
                             ? "Koi asagi"
                             : selectedCategory === "3"
                             ? "Koi karashi"
-                            : "Koi Benikoi"}
+                            : selectedCategory === "4"
+                            ? "Koi Benikoi"
+                            : "Danh mục"}
                         </p>
                       </div>
                       <div>
