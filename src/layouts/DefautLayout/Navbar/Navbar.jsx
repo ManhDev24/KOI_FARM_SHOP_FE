@@ -9,10 +9,36 @@ import { signOut } from "../../../Redux/Slices/Auth_Slice";
 import FishApi from "../../../apis/Fish.api";
 import logo from '/img/logo.png';
 import Vector from '/img/Vector.png';
+import { AuthApi } from "../../../apis/Auth.api";
 const Navbar = () => {
   const dispatch = useDispatch();
 
+  const fetchEmail = () => {
+    const dataProfile = getLocalStorage('user'); // Get 'user' from localStorage
+    if (dataProfile && dataProfile.email) {
+      return dataProfile.email; // Return email if found
+    } else {
+      console.error("No user profile found in localStorage");
+      return null;
+    }
+  };
+  const [profileData, setProfileData] = useState(null);
 
+  const fetchProfile = async () => {
+    const email = fetchEmail(); // Fetch email from localStorage
+    if (email) { // Proceed only if email exists
+      try {
+        const data = await AuthApi.userProfile(email); // Await the response from AuthApi
+        setProfileData(data); // Lưu trữ dữ liệu profile vào state
+      } catch (error) {
+        console.error("Error in fetchProfile:", error); // Handle any error that occurs
+        setProfileData(null); // Xử lý khi có lỗi
+      }
+    }
+  };
+
+
+  fetchProfile();
   const { items } = useSelector((state) => state.cart);
 
   // Define menu items for dropdowns
@@ -20,41 +46,54 @@ const Navbar = () => {
   const [koiMenuItems, setKoiMenuItems] = useState([]); // State lưu trữ các mục menu
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const category = (id) => {
+    // Your logic for handling the category here
+  };
 
   const fetchKoiCategories = async () => {
     try {
-      const categoriesArray = await FishApi.getCategories(); // Nhận mảng dữ liệu
-      // const catefind =  await FishApi.getFishListFromCategory(id,pageNo,pageSize);
-     
+      const categoriesArray = await FishApi.getCategories();
       if (Array.isArray(categoriesArray)) {
         const menuItems = categoriesArray.map((item) => ({
           key: item.id.toString(),
           label: (
-            <a href={`/cakoi/${item.id}`}>
+            // onClick={(e) => handleCategorySelection(e, item.id)}
+            <a href={`/koiList`} >
               {item.categoryName}
             </a>
           ),
         }));
-
-        setKoiMenuItems(menuItems); // Cập nhật state menu items
+        setKoiMenuItems(menuItems);
       } else {
-        console.error("categoriesArray không phải là mảng:", categoriesArray);
-        setError("Dữ liệu nhận được không phải là mảng như mong đợi.");
+        setError("The received data is not an array as expected.");
       }
     } catch (error) {
-      console.error("Lỗi khi lấy danh mục:", error);
-      setError(error.message || "Đã xảy ra lỗi khi lấy danh mục.");
+      setError(error.message || "An error occurred while fetching categories.");
     } finally {
-      setLoading(false); // Tắt trạng thái loading
+      setLoading(false);
+    }
+  };
+  // Function to handle category selection and call API
+  const handleCategorySelection = async (e, id) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      const fishList = await FishApi.getListFishByCategory(id);
+      console.log("Fish list fetched: ", fishList);
+    } catch (error) {
+      setError(error.message || "Failed to fetch fish list.");
+    } finally {
+      setLoading(false);
     }
   };
 
 
+
   useEffect(() => {
 
-
+    fetchProfile();
     fetchKoiCategories(); // Gọi hàm bất đồng bộ
+    handleCategorySelection();
   }, []);
 
   // Hiển thị loading hoặc error nếu có
@@ -94,7 +133,7 @@ const Navbar = () => {
     {
       key: "5",
       label: (
-        <a target="_self" rel="noopener noreferrer" href="/profile">
+        <a target="_self" rel="noopener noreferrer" href={`/profile/${fetchEmail()}`}>
           Thông tin cá nhân
         </a>
       ),
@@ -332,7 +371,7 @@ const Navbar = () => {
                   }}
                   className="rounded-full  w-[18px] h-[18px] absolute flex justify-center items-center "
                 >
-                   <p className="text-sm text-center text-[#EA4444]">{items?.length}</p>
+                  <p className="text-sm text-center text-[#EA4444]">{items?.length}</p>
                 </div>
               </div>
             </button>

@@ -52,6 +52,9 @@ const schema = yup.object().shape({
 
 
 const Profile = () => {
+  // const profileData = () => {
+  //   const respond = AuthApi.
+  // }
   const { control, handleSubmit, trigger, formState: { errors }, getValues, setValue, setError } = useForm({
     resolver: yupResolver(schema),
   });
@@ -343,7 +346,7 @@ const Profile = () => {
 
               {/* Mật khẩu */}
 
-              // Hiển thị form mật khẩu
+             
               <AntForm.Item
                 label="Mật khẩu"
                 validateStatus={errors.password ? 'error' : ''}
@@ -394,7 +397,7 @@ const Profile = () => {
                       />
                     </AntForm.Item>
 
-                    <AntForm.Item label="Xác nhận mật khẩu mới" validateStatus={errors.confirmPassword ? 'error' : ''}
+                    <AntForm.Item label="Xác nhận mật khẩu mới" validateStatus={errors.confirmPassword ? 'error' : 'Đã đổi mật khẩu'}
                       help={errors.confirmPassword?.message}>
                       <Controller
                         name="confirmPassword"
