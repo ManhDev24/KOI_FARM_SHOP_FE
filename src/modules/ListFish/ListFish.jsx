@@ -7,6 +7,7 @@ import FishApi from "../../apis/Fish.api";
 import LoadingModal from "../Modal/LoadingModal";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../Redux/Slices/Cart_Slice";
+import { toast } from "react-toastify";
 
 const ListFish = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -92,12 +93,11 @@ const ListFish = () => {
   const koiToDisplay = isFiltered
     ? koiListFilter?.koiFishReponseList
     : updateKoiList;
+
   const totalPage = isFiltered
     ? koiListFilter?.totalElements
     : KoiList?.totalElements;
-  console.log("koiToDisplay: ", koiToDisplay);
 
-  console.log("koiToDisplay: ", koiToDisplay);
   if (isLoadingKoiList) {
     return <LoadingModal />;
   }
@@ -558,6 +558,13 @@ const ListFish = () => {
           className="w-[1110px] mx-auto my-0 pb-1 pt-1 mb-3 list-fish col-span-9 "
           style={{ boxShadow: "4px 4px 4px 4px rgba(0, 0, 0, 0.25)" }}
         >
+          {koiToDisplay?.length === 0 && (
+            <div className="flex justify-center items-center mt-10">
+              <h2 className="text-3xl font-bold">
+                Không tìm thấy cá koi phù hợp
+              </h2>
+            </div>
+          )}
           <div className="my-[80px] flex justify-center items-start ">
             <Flex className="justify-center ">
               <Row
@@ -634,15 +641,17 @@ const ListFish = () => {
               </Row>
             </Flex>
           </div>
-          <div className="pagination flex justify-end mb-3 me-3">
-            <Pagination
-              defaultCurrent={currentPage}
-              total={totalPage}
-              onChange={(page) => {
-                setCurrentPage(page);
-              }}
-            />
-          </div>
+          {koiToDisplay?.length > 0 && (
+            <div className="pagination flex justify-end mb-3 me-3">
+              <Pagination
+                defaultCurrent={currentPage}
+                total={totalPage}
+                onChange={(page) => {
+                  setCurrentPage(page);
+                }}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>
