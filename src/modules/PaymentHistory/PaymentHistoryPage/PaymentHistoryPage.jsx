@@ -71,6 +71,7 @@ const PaymentHistoryPage = () => {
     {
       title: "Mã thanh toán",
       dataIndex: "PaymentId",
+      align: "center",
     },
     {
       title: "Mã giao dịch",
