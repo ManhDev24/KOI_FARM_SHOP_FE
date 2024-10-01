@@ -10,12 +10,12 @@ import { addToCart } from "../../Redux/Slices/Cart_Slice";
 import { toast } from "react-toastify";
 
 const ListFish = () => {
-  const [selectedCategory, setSelectedCategory] = useState("1");
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [isFiltered, setIsFiltered] = useState(false);
-  const [selectedGender, setSelectedGender] = useState(1);
-  const [selectDate, setSelectDate] = useState(1);
-  const [selectAge, setSelectAge] = useState(1);
-  const [selectPrice, setSelectPrice] = useState(1);
+  const [selectedGender, setSelectedGender] = useState("");
+  const [selectDate, setSelectDate] = useState("");
+  const [selectAge, setSelectAge] = useState("");
+  const [selectPrice, setSelectPrice] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [currentSize, setCurrentSize] = useState(100); // chiều dài max của cá
   const [currentPrice, setCurrentPrice] = useState(1000000000); // tiền max của cá
@@ -107,6 +107,11 @@ const ListFish = () => {
 
   const CategoryItem = [
     {
+      key: "Danh mục",
+      label: "Danh mục",
+      value: "",
+    },
+    {
       key: "Koi showa",
       label: "Koi showa",
       value: "1",
@@ -130,6 +135,11 @@ const ListFish = () => {
 
   const newDateFilterCategoryItem = [
     {
+      key: "Sắp xếp theo ngày",
+      label: "Sắp xếp theo ngày",
+      value: "",
+    },
+    {
       key: "latest",
       label: "Ngày Mới nhất",
       value: "1",
@@ -141,6 +151,11 @@ const ListFish = () => {
     },
   ];
   const priceCategoryItem = [
+    {
+      key: "Sắp xếp theo giá",
+      label: "Sắp xếp theo giá",
+      value: "",
+    },
     {
       key: "HighestPrices",
       label: "Giá từ thấp đến cao",
@@ -154,17 +169,27 @@ const ListFish = () => {
   ];
   const ageCategoryItem = [
     {
-      key: "HighestAge",
-      label: "Tuổi từ Cao đến Thấp",
-      value: "1",
+      key: "Tuổi",
+      label: "Tuổi",
+      value: "",
     },
     {
       key: "LowestAge",
       label: "Tuổi từ Thấp đến Cao",
+      value: "1",
+    },
+    {
+      key: "HighestAge",
+      label: "Tuổi từ Cao đến Thấp",
       value: "2",
     },
   ];
   const genderCategoryItem = [
+    {
+      key: "Giới tính",
+      label: "Giới tính",
+      value: "",
+    },
     {
       key: "Koi Cái",
       label: "Koi Cái",
@@ -285,7 +310,7 @@ const ListFish = () => {
                     </Button>
                   </Dropdown>
                 </div>
-                <div className="dropdown_filter">
+                {/* <div className="dropdown_filter">
                   <Dropdown
                     menu={{
                       items: CategoryItem,
@@ -318,7 +343,7 @@ const ListFish = () => {
                       </div>
                     </Button>
                   </Dropdown>
-                </div>
+                </div> */}
                 <div className="dropdown_filter">
                   <Dropdown
                     menu={{
@@ -339,7 +364,13 @@ const ListFish = () => {
                       className="h-[50px] w-[250px] text-xl flex justify-between"
                     >
                       <div className="text-center text-xl font-bold flex justify-center items-center m-0">
-                        <p>{selectedGender ? "Koi Đực" : "Koi Cái"}</p>
+                        <p>
+                          {selectedGender === "0"
+                            ? "Koi Cái"
+                            : selectedGender === "1"
+                            ? "Koi Đực"
+                            : "Giới tính"}
+                        </p>
                       </div>
                       <div>
                         <svg
@@ -358,7 +389,7 @@ const ListFish = () => {
                     </Button>
                   </Dropdown>
                 </div>
-                <div className="dropdown_filter">
+                {/* <div className="dropdown_filter">
                   <Dropdown
                     menu={{
                       items: newDateFilterCategoryItem.map((item) => ({
@@ -379,7 +410,11 @@ const ListFish = () => {
                     >
                       <div className="text-center text-xl font-bold flex justify-center items-center  m-0 ">
                         <p>
-                          {selectDate == 1 ? "Ngày mới nhất" : "Ngày cũ nhất"}
+                          {selectDate === "1"
+                            ? "Ngày Mới nhất"
+                            : selectDate === "2"
+                            ? "Ngày Cũ nhất"
+                            : "Sắp xếp theo ngày"}{" "}
                         </p>
                       </div>
                       <div>
@@ -398,7 +433,7 @@ const ListFish = () => {
                       </div>
                     </Button>
                   </Dropdown>
-                </div>
+                </div> */}
                 <div className="dropdown_filter">
                   <Dropdown
                     menu={{
@@ -420,9 +455,11 @@ const ListFish = () => {
                     >
                       <div className="text-center text-xl font-bold flex justify-center items-center  m-0 ">
                         <p>
-                          {selectAge == 1
-                            ? "Tuổi từ cao đến thấp"
-                            : "Tuổi từ thấp đến cao"}
+                          {selectAge === "1"
+                            ? "Tuổi từ Thấp đến Cao"
+                            : selectAge === "2"
+                            ? "Tuổi từ Cao đến Thấp "
+                            : "Tuổi"}
                         </p>
                       </div>
                       <div>
@@ -463,9 +500,11 @@ const ListFish = () => {
                     >
                       <div className="text-center text-xl font-bold flex justify-center items-center  m-0 ">
                         <p>
-                          {selectPrice == 1
-                            ? "Giá từ cao đến thấp"
-                            : "Giá từ thấp đến cao"}
+                          {selectPrice === "1"
+                            ? "Giá từ thâp đến cao"
+                            : selectPrice === "2"
+                            ? "Giá từ cao đến thâp"
+                            : "Sắp xếp theo giá"}
                         </p>
                       </div>
                       <div>

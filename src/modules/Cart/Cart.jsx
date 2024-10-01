@@ -26,56 +26,7 @@ const Cart = () => {
     selectedRowKeys,
     onChange: onSelectChange,
   };
-  const data = [
-    {
-      id: "1",
-      imgSrc: "img/SOWA.webp",
-      title: "SHOWA KOI",
-      seller: "Hoàng Tiến Đạt",
-      origin: "Nhật Bổn",
-      price: "300.000 đ",
-      age: "18+",
-      size: "80cm",
-      gender: "Koi cái",
-      quantity: 1,
-    },
-    {
-      id: "2",
-      imgSrc: "./img/SOWA.webp",
-      title: "Long Thần KOI",
-      seller: "Phạm Tiến Mạnh",
-      origin: "Nhật bản",
-      gender: "Koi cái",
-      age: "18+",
-      size: "80cm",
-      price: "100.000.000 đ",
-      quantity: 1,
-    },
-    {
-      id: "3",
-      imgSrc: "img/SOWA.webp",
-      title: "SHOWA KOI",
-      seller: "Hoàng Tiến Đạt",
-      origin: "Nhật Bổn",
-      gender: "Koi cái",
-      age: "18+",
-      size: "80cm",
-      price: "340.000 đ",
-      quantity: 1,
-    },
-    {
-      id: "4",
-      imgSrc: "img/SOWA.webp",
-      title: "SHOWA KOI",
-      seller: "Hoàng Tiến Đạt",
-      origin: "Nhật Bổn",
-      gender: "Koi cái",
-      age: "18+",
-      size: "80cm",
-      price: "500.000 đ",
-      quantity: 1,
-    },
-  ];
+
 
   const handleDelete = (fish) => {
     dispatch(removeFromCart(fish));
@@ -118,39 +69,9 @@ const Cart = () => {
   if (isVnPayLoading || isOrdering) {
     return <LoadingModal />;
   }
-  const handleVnPayCallback = async (params) => {
-    try {
-      const { statusCode } = params;
 
-      if (statusCode === "00") {
-        toast.success("Thanh toán thành công!");
-      } else {
-        toast.error("Thanh toán không thành công!");
-      }
-
-      // Gọi API callback nếu cần
-      const response = await CheckoutApi.vnPayCallback(params);
-      console.log("Callback response: ", response);
-    } catch (error) {
-      const errorMessage = error?.message || "Đã có lỗi xảy ra trong callback!";
-      toast.error(errorMessage);
-    }
-  };
-
-  const handlePaymentByVnPay = () => {
-    if (totalPrice === 0) {
-      return toast.error("Hãy mua gì đó đi đm mày !!!");
-    }
-    handlePayOrderByVnPay(totalPrice)
-      .then((data) => {
-        const params = {
-          statusCode: data.statusCode, 
-        };
-        handleVnPayCallback(params); 
-      })
-      .catch((error) => {
-        console.error("Lỗi thanh toán: ", error);
-      });
+  const handleOrder = () => {
+    handlePayOrderByVnPay(totalPrice);
   };
   const columns = [
     {
@@ -396,7 +317,7 @@ const Cart = () => {
                     <div className="flex justify-center items-center">
                       <Button
                         onClick={() => {
-                          handlePaymentByVnPay();
+                          handleOrder();
                         }}
                         style={{
                           backgroundColor: "#EA4444",
