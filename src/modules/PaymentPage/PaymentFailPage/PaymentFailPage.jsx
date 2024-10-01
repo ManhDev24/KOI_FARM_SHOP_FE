@@ -1,10 +1,16 @@
 import { Button } from "antd";
-import React from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 const PaymentFailPage = () => {
   const [searchParams] = useSearchParams();
   const status = searchParams.get("paymentStatus");
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (status !== "0") {
+      navigate("/");
+    }
+  });
   return (
     <div className="flex  flex-col items-center justify-center h-[600px] w-full">
       <div className="text-center text-3xl font-bold ">

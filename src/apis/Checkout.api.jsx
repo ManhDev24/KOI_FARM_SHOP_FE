@@ -1,10 +1,10 @@
 import fetcher from "./Fetcher";
 
 export const CheckoutApi = {
-  saveOrder: async (data) => {
+  saveOrder: async (data, transactionCode) => {
     try {
       const response = await fetcher.post(
-        "http://localhost:8080/koifarm/order/saveOrder",
+        `http://localhost:8080/koifarm/order/saveOrder?transactionCode=${transactionCode}`,
         data
       );
       return response.data;
@@ -38,7 +38,7 @@ export const CheckoutApi = {
       const response = await fetcher.get(
         `http://localhost:8080/koifarm/payment/get-payment-status`
       );
-      console.log('response: ', response);
+      console.log("response: ", response);
       return response.data;
     } catch (error) {
       throw new Error(error.response.data.message);
