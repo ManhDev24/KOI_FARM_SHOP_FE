@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import FishApi from '../../../apis/Fish.api';
 import ComparisonModal from '../../../modules/Modal/ComparisonModal';
 import { Button, Col, Flex, Row } from 'antd';
+import { useDispatch } from 'react-redux';
+import { addToCart } from '../../../Redux/Slices/Cart_Slice';
 
 const Knowledge = () => {
   const [categoryResponses, setCategoryResponses] = useState([]);
@@ -12,9 +14,11 @@ const Knowledge = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
   const [selectedItems, setSelectedItems] = useState([]); // State to store the selected items for comparison
 
+  const dispatch = useDispatch(); // Initialize the dispatch hook
+
   // Helper function to handle image paths
   const getImageUrl = (imgPath) => {
-    if (!imgPath) return "/img/default-banner.jpg"; // Default image if there's no cateImg
+    if (!imgPath) return '/img/default-banner.jpg'; // Default image if there's no cateImg
     return imgPath.startsWith('http') ? imgPath : imgPath.replace('./', '/');
   };
 
@@ -23,17 +27,17 @@ const Knowledge = () => {
     const fetchKoiFishData = async () => {
       try {
         const data = await FishApi.getKnowledgeFishList();
-        console.log("Dữ liệu nhận được từ API:", data);
+        console.log('Dữ liệu nhận được từ API:', data);
 
         const categoryResponses = data.categoryReponses;
-        console.log("categoryResponses:", categoryResponses);
+        console.log('categoryResponses:', categoryResponses);
         if (!Array.isArray(categoryResponses)) {
-          throw new Error("categoryReponses không phải là mảng");
+          throw new Error('categoryReponses không phải là mảng');
         }
         setCategoryResponses(categoryResponses);
       } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu từ API:", error);
-        setError(error.message || "Đã xảy ra lỗi khi lấy danh mục.");
+        console.error('Lỗi khi lấy dữ liệu từ API:', error);
+        setError(error.message || 'Đã xảy ra lỗi khi lấy danh mục.');
       } finally {
         setLoading(false);
       }
@@ -47,10 +51,20 @@ const Knowledge = () => {
     if (selectedItems.length < 2 && !selectedItems.some((i) => i.id === item.id)) {
       setSelectedItems([...selectedItems, item]); // Add item to the comparison list
     } else if (selectedItems.some((i) => i.id === item.id)) {
-      alert("This item has already been added to the comparison.");
+      alert('This item has already been added to the comparison.');
     } else {
-      alert("You can only compare a maximum of 2 items.");
+      alert('You can only compare a maximum of 2 items.');
     }
+  };
+
+  // Add Koi fish to cart
+  const handleAddToCart = (fish) => {
+    dispatch(
+      addToCart({
+        ...fish,
+        quantity: 1,
+      })
+    );
   };
 
   // Remove Koi fish from the comparison list
@@ -64,7 +78,7 @@ const Knowledge = () => {
     if (selectedItems.length > 0) {
       setIsModalOpen(true);
     } else {
-      alert("Please select at least one fish to compare.");
+      alert('Please select at least one fish to compare.');
     }
   };
 
@@ -90,7 +104,7 @@ const Knowledge = () => {
       {categoryResponses.map((category, index) => (
         <div key={index} className='group'>
           {/* Banner for each category */}
-          <Row justify="center" style={{ marginBottom: '80px' }}>
+          <Row justify='center' style={{ marginBottom: '80px' }}>
             <Col>
               <img
                 src={getImageUrl(category.cateImg)}
@@ -104,23 +118,23 @@ const Knowledge = () => {
           <Flex horizontal className='justify-center'>
             <Row
               gutter={[16, 16]}
-              justify="center"
-              className="w-[950px] grid grid-cols-3"
+              justify='center'
+              className='w-[950px] grid grid-cols-3'
             >
               {category.koiFishList && category.koiFishList.length > 0 ? (
                 category.koiFishList.map((card) => (
                   <Col
                     key={card.id} // Use `id` as key
-                    className="w-[250px] h-[645px] mx-10 mb-10"
+                    className='w-[250px] h-[645px] mx-10 mb-10'
                   >
                     {/* Card content */}
-                    <div className="relative w-[250px]">
+                    <div className='relative w-[250px]'>
                       {/* Tag */}
-                      <div className="absolute w-[86px] bg-[#FFFFFF] rounded-ee-[10px] rounded-tl-[5px] text-center text-[#FA4444]">
-                        {card.status ? "Đang bán" : "Đã bán"}
+                      <div className='absolute w-[86px] bg-[#FFFFFF] rounded-ee-[10px] rounded-tl-[5px] text-center text-[#FA4444]'>
+                        {card.status ? 'Đang bán' : 'Đã bán'}
                       </div>
                       {/* Koi fish image */}
-                      <div className="rounded-[10px]">
+                      <div className='rounded-[10px]'>
                         <img
                           src={getImageUrl(card.koiImage)}
                           className='w-[250px] h-[354px] rounded-t-[8px] box-border'
@@ -129,32 +143,41 @@ const Knowledge = () => {
                       </div>
                     </div>
                     {/* Koi fish details */}
-                    <div className="flex flex-col w-[250px] h-[290px] bg-[#FFFFFF] border border-t-0 border-x-2 border-b-2 border-[#FA4444] rounded-b-[10px]">
-                      <h1 className="my-0 mx-auto text-[#FA4444] font-bold text-[20px]">
+                    <div className='flex flex-col w-[250px] h-[290px] bg-[#FFFFFF] border border-t-0 border-x-2 border-b-2 border-[#FA4444] rounded-b-[10px]'>
+                      <h1 className='my-0 mx-auto text-[#FA4444] font-bold text-[20px]'>
                         {category.categoryName}
                       </h1>
-                      <div className="my-[10px] mx-[10px]">
-                        <div className="flex flex-col">
-                          <div className="h-7">Người bán: {card.origin}</div>
-                          <div className="h-6">Giới tính: {card.gender}</div>
-                          <div className="h-6">Tuổi: {card.age}</div>
-                          <div className="h-6">Kích thước: {card.size}cm</div>
-                          <div className="h-6">Nguồn gốc: {card.origin}</div>
-                          <div className="h-6">Giống: {card.type}</div>
+                      <div className='my-[10px] mx-[10px]'>
+                        <div className='flex flex-col'>
+                          <div className='h-7'>Người bán: {card.origin}</div>
+                          <div className='h-6'>Giới tính: {card.gender}</div>
+                          <div className='h-6'>Tuổi: {card.age}</div>
+                          <div className='h-6'>Kích thước: {card.size}cm</div>
+                          <div className='h-6'>Nguồn gốc: {card.origin}</div>
+                          <div className='h-6'>Giống: {card.type}</div>
                         </div>
-                        <div className="text-center">
-                          <div className="my-[10px] text-[20px] font-bold">
+                        <div className='text-center'>
+                          <div className='my-[10px] text-[20px] font-bold'>
                             {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(card.price)}
                           </div>
-                          <Link to={`/product/${card.id}`}>
-                            <Button className='w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]'>
+                          <Link>
+                            <Button
+                              onClick={() => {
+                                handleAddToCart(card);
+                              }}
+                              className='w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]'
+                            >
                               Đặt Mua
                             </Button>
                           </Link>
                           <div className='relative top-[-629px] left-[130px]' onClick={() => handleAddToCompare(card)}>
-                            <Button className='!p-0 !py-1 w-[100px] !border-0 h-fit hover:!border-[#FA4444] border-[#null] hover:!text-[#FA4444] flex justify-around'>
+                            <Button className='!p-0 !py-1 w-[100px] !border-0 h-fit hover:!border-[#FA4444] hover:!text-[#FA4444] flex justify-around'>
                               <div className='flex justify-center items-center'>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" className='flex' viewBox="0 0 24 24"><g fill="none" fillRule="evenodd"><path d="M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4h4a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-4v4a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-4H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h4z" fill="currentColor" /></g></svg>
+                                <svg xmlns='http://www.w3.org/2000/svg' width='1em' height='1em' className='flex' viewBox='0 0 24 24'>
+                                  <g fill='none' fillRule='evenodd'>
+                                    <path d='M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4h4a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-4v4a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-4H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h4z' fill='currentColor' />
+                                  </g>
+                                </svg>
                                 <h5 className='mx-1 my-0 !text-center'>So sánh</h5>
                               </div>
                             </Button>
@@ -189,8 +212,6 @@ const Knowledge = () => {
       </Button>
     </div>
   );
-
-
-}
+};
 
 export default Knowledge;
