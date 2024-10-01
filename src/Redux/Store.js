@@ -1,12 +1,13 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authReducer from "./Slices/Auth_Slice";
 import cartReducer from "./Slices/Cart_Slice";
-// import fishListReducer from "./Slices/FishList_Slice"; // Import categoryReducer
 
+import orderReducer from "./Slices/Order_Slice";
 const rootReducer = combineReducers({
   auth: authReducer,
   cart: cartReducer,
-  // category: fishListReducer, // Thêm categoryReducer vào rootReducer
+  order: orderReducer,
+
 });
 
 const Store = configureStore({

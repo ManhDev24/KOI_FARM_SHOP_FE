@@ -8,11 +8,15 @@ import ListFish from "../modules/ListFish/ListFish";
 import Login from "../modules/LoginPage/Login";
 import ComparisonModal from "../modules/Modal/ComparisonModal";
 import Otp from "../modules/OTP/Otp";
+import PaymentHistoryPage from "../modules/PaymentHistory/PaymentHistoryPage/PaymentHistoryPage";
+import PaymentDetailPage from "../modules/PaymentPage/PaymentDetailPage/PaymentDetailPage";
+import PaymentFailPage from "../modules/PaymentPage/PaymentFailPage/PaymentFailPage";
+import ThankPage from "../modules/PaymentPage/ThankPage/ThankPage";
 import Profile from "../modules/Profile/Profile";
 import Register from "../modules/RegisterPage/Register";
 import { getLocalStorage } from "../utils/LocalStorage";
 const fetchEmail = () => {
-  const dataProfile = getLocalStorage('user'); // Get 'user' from localStorage
+  const dataProfile = getLocalStorage("user"); // Get 'user' from localStorage
   if (dataProfile && dataProfile.email) {
     return dataProfile.email; // Return email if found
   } else {
@@ -20,7 +24,6 @@ const fetchEmail = () => {
     return null;
   }
 };
-
 
 export const publicRoutes = [
   {
@@ -81,6 +84,26 @@ export const publicRoutes = [
   {
     path: "/compare",
     component: ComparisonModal,
+    layout: DefaultLayout,
+  },
+  {
+    path: "/thank-you",
+    component: ThankPage,
+    layout: DefaultLayout,
+  },
+  {
+    path: "/payment-fail",
+    component: PaymentFailPage,
+    layout: DefaultLayout,
+  },
+  {
+    path: "/payment-history",
+    component: PaymentHistoryPage,
+    layout: DefaultLayout,
+  },
+  {
+    path: "/payment-detail",
+    component: PaymentDetailPage,
     layout: DefaultLayout,
   },
 ];

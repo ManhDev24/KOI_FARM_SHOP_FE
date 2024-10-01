@@ -48,6 +48,10 @@ const cartSlice = createSlice({
         }
       }
     },
+    removeAllFromCart: (state, action) => {
+      state.items = [];
+      state.total = 0;
+    },
   },
 });
 

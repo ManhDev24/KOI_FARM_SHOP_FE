@@ -1,77 +1,77 @@
 import { Breadcrumb, Button, Input, Table } from "antd";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Cart.css";
 import { useDispatch, useSelector } from "react-redux";
 import { removeFromCart } from "../../Redux/Slices/Cart_Slice";
 import { getLocalStorage } from "../../utils/LocalStorage";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import CheckoutApi from "../../apis/Checkout.api";
+import { toast } from "react-toastify";
+import LoadingModal from "../Modal/LoadingModal";
 const Cart = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [isPaymentSuccess, setIsPaymentSuccess] = useState(false);
   const dispatch = useDispatch();
   const totalPrice = useSelector((state) => state.cart.total);
-  console.log("totalPrice: ", totalPrice);
   const onCart = getLocalStorage("cartItems");
+  console.log("onCart: ", onCart);
+  const user = getLocalStorage("user");
+
+  const navigate = useNavigate();
+
   const onSelectChange = (newSelectedRowKeys) => {
-    console.log("selectedRowKeys changed: ", newSelectedRowKeys);
     setSelectedRowKeys(newSelectedRowKeys);
   };
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
   };
-  const data = [
-    {
-      id: "1",
-      imgSrc: "img/SOWA.webp",
-      title: "SHOWA KOI",
-      seller: "Hoàng Tiến Đạt",
-      origin: "Nhật Bổn",
-      price: "300.000 đ",
-      age: "18+",
-      size: "80cm",
-      gender: "Koi cái",
-      quantity: 1,
-    },
-    {
-      id: "2",
-      imgSrc: "./img/SOWA.webp",
-      title: "Long Thần KOI",
-      seller: "Phạm Tiến Mạnh",
-      origin: "Nhật bản",
-      gender: "Koi cái",
-      age: "18+",
-      size: "80cm",
-      price: "100.000.000 đ",
-      quantity: 1,
-    },
-    {
-      id: "3",
-      imgSrc: "img/SOWA.webp",
-      title: "SHOWA KOI",
-      seller: "Hoàng Tiến Đạt",
-      origin: "Nhật Bổn",
-      gender: "Koi cái",
-      age: "18+",
-      size: "80cm",
-      price: "340.000 đ",
-      quantity: 1,
-    },
-    {
-      id: "4",
-      imgSrc: "img/SOWA.webp",
-      title: "SHOWA KOI",
-      seller: "Hoàng Tiến Đạt",
-      origin: "Nhật Bổn",
-      gender: "Koi cái",
-      age: "18+",
-      size: "80cm",
-      price: "500.000 đ",
-      quantity: 1,
-    },
-  ];
+
   const handleDelete = (fish) => {
-    console.log("fish: ", fish.id);
     dispatch(removeFromCart(fish));
+  };
+  const {
+    mutate: handleSaveOrder,
+    isLoading: isOrdering,
+    isError: isOrderError,
+  } = useMutation({
+    mutationFn: (data) => CheckoutApi.saveOrder(data),
+    onSuccess: (data) => {
+      toast.success("Đặt hàng thành công");
+    },
+    onError: (error) => {
+      const errorMessage =
+        error?.message || "Đã có lỗi xảy ra vui lòng thử lại !!!";
+      toast.error(errorMessage);
+    },
+  });
+  const {
+    mutate: handlePayOrderByVnPay,
+    isLoading: isVnPayLoading,
+    isError: isVnPayError,
+  } = useMutation({
+    mutationFn: (amount) => CheckoutApi.payByVnPay(amount),
+    onSuccess: (data) => {
+      console.log("data: ", data);
+
+      window.location.assign(data.data.paymentUrl);
+    },
+    onError: (error) => {
+      const errorMessage =
+        error?.message || "Đã có lỗi xảy ra vui lòng thử lại !!!";
+      toast.error(errorMessage);
+    },
+  });
+  if (isOrderError || isVnPayError) {
+    return <div>Lỗi rồi</div>;
+  }
+  if (isVnPayLoading || isOrdering) {
+    return <LoadingModal />;
+  }
+
+  const handleOrder = () => {
+    handlePayOrderByVnPay(totalPrice);
   };
   const columns = [
     {
@@ -207,7 +207,10 @@ const Cart = () => {
           </Breadcrumb>
         </div>
         <div className="text-center mb-5">
-          <p style={{ color: "#EA4444" }} className="text-2xl font-bold">
+          <p
+            style={{ color: "#EA4444" }}
+            className="text-2xl font-bold me-[400px]"
+          >
             GIỎ HÀNG
           </p>
         </div>
@@ -310,18 +313,29 @@ const Cart = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="flex justify-center items-center">
-                    <Button
-                      style={{
-                        backgroundColor: "#EA4444",
-                        borderColor: "#EA4444",
-                        color: "white",
-                      }}
-                      className="w-1/2 h-[40px] hover:bg-[#EA4444] hover:border-[#EA4444] hover:text-white"
-                    >
-                      Thanh Toán
-                    </Button>
-                  </div>
+                  {user && onCart ? (
+                    <div className="flex justify-center items-center">
+                      <Button
+                        onClick={() => {
+                          handleOrder();
+                        }}
+                        style={{
+                          backgroundColor: "#EA4444",
+                          borderColor: "#EA4444",
+                          color: "white",
+                        }}
+                        className="w-1/2 h-[40px] hover:bg-[#EA4444] hover:border-[#EA4444] hover:text-white"
+                      >
+                        Thanh Toán
+                      </Button>
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="text-[#EA4444]">
+                        Vui lòng đăng nhập hoặc mua cá để thanh toán
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
