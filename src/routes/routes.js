@@ -8,6 +8,7 @@ import ListFish from "../modules/ListFish/ListFish";
 import Login from "../modules/LoginPage/Login";
 import ComparisonModal from "../modules/Modal/ComparisonModal";
 import Otp from "../modules/OTP/Otp";
+import PaymentHistoryPage from "../modules/PaymentHistory/PaymentHistoryPage/PaymentHistoryPage";
 import PaymentFailPage from "../modules/PaymentPage/PaymentFailPage/PaymentFailPage";
 import ThankPage from "../modules/PaymentPage/ThankPage/ThankPage";
 import Profile from "../modules/Profile/Profile";
@@ -92,6 +93,11 @@ export const publicRoutes = [
   {
     path: "/payment-fail",
     component: PaymentFailPage,
+    layout: DefaultLayout,
+  },
+  {
+    path: "/payment-history",
+    component: PaymentHistoryPage,
     layout: DefaultLayout,
   },
 ];
