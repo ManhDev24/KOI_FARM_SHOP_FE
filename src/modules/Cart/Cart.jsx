@@ -15,6 +15,7 @@ const Cart = () => {
   const dispatch = useDispatch();
   const totalPrice = useSelector((state) => state.cart.total);
   const onCart = getLocalStorage("cartItems");
+  console.log("onCart: ", onCart);
   const user = getLocalStorage("user");
 
   const navigate = useNavigate();
@@ -26,7 +27,6 @@ const Cart = () => {
     selectedRowKeys,
     onChange: onSelectChange,
   };
-
 
   const handleDelete = (fish) => {
     dispatch(removeFromCart(fish));
@@ -313,7 +313,7 @@ const Cart = () => {
                       </div>
                     </div>
                   </div>
-                  {user ? (
+                  {user && onCart ? (
                     <div className="flex justify-center items-center">
                       <Button
                         onClick={() => {
@@ -332,7 +332,7 @@ const Cart = () => {
                   ) : (
                     <div>
                       <p className="text-[#EA4444]">
-                        Vui lòng đăng nhập để thanh toán
+                        Vui lòng đăng nhập hoặc mua cá để thanh toán
                       </p>
                     </div>
                   )}

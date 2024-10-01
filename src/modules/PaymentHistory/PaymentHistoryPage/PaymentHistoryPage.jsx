@@ -1,104 +1,69 @@
-import { Table, Tag } from "antd";
-import React from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Pagination, Table, Tag } from "antd";
+import React, { useState } from "react";
+import moment from "moment";
+import "moment/locale/vi";
+import orderApi from "../../../apis/Order.api";
+import { getLocalStorage } from "../../../utils/LocalStorage";
+import LoadingModal from "../../Modal/LoadingModal";
+import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { saveOrderId } from "../../../Redux/Slices/Order_Slice";
+
+moment.locale("vi");
 
 const PaymentHistoryPage = () => {
-  const data = [
-    {
-      PaymentId: "1",
-      PaymentDate: "2022-01-01",
-      PaymentStatus: 1,
-      transitionCode: 14599140,
-      Amount: "100000000",
-    },
-    {
-      PaymentId: "2",
-      PaymentDate: "2022-01-01",
-      PaymentStatus: 2,
-      transitionCode: 14599141,
-      Amount: "100000000",
-    },
-    {
-      PaymentId: "3",
-      PaymentDate: "2023-01-01",
-      PaymentStatus: 3,
-      transitionCode: 14599142,
-      Amount: "320000000",
-    },
-    {
-      PaymentId: "4",
-      PaymentDate: "2022-01-01",
-      PaymentStatus: 1,
-      transitionCode: 14599143,
-      Amount: "1032000000",
-    },
-    {
-      PaymentId: "5",
-      PaymentDate: "2022-01-01",
-      PaymentStatus: 2,
-      transitionCode: 14599144,
-      Amount: "100000000",
-    },
-    {
-      PaymentId: "6",
-      PaymentDate: "2022-01-01",
-      PaymentStatus: 3,
-      transitionCode: 14599145,
-      Amount: "320000000",
-    },
-    {
-      PaymentId: "7",
-      PaymentDate: "2022-01-01",
-      PaymentStatus: 1,
-      transitionCode: 14599146,
-      Amount: "1032000000",
-    },
-    {
-      PaymentId: "8",
-      PaymentDate: "2022-01-01",
-      PaymentStatus: 2,
-      transitionCode: 14599147,
-      Amount: "100000000",
-    },
-    {
-      PaymentId: "9",
-      PaymentDate: "2022-01-01",
-      PaymentStatus: 3,
-      transitionCode: 14599148,
-      Amount: "320000000",
-    },
-  ];
+  const user = getLocalStorage("user");
+  const [currentPage, setCurrentPage] = useState(1);
+  const dispatch = useDispatch();
+
+  const handleSaveOrderId = (orderId) => {
+    dispatch(saveOrderId(orderId));
+  };
+  const {
+    data: orderData,
+    isLoading: orderDataLoading,
+    isError: orderDataError,
+  } = useQuery({
+    queryKey: ["orderData", currentPage],
+    queryFn: () => orderApi.getOrderHistory(user?.id, currentPage, 9),
+    keepPreviousData: true,
+  });
+  console.log("orderData: ", orderData);
+  const orderContent = orderData?.data?.content;
+  const total = orderData?.data?.totalElements;
+  console.log("orderContent: ", orderContent);
+  if (orderDataLoading) {
+    return <LoadingModal />;
+  }
   const columns = [
     {
       title: "Mã thanh toán",
-      dataIndex: "PaymentId",
+      dataIndex: "paymentId",
       align: "center",
     },
     {
       title: "Mã giao dịch",
-      dataIndex: "transitionCode",
+      dataIndex: "transactionCode",
       render: (value) => {
         return <div className="font-bold">{value}</div>;
       },
     },
     {
       title: "Ngày thanh toán",
-      dataIndex: "PaymentDate",
+      dataIndex: "createdDate",
+      render: (createdDate) =>
+        moment(createdDate).format("DD [tháng] M [năm] YYYY, h:mm:ss a"), 
     },
     {
       title: "Trạng thái thanh toán",
-      dataIndex: "PaymentStatus",
+      dataIndex: "status",
       width: "300px",
       render: (value) => {
         return (
           <div className="flex ms-10 justify-start items-center">
-            <Tag
-              color={value === 1 ? "green" : value === 2 ? "orange" : "blue"}
-            >
-              {value === 1
-                ? "Đã thanh toán"
-                : value === 2
-                ? "Đang giao"
-                : "Đã giao"}
+            <Tag color={value === true ? "orange" : "green"}>
+              {value === true ? "Đang Giao" : "Đã hoàn tất"}
             </Tag>
           </div>
         );
@@ -107,31 +72,55 @@ const PaymentHistoryPage = () => {
 
     {
       title: "Số tiền",
-      dataIndex: "Amount",
-      render: (amount) => (
+      dataIndex: "totalPrice",
+      render: (totalPrice) => (
         <span className="">
           {new Intl.NumberFormat("vi-VN", {
             style: "currency",
             currency: "VND",
-          }).format(amount)}
+          }).format(totalPrice)}
         </span>
       ),
     },
     {
       title: "Chi tiết",
-      render: () => (
+      render: (payment) => (
         <div>
-          <button className="bg-blue-500 text-white font-bold py-1 px-3 rounded m-4">
-            Xem chi tiết
-          </button>
+          <Link to={"/payment-detail"}>
+            <button
+              onClick={() => handleSaveOrderId(payment.orderId)}
+              className="bg-blue-500 text-white font-bold py-1 px-3 rounded m-4"
+            >
+              Xem chi tiết
+            </button>
+          </Link>
         </div>
       ),
     },
   ];
   return (
-    <div>
-      <div className="container flex justify-center items-center mx-auto">
-        <Table columns={columns} dataSource={data} />
+    <div className="m-5">
+      <div className="container flex justify-center items-center mx-auto flex-col">
+        <div>
+          <Table
+            pagination={false}
+            rowKey={(payment) => payment.paymentId}
+            columns={columns}
+            showSizeChanger={false}
+            dataSource={orderContent}
+          />
+        </div>
+        <div className="w-full flex justify-end me-[550px]">
+          <Pagination
+            className="mt-5 items-end"
+            rowKey
+            defaultCurrent={currentPage}
+            total={total}
+            onChange={(page) => {
+              setCurrentPage(page);
+            }}
+          />
+        </div>
       </div>
     </div>
   );
