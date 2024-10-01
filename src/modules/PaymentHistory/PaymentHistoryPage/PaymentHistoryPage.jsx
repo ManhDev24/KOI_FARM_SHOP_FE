@@ -53,7 +53,7 @@ const PaymentHistoryPage = () => {
       title: "Ngày thanh toán",
       dataIndex: "createdDate",
       render: (createdDate) =>
-        moment(createdDate).format("DD [tháng] M [năm] YYYY, h:mm:ss a"), 
+        moment(createdDate).format("DD [tháng] M [năm] YYYY, h:mm:ss a"),
     },
     {
       title: "Trạng thái thanh toán",
