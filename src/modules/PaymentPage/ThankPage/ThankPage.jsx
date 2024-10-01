@@ -8,7 +8,8 @@ import {
   removeLocalStorage,
 } from "../../../utils/LocalStorage";
 import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { removeFromCart } from "../../../Redux/Slices/Cart_Slice";
 
 const ThankPage = () => {
   const [searchParams] = useSearchParams();
@@ -19,6 +20,7 @@ const ThankPage = () => {
       navigate("/");
     }
   }, [status, navigate]);
+  const dispatch = useDispatch();
   const paymentCode = searchParams.get("paymentCode");
   const user = getLocalStorage("user");
   console.log("user: ", user);
@@ -34,7 +36,9 @@ const ThankPage = () => {
     mutationFn: (data) => CheckoutApi.saveOrder(data, paymentCode),
     onSuccess: (data) => {
       toast.success("Thực hiện giao dịch thành công");
+      // dispatch(removeFromCart());
       removeLocalStorage("cartItems");
+      window.location.reload()
     },
     onError: (error) => {
       const errorMessage =
