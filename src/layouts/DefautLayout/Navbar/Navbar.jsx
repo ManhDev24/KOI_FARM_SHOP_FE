@@ -10,6 +10,7 @@ import FishApi from "../../../apis/Fish.api";
 import logo from "/img/logo.png";
 import Vector from "/img/Vector.png";
 import { AuthApi } from "../../../apis/Auth.api";
+// import { setSelectedCategory } from "../../../Redux/Slices/FishList_Slice";
 const Navbar = () => {
   const dispatch = useDispatch();
 
@@ -23,6 +24,7 @@ const Navbar = () => {
     }
   };
   const [profileData, setProfileData] = useState(null);
+
 
   const fetchProfile = async () => {
     const email = fetchEmail(); // Fetch email from localStorage
@@ -39,28 +41,34 @@ const Navbar = () => {
   };
 
   fetchProfile();
+
   const { items } = useSelector((state) => state.cart);
 
-  // Define menu items for dropdowns
+  
 
   const [koiMenuItems, setKoiMenuItems] = useState([]); // State lưu trữ các mục menu
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const category = (id) => {
-    // Your logic for handling the category here
-  };
-
+  const [selectedCategoryID, setSelectedCategoryID] = useState(null);
   const fetchKoiCategories = async () => {
     try {
       const categoriesArray = await FishApi.getCategories();
+      console.log(categoriesArray)
       if (Array.isArray(categoriesArray)) {
-        const menuItems = categoriesArray.map((item) => ({
-          key: item.id.toString(),
-          label: (
-            // onClick={(e) => handleCategorySelection(e, item.id)}
-            <a href={`/koiList`}>{item.categoryName}</a>
-          ),
-        }));
+
+        const menuItems = categoriesArray.map((item) => (
+
+          {
+
+            key: item.id,
+            label: (
+              <Link to="/koiList" onClick={() => handleCategorySelection(item.id)}>
+                {item.categoryName}
+              </Link>
+            ),
+          }));
+        console.log(menuItems)
+
         setKoiMenuItems(menuItems);
       } else {
         setError("The received data is not an array as expected.");
@@ -72,21 +80,15 @@ const Navbar = () => {
     }
   };
   // Function to handle category selection and call API
-  const handleCategorySelection = async (e, id) => {
-    e.preventDefault();
-    try {
-      setLoading(true);
-      const fishList = await FishApi.getListFishByCategory(id);
-      console.log("Fish list fetched: ", fishList);
-    } catch (error) {
-      setError(error.message || "Failed to fetch fish list.");
-    } finally {
-      setLoading(false);
-    }
+  const handleCategorySelection = (categoryID) => {
+    
+    // dispatch(setSelectedCategory(categoryID)); 
   };
+
 
   useEffect(() => {
     fetchProfile();
+
     fetchKoiCategories(); // Gọi hàm bất đồng bộ
     handleCategorySelection();
   }, []);
