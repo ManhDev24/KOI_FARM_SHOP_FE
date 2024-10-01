@@ -62,6 +62,7 @@ export const AuthApi = {
       const token = getLocalStorage("otpToken"); // Retrieve the token
       const response = await fetcher.post(
         `http://localhost:8080/koifarm/login/changePassword/${email}`,
+
         data,
         {
           headers: {
@@ -89,10 +90,64 @@ export const AuthApi = {
       const response = await fetcher.get(
         `http://localhost:8080/koifarm/account/profile/${email}`
       );
-      const data = response.data();
-      console.log(data)
+      const data = response.data;
+      return response.data;
     } catch (error) {
-
+      throw new Error(error.response.data.message);
     }
-  }
+  },
+  // Cập nhật thông tin hồ sơ (Họ và tên, Địa chỉ, Số điện thoại)
+  userProfileEdit: async (id, accessToken, updatedData) => {
+    try {
+      const response = await fetcher.put(
+        `http://localhost:8080/koifarm/account/profile/update/${id}`, // URL API không cần accessToken ở đây
+        updatedData, // Truyền dữ liệu cần cập nhật (name, address, phone)
+        {
+          headers: {
+            'Content-Type': 'application/json', // Xác định kiểu dữ liệu là JSON
+            'Authorization': `Bearer ${accessToken}`, // Thêm accessToken vào headers để xác thực
+          },
+        }
+      );
+
+      const data = response.data;
+      console.log('Cập nhật thành công:', data);
+      return data; // Trả về dữ liệu sau khi cập nhật thành công
+    } catch (error) {
+      console.error('Lỗi khi cập nhật hồ sơ:', error.response?.data?.message || error.message);
+      throw new Error(error.response?.data?.message || 'Lỗi khi cập nhật hồ sơ');
+    }
+  },
+
+  // Cập nhật mật khẩu
+  checkPassword: async (id, password) => {
+    try {
+      const response = await fetcher.post(
+        `http://localhost:8080/koifarm/account/checkPassword/${id}`,
+        { password } // Gửi mật khẩu trong body của yêu cầu
+      );
+      return response.data; // Trả về dữ liệu phản hồi từ API
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Lỗi xác thực mật khẩu');
+    }
+  },
+  updatePassword: async (id, accessToken, password) => {
+    try {
+      const response = await fetcher.put(
+        `http://localhost:8080/koifarm/account/profile/updatePassword/${id}`,
+        { password }, // Gửi mật khẩu trong body của yêu cầu
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Truyền accessToken trong headers
+          },
+        }
+      );
+      return response.data; // Trả về dữ liệu phản hồi từ API
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Lỗi cập nhật mật khẩu');
+    }
+  },
+  
+
+
 };
