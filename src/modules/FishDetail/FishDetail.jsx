@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 const fakeFishData = [
   { id: 1, imageUrl: "./img/showa2.jpg", name: "Fish 1", gender: "Male", age: 2, size: "Medium", origin: "Japan" },
   { id: 2, imageUrl: "./img/showa2.jpg", name: "Fish 2", gender: "Female", age: 1, size: "Small", origin: "USA" },{ id: 2, imageUrl: "./img/showa2.jpg", name: "Fish 2", gender: "Female", age: 1, size: "Small", origin: "USA" },
-  { id: 2, imageUrl: "./img/showa2.jpg", name: "Fish 2", gender: "Female", age: 1, size: "Small", origin: "USA" },{ id: 2, imageUrl: "./img/showa2.jpg", name: "Fish 2", gender: "Female", age: 1, size: "Small", origin: "USA" },{ id: 2, imageUrl: "./img/showa2.jpg", name: "Fish 2", gender: "Female", age: 1, size: "Small", origin: "USA" },{ id: 2, imageUrl: "./img/showa2.jpg", name: "Fish 2", gender: "Female", age: 1, size: "Small", origin: "USA" },{ id: 2, imageUrl: "./img/showa2.jpg", name: "Fish 2", gender: "Female", age: 1, size: "Small", origin: "USA" },{ id: 2, imageUrl: "./img/showa2.jpg", name: "Fish 2", gender: "Female", age: 1, size: "Small", origin: "USA" },
+  { id: 2, imageUrl: "./img/showa2.jpg", name: "Fish 2", gender: "Female", age: 1, size: "Small", origin: "USA" },{ id: 2, imageUrl: "./img/showa2.jpg", name: "Fish 2", gender: "Female", age: 1, size: "Small", origin: "USA" },
   // ... add more fish with relevant details
 ];
 
