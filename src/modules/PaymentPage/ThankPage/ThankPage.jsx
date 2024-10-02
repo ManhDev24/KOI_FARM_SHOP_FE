@@ -36,7 +36,6 @@ const ThankPage = () => {
     mutationFn: (data) => CheckoutApi.saveOrder(data, paymentCode),
     onSuccess: (data) => {
       toast.success("Thực hiện giao dịch thành công");
-      // dispatch(removeFromCart());
       removeLocalStorage("cartItems");
       window.location.reload()
     },

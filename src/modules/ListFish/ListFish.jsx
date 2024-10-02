@@ -115,6 +115,7 @@ const ListFish = () => {
   const koiToDisplay = isFiltered
     ? koiListFilter?.koiFishReponseList
     : updateKoiList;
+  console.log("koiToDisplay: ", koiToDisplay);
 
   const totalPage = isFiltered
     ? koiListFilter?.totalElements
@@ -621,7 +622,11 @@ const ListFish = () => {
                                                 rounded-tl-[5px] text-center 
                                                 text-[#FA4444]"
                         >
-                          {card.status ? "Đang bán" : "Đã bán"}
+                          {card.status === 1
+                            ? "Đang bán"
+                            : card.status === 2
+                            ? "Đã bán"
+                            : null}
                         </div>
                         <div className="rounded-[10px]">
                           <img
@@ -657,17 +662,18 @@ const ListFish = () => {
                                 currency: "VND",
                               }).format(card.price)}
                             </div>
-
-                            <Link>
-                              <Button
-                                onClick={() => {
-                                  handleAddToCart(card);
-                                }}
-                                className="w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]"
-                              >
-                                Đặt Mua
-                              </Button>
-                            </Link>
+                            {card.status !== 2 ? (
+                              <Link>
+                                <Button
+                                  onClick={() => {
+                                    handleAddToCart(card);
+                                  }}
+                                  className="w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]"
+                                >
+                                  Đặt Mua
+                                </Button>
+                              </Link>
+                            ) : null}
                           </div>
                         </div>
                       </div>
