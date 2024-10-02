@@ -160,7 +160,7 @@ const Knowledge = () => {
                           <div className='my-[10px] text-[20px] font-bold'>
                             {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(card.price)}
                           </div>
-                          <Link>
+                          <Link to={`/product/${card.id}`}>
                             <Button
                               onClick={() => {
                                 handleAddToCart(card);
