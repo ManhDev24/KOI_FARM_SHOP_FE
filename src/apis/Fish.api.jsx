@@ -47,7 +47,7 @@ export const FishApi = {
   getKnowledgeFishList: async () => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/homepage?pageNum=1&pageSize=4`
+        `http://localhost:8080/koifarm/homepage?pageNum=0&pageSize=4`
       );
       console.log(response.data + "aaa");
 

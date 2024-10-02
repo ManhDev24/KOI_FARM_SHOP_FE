@@ -7,7 +7,7 @@ import { useForm, Controller } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { AuthApi } from '../../apis/Auth.api';
-import avt from '/img/avatar.svg';
+
 
 
 // Yup schema để xác thực dữ liệu
@@ -15,11 +15,7 @@ const schema = yup.object().shape({
   fullname: yup.string()
     .required('Vui lòng nhập họ và tên')
     .min(3, 'Tên quá ngắn!')
-    .matches(/^[A-Za-zÀ-ỹ\s'-]+$/, 'Họ và tên không được chứa số hoặc ký tự đặc biệt')
-    .test('max-word-length', 'Mỗi từ không được vượt quá 15 ký tự', value => {
-      if (!value) return true; // Skip if value is empty (handled by required)
-      return value.split(/\s/).every(word => word.length <= 15); // Ensure each word is <= 20 chars
-    }),
+    .matches(/^[A-Za-zÀ-ỹ\s]+$/, 'Họ và tên không được chứa số hoặc ký tự đặc biệt'),
 
   email: yup.string()
     .required('Vui lòng nhập email')
@@ -43,12 +39,7 @@ const schema = yup.object().shape({
 
   address: yup.string()
     .required('Vui lòng nhập địa chỉ')
-    .min(10, 'Địa chỉ phải có ít nhất 10 ký tự')
-    .test('max-word-length', 'Mỗi từ không được vượt quá 15 ký tự', value => {
-      if (!value) return true; // Skip if value is empty (handled by required)
-      return value.split(/\s/).every(word => word.length <= 15); // Ensure each word is <= 20 chars
-    }),
-
+    .min(10, 'Địa chỉ phải có ít nhất 10 ký tự'),
 
   phone: yup.string()
     .required('Vui lòng nhập số điện thoại')
@@ -230,30 +221,11 @@ const Profile = () => {
 
 
   const handleCancel = (field) => {
-    if (field === 'password') {
-      // Reset the password-related fields
-      setValue('password', ''); // Clear the old password field
-      setValue('newPassword', ''); // Clear the new password field
-      setValue('confirmPassword', ''); // Clear the confirm password field
-
-      // Reset the state to ask for the old password again
-      setOldPasswordCorrect(false); // Ensure that the old password will be required again
-
-      // Reset the editing state for the password field
-      setIsEditing((prevState) => ({
-        ...prevState,
-        password: false, // Disable the password editing form
-      }));
-    } else {
-      // Reset the other fields to their initial values
-      setValue(field, initialData[field]);
-
-      // Reset the editing state for the field
-      setIsEditing((prevState) => ({
-        ...prevState,
-        [field]: false,
-      }));
-    }
+    setValue(field, initialData[field]);
+    setIsEditing((prevState) => ({
+      ...prevState,
+      [field]: false,
+    }));
   };
 
 
@@ -263,71 +235,54 @@ const Profile = () => {
     // Kiểm tra trường hợp email
     if (fieldName === 'email') {
       return (
-        <>
-          <div>
-            <AntForm.Item label={label} className='flex'>
-              <div className="text-black flex flex-col w-max-300px ms-10 text-xl font-['Arial']">{initialData[fieldName]}</div>
-            </AntForm.Item>
-          </div>
-        </>
+        <AntForm.Item label={label} className='flex'>
+          <div className="text-black flex flex-col text-xl font-['Arial'] w-full">{initialData[fieldName]}</div>
+        </AntForm.Item>
       );
     }
 
 
     // Trường hợp thông thường, hiển thị trường chỉnh sửa
     return (
-      <AntForm.Item className='w-[100%]'
+      <AntForm.Item className='flex'
         label={label}
         validateStatus={errors[fieldName] ? 'error' : ''}
         help={errors[fieldName]?.message}
       >
         {isEditing[fieldName] ? (
           <>
-            <div className='grid mt-[5px] grid-cols-1 '>
-              <div className='ms-3 text-xl'>
-                {initialData[fieldName]}
-              </div>
-              <div>
-                <div className='w-[90%]'>
-                  <Controller
-                    name={fieldName}
-                    control={control}
-                    render={({ field }) => (
-                      isPassword ? (
-                        <Input.Password
-                          {...field}
-                          placeholder={placeholder}
-                          iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-                        />
-                      ) : (
-                        <Input {...field} placeholder={placeholder} />
-                      )
-                    )}
+            <Controller
+              name={fieldName}
+              control={control}
+              render={({ field }) => (
+                isPassword ? (
+                  <Input.Password
+                    {...field}
+                    placeholder={placeholder}
+                    iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                   />
-                </div>
-                <Button
-                  type="primary"
-                  onClick={() => handleSaveField(fieldName)}
-                >
-                  Lưu thay đổi
-                </Button>
-                <Button onClick={() => handleCancel(fieldName)}>Hủy</Button>
-              </div>
-            </div>
+                ) : (
+                  <Input {...field} placeholder={placeholder} />
+                )
+              )}
+            />
+            <Button
+              type="primary"
+              onClick={() => handleSaveField(fieldName)}
+            >
+              Lưu thay đổi
+            </Button>
+            <Button onClick={() => handleCancel(fieldName)}>Hủy</Button>
           </>
         ) : (
           <>
-            <div className=' w-[90%] '>
-              <div className=''>
-                <div className="text-black  text-xl  inline font-['Arial']">{initialData[fieldName]}</div>
-                <Button className='' type="link" onClick={() => setIsEditing((prevState) => ({
-                  ...prevState,
-                  [fieldName]: true
-                }))}>
-                  Chỉnh sửa
-                </Button>
-              </div>
-            </div>
+            <div className="text-black  text-xl inline font-['Arial']">{initialData[fieldName]}</div>
+            <Button type="link" onClick={() => setIsEditing((prevState) => ({
+              ...prevState,
+              [fieldName]: true
+            }))}>
+              Chỉnh sửa
+            </Button>
           </>
         )}
       </AntForm.Item>
@@ -349,8 +304,6 @@ const Profile = () => {
               <Link style={{ color: "#EA4444" }}>
                 Thông tin cá nhân
               </Link>
-
-
             </Breadcrumb.Item>
           </Breadcrumb>
         </div>
@@ -366,11 +319,10 @@ const Profile = () => {
             </div>
             <div className="w-full h-[315px] bg-white shadow flex justify-center items-center">
               <div className="flex flex-col">
-                
                 <img
-                  src={avt}
-                  alt="a"
-                  className="relative z-50 inline-block h-[200px] w-[200px] rounded-full ring-2 ring-lime-100"
+                  src="./img/avatar.svg"
+                  alt=""
+                  className="inline-block h-[200px] w-[200px] rounded-full ring-2 ring-lime-100"
                 />
                 <div className="mt-10">
                   <div className="w-full flex justify-center text-black text-xl font-bold font-['Arial']">
@@ -415,16 +367,12 @@ const Profile = () => {
               {renderFormItem('Email', 'email', 'Nhập email')}
 
               {/* Mật khẩu */}
-
-              <div className='mb-4'>
-                <span >Mật khẩu:</span>
+              <AntForm.Item label="Mật khẩu" validateStatus={errors.password ? 'error' : ''} help={((errors.password?.message)==='Nhập lại pass word')? "Sai mật khẩu vui lòng thử lại!" : ' '}>
+                {console.log(initialData.password)
+                }
                 {initialData.password === '' ? (
-                  <div className="text-black text-xl flex flex-col font-['Arial']">
-                    <div>&nbsp;</div>
-                    <div className='flex items-center'>
-                      <h4 className='me-2 text-lg'> Tài khoản đăng nhập bằng</h4>
-                      {/* Icon */}
-                    </div>
+                  <div className="text-black text-xl font-['Arial']">
+                    Tài khoản đăng nhập bằng Google
                   </div>
                 ) : (
                   <>
@@ -434,48 +382,31 @@ const Profile = () => {
                       </Button>
                     ) : !oldPasswordCorrect ? (
                       <>
-                        <div className='ms-10'>
-                          {!passwordChanged ? (
-                            <div className='w-[50%] md:w-1/2 ms-10'>
-                              <Controller
-                                name="password"
-                                control={control}
-                                render={({ field }) => (
-                                  <Input.Password
-                                    {...field}
-                                    placeholder="Nhập mật khẩu cũ"
-                                    className="border rounded-lg p-2 w-full"
-                                    iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-                                  />
-                                )}
-                              />
-                              <div className="flex items-center gap-4 mt-4">
-                                <Button type="primary" onClick={handleOldPasswordSubmit} className="bg-blue-500 text-white">
-                                  Xác nhận mật khẩu cũ
-                                </Button>
-                                <Button onClick={() => handleCancel('password')} className="bg-gray-500 text-white">
-                                  Hủy
-                                </Button>
-                              </div>
-                              {/* Error message for incorrect password */}
-                              {errors.password && <span className="text-red-500 mt-2 block">Sai mật khẩu</span>}
-                            </div>
-                          ) : (
-                            // Option to reset the password after change
-                            <Button type="link" onClick={() => setPasswordChanged(false)}>
-                              Đổi lại mật khẩu
-                            </Button>
-                          )}
-                        </div>
+                        {!passwordChanged ? (
+                          <>
+                            <Controller
+                              name="password"
+                              control={control}
+                              render={({ field }) => (
+                                <Input.Password
+                                  {...field}
+                                  placeholder="Nhập mật khẩu cũ"
+                                  iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                                />
+                              )}
+                            />
+                            <Button type="primary" onClick={handleOldPasswordSubmit}>Xác nhận mật khẩu cũ</Button>
+                            <Button onClick={() => handleCancel('password')}>Hủy</Button>
+                          </>
+                        ) : (
+                          <Button type="link" onClick={() => setPasswordChanged(false)}>
+                            Đổi lại mật khẩu
+                          </Button>
+                        )}
                       </>
                     ) : (
-                      <div className='w-[50%] md:w-1/2 ms-20 mb-4'>
-                        {/* After entering the correct old password, show new password inputs */}
-                        <AntForm.Item
-                          validateStatus={errors.newPassword ? 'error' : ''}
-                          help={errors.newPassword?.message}
-                        >
-                          <label className="block text-sm font-medium text-gray-700">Mật khẩu mới</label>
+                      <>
+                        <AntForm.Item label="Mật khẩu mới" validateStatus={errors.newPassword ? 'error' : ''} help={errors.newPassword?.message}>
                           <Controller
                             name="newPassword"
                             control={control}
@@ -483,18 +414,13 @@ const Profile = () => {
                               <Input.Password
                                 {...field}
                                 placeholder="Nhập mật khẩu mới"
-                                className="border rounded-lg p-2 w-full"
                                 iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                               />
                             )}
                           />
                         </AntForm.Item>
 
-                        <AntForm.Item
-                          validateStatus={errors.confirmPassword ? 'error' : ''}
-                          help={errors.confirmPassword?.message}
-                        >
-                          <label className="block text-sm font-medium text-gray-700">Xác nhận mật khẩu mới</label>
+                        <AntForm.Item label="Xác nhận mật khẩu mới" validateStatus={errors.confirmPassword ? 'error' : ''} help={errors.confirmPassword?.message}>
                           <Controller
                             name="confirmPassword"
                             control={control}
@@ -502,27 +428,19 @@ const Profile = () => {
                               <Input.Password
                                 {...field}
                                 placeholder="Xác nhận mật khẩu mới"
-                                className="border rounded-lg p-2 w-full"
                                 iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                               />
                             )}
                           />
                         </AntForm.Item>
 
-                        <div className="flex items-center gap-4 mt-4">
-                          <Button type="primary" onClick={handleSavePassword} className="bg-blue-500 text-white">
-                            Lưu thay đổi
-                          </Button>
-                          <Button onClick={() => handleCancel('password')} className="bg-gray-500 text-white">
-                            Hủy
-                          </Button>
-                        </div>
-                      </div>
+                        <Button type="primary" onClick={handleSavePassword}>Lưu thay đổi</Button>
+                        <Button onClick={() => handleCancel('password')}>Hủy</Button>
+                      </>
                     )}
                   </>
                 )}
-              </div>
-
+              </AntForm.Item>
 
 
               {/* Địa chỉ */}

@@ -150,17 +150,17 @@ const Knowledge = () => {
                       <div className='my-[10px] mx-[10px]'>
                         <div className='flex flex-col'>
                           <div className='h-7'>Người bán: {card.origin}</div>
-                          <div className='h-6'>Giới tính: {card.gender}</div>
+                          <div className='h-6'>Giới tính: {(card.gender)? "Koi Cái":"Koi đực" }</div>
                           <div className='h-6'>Tuổi: {card.age}</div>
                           <div className='h-6'>Kích thước: {card.size}cm</div>
                           <div className='h-6'>Nguồn gốc: {card.origin}</div>
-                          <div className='h-6'>Giống: {card.type}</div>
+                          <div className='h-6'>Giống: {card.category}</div>
                         </div>
                         <div className='text-center'>
                           <div className='my-[10px] text-[20px] font-bold'>
                             {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(card.price)}
                           </div>
-                          <Link to={`/product/${card.id}`}>
+                          <Link>
                             <Button
                               onClick={() => {
                                 handleAddToCart(card);

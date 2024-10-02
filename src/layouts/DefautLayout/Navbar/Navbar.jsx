@@ -10,7 +10,7 @@ import FishApi from "../../../apis/Fish.api";
 import logo from '/img/logo.png';
 import Vector from '/img/Vector.png';
 import { AuthApi } from "../../../apis/Auth.api";
-// import { setSelectedCategory } from "../../../Redux/Slices/FishList_Slice";
+import { setSelectedCategory } from "../../../Redux/Slices/FishList_Slice";
 const Navbar = () => {
   const dispatch = useDispatch();
 
@@ -67,7 +67,7 @@ const Navbar = () => {
   // Function to handle category selection and call API
   const handleCategorySelection = (categoryID) => {
     
-    // dispatch(setSelectedCategory(categoryID)); 
+    dispatch(setSelectedCategory(categoryID)); 
   };
 
 
