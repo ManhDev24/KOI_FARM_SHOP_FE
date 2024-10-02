@@ -7,15 +7,15 @@ import { getLocalStorage } from "../../../utils/LocalStorage";
 import { useDispatch, useSelector } from "react-redux";
 import { signOut } from "../../../Redux/Slices/Auth_Slice";
 import FishApi from "../../../apis/Fish.api";
-import logo from '/img/logo.png';
-import Vector from '/img/Vector.png';
+import logo from "/img/logo.png";
+import Vector from "/img/Vector.png";
 import { AuthApi } from "../../../apis/Auth.api";
 // import { setSelectedCategory } from "../../../Redux/Slices/FishList_Slice";
 const Navbar = () => {
   const dispatch = useDispatch();
 
   const fetchEmail = () => {
-    const dataProfile = getLocalStorage('user'); // Get 'user' from localStorage
+    const dataProfile = getLocalStorage("user"); // Get 'user' from localStorage
     if (dataProfile && dataProfile.email) {
       return dataProfile.email; // Return email if found
     } else {
@@ -25,13 +25,7 @@ const Navbar = () => {
   };
   const [profileData, setProfileData] = useState(null);
 
-
-
-
-  
   const { items } = useSelector((state) => state.cart);
-
-  
 
   const [koiMenuItems, setKoiMenuItems] = useState([]); // State lưu trữ các mục menu
   const [loading, setLoading] = useState(true);
@@ -40,20 +34,20 @@ const Navbar = () => {
   const fetchKoiCategories = async () => {
     try {
       const categoriesArray = await FishApi.getCategories();
-      console.log(categoriesArray)
+      console.log(categoriesArray);
       if (Array.isArray(categoriesArray)) {
-        const menuItems = categoriesArray.map((item) => (
-
-          {
-
-            key: item.id,
-            label: (
-              <Link to="/koiList" onClick={() => handleCategorySelection(item.id)}>
-                {item.categoryName}
-              </Link>
-            ),
-          }));
-        console.log(menuItems)
+        const menuItems = categoriesArray.map((item) => ({
+          key: item.id,
+          label: (
+            <Link
+              to="/koiList"
+              onClick={() => handleCategorySelection(item.id)}
+            >
+              {item.categoryName}
+            </Link>
+          ),
+        }));
+        console.log(menuItems);
         setKoiMenuItems(menuItems);
       } else {
         setError("The received data is not an array as expected.");
@@ -66,14 +60,10 @@ const Navbar = () => {
   };
   // Function to handle category selection and call API
   const handleCategorySelection = (categoryID) => {
-    
-    // dispatch(setSelectedCategory(categoryID)); 
+    // dispatch(setSelectedCategory(categoryID));
   };
 
-
   useEffect(() => {
-
-    
     fetchKoiCategories(); // Gọi hàm bất đồng bộ
     handleCategorySelection();
   }, []);
@@ -81,8 +71,6 @@ const Navbar = () => {
   // Hiển thị loading hoặc error nếu có
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
-
-
 
   const newsMenuItems = [
     {
@@ -115,18 +103,18 @@ const Navbar = () => {
     {
       key: "5",
       label: (
-        <a target="_self" rel="noopener noreferrer" href={`/profile/${fetchEmail()}`}>
+        <a
+          target="_self"
+          rel="noopener noreferrer"
+          href={`/profile/${fetchEmail()}`}
+        >
           Thông tin cá nhân
         </a>
       ),
     },
     {
       key: "6",
-      label: (
-        <a target="_self" rel="noopener noreferrer" href="/setting">
-          Lịch sử mua hàng
-        </a>
-      ),
+      label: <Link to="/payment-history">Lịch sử mua hàng</Link>,
     },
     {
       key: "7",
@@ -181,11 +169,12 @@ const Navbar = () => {
 
         {/* //cate */}
 
-        <div className="categories md:col-span-12 md:w-full md:h-[200px]
+        <div
+          className="categories md:col-span-12 md:w-full md:h-[200px]
           lg:col-span-12  lg:flex lg:items-center lg:justify-center lg:h-[150px] lg:w-full 
           xl:grid xl:grid-cols-1 xl:ms-[50px] xl:col-span-5 
-          2xl:col-span-4  sm:h-[200px]">
-
+          2xl:col-span-4  sm:h-[200px]"
+        >
           <ul className="flex flex-col md:flex-row items-center justify-center md:h-[200px] lg:h-[150px]">
             <li className="me-x">
               <Dropdown menu={{ items: koiMenuItems }} trigger={["hover"]}>
@@ -353,7 +342,9 @@ const Navbar = () => {
                   }}
                   className="rounded-full  w-[18px] h-[18px] absolute flex justify-center items-center "
                 >
-                  <p className="text-sm text-center text-[#EA4444]">{items?.length}</p>
+                  <p className="text-sm text-center text-[#EA4444]">
+                    {items?.length}
+                  </p>
                 </div>
               </div>
             </button>
