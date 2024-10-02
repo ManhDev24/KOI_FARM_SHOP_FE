@@ -367,7 +367,7 @@ const Profile = () => {
               {renderFormItem('Email', 'email', 'Nhập email')}
 
               {/* Mật khẩu */}
-              <AntForm.Item label="Mật khẩu" validateStatus={errors.password ? 'error' : ''} help={errors.password?.message}>
+              <AntForm.Item label="Mật khẩu" validateStatus={errors.password ? 'error' : ''} help={((errors.password?.message)==='Nhập lại pass word')? "Sai mật khẩu vui lòng thử lại!" : ' '}>
                 {console.log(initialData.password)
                 }
                 {initialData.password === '' ? (

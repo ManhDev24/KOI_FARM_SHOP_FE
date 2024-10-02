@@ -3,6 +3,7 @@ import DefaultLayout from "../layouts/DefautLayout/DefaultLayout";
 import Cart from "../modules/Cart/Cart";
 import ChangePassword from "../modules/ChangePassword/ChangePassword";
 import Error from "../modules/ErrorPage/Error";
+import FishDetail from "../modules/FishDetail/FishDetail";
 import ForgotPassword from "../modules/ForgotPassword/ForgotPassword";
 import ListFish from "../modules/ListFish/ListFish";
 import Login from "../modules/LoginPage/Login";
@@ -104,6 +105,11 @@ export const publicRoutes = [
   {
     path: "/payment-detail",
     component: PaymentDetailPage,
+    layout: DefaultLayout,
+  },
+  {
+    path: "/fish-detail",
+    component: FishDetail,
     layout: DefaultLayout,
   },
 ];
