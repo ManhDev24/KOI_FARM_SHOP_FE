@@ -12,7 +12,7 @@ import { AuthApi } from '../../apis/Auth.api';
 
 // Yup schema để xác thực dữ liệu
 const schema = yup.object().shape({
-  fullname: yup.string()
+  fullName: yup.string()
     .required('Vui lòng nhập họ và tên')
     .min(3, 'Tên quá ngắn!')
     .matches(/^[A-Za-zÀ-ỹ\s]+$/, 'Họ và tên không được chứa số hoặc ký tự đặc biệt'),
@@ -52,7 +52,7 @@ const Profile = () => {
   });
 
   const [initialData, setInitialData] = useState({
-    fullname: '',
+    fullName: '',
     email: '',
     password: '',
     address: '',
@@ -60,7 +60,7 @@ const Profile = () => {
   });
 
   const [isEditing, setIsEditing] = useState({
-    fullname: false,
+    fullName: false,
     email: false,
     password: false,
     address: false,
@@ -80,7 +80,7 @@ const Profile = () => {
           const profileData = profile.data;
 
           setInitialData({
-            fullname: profileData.fullname || '',
+            fullName: profileData.fullName || '',
             email: profileData.email || '',
             password: profileData.password || '',
             address: profileData.address || '',
@@ -88,7 +88,7 @@ const Profile = () => {
           });
 
           // Set form values
-          setValue('fullname', profileData.fullname);
+          setValue('fullName', profileData.fullName);
           setValue('email', profileData.email);
           setValue('address', profileData.address);
           setValue('phone', profileData.phone);
@@ -111,8 +111,8 @@ const Profile = () => {
     let updatedData = {};
 
 
-    if (field === 'fullname') {
-      updatedData = { fullName: value }; 
+    if (field === 'fullName') {
+      updatedData = { fullName: value };
 
     } else {
       updatedData = { [field]: value };
@@ -125,7 +125,7 @@ const Profile = () => {
 
 
       const completeUpdatedData = {
-        fullName: field === 'fullname' ? value : initialData.fullname,
+        fullName: field === 'fullName' ? value : initialData.fullName,
         email: initialData.email,
         password: initialData.password,
         address: field === 'address' ? value : initialData.address,
@@ -137,7 +137,7 @@ const Profile = () => {
 
       setInitialData((prevData) => ({
         ...prevData,
-        [field]: value, 
+        [field]: value,
 
       }));
 
@@ -175,7 +175,7 @@ const Profile = () => {
           message: 'Mật khẩu cũ không chính xác',
         });
 
-        setOldPasswordCorrect(false); 
+        setOldPasswordCorrect(false);
 
       }
     } catch (error) {
@@ -225,9 +225,9 @@ const Profile = () => {
 
   const handleCancel = (field) => {
     if (field === 'password') {
-      setOldPasswordCorrect(false);  
+      setOldPasswordCorrect(false);
     }
-    setValue(field, initialData[field]);
+    setValue('', initialData[field]);
     setIsEditing((prevState) => ({
       ...prevState,
       [field]: false,
@@ -254,8 +254,10 @@ const Profile = () => {
         validateStatus={errors[fieldName] ? 'error' : ''}
         help={errors[fieldName]?.message}
       >
+        {initialData[fieldName]}
         {isEditing[fieldName] ? (
           <>
+
             <Controller
               name={fieldName}
               control={control}
@@ -263,11 +265,11 @@ const Profile = () => {
                 isPassword ? (
                   <Input.Password
                     {...field}
-                    placeholder={placeholder}
+                    
                     iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                   />
                 ) : (
-                  <Input {...field} placeholder={placeholder} />
+                  <Input {...field} />
                 )
               )}
             />
@@ -281,7 +283,7 @@ const Profile = () => {
           </>
         ) : (
           <>
-            <div className="text-black  text-xl inline font-['Arial']">{initialData[fieldName]}</div>
+            <div className="text-black  text-xl inline font-['Arial']"></div>
             <Button type="link" onClick={() => setIsEditing((prevState) => ({
               ...prevState,
               [fieldName]: true
@@ -366,7 +368,7 @@ const Profile = () => {
             </div>
             <AntForm className=' ms-10' >
               {/* Họ và tên */}
-              {renderFormItem('Họ và tên', 'fullname', 'Nhập họ và tên')}
+              {renderFormItem('Họ và tên', 'fullName', 'Nhập họ và tên')}
 
               {/* Email */}
               {renderFormItem('Email', 'email', 'Nhập email')}
@@ -404,18 +406,32 @@ const Profile = () => {
                               }}
 
                             />
-                            <Button type="primary" onClick={handleOldPasswordSubmit}>Xác nhận mật khẩu cũ</Button>
+                            <Button
+                              type="primary"
+                              onClick={() => {
+                                handleOldPasswordSubmit();
+                                setValue('password', '');
+                                setValue('newPassword', null);   // Reset trường newPassword
+                                setValue('confirmPassword', null);  // Reset trường confirmPassword
+                              }}>
+                              Xác nhận mật khẩu cũ
+                            </Button>
+
                             <Button onClick={() => handleCancel('password')}>Hủy</Button>
                           </>
                         ) : (
                           <Button type="link" onClick={() => setPasswordChanged(false)}>
-                            Đổi lại mật khẩu
+                            Đổi mật khẩu
                           </Button>
                         )}
                       </>
                     ) : (
                       <>
-                        <AntForm.Item label="Mật khẩu mới" validateStatus={errors.newPassword ? 'error' : ''} help={errors.newPassword?.message}>
+                        <AntForm.Item
+                          label="Mật khẩu mới"
+                          validateStatus={errors.newPassword ? 'error' : ''}
+                          help={errors.newPassword?.message}
+                        >
                           <Controller
                             name="newPassword"
                             control={control}
@@ -429,7 +445,11 @@ const Profile = () => {
                           />
                         </AntForm.Item>
 
-                        <AntForm.Item label="Xác nhận mật khẩu mới" validateStatus={errors.confirmPassword ? 'error' : ''} help={errors.confirmPassword?.message}>
+                        <AntForm.Item
+                          label="Xác nhận mật khẩu mới"
+                          validateStatus={errors.confirmPassword ? 'error' : ''}
+                          help={errors.confirmPassword?.message}
+                        >
                           <Controller
                             name="confirmPassword"
                             control={control}
@@ -443,7 +463,11 @@ const Profile = () => {
                           />
                         </AntForm.Item>
 
-                        <Button type="primary" onClick={handleSavePassword}>Lưu thay đổi</Button>
+                        <Button type="primary" onClick={() => {
+
+                          handleSavePassword();
+                        }}>Lưu thay đổi</Button>
+
                         <Button onClick={() => handleCancel('password')}>Hủy</Button>
                       </>
                     )}
@@ -460,7 +484,7 @@ const Profile = () => {
             </AntForm>
           </div>
         </div>
-      </div>
+      </div >
     </>
   );
 };
