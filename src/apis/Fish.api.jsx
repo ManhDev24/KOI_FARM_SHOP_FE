@@ -1,6 +1,7 @@
 import fetcher from "./Fetcher";
 
 export const FishApi = {
+
   getListFish: async ( currentPage, pageSize = 9) => {
     try {
       const response = await fetcher.get(
@@ -47,7 +48,7 @@ export const FishApi = {
   getKnowledgeFishList: async () => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/homepage?pageNum=0&pageSize=4`
+        `http://localhost:8080/koifarm/homepage?pageNum=1&pageSize=4`
       );
       console.log(response.data + "aaa");
 

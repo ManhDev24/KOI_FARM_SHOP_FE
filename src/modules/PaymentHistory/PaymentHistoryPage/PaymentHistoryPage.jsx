@@ -14,7 +14,7 @@ moment.locale("vi");
 
 const PaymentHistoryPage = () => {
   const user = getLocalStorage("user");
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const dispatch = useDispatch();
 
   const handleSaveOrderId = (orderId) => {
