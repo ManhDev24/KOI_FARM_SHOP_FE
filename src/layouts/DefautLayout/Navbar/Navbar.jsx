@@ -61,8 +61,8 @@ const Navbar = () => {
   // Function to handle category selection and call API
   const handleCategorySelection = (categoryID) => {
 
-    
-    dispatch(setSelectedCategory(categoryID)); 
+
+    dispatch(setSelectedCategory(categoryID));
 
   };
 
@@ -106,13 +106,14 @@ const Navbar = () => {
     {
       key: "5",
       label: (
-        <a
+        <Link
+          to={`/profile/${fetchEmail()}`}
           target="_self"
           rel="noopener noreferrer"
-          href={`/profile/${fetchEmail()}`}
         >
           Thông tin cá nhân
-        </a>
+        </Link>
+
       ),
     },
     {
@@ -122,9 +123,9 @@ const Navbar = () => {
     {
       key: "7",
       label: (
-        <a target="_self" rel="noopener noreferrer" href="/setting">
+        <Link to="/setting" target="_self" rel="noopener noreferrer" >
           Cài đặt
-        </a>
+        </Link>
       ),
     },
     { key: "8", label: "Đăng xuất", onClick: () => handleSignOut() },

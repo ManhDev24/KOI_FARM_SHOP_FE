@@ -2,6 +2,9 @@ import HomePage from "../components/HomePage/HomePage";
 import DefaultLayout from "../layouts/DefautLayout/DefaultLayout";
 import Cart from "../modules/Cart/Cart";
 import ChangePassword from "../modules/ChangePassword/ChangePassword";
+import RequestConsignment from "../modules/Consigment/RequestConsignment";
+
+
 import Error from "../modules/ErrorPage/Error";
 import FishDetail from "../modules/FishDetail/FishDetail";
 import ForgotPassword from "../modules/ForgotPassword/ForgotPassword";
@@ -110,6 +113,11 @@ export const publicRoutes = [
   {
     path: "/fish-detail",
     component: FishDetail,
+    layout: DefaultLayout,
+  },
+  {
+    path: "/consignment",
+    component: RequestConsignment,
     layout: DefaultLayout,
   },
 ];

@@ -27,8 +27,6 @@ const schema = yup.object().shape({
   newPassword: yup.string()
     .required('Vui lòng nhập mật khẩu mới')
     .min(8, 'Mật khẩu phải có ít nhất 8 ký tự')
-    .matches(/[A-Z]/, 'Mật khẩu phải chứa ít nhất một chữ cái in hoa')
-    .matches(/[a-z]/, 'Mật khẩu phải chứa ít nhất một chữ cái thường')
     .matches(/[0-9]/, 'Mật khẩu phải chứa ít nhất một chữ số')
     .matches(/[!@#$%^&*(),.?":{}|<>]/, 'Mật khẩu phải chứa ít nhất một ký tự đặc biệt')
     .notOneOf([yup.ref('password')], 'Mật khẩu mới không được giống mật khẩu cũ'),
@@ -49,7 +47,7 @@ const schema = yup.object().shape({
 });
 
 const Profile = () => {
-  const { control, trigger, formState: { errors }, getValues, setValue, setError } = useForm({
+  const { control, trigger, formState: { errors }, getValues, setValue, setError, clearErrors, } = useForm({
     resolver: yupResolver(schema),
   });
 
@@ -112,8 +110,10 @@ const Profile = () => {
     const value = getValues(field);
     let updatedData = {};
 
+
     if (field === 'fullname') {
       updatedData = { fullName: value }; 
+
     } else {
       updatedData = { [field]: value };
     }
@@ -123,7 +123,7 @@ const Profile = () => {
       const id = dataProfile.id;
       const accessToken = dataProfile.accessToken;
 
- 
+
       const completeUpdatedData = {
         fullName: field === 'fullname' ? value : initialData.fullname,
         email: initialData.email,
@@ -134,9 +134,11 @@ const Profile = () => {
 
       await AuthApi.userProfileEdit(id, accessToken, completeUpdatedData);
 
+
       setInitialData((prevData) => ({
         ...prevData,
         [field]: value, 
+
       }));
 
       setIsEditing((prevState) => ({
@@ -154,19 +156,27 @@ const Profile = () => {
 
   const handleOldPasswordSubmit = async () => {
     try {
+
+
       const oldPassword = getValues('password');
       const dataProfile = JSON.parse(localStorage.getItem('user'));
       const id = dataProfile.id;
+
       const response = await AuthApi.checkPassword(id, oldPassword);
+
 
       if (response.data) {
         setOldPasswordCorrect(true);
+        clearErrors('password');
+
       } else {
         setError('password', {
           type: 'manual',
           message: 'Mật khẩu cũ không chính xác',
         });
+
         setOldPasswordCorrect(false); 
+
       }
     } catch (error) {
       setError('password', {
@@ -214,6 +224,9 @@ const Profile = () => {
 
 
   const handleCancel = (field) => {
+    if (field === 'password') {
+      setOldPasswordCorrect(false);  
+    }
     setValue(field, initialData[field]);
     setIsEditing((prevState) => ({
       ...prevState,
@@ -223,9 +236,8 @@ const Profile = () => {
 
 
 
-
   const renderFormItem = (label, fieldName, placeholder, isPassword = false) => {
-    // Kiểm tra trường hợp email
+
     if (fieldName === 'email') {
       return (
         <AntForm.Item label={label} className='flex'>
@@ -233,6 +245,7 @@ const Profile = () => {
         </AntForm.Item>
       );
     }
+
 
 
     return (
@@ -359,9 +372,8 @@ const Profile = () => {
               {renderFormItem('Email', 'email', 'Nhập email')}
 
               {/* Mật khẩu */}
-              <AntForm.Item label="Mật khẩu" validateStatus={errors.password ? 'error' : ''} help={((errors.password?.message)==='Nhập lại pass word')? "Sai mật khẩu vui lòng thử lại!" : ' '}>
-                {console.log(initialData.password)
-                }
+              <AntForm.Item label="Mật khẩu" validateStatus={errors.password ? 'error' : ''} help={((errors.password?.message) === 'Nhập lại pass word') ? "Sai mật khẩu vui lòng thử lại!" : ' '}>
+
                 {initialData.password === '' ? (
                   <div className="text-black text-xl font-['Arial']">
                     Tài khoản đăng nhập bằng Google
@@ -385,7 +397,12 @@ const Profile = () => {
                                   placeholder="Nhập mật khẩu cũ"
                                   iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                                 />
-                              )}
+
+                              )} onChange={(e) => {
+                                field.onChange(e);
+                                clearErrors('password'); // Xóa lỗi khi người dùng nhập
+                              }}
+
                             />
                             <Button type="primary" onClick={handleOldPasswordSubmit}>Xác nhận mật khẩu cũ</Button>
                             <Button onClick={() => handleCancel('password')}>Hủy</Button>
