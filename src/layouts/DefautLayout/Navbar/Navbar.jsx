@@ -71,7 +71,6 @@ const Navbar = () => {
     handleCategorySelection();
   }, []);
 
-  // Hiển thị loading hoặc error nếu có
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
