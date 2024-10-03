@@ -27,8 +27,6 @@ const schema = yup.object().shape({
   newPassword: yup.string()
     .required('Vui lòng nhập mật khẩu mới')
     .min(8, 'Mật khẩu phải có ít nhất 8 ký tự')
-    .matches(/[A-Z]/, 'Mật khẩu phải chứa ít nhất một chữ cái in hoa')
-    .matches(/[a-z]/, 'Mật khẩu phải chứa ít nhất một chữ cái thường')
     .matches(/[0-9]/, 'Mật khẩu phải chứa ít nhất một chữ số')
     .matches(/[!@#$%^&*(),.?":{}|<>]/, 'Mật khẩu phải chứa ít nhất một ký tự đặc biệt')
     .notOneOf([yup.ref('password')], 'Mật khẩu mới không được giống mật khẩu cũ'),
@@ -113,9 +111,9 @@ const Profile = () => {
     const value = getValues(field);
     let updatedData = {};
 
-    // Map request field to 'fullName' when updating the name
+
     if (field === 'fullname') {
-      updatedData = { fullName: value }; // Sử dụng 'fullName' khi gửi request
+      updatedData = { fullName: value };
     } else {
       updatedData = { [field]: value };
     }
@@ -125,9 +123,9 @@ const Profile = () => {
       const id = dataProfile.id;
       const accessToken = dataProfile.accessToken;
 
-      // Lấy tất cả các giá trị khác từ initialData và chỉ cập nhật trường đã thay đổi
+
       const completeUpdatedData = {
-        fullName: field === 'fullname' ? value : initialData.fullname,
+        fullName: field === 'fullname' ?   value : initialData.fullname,
         email: initialData.email,
         password: initialData.password,
         address: field === 'address' ? value : initialData.address,
@@ -136,15 +134,15 @@ const Profile = () => {
 
       await AuthApi.userProfileEdit(id, accessToken, completeUpdatedData);
 
-      // Cập nhật lại initialData với giá trị mới
+
       setInitialData((prevData) => ({
         ...prevData,
-        [field]: value, // Chỉ cập nhật trường đã thay đổi trong state
+        [field]: value,
       }));
 
       setIsEditing((prevState) => ({
         ...prevState,
-        [field]: false, // Tắt chế độ chỉnh sửa cho trường đó
+        [field]: false,
       }));
 
       message.success(`${field} đã được cập nhật thành công`);
@@ -157,22 +155,22 @@ const Profile = () => {
 
   const handleOldPasswordSubmit = async () => {
     try {
-      // Lấy mật khẩu cũ từ form
+
       const oldPassword = getValues('password');
       const dataProfile = JSON.parse(localStorage.getItem('user'));
       const id = dataProfile.id;
-      // Gọi API để kiểm tra mật khẩu
+
       const response = await AuthApi.checkPassword(id, oldPassword);
 
-      // Giả sử API trả về kết quả đúng/sai (true/false) cho việc kiểm tra mật khẩu
+
       if (response.data) {
-        setOldPasswordCorrect(true); // Mật khẩu chính xác
+        setOldPasswordCorrect(true);
       } else {
         setError('password', {
           type: 'manual',
           message: 'Mật khẩu cũ không chính xác',
         });
-        setOldPasswordCorrect(false); // Mật khẩu không đúng
+        setOldPasswordCorrect(false);
       }
     } catch (error) {
       setError('password', {
@@ -196,12 +194,12 @@ const Profile = () => {
         const id = dataProfile.id;
         const accessToken = dataProfile.accessToken;
 
-        // Gửi mật khẩu mới lên server
+
         await AuthApi.updatePassword(id, accessToken, newPassword);
 
         setInitialData((prevData) => ({
           ...prevData,
-          password: newPassword, // Lưu mật khẩu mới vào initialData (nếu cần)
+          password: newPassword,
         }));
 
         setPasswordChanged(true);
@@ -232,7 +230,7 @@ const Profile = () => {
 
 
   const renderFormItem = (label, fieldName, placeholder, isPassword = false) => {
-    // Kiểm tra trường hợp email
+
     if (fieldName === 'email') {
       return (
         <AntForm.Item label={label} className='flex'>
@@ -242,7 +240,7 @@ const Profile = () => {
     }
 
 
-    // Trường hợp thông thường, hiển thị trường chỉnh sửa
+
     return (
       <AntForm.Item className='flex'
         label={label}
@@ -367,7 +365,7 @@ const Profile = () => {
               {renderFormItem('Email', 'email', 'Nhập email')}
 
               {/* Mật khẩu */}
-              <AntForm.Item label="Mật khẩu" validateStatus={errors.password ? 'error' : ''} help={((errors.password?.message)==='Nhập lại pass word')? "Sai mật khẩu vui lòng thử lại!" : ' '}>
+              <AntForm.Item label="Mật khẩu" validateStatus={errors.password ? 'error' : ''} help={((errors.password?.message) === 'Nhập lại pass word') ? "Sai mật khẩu vui lòng thử lại!" : ' '}>
                 {console.log(initialData.password)
                 }
                 {initialData.password === '' ? (
