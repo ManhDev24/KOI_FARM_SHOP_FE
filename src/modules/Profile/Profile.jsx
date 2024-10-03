@@ -103,7 +103,6 @@ const Profile = () => {
     fetchProfile();
   }, [setValue]);
 
-  // Hàm xử lý lưu thông tin cá nhân
   const handleSaveField = async (field) => {
     const isValid = await trigger(field);
     if (!isValid) return;
@@ -113,7 +112,8 @@ const Profile = () => {
 
 
     if (field === 'fullname') {
-      updatedData = { fullName: value };
+      updatedData = { fullName: value }; 
+
     } else {
       updatedData = { [field]: value };
     }
@@ -137,7 +137,8 @@ const Profile = () => {
 
       setInitialData((prevData) => ({
         ...prevData,
-        [field]: value,
+        [field]: value, 
+
       }));
 
       setIsEditing((prevState) => ({
@@ -156,6 +157,7 @@ const Profile = () => {
   const handleOldPasswordSubmit = async () => {
     try {
 
+
       const oldPassword = getValues('password');
       const dataProfile = JSON.parse(localStorage.getItem('user'));
       const id = dataProfile.id;
@@ -166,12 +168,15 @@ const Profile = () => {
       if (response.data) {
         setOldPasswordCorrect(true);
         clearErrors('password');
+
       } else {
         setError('password', {
           type: 'manual',
           message: 'Mật khẩu cũ không chính xác',
         });
-        setOldPasswordCorrect(false);
+
+        setOldPasswordCorrect(false); 
+
       }
     } catch (error) {
       setError('password', {
@@ -194,7 +199,6 @@ const Profile = () => {
         const dataProfile = JSON.parse(localStorage.getItem('user'));
         const id = dataProfile.id;
         const accessToken = dataProfile.accessToken;
-
 
         await AuthApi.updatePassword(id, accessToken, newPassword);
 
@@ -221,7 +225,7 @@ const Profile = () => {
 
   const handleCancel = (field) => {
     if (field === 'password') {
-      setOldPasswordCorrect(false);  // Quay lại trạng thái nhập mật khẩu cũ
+      setOldPasswordCorrect(false);  
     }
     setValue(field, initialData[field]);
     setIsEditing((prevState) => ({

@@ -1,29 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Breadcrumb, Col, Input, Pagination, Slider } from "antd";
 import { Link } from "react-router-dom";
 import { Button, Dropdown, Flex, Row } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import FishApi from "../../apis/Fish.api";
 import LoadingModal from "../Modal/LoadingModal";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { addToCart } from "../../Redux/Slices/Cart_Slice";
 import { toast } from "react-toastify";
 
 const ListFish = () => {
-  const selectedCategoryFromRedux = useSelector((state) => state.category.selectedCategory || "");
-  console.log(selectedCategoryFromRedux)
-  const [selectedCategory, setSelectedCategory] = useState(selectedCategoryFromRedux);
-  console.log(selectedCategory)
-
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [isFiltered, setIsFiltered] = useState(false);
-  const [selectedGender, setSelectedGender] = useState(1);
-  const [selectDate, setSelectDate] = useState(1);
-  const [selectAge, setSelectAge] = useState(1);
-  const [selectPrice, setSelectPrice] = useState(1);
+  const [selectedGender, setSelectedGender] = useState("");
+  const [selectDate, setSelectDate] = useState("");
+  const [selectAge, setSelectAge] = useState("");
+  const [selectPrice, setSelectPrice] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [currentSize, setCurrentSize] = useState(100); // chiều dài max của cá
   const [currentPrice, setCurrentPrice] = useState(1000000000); // tiền max của cá
-  // console.log("currentPrice: ", currentPrice);
+  console.log("currentPrice: ", currentPrice);
   const [genderFilter, setGenderFilter] = useState(0);
   const [sortField, setSortField] = useState(0);
   const [sortDirection, setSortDirection] = useState(0);
@@ -38,20 +34,6 @@ const ListFish = () => {
       })
     );
   };
-
-  const { data: koiList, isLoading, isError } = useQuery({
-    queryKey: ["KoiList", selectedCategory],
-    queryFn: () => FishApi.getListFishByCategory(selectedCategory),
-    enabled: isFiltered,// Chỉ gọi API khi có category
-    keepPreviousData: true,
-  });
-
-  useEffect(() => {
-
-    setSelectedCategory(selectedCategoryFromRedux);
-    setIsFiltered(true);
-  }, [selectedCategoryFromRedux, koiList]);
-
   const {
     data: KoiList,
     isLoading: isLoadingKoiList,
@@ -61,9 +43,6 @@ const ListFish = () => {
     queryFn: () => FishApi.getListFish(currentPage),
     keepPreviousData: true,
   });
-
-
-
   const {
     data: koiListFilter,
     isLoading: isLoadingKoiListFilter,
@@ -72,7 +51,7 @@ const ListFish = () => {
     queryKey: [
       "koiListFilter",
       currentPage,
-      selectedCategoryFromRedux, // Sử dụng danh mục từ Redux
+      selectedCategory,
       selectedGender,
       selectDate,
       selectAge,
@@ -85,7 +64,7 @@ const ListFish = () => {
     ],
     queryFn: () =>
       FishApi.getFilteredKoiFish(
-        selectedCategoryFromRedux, // Sử dụng danh mục từ Redux
+        selectedCategory,
         selectedGender,
         0,
         currentSize,
@@ -101,7 +80,6 @@ const ListFish = () => {
     enabled: isFiltered,
     keepPreviousData: true,
   });
-
   koiListFilter;
   console.log("koiListFilter: ", koiListFilter);
 
@@ -128,11 +106,11 @@ const ListFish = () => {
     return <h1>Error</h1>;
   }
 
-
   const CategoryItem = [
     {
       key: "Danh mục",
       label: "Danh mục",
+      value: "",
     },
     {
       key: "Koi showa",
@@ -158,6 +136,11 @@ const ListFish = () => {
 
   const newDateFilterCategoryItem = [
     {
+      key: "Sắp xếp theo ngày",
+      label: "Sắp xếp theo ngày",
+      value: "",
+    },
+    {
       key: "latest",
       label: "Ngày Mới nhất",
       value: "1",
@@ -169,6 +152,11 @@ const ListFish = () => {
     },
   ];
   const priceCategoryItem = [
+    {
+      key: "Sắp xếp theo giá",
+      label: "Sắp xếp theo giá",
+      value: "",
+    },
     {
       key: "HighestPrices",
       label: "Giá từ thấp đến cao",
@@ -182,17 +170,27 @@ const ListFish = () => {
   ];
   const ageCategoryItem = [
     {
-      key: "HighestAge",
-      label: "Tuổi từ Cao đến Thấp",
-      value: "1",
+      key: "Tuổi",
+      label: "Tuổi",
+      value: "",
     },
     {
       key: "LowestAge",
       label: "Tuổi từ Thấp đến Cao",
+      value: "1",
+    },
+    {
+      key: "HighestAge",
+      label: "Tuổi từ Cao đến Thấp",
       value: "2",
     },
   ];
   const genderCategoryItem = [
+    {
+      key: "Giới tính",
+      label: "Giới tính",
+      value: "",
+    },
     {
       key: "Koi Cái",
       label: "Koi Cái",
@@ -206,16 +204,9 @@ const ListFish = () => {
   ];
 
   const handleMenuClickCategory = (item) => {
-    // Cập nhật danh mục được chọn
     setSelectedCategory(item.value);
-
-    // Cập nhật danh mục trong Redux
-    dispatch(setSelectedCategory(item.value));
-
-    // Kích hoạt bộ lọc
     setIsFiltered(true);
   };
-
   const handleMenuClickGender = (item) => {
     setSelectedGender(+item.value);
     setIsFiltered(true);
@@ -295,12 +286,12 @@ const ListFish = () => {
                           {selectedCategory === "1"
                             ? "Koi showa"
                             : selectedCategory === "2"
-                              ? "Koi asagi"
-                              : selectedCategory === "3"
-                                ? "Koi karashi"
-                                : selectedCategory === "4"
-                                  ? "Koi Benikoi"
-                                  : "Danh mục"}
+                            ? "Koi asagi"
+                            : selectedCategory === "3"
+                            ? "Koi karashi"
+                            : selectedCategory === "4"
+                            ? "Koi Benikoi"
+                            : "Danh mục"}
                         </p>
                       </div>
                       <div>
@@ -320,7 +311,7 @@ const ListFish = () => {
                     </Button>
                   </Dropdown>
                 </div>
-                <div className="dropdown_filter">
+                {/* <div className="dropdown_filter">
                   <Dropdown
                     menu={{
                       items: CategoryItem,
@@ -353,7 +344,7 @@ const ListFish = () => {
                       </div>
                     </Button>
                   </Dropdown>
-                </div>
+                </div> */}
                 <div className="dropdown_filter">
                   <Dropdown
                     menu={{
@@ -374,7 +365,13 @@ const ListFish = () => {
                       className="h-[50px] w-[250px] text-xl flex justify-between"
                     >
                       <div className="text-center text-xl font-bold flex justify-center items-center m-0">
-                        <p>{selectedGender ? "Koi Đực" : "Koi Cái"}</p>
+                        <p>
+                          {selectedGender === "0"
+                            ? "Koi Cái"
+                            : selectedGender === "1"
+                            ? "Koi Đực"
+                            : "Giới tính"}
+                        </p>
                       </div>
                       <div>
                         <svg
@@ -393,7 +390,7 @@ const ListFish = () => {
                     </Button>
                   </Dropdown>
                 </div>
-                <div className="dropdown_filter">
+                {/* <div className="dropdown_filter">
                   <Dropdown
                     menu={{
                       items: newDateFilterCategoryItem.map((item) => ({
@@ -414,7 +411,11 @@ const ListFish = () => {
                     >
                       <div className="text-center text-xl font-bold flex justify-center items-center  m-0 ">
                         <p>
-                          {selectDate == 1 ? "Ngày mới nhất" : "Ngày cũ nhất"}
+                          {selectDate === "1"
+                            ? "Ngày Mới nhất"
+                            : selectDate === "2"
+                            ? "Ngày Cũ nhất"
+                            : "Sắp xếp theo ngày"}{" "}
                         </p>
                       </div>
                       <div>
@@ -433,7 +434,7 @@ const ListFish = () => {
                       </div>
                     </Button>
                   </Dropdown>
-                </div>
+                </div> */}
                 <div className="dropdown_filter">
                   <Dropdown
                     menu={{
@@ -455,9 +456,11 @@ const ListFish = () => {
                     >
                       <div className="text-center text-xl font-bold flex justify-center items-center  m-0 ">
                         <p>
-                          {selectAge == 1
-                            ? "Tuổi từ cao đến thấp"
-                            : "Tuổi từ thấp đến cao"}
+                          {selectAge === "1"
+                            ? "Tuổi từ Thấp đến Cao"
+                            : selectAge === "2"
+                            ? "Tuổi từ Cao đến Thấp "
+                            : "Tuổi"}
                         </p>
                       </div>
                       <div>
@@ -498,9 +501,11 @@ const ListFish = () => {
                     >
                       <div className="text-center text-xl font-bold flex justify-center items-center  m-0 ">
                         <p>
-                          {selectPrice == 1
-                            ? "Giá từ cao đến thấp"
-                            : "Giá từ thấp đến cao"}
+                          {selectPrice === "1"
+                            ? "Giá từ thâp đến cao"
+                            : selectPrice === "2"
+                            ? "Giá từ cao đến thâp"
+                            : "Sắp xếp theo giá"}
                         </p>
                       </div>
                       <div>
