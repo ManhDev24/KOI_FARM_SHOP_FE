@@ -10,7 +10,7 @@ const fakeFishData = [
   { id: 6, imageUrl: "./img/showa2.jpg", name: "Fish 6", gender: "Female", age: 2, size: "Medium", origin: "Australia" },
   { id: 7, imageUrl: "./img/showa2.jpg", name: "Fish 7", gender: "Male", age: 1, size: "Small", origin: "Canada" },
   { id: 8, imageUrl: "./img/showa2.jpg", name: "Fish 8", gender: "Female", age: 3, size: "Large", origin: "UK" },
-  // ... add more fish with unique IDs and relevant details
+  
 ];
 
 const FishDetail = () => {

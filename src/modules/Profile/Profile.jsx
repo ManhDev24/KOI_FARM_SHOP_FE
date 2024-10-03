@@ -47,7 +47,7 @@ const schema = yup.object().shape({
 });
 
 const Profile = () => {
-  const { control, trigger, formState: { errors }, getValues, setValue, setError } = useForm({
+  const { control, trigger, formState: { errors }, getValues, setValue, setError, clearErrors, } = useForm({
     resolver: yupResolver(schema),
   });
 
@@ -125,7 +125,7 @@ const Profile = () => {
 
 
       const completeUpdatedData = {
-        fullName: field === 'fullname' ?   value : initialData.fullname,
+        fullName: field === 'fullname' ? value : initialData.fullname,
         email: initialData.email,
         password: initialData.password,
         address: field === 'address' ? value : initialData.address,
@@ -165,6 +165,7 @@ const Profile = () => {
 
       if (response.data) {
         setOldPasswordCorrect(true);
+        clearErrors('password');
       } else {
         setError('password', {
           type: 'manual',
@@ -219,13 +220,15 @@ const Profile = () => {
 
 
   const handleCancel = (field) => {
+    if (field === 'password') {
+      setOldPasswordCorrect(false);  // Quay lại trạng thái nhập mật khẩu cũ
+    }
     setValue(field, initialData[field]);
     setIsEditing((prevState) => ({
       ...prevState,
       [field]: false,
     }));
   };
-
 
 
 
@@ -366,8 +369,7 @@ const Profile = () => {
 
               {/* Mật khẩu */}
               <AntForm.Item label="Mật khẩu" validateStatus={errors.password ? 'error' : ''} help={((errors.password?.message) === 'Nhập lại pass word') ? "Sai mật khẩu vui lòng thử lại!" : ' '}>
-                {console.log(initialData.password)
-                }
+
                 {initialData.password === '' ? (
                   <div className="text-black text-xl font-['Arial']">
                     Tài khoản đăng nhập bằng Google
@@ -391,7 +393,12 @@ const Profile = () => {
                                   placeholder="Nhập mật khẩu cũ"
                                   iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                                 />
-                              )}
+
+                              )} onChange={(e) => {
+                                field.onChange(e);
+                                clearErrors('password'); // Xóa lỗi khi người dùng nhập
+                              }}
+
                             />
                             <Button type="primary" onClick={handleOldPasswordSubmit}>Xác nhận mật khẩu cũ</Button>
                             <Button onClick={() => handleCancel('password')}>Hủy</Button>
