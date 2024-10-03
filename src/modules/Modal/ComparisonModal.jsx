@@ -60,7 +60,7 @@ const ComparisonModal = ({ isOpen, onClose, selectedItems, removeItem }) => {
                 >
                   Xóa
                 </button>
-                <Link to={`/product/${item.id}`}>
+                <Link >
                   <Button className='w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]'>
                     Đặt Mua
                   </Button>
