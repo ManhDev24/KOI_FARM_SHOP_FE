@@ -653,7 +653,7 @@ const ListFish = () => {
                       >
                         <div className="relative w-[250px]">
                           <div
-                            className="absolute w-[86px] 
+                            className="absolute border-[1px] border-[#FA4444] w-[86px] 
                                                 bg-[#FFFFFF] rounded-ee-[10px] 
                                                 rounded-tl-[5px] text-center 
                                                 text-[#FA4444]"
@@ -710,7 +710,7 @@ const ListFish = () => {
                                   </Button>
                                   <Link>
                                     <div
-                                      className='absolute top-[10px] right-[10px] z-50' // Adjusted position: top right of the card
+                                      className='absolute  top-[3px] right-[-5px] z-50' // Adjusted position: top right of the card
                                       onClick={(e) => {
 
                                         handleAddToCompare(card);

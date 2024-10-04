@@ -131,7 +131,7 @@ const Knowledge = () => {
                       {/* Card content */}
                       <div className='relative w-[250px]'>
                         {/* Tag */}
-                        <div className='absolute w-[86px] bg-[#FFFFFF] rounded-ee-[10px] rounded-tl-[5px] text-center text-[#FA4444]'>
+                        <div className='absolute w-[86px] bg-[#FFFFFF] rounded-ee-[10px] rounded-tl-[5px] border-[1px] border-[#FA4444] text-center text-[#FA4444]'>
                           {card.status ? 'Đang bán' : 'Đã bán'}
                         </div>
                         {/* Koi fish image */}
@@ -174,7 +174,7 @@ const Knowledge = () => {
                             </Link>
                             <Link>
                               <div
-                                className='absolute top-[10px] right-[10px] z-50' // Adjusted position: top right of the card
+                                className='absolute top-[3px] right-[-5px] z-50 ' // Adjusted position: top right of the card
                                 onClick={(e) => {
 
                                   handleAddToCompare(card);
