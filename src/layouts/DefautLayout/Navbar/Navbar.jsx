@@ -106,13 +106,13 @@ const Navbar = () => {
     {
       key: "5",
       label: (
-        <Link
-          to={`/profile/${fetchEmail()}`}
+        <a
+          href={`/profile/${fetchEmail()}`}
           target="_self"
           rel="noopener noreferrer"
         >
           Thông tin cá nhân
-        </Link>
+        </a>
 
       ),
     },

@@ -111,10 +111,11 @@ export const publicRoutes = [
     layout: DefaultLayout,
   },
   {
-    path: "/fish-detail",
+    path: "/fish-detail/:id",
     component: FishDetail,
     layout: DefaultLayout,
   },
+  
   {
     path: "/consignment",
     component: RequestConsignment,

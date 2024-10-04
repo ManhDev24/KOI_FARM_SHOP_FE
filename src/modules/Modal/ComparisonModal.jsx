@@ -2,9 +2,21 @@
 import { Button } from 'antd';
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { addToCart } from '../../Redux/Slices/Cart_Slice';
+import { useDispatch } from 'react-redux';
 
 const ComparisonModal = ({ isOpen, onClose, selectedItems, removeItem }) => {
   if (!isOpen) return null; // Only render modal if it's open
+  // Add Koi fish to cart
+  const dispatch = useDispatch(); 
+  const handleAddToCart = (fish) => {
+    dispatch(
+      addToCart({
+        ...fish,
+        quantity: 1,
+      })
+    );
+  };
 
   return (
     <div className="fixed z-50 inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
@@ -40,8 +52,8 @@ const ComparisonModal = ({ isOpen, onClose, selectedItems, removeItem }) => {
 
                 {/* Thông tin chi tiết cá Koi */}
                 <h3 className="text-xl font-semibold ms-3 mb-2 text-[#FA4444]">{selectedItems?.category || item.category}</h3>
-                <p className="mb-2 ms-3">Giới tính: {(item?.gender)? 'Koi Cái': 'Koi Đực' || "Không có thông tin"}</p>
-                <p className="mb-2 ms-3">Tuổi: {(item?.age )|| "Không có thông tin"}</p>
+                <p className="mb-2 ms-3">Giới tính: {(item?.gender) ? 'Koi Cái' : 'Koi Đực' || "Không có thông tin"}</p>
+                <p className="mb-2 ms-3">Tuổi: {(item?.age) || "Không có thông tin"}</p>
                 <p className="mb-2 ms-3">Kích thước: {item?.size || "Không có thông tin"} cm</p>
                 <p className="mb-2 ms-3">Nguồn gốc: {item?.origin || "Không có thông tin"}</p>
                 <p className="mb-2 ms-3">Giống: {item?.category || "Không có thông tin"}</p>
@@ -61,7 +73,11 @@ const ComparisonModal = ({ isOpen, onClose, selectedItems, removeItem }) => {
                   Xóa
                 </button>
                 <Link >
-                  <Button className='w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]'>
+                  <Button
+                    onClick={(e) => {
+
+                      handleAddToCart(item);
+                    }} className='w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]'>
                     Đặt Mua
                   </Button>
                 </Link>
@@ -70,7 +86,7 @@ const ComparisonModal = ({ isOpen, onClose, selectedItems, removeItem }) => {
           </div>
         )}
 
-        {/* Hành động đóng modal */}
+
 
       </div>
     </div>
