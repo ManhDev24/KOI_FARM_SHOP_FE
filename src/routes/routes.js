@@ -1,5 +1,7 @@
 import HomePage from "../components/HomePage/HomePage";
 import DefaultLayout from "../layouts/DefautLayout/DefaultLayout";
+import Blog from "../modules/Blog/Blog/Blog";
+import ListBlog from "../modules/Blog/ListBlog/ListBlog";
 import Cart from "../modules/Cart/Cart";
 import ChangePassword from "../modules/ChangePassword/ChangePassword";
 import RequestConsignment from "../modules/Consigment/RequestConsignment";
@@ -119,6 +121,16 @@ export const publicRoutes = [
   {
     path: "/consignment",
     component: RequestConsignment,
+    layout: DefaultLayout,
+  },
+  {
+    path: "/list-blog",
+    component: ListBlog,
+    layout: DefaultLayout,
+  },
+  {
+    path: "/blog",
+    component: Blog,
     layout: DefaultLayout,
   },
 ];

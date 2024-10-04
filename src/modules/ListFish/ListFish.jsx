@@ -86,15 +86,10 @@ const ListFish = () => {
   console.log("koiListFilter: ", koiListFilter);
 
   const koiResponseList = KoiList?.koiFishReponseList;
-  const updateKoiList = koiResponseList?.map((item) => {
-    return {
-      ...item,
-      koiImage: "./img/showa2.jpg",
-    };
-  });
+ 
   const koiToDisplay = isFiltered
     ? koiListFilter?.koiFishReponseList
-    : updateKoiList;
+    : koiResponseList;
   console.log("koiToDisplay: ", koiToDisplay);
 
   const totalPage = isFiltered
@@ -687,7 +682,7 @@ const ListFish = () => {
                                 Giới tính: {card.gender ? "Koi Đực" : "Koi Cái"}
                               </div>
                               <div className="h-6">Tuổi: {card.age}</div>
-                              <div className="h-6">Kích thước: {card.size}cm</div>
+                              <div className="h-6">Kích thước: {card.size} cm</div>
                               <div className="h-6">Nguồn gốc: {card.origin}</div>
                               <div className="h-6">Giống: {card.category}</div>
                             </div>
