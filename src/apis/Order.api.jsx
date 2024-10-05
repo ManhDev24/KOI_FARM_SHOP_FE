@@ -22,5 +22,6 @@ const orderApi = {
       throw new Error(error.response.data.message);
     }
   },
+  
 };
 export default orderApi;

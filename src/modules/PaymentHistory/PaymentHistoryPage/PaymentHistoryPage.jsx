@@ -71,7 +71,7 @@ const PaymentHistoryPage = () => {
     },
 
     {
-      title: "Số tiền",
+      title: "Tổng tiền",
       dataIndex: "totalPrice",
       render: (totalPrice) => (
         <span className="">

@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import CheckoutApi from "../../../apis/Checkout.api";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "antd";
@@ -20,14 +20,14 @@ const ThankPage = () => {
       navigate("/");
     }
   }, [status, navigate]);
+
   const dispatch = useDispatch();
   const paymentCode = searchParams.get("paymentCode");
+  const disCountRate = getLocalStorage("discountRate");
+  const promoCode = getLocalStorage("PromotionCode");
+  console.log("disCountRate: ", disCountRate);
   const user = getLocalStorage("user");
-  console.log("user: ", user);
   const order = getLocalStorage("cartItems");
-  console.log("order: ", order);
-  console.log("paymentCode: ", paymentCode);
-  console.log("status: ", status);
   const {
     mutate: handleSaveOrder,
     isLoading,
@@ -37,7 +37,9 @@ const ThankPage = () => {
     onSuccess: (data) => {
       toast.success("Thực hiện giao dịch thành công");
       removeLocalStorage("cartItems");
-      window.location.reload()
+      removeLocalStorage("discountRate");
+      removeLocalStorage("PromotionCode");
+      window.location.reload();
     },
     onError: (error) => {
       const errorMessage =
@@ -50,15 +52,17 @@ const ThankPage = () => {
   const koiFishs = order?.map((fish) => fish.id);
   const batchs = [];
   const quantity = order?.map((item) => item.quantity);
-  const totalPrice = useSelector((state) => state.cart.total);
+  let totalPrice = useSelector((state) => state.cart.total);
+  totalPrice = totalPrice - totalPrice * +disCountRate;
+  console.log("totalPrice: ", totalPrice);
   const data = {
     accountID,
     koiFishs,
     batchs,
     quantity,
     totalPrice,
+    promoCode,
   };
-  console.log("data: ", data);
 
   useEffect(() => {
     if (status == 1 && paymentCode && order) {
