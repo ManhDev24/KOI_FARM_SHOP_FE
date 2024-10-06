@@ -90,7 +90,7 @@ export const AuthApi = {
       const response = await fetcher.get(
         `http://localhost:8080/koifarm/account/profile/${email}`
       );
-      const data = response.data;
+
       return response.data;
     } catch (error) {
       throw new Error(error.response.data.message);
@@ -100,7 +100,7 @@ export const AuthApi = {
   userProfileEdit: async (id, accessToken, updatedData) => {
     try {
       const response = await fetcher.put(
-        `http://localhost:8080/koifarm/account/profile/update/${id}`, // URL API không cần accessToken ở đây
+        `http://localhost:8080/koifarm/account/update/updateProfile/${id}`, // URL API không cần accessToken ở đây
         updatedData, // Truyền dữ liệu cần cập nhật (name, address, phone)
         {
           headers: {
@@ -147,7 +147,34 @@ export const AuthApi = {
       throw new Error(error.response?.data?.message || 'Lỗi cập nhật mật khẩu');
     }
   },
-  
+
+  uploadAvatar: async (id, file) => {
+    if (!file) {
+      throw new Error("Vui lòng chọn một file để upload.");
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {   
+ const response = await fetch(`http://localhost:8080/koifarm/account/profile/updateAvatar/${id}`, {
+        method: 'POST',
+
+        body: formData, // Gửi formData trực tiếp
+      });
+
+      return response.data;
+    } catch (error) {
+
+      console.error('Error uploading avatar:', error.response?.data || error.message);
+      throw new Error(error.response?.data?.message || 'Lỗi cập nhật ảnh');
+    }
+  },
+
+
+
+
+
 
 
 };
