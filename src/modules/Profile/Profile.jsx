@@ -44,19 +44,25 @@ const schema = yup.object().shape({
     .matches(/^[0-9]+$/, 'Số điện thoại chỉ chứa số')
     .min(10, 'Số điện thoại phải có ít nhất 10 chữ số')
     .max(15, 'Số điện thoại không được vượt quá 15 chữ số'),
+
 });
 
 const Profile = () => {
+
   const { control, trigger, formState: { errors }, getValues, setValue, setError, clearErrors, } = useForm({
     resolver: yupResolver(schema),
   });
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [preview, setPreview] = useState(null);
 
+  const [success, setSuccess] = useState('');
   const [initialData, setInitialData] = useState({
     fullName: '',
     email: '',
     password: '',
     address: '',
     phone: '',
+    avatar: '',
   });
 
   const [isEditing, setIsEditing] = useState({
@@ -65,10 +71,12 @@ const Profile = () => {
     password: false,
     address: false,
     phone: false,
+    avatar: false,
   });
 
   const [oldPasswordCorrect, setOldPasswordCorrect] = useState(false);
   const [passwordChanged, setPasswordChanged] = useState(false);
+
 
   // Fetch profile data when component is mounted
   useEffect(() => {
@@ -85,13 +93,15 @@ const Profile = () => {
             password: profileData.password || '',
             address: profileData.address || '',
             phone: profileData.phone || '',
+            avatar: profileData.avatar || './img/avatar.svg',
           });
-
-          // Set form values
+          setAvatarPreview(profileData.avatar || './img/avatar.svg');
+         
           setValue('fullName', profileData.fullName);
           setValue('email', profileData.email);
           setValue('address', profileData.address);
           setValue('phone', profileData.phone);
+          setValue('avatar', profileData.avatar);
         } else {
           message.error('Không tìm thấy email người dùng. Vui lòng đăng nhập lại.');
         }
@@ -102,7 +112,7 @@ const Profile = () => {
 
     fetchProfile();
   }, [setValue]);
-
+  const [avatarPreview, setAvatarPreview] = useState(initialData.avatar || './img/avatar.svg');
   const handleSaveField = async (field) => {
     const isValid = await trigger(field);
     if (!isValid) return;
@@ -130,6 +140,7 @@ const Profile = () => {
         password: initialData.password,
         address: field === 'address' ? value : initialData.address,
         phone: field === 'phone' ? value : initialData.phone,
+        avatar: field === 'avatar' ? value : initialData.avatar,
       };
 
       await AuthApi.userProfileEdit(id, accessToken, completeUpdatedData);
@@ -153,6 +164,73 @@ const Profile = () => {
   };
 
 
+  const [selectedFile, setSelectedFile] = useState(null);
+
+
+const handleFileChange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/png'];
+    if (!validTypes.includes(file.type)) {
+      message.error('Định dạng file không hợp lệ. Chỉ chấp nhận JPEG hoặc PNG.');
+      return;
+    }
+
+    // Validate file size
+    if (file.size > 20000000) { // 2MB limit
+      message.error('File quá lớn. Kích thước tối đa là 2MB.');
+      return;
+    }
+
+    // If the file is valid, set the preview and state
+    setSelectedFile(file);
+    setAvatarPreview(URL.createObjectURL(file)); // Update preview for the UI
+
+    // Call the function to upload the file immediately
+    handleAvatarUpload(file);
+    e.target.value = ''; // Reset the file input for the user to select the same file again
+  }
+};
+
+// Function to upload the file to the server
+const handleAvatarUpload = async (file) => {
+  // Create FormData and append the file
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    // Get the user ID from localStorage for authentication
+    const dataProfile = JSON.parse(localStorage.getItem('user'));
+    const id = dataProfile?.id; // Use optional chaining to avoid errors if dataProfile is null
+
+    if (!id) {
+      message.error('Không tìm thấy thông tin người dùng.');
+      return;
+    }
+
+    // Send the POST request with FormData
+    const response = await fetch(`http://localhost:8080/koifarm/account/profile/updateAvatar/${id}`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error('Có lỗi xảy ra khi upload ảnh.');
+    }
+
+    const data = await response.json(); // Handle the server's response
+    message.success('Upload ảnh thành công!');
+    
+    // If the server returns the URL of the uploaded image, you can update the UI here
+    console.log(data);
+
+  } catch (error) {
+    // Show error message to the user
+    message.error(error.message || 'Đã xảy ra lỗi khi upload ảnh, vui lòng thử lại.');
+  }
+};
+  
 
   const handleOldPasswordSubmit = async () => {
     try {
@@ -265,7 +343,7 @@ const Profile = () => {
                 isPassword ? (
                   <Input.Password
                     {...field}
-                    
+
                     iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                   />
                 ) : (
@@ -327,33 +405,25 @@ const Profile = () => {
             <div className="w-full h-[315px] bg-white shadow flex justify-center items-center">
               <div className="flex flex-col">
                 <img
-                  src="./img/avatar.svg"
-                  alt=""
+                  src={avatarPreview}
+                  alt="Avatar"
                   className="inline-block h-[200px] w-[200px] rounded-full ring-2 ring-lime-100"
                 />
-                <div className="mt-10">
-                  <div className="w-full flex justify-center text-black text-xl font-bold font-['Arial']">
-                    <div className="mb-1">
-                      <div className="file-input-wrapped flex justify-center items-center">
-                        <div>
-                          <input
-                            type="file"
-                            id="file-input"
-                            name="ImageStyle"
-                            className="file-input-class"
-                            accept="image/*"
-                            style={{ display: 'none' }}
-                          />
-                        </div>
-                        <label
-                          htmlFor="file-input"
-                          className="upload-button flex justify-center items-center px-2 rounded-[10px] bg-[#FFFFFF] border-2 border-[#FA4444]"
-                        >
-                          <p>Cập nhật ảnh đại diện</p>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
+                <div className="file-input-wrapped flex justify-center items-center mt-4">
+                  <input
+                    type="file"
+                    id="file-input"
+                    name="avatar"
+                    accept="image/jpeg,image/png"
+                    style={{ display: 'none' }}
+                    onChange={handleFileChange}
+                  />
+                  <label
+                    htmlFor="file-input"
+                    className="upload-button flex justify-center items-center px-2 rounded-[10px] bg-[#FFFFFF] border-2 border-[#FA4444] cursor-pointer"
+                  >
+                    <p>Cập nhật ảnh đại diện</p>
+                  </label>
                 </div>
               </div>
             </div>

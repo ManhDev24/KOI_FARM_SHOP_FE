@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../Redux/Slices/Cart_Slice";
 import { toast } from "react-toastify";
 
-const ListFish = () => {
+const BatchFish = () => {
   const selectedCategoryFromRedux = useSelector((state) => state.category.selectedCategory || "");
   console.log(selectedCategoryFromRedux)
   const [selectedCategory, setSelectedCategory] = useState(selectedCategoryFromRedux);
@@ -625,8 +625,8 @@ const ListFish = () => {
                           {card.status === 1
                             ? "Đang bán"
                             : card.status === 2
-                            ? "Đã bán"
-                            : null}
+                              ? "Đã bán"
+                              : null}
                         </div>
                         <div className="rounded-[10px]">
                           <img
@@ -700,4 +700,4 @@ const ListFish = () => {
   );
 };
 
-export default ListFish;
+export default BatchFish;

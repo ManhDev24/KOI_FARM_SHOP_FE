@@ -58,6 +58,33 @@ const Navbar = () => {
       setLoading(false);
     }
   };
+  const fetchUserProfile = async () => {
+    try {
+      const categoriesArray = await FishApi.getCategories();
+      console.log(categoriesArray);
+      if (Array.isArray(categoriesArray)) {
+        const menuItems = categoriesArray.map((item) => ({
+          key: item.id,
+          label: (
+            <Link
+              to="/koiList"
+              onClick={() => handleCategorySelection(item.id)}
+            >
+              {item.categoryName}
+            </Link>
+          ),
+        }));
+        console.log(menuItems);
+        setKoiMenuItems(menuItems);
+      } else {
+        setError("The received data is not an array as expected.");
+      }
+    } catch (error) {
+      setError(error.message || "An error occurred while fetching categories.");
+    } finally {
+      setLoading(false);
+    }
+  };
   // Function to handle category selection and call API
   const handleCategorySelection = (categoryID) => {
 
@@ -73,6 +100,25 @@ const Navbar = () => {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
+  const dropdownFish = [
+    {
+      key: "9",
+      label: (
+        <Link to='/koiList' target="_self" rel="noopener noreferrer" >
+          Cá Koi Nhật
+        </Link>
+      ),
+    },
+    {
+      key: "10",
+      label: (
+        <Link to='/batch-fish' target="_self" rel="noopener noreferrer" >
+          Cá Koi theo lô
+        </Link>
+      ),
+    },
+
+  ];
 
   const newsMenuItems = [
     {
@@ -105,13 +151,14 @@ const Navbar = () => {
     {
       key: "5",
       label: (
-        <a
-          href={`/profile/${fetchEmail()}`}
+        <Link to="/profile"
           target="_self"
           rel="noopener noreferrer"
         >
+
+          { }
           Thông tin cá nhân
-        </a>
+        </Link>
 
       ),
     },
@@ -139,12 +186,12 @@ const Navbar = () => {
 
   return (
     <>
-      {/* //navbar */}
+      {/* navbar */}
       <div
         className="Navbar md:h-[400px] lg:h-[400px] xl:grid-cols-10  grid lg:grid-cols-10  2xl:grid-cols-8   
       w-full h-[150px]  lg:w-full xl:h-[150px]   sm:h-[300px] sm:col-span-1"
       >
-        {/* //logo */}
+        {/* logo */}
         <div
           className="w-full h-full md:col-span-12 lg:col-span-12 xl:col-span-1 flex flex-col justify-center
          col-span-1  sm:col-span-12 items-center"
@@ -180,7 +227,7 @@ const Navbar = () => {
         >
           <ul className="flex flex-col md:flex-row items-center justify-center md:h-[200px] lg:h-[150px]">
             <li className="me-x">
-              <Dropdown menu={{ items: koiMenuItems }} trigger={["hover"]}>
+              <Dropdown menu={{ items: dropdownFish }} trigger={["hover"]}>
                 <Button
                   type="primary"
                   danger
