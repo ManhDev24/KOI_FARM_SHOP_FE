@@ -32,13 +32,13 @@ export const FishApi = {
       throw new Error(error.response.data.message);
     }
   },
-  getListFishByCategory: async (categoryID, currentPage = 1, pageSize = 9) => {
+  getListFishByCategory: async (categoryID, currentPage=1, pageSize = 9) => {
     try {
       // if (categoryID) {
-      // Call the filter API if categoryID is provided
-      response = await fetcher.get(
-        `http://localhost:8080/koifarm/koifish/filter?categoryID=${categoryID}&page=${currentPage}&pageSize=${pageSize}`
-      );
+        // Call the filter API if categoryID is provided
+        response = await fetcher.get(
+          `http://localhost:8080/koifarm/koifish/filter?categoryID=${categoryID}&page=${currentPage}&pageSize=${pageSize}`
+        );
       // } else {
       //   // Call the all koi fish API if no categoryID is provided
       //   response = await fetcher.get(
