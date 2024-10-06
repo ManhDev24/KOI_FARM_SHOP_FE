@@ -17,9 +17,10 @@ const ListFish = () => {
   const [selectDate, setSelectDate] = useState("");
   const [selectAge, setSelectAge] = useState("");
   const [selectPrice, setSelectPrice] = useState("");
+  const [selectPurebred, setSelectPurebred] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [currentSize, setCurrentSize] = useState(100); // chiều dài max của cá
-  const [currentPrice, setCurrentPrice] = useState(1000000000); // tiền max của cá
+  const [currentSize, setCurrentSize] = useState(100);
+  const [currentPrice, setCurrentPrice] = useState(1000000000);
   console.log("currentPrice: ", currentPrice);
   const [genderFilter, setGenderFilter] = useState(0);
   const [sortField, setSortField] = useState(0);
@@ -63,6 +64,7 @@ const ListFish = () => {
       "price",
       currentSize,
       currentPrice,
+      selectPurebred,
     ],
     queryFn: () =>
       FishApi.getFilteredKoiFish(
@@ -76,6 +78,7 @@ const ListFish = () => {
         selectAge,
         "price",
         selectPrice,
+        selectPurebred,
         currentPage,
         pageSize
       ),
@@ -86,15 +89,10 @@ const ListFish = () => {
   console.log("koiListFilter: ", koiListFilter);
 
   const koiResponseList = KoiList?.koiFishReponseList;
-  const updateKoiList = koiResponseList?.map((item) => {
-    return {
-      ...item,
-      koiImage: "./img/showa2.jpg",
-    };
-  });
+
   const koiToDisplay = isFiltered
     ? koiListFilter?.koiFishReponseList
-    : updateKoiList;
+    : koiResponseList;
   console.log("koiToDisplay: ", koiToDisplay);
 
   const totalPage = isFiltered
@@ -204,6 +202,23 @@ const ListFish = () => {
       value: "1",
     },
   ];
+  const purebredCategoryItem = [
+    {
+      key: "Độ thuần chủng",
+      label: "Độ thuần chủng",
+      value: "",
+    },
+    {
+      key: "Thuẩn chủng",
+      label: "Thuẩn chủng",
+      value: "0",
+    },
+    {
+      key: "Lai F1",
+      label: "Lai F1",
+      value: "1",
+    },
+  ];
 
   const handleMenuClickCategory = (item) => {
     setSelectedCategory(item.value);
@@ -225,27 +240,34 @@ const ListFish = () => {
     setSelectPrice(item.value);
     setIsFiltered(true);
   };
+  const handleMenuClickPurebred = (item) => {
+    setSelectPurebred(item.value);
+    setIsFiltered(true);
+  };
   const handleAddToCompare = (item) => {
-    if (selectedItems.length < 2 && !selectedItems.some((i) => i.id === item.id)) {
-      setSelectedItems([...selectedItems, item]); // Add item to the comparison list
+    if (
+      selectedItems.length < 2 &&
+      !selectedItems.some((i) => i.id === item.id)
+    ) {
+      setSelectedItems([...selectedItems, item]);
     } else if (selectedItems.some((i) => i.id === item.id)) {
-      alert('This item has already been added to the comparison.');
+      alert("This item has already been added to the comparison.");
     } else {
-      alert('You can only compare a maximum of 2 items.');
+      alert("You can only compare a maximum of 2 items.");
     }
   };
-  // Remove Koi fish from the comparison list
   const removeItemFromCompare = (itemToRemove) => {
-    const updatedItems = selectedItems.filter((item) => item.id !== itemToRemove.id);
+    const updatedItems = selectedItems.filter(
+      (item) => item.id !== itemToRemove.id
+    );
     setSelectedItems(updatedItems);
   };
 
-  // Open comparison modal
   const handleCompare = () => {
     if (selectedItems.length > 0) {
       setIsModalOpen(true);
     } else {
-      alert('Please select at least one fish to compare.');
+      alert("Please select at least one fish to compare.");
     }
   };
 
@@ -316,12 +338,12 @@ const ListFish = () => {
                           {selectedCategory === "1"
                             ? "Koi showa"
                             : selectedCategory === "2"
-                              ? "Koi asagi"
-                              : selectedCategory === "3"
-                                ? "Koi karashi"
-                                : selectedCategory === "4"
-                                  ? "Koi Benikoi"
-                                  : "Danh mục"}
+                            ? "Koi asagi"
+                            : selectedCategory === "3"
+                            ? "Koi karashi"
+                            : selectedCategory === "4"
+                            ? "Koi Benikoi"
+                            : "Danh mục"}
                         </p>
                       </div>
                       <div>
@@ -341,10 +363,17 @@ const ListFish = () => {
                     </Button>
                   </Dropdown>
                 </div>
-                {/* <div className="dropdown_filter">
+                <div className="dropdown_filter">
                   <Dropdown
                     menu={{
-                      items: CategoryItem,
+                      items: purebredCategoryItem.map((item) => {
+                        return {
+                          ...item,
+                          key: item.key,
+                          label: item.label,
+                          onClick: () => handleMenuClickPurebred(item),
+                        };
+                      }),
                     }}
                     arrow
                   >
@@ -356,7 +385,13 @@ const ListFish = () => {
                       className="h-[50px] w-[250px] text-xl flex justify-between"
                     >
                       <div className="text-center text-xl font-bold flex justify-center items-center  m-0 ">
-                        <p>Nguồn gốc</p>
+                        <p>
+                          {selectPurebred === "0"
+                            ? "Thuần chủng"
+                            : selectPurebred === "1"
+                            ? "Lai F1"
+                            : "Độ thuần chủng"}
+                        </p>
                       </div>
                       <div>
                         <svg
@@ -374,7 +409,7 @@ const ListFish = () => {
                       </div>
                     </Button>
                   </Dropdown>
-                </div> */}
+                </div>
                 <div className="dropdown_filter">
                   <Dropdown
                     menu={{
@@ -399,8 +434,8 @@ const ListFish = () => {
                           {selectedGender === "0"
                             ? "Koi Cái"
                             : selectedGender === "1"
-                              ? "Koi Đực"
-                              : "Giới tính"}
+                            ? "Koi Đực"
+                            : "Giới tính"}
                         </p>
                       </div>
                       <div>
@@ -489,8 +524,8 @@ const ListFish = () => {
                           {selectAge === "1"
                             ? "Tuổi từ Thấp đến Cao"
                             : selectAge === "2"
-                              ? "Tuổi từ Cao đến Thấp "
-                              : "Tuổi"}
+                            ? "Tuổi từ Cao đến Thấp "
+                            : "Tuổi"}
                         </p>
                       </div>
                       <div>
@@ -534,8 +569,8 @@ const ListFish = () => {
                           {selectPrice === "1"
                             ? "Giá từ thâp đến cao"
                             : selectPrice === "2"
-                              ? "Giá từ cao đến thâp"
-                              : "Sắp xếp theo giá"}
+                            ? "Giá từ cao đến thâp"
+                            : "Sắp xếp theo giá"}
                         </p>
                       </div>
                       <div>
@@ -649,7 +684,7 @@ const ListFish = () => {
                     <Link to={`/fish-detail/${card.id}`}>
                       <Col
                         key={card.id}
-                        className="w-[250px] h-[645px] mx-10 mb-10"
+                        className="w-[250px] h-[700px] mx-10 mb-10"
                       >
                         <div className="relative w-[250px]">
                           <div
@@ -661,8 +696,8 @@ const ListFish = () => {
                             {card.status === 1
                               ? "Đang bán"
                               : card.status === 2
-                                ? "Đã bán"
-                                : null}
+                              ? "Đã bán"
+                              : null}
                           </div>
                           <div className="rounded-[10px]">
                             <img
@@ -673,22 +708,32 @@ const ListFish = () => {
                             />
                           </div>
                         </div>
-                        <div className="flex flex-col w-[250px] h-[300px] bg-[#FFFFFF] border border-t-0 border-x-2 border-b-2 border-[#FA4444] rounded-b-[10px]">
+                        <div className="flex flex-col w-[250px] h-[350px] bg-[#FFFFFF] border border-t-0 border-x-2 border-b-2 border-[#FA4444] rounded-b-[10px]">
                           <h1 className="my-0 mx-auto text-[#FA4444] font-bold text-[20px]">
                             {card.categoryName}
                           </h1>
                           <div className="my-[10px] mx-[10px]  ">
                             <div className="flex flex-col ">
-                              <div className="h-7 text-lg font-bold flex justify-center text-[#FA4444] ">
+                              <div className="h-7 text-lg font-bold flex justify-center text-[#FA4444] mb-6 ">
                                 {card.category} {card.size} cm {card.age} tuổi
                               </div>
-                              <div className="h-7">Người bán: {card.origin}</div>
+                              <div className="h-7">
+                                Người bán: {card.origin}
+                              </div>
                               <div className="h-6">
                                 Giới tính: {card.gender ? "Koi Đực" : "Koi Cái"}
                               </div>
                               <div className="h-6">Tuổi: {card.age}</div>
-                              <div className="h-6">Kích thước: {card.size}cm</div>
-                              <div className="h-6">Nguồn gốc: {card.origin}</div>
+                              <div className="h-6">
+                                Kích thước: {card.size} cm
+                              </div>
+                              <div className="h-6 ">
+                                Độ thuần chủng:
+                                {card.purebred == 0 ? "Thuần chủng" : "Lai F1"}
+                              </div>
+                              <div className="h-6">
+                                Nguồn gốc: {card.origin}
+                              </div>
                               <div className="h-6">Giống: {card.category}</div>
                             </div>
                             <div className="text-center">
@@ -710,41 +755,40 @@ const ListFish = () => {
                                   </Button>
                                   <Link>
                                     <div
-                                      className='absolute  top-[3px] right-[-5px] z-50' // Adjusted position: top right of the card
+                                      className="absolute  top-[3px] right-[-5px] z-50" // Adjusted position: top right of the card
                                       onClick={(e) => {
-
                                         handleAddToCompare(card);
                                       }}
                                     >
                                       <Button
                                         onClick={(e) => {
-
                                           handleAddToCompare(card);
                                         }}
-                                        className='!p-0 !py-1 w-[100px] !border-0 h-fit hover:!border-[#FA4444] hover:!text-[#FA4444] flex justify-around'
+                                        className="!p-0 !py-1 w-[100px] !border-0 h-fit hover:!border-[#FA4444] hover:!text-[#FA4444] flex justify-around"
                                       >
-                                        <div className='flex justify-center items-center'>
+                                        <div className="flex justify-center items-center">
                                           <svg
-                                            xmlns='http://www.w3.org/2000/svg'
-                                            width='1em'
-                                            height='1em'
-                                            className='flex'
-                                            viewBox='0 0 24 24'
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="1em"
+                                            height="1em"
+                                            className="flex"
+                                            viewBox="0 0 24 24"
                                           >
-                                            <g fill='none' fillRule='evenodd'>
+                                            <g fill="none" fillRule="evenodd">
                                               <path
-                                                d='M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4h4a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-4v4a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-4H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h4z'
-                                                fill='currentColor'
+                                                d="M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4h4a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-4v4a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-4H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h4z"
+                                                fill="currentColor"
                                               />
                                             </g>
                                           </svg>
-                                          <h5 className='mx-1 my-0 !text-center'>So sánh</h5>
+                                          <h5 className="mx-1 my-0 !text-center">
+                                            So sánh
+                                          </h5>
                                         </div>
                                       </Button>
                                     </div>
                                   </Link>
                                 </Link>
-
                               ) : null}
                             </div>
                           </div>
@@ -769,7 +813,6 @@ const ListFish = () => {
           )}
         </div>
       </div>
-      {/* Comparison Modal */}
       <ComparisonModal
         isOpen={isModalOpen}
         onClose={handleModalClose}
@@ -779,13 +822,14 @@ const ListFish = () => {
 
       <Button
         onClick={handleCompare}
-        className={`bg-[#FA4444] text-white fixed z-40 left-[100px] top-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${selectedItems.length === 0 ? 'disabled' : ''}`}
+        className={`bg-[#FA4444] text-white fixed z-40 left-[100px] top-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${
+          selectedItems.length === 0 ? "disabled" : ""
+        }`}
         disabled={selectedItems.length === 0}
       >
         Xem So Sánh ({selectedItems.length}) Cá Koi
       </Button>
     </div>
-
   );
 };
 

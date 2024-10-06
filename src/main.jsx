@@ -8,8 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
 import { Provider } from "react-redux";
 import Store from "./Redux/Store.js";
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -21,14 +20,14 @@ const queryClient = new QueryClient({
 
 createRoot(document.getElementById("root")).render(
   <Provider store={Store}>
-    <Router>
-      <QueryClientProvider client={queryClient}>
-        <GoogleOAuthProvider clientId="1097391559765-mlqeb37es5jof3736qagniim3aj8ivsh.apps.googleusercontent.com">
-          <App />
-          <ToastContainer />
-        </GoogleOAuthProvider>
-        <ReactQueryDevtools initialIsOpen={true} />
-      </QueryClientProvider>
-    </Router>
+      <Router>
+        <QueryClientProvider client={queryClient}>
+          <GoogleOAuthProvider clientId="1097391559765-mlqeb37es5jof3736qagniim3aj8ivsh.apps.googleusercontent.com">
+            <App />
+            <ToastContainer />
+          </GoogleOAuthProvider>
+          <ReactQueryDevtools initialIsOpen={true} />
+        </QueryClientProvider>
+      </Router>
   </Provider>
 );

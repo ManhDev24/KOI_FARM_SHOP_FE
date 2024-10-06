@@ -8,10 +8,14 @@ import {
 const initialState = {
   items: getLocalStorage("cartItems") || [],
   total: 0,
+  discountRate: 0,
 };
 
 const calculateTotalPrice = (items) => {
-  return items.reduce((total, item) => total + (item.price * (item.quantity || 1)), 0);
+  return items.reduce(
+    (total, item) => total + item.price * (item.quantity || 1),
+    0
+  );
 };
 
 const cartSlice = createSlice({
@@ -52,9 +56,12 @@ const cartSlice = createSlice({
       state.items = [];
       state.total = 0;
     },
+    saveDiscountRate: (state, action) => {
+      state.discountRate = action.payload;
+    },
   },
 });
 
 // Export actions and reducer
-export const { addToCart, removeFromCart } = cartSlice.actions;
+export const { addToCart, removeFromCart,saveDiscountRate } = cartSlice.actions;
 export default cartSlice.reducer;

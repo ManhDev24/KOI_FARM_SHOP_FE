@@ -1,6 +1,11 @@
 import HomePage from "../components/HomePage/HomePage";
 import DefaultLayout from "../layouts/DefautLayout/DefaultLayout";
+
 import BatchFish from "../modules/BatchFish/BatchFish";
+
+import Blog from "../modules/Blog/Blog/Blog";
+import ListBlog from "../modules/Blog/ListBlog/ListBlog";
+
 import Cart from "../modules/Cart/Cart";
 import ChangePassword from "../modules/ChangePassword/ChangePassword";
 import RequestConsignment from "../modules/Consigment/RequestConsignment";
@@ -123,8 +128,18 @@ export const publicRoutes = [
     layout: DefaultLayout,
   },
   {
+
     path: "/batch-fish",
     component: BatchFish,
+
+    path: "/list-blog",
+    component: ListBlog,
+    layout: DefaultLayout,
+  },
+  {
+    path: "/blog",
+    component: Blog,
+
     layout: DefaultLayout,
   },
 ];

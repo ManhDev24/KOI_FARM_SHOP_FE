@@ -1,25 +1,41 @@
-import { Breadcrumb, Button, Input, Table } from "antd";
-import React, { useState } from "react";
+import { Breadcrumb, Button, Form, Input, Table } from "antd";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Cart.css";
 import { useDispatch, useSelector } from "react-redux";
-import { removeFromCart } from "../../Redux/Slices/Cart_Slice";
-import { getLocalStorage } from "../../utils/LocalStorage";
+import {
+  removeFromCart,
+  saveDiscountRate,
+} from "../../Redux/Slices/Cart_Slice";
+import { getLocalStorage, setLocalStorage } from "../../utils/LocalStorage";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import CheckoutApi from "../../apis/Checkout.api";
 import { toast } from "react-toastify";
 import LoadingModal from "../Modal/LoadingModal";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+import { Controller, useForm } from "react-hook-form";
+import PromotionApi from "../../apis/Promotion";
+import orderApi from "../../apis/Order.api";
+
+const validationSchema = yup.object().shape({
+  code: yup.string().required(""),
+});
+
 const Cart = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [isPaymentSuccess, setIsPaymentSuccess] = useState(false);
+  const [isPaymentSuccess, setIsPaymentSuccess] = useState(0);
+  const [disCountRate, setDisCountRate] = useState(0);
+  console.log('disCountRate: ', disCountRate);
   const dispatch = useDispatch();
   const totalPrice = useSelector((state) => state.cart.total);
   const onCart = getLocalStorage("cartItems");
-  console.log("onCart: ", onCart);
   const user = getLocalStorage("user");
 
+  const finalPrice = totalPrice - totalPrice * disCountRate;
+  console.log("finalPrice: ", finalPrice);
   const navigate = useNavigate();
-
   const onSelectChange = (newSelectedRowKeys) => {
     setSelectedRowKeys(newSelectedRowKeys);
   };
@@ -28,9 +44,19 @@ const Cart = () => {
     onChange: onSelectChange,
   };
 
-  const handleDelete = (fish) => {
-    dispatch(removeFromCart(fish));
-  };
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      code: "",
+    },
+    resolver: yupResolver(validationSchema),
+    criteriaMode: "all",
+    mode: "onBlur",
+  });
+
   const {
     mutate: handleSaveOrder,
     isLoading: isOrdering,
@@ -63,16 +89,47 @@ const Cart = () => {
       toast.error(errorMessage);
     },
   });
+  const {
+    mutate: handleApplyPromotion,
+    isLoading: isPromotionLoading,
+    isError: isPromotionError,
+  } = useMutation({
+    mutationFn: (promoCode) => PromotionApi.applyPromotion(promoCode, user?.id),
+    onSuccess: (data) => {
+      console.log("data: ", data.data.discountRate);
+      setDisCountRate(data?.data?.discountRate);
+      setLocalStorage("discountRate", data.data.discountRate);
+      setLocalStorage("PromotionCode", data?.data?.promoCode);
+      toast.success("Áp dụng khuyến mãi thành công");
+    },
+    onError: (error) => {
+      const errorMessage =
+        error?.message || "Đã có lỗi xảy ra vui lòng thử lại !!!";
+      toast.error(errorMessage);
+    },
+  });
   if (isOrderError || isVnPayError) {
     return <div>Lỗi rồi</div>;
   }
-  if (isVnPayLoading || isOrdering) {
+  if (isVnPayLoading || isOrdering || isPromotionLoading) {
     return <LoadingModal />;
   }
 
   const handleOrder = () => {
-    handlePayOrderByVnPay(totalPrice);
+    handlePayOrderByVnPay(finalPrice);
   };
+  const handleDelete = (fish) => {
+    dispatch(removeFromCart(fish));
+  };
+  const onSubmitPromotionCode = (data) => {
+    if (onCart?.length == null) {
+      toast.error("Không có cá để áp dụng khuyến mãi");
+      return;
+    }
+    handleApplyPromotion(data.code);
+
+  };
+
   const columns = [
     {
       title: "Ảnh",
@@ -238,20 +295,30 @@ const Cart = () => {
                 style={{ border: "1px solid #EA4444" }}
                 className="w-[250px] h-[125px] flex mb-10 "
               >
-                <div className="flex flex-col justify-center p-3 w-full ">
-                  <div className="mb-3">
-                    <p className="text-xl font-semibold text-start">
-                      Mã giảm giá
-                    </p>
+                <Form onFinish={handleSubmit(onSubmitPromotionCode)}>
+                  <div className="flex flex-col justify-center p-3 w-full ">
+                    <div className="mb-3">
+                      <p className="text-xl font-semibold text-start">
+                        Mã giảm giá
+                      </p>
+                    </div>
+                    <div>
+                      <Controller
+                        name="code"
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            {...field}
+                            status={errors.code ? "error" : ""}
+                            style={{ border: "1px solid #EA4444" }}
+                            placeholder="Nhập mã giảm giá"
+                            className="w-full h-[40px]"
+                          />
+                        )}
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <Input
-                      style={{ border: "1px solid #EA4444" }}
-                      placeholder="Nhập mã giảm giá"
-                      className="w-full h-[40px]"
-                    />
-                  </div>
-                </div>
+                </Form>
               </div>
               <div
                 style={{ border: "1px solid #EA4444" }}
@@ -288,7 +355,10 @@ const Cart = () => {
                       </span>
                     </div>
                     <div>
-                      <span className="text-lg font-bold">0</span>
+                      <span className="text-lg font-bold">
+                        {" "}
+                        {disCountRate == 0 ? 0 : disCountRate * 100}%
+                      </span>
                     </div>
                   </div>
                   <div>
@@ -303,8 +373,8 @@ const Cart = () => {
                       </div>
                       <div className="text-center">
                         <span className="text-xl font-bold">
-                          {totalPrice
-                            ? totalPrice.toLocaleString("vi-VN", {
+                          {finalPrice
+                            ? finalPrice.toLocaleString("vi-VN", {
                                 style: "currency",
                                 currency: "VND",
                               })

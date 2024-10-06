@@ -98,7 +98,6 @@ const Navbar = () => {
     handleCategorySelection();
   }, []);
 
-  // Hiển thị loading hoặc error nếu có
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
   const dropdownFish = [
@@ -133,9 +132,9 @@ const Navbar = () => {
     {
       key: "2",
       label: (
-        <a target="_self" rel="noopener noreferrer" href="/cakoi">
+        <Link to={"/list-blog"}>
           Tin tức cá Koi
-        </a>
+        </Link>
       ),
     },
     {
