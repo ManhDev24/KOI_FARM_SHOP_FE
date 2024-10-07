@@ -1,5 +1,7 @@
 import HomePage from "../components/HomePage/HomePage";
 import DefaultLayout from "../layouts/DefautLayout/DefaultLayout";
+import AdminLayout from "../modules/Admin/AdminLayout/AdminLayout";
+import UserManagement from "../modules/Admin/UserManagement/UserManagement";
 
 import BatchFish from "../modules/BatchFish/BatchFish";
 
@@ -9,7 +11,6 @@ import ListBlog from "../modules/Blog/ListBlog/ListBlog";
 import Cart from "../modules/Cart/Cart";
 import ChangePassword from "../modules/ChangePassword/ChangePassword";
 import RequestConsignment from "../modules/Consigment/RequestConsignment";
-
 
 import Error from "../modules/ErrorPage/Error";
 import FishDetail from "../modules/FishDetail/FishDetail";
@@ -121,14 +122,13 @@ export const publicRoutes = [
     component: FishDetail,
     layout: DefaultLayout,
   },
-  
+
   {
     path: "/consignment",
     component: RequestConsignment,
     layout: DefaultLayout,
   },
   {
-
     path: "/batch-fish",
     component: BatchFish,
 
@@ -144,4 +144,19 @@ export const publicRoutes = [
   },
 ];
 
-export const privateRoutes = [];
+export const privateRoutes = [
+  {
+    path: "/admin",
+    component: AdminLayout,
+    layout: null,
+    roles: ["manager", "staff"],
+    children: [
+      {
+        path: "user-management",
+        component: UserManagement,
+        layout: null,
+        roles: ["manager", "staff"],
+      },
+    ],
+  },
+];
