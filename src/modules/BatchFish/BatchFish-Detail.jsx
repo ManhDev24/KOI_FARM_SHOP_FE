@@ -6,7 +6,8 @@ import { Button } from 'antd';
 import { addToCart } from '../../Redux/Slices/Cart_Slice';
 import { useDispatch } from 'react-redux';
 import fish from '/img/SOWA.webp';
-const FishDetail = () => {
+
+const BatchFishDetail = () => {
   const { id } = useParams();  // Get the fish ID from the URL
   const dispatch = useDispatch();
 
@@ -15,7 +16,7 @@ const FishDetail = () => {
   // Fetch fish details using the useQuery hook
   const { data, error, isLoading } = useQuery({
     queryKey: ['fishDetail', id],
-    queryFn: () => FishApi.getFishDetail(id),  
+    queryFn: () => FishApi.getBatchFishDetail(id),  // API call to fetch fish details
   });
 
   // Handle loading state
@@ -162,10 +163,6 @@ const FishDetail = () => {
                   Next
                 </button>
               </div> */}
-              <div>
-
-                aaaaaaa
-              </div>
         </div>
       </div>
 
@@ -173,4 +170,4 @@ const FishDetail = () => {
   );
 };
 
-export default FishDetail;
+export default BatchFishDetail;

@@ -8,27 +8,28 @@ import LoadingModal from "../Modal/LoadingModal";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../Redux/Slices/Cart_Slice";
 import { toast } from "react-toastify";
+import BatchComparisonModal from "../Modal/BatchComparisonModal ";
 
 const BatchFish = () => {
-  const selectedCategoryFromRedux = useSelector((state) => state.category.selectedCategory || "");
-  console.log(selectedCategoryFromRedux)
-  const [selectedCategory, setSelectedCategory] = useState(selectedCategoryFromRedux);
-  console.log(selectedCategory)
+
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   const [isFiltered, setIsFiltered] = useState(false);
-  const [selectedGender, setSelectedGender] = useState(1);
-  const [selectDate, setSelectDate] = useState(1);
-  const [selectAge, setSelectAge] = useState(1);
-  const [selectPrice, setSelectPrice] = useState(1);
+  const [selectAge, setSelectAge] = useState("");
+  const [selectPrice, setSelectPrice] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [currentSize, setCurrentSize] = useState(100); // chiều dài max của cá
-  const [currentPrice, setCurrentPrice] = useState(1000000000); // tiền max của cá
-  // console.log("currentPrice: ", currentPrice);
-  const [genderFilter, setGenderFilter] = useState(0);
-  const [sortField, setSortField] = useState(0);
-  const [sortDirection, setSortDirection] = useState(0);
-  const dispatch = useDispatch();
+  const [currentSize, setCurrentSize] = useState(); // Max size
+  const [currentPrice, setCurrentPrice] = useState(1000000000); // Max price
+  const [avgSize, setAvgSize] = useState("");
+  const [sortField, setSortField] = useState("");
+  const [sortDirection, setSortDirection] = useState("");
   const [pageSize, setPageSize] = useState(9);
+
+  const dispatch = useDispatch();
+  const [selectedItems, setSelectedItems] = useState([]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
 
   const handleAddToCart = (fish) => {
     dispatch(
@@ -39,87 +40,87 @@ const BatchFish = () => {
     );
   };
 
-  const { data: koiList, isLoading, isError } = useQuery({
-    queryKey: ["KoiList", selectedCategory],
-    queryFn: () => FishApi.getListFishByCategory(selectedCategory),
-    enabled: isFiltered,// Chỉ gọi API khi có category
-    keepPreviousData: true,
-  });
+  // const {
+  //   data: KoiLists,
+  //   isLoading: isLoadingKoiLists,
+  //   isError: isErrorLoadingKoiLists,
+  // } = useQuery({
+  //   queryKey: ["KoiLists", currentPage],
+  //   queryFn: () => FishApi.getListBatchFishByCategory(currentPage),
+  //   keepPreviousData: true,
+  // });
 
-  useEffect(() => {
 
-    setSelectedCategory(selectedCategoryFromRedux);
-    setIsFiltered(true);
-  }, [selectedCategoryFromRedux, koiList]);
-
+  //koibatchfish
   const {
     data: KoiList,
     isLoading: isLoadingKoiList,
     isError: isErrorLoadingKoiList,
   } = useQuery({
-    queryKey: ["KoiList", currentPage],
-    queryFn: () => FishApi.getListFish(currentPage),
+    queryKey: ["KoiList", currentPage, pageSize],
+    queryFn: () => FishApi.getListBatchFish(currentPage, pageSize),
     keepPreviousData: true,
   });
 
 
 
+  //koiListFilter
   const {
-    data: koiListFilter,
-    isLoading: isLoadingKoiListFilter,
-    isError: isErrorLoadingKoiListFilter,
+    data: filteredKoiBatchList,
+    isLoading: isLoadingFilteredKoiBatchList,
+    isError: isErrorLoadingFilteredKoiBatchList,
   } = useQuery({
     queryKey: [
-      "koiListFilter",
+      "filteredKoiBatchList",
       currentPage,
-      selectedCategoryFromRedux, // Sử dụng danh mục từ Redux
-      selectedGender,
-      selectDate,
+      pageSize,
+      selectedCategory,
+      avgSize,
       selectAge,
-      selectPrice,
-      "age",
-      sortDirection,
-      "price",
-      currentSize,
+      300000,
       currentPrice,
+      "",
+      sortDirection,
     ],
     queryFn: () =>
-      FishApi.getFilteredKoiFish(
-        selectedCategoryFromRedux, // Sử dụng danh mục từ Redux
-        selectedGender,
-        0,
-        currentSize,
+      FishApi.getFilteredBatchKoiFish(
+        currentPage,
+        pageSize,
+        selectedCategory,
+        avgSize,
+        selectAge,
         300000,
         currentPrice,
-        "age",
-        selectAge,
         "price",
-        selectPrice,
-        currentPage,
-        pageSize
+        sortDirection
       ),
     enabled: isFiltered,
     keepPreviousData: true,
   });
 
-  koiListFilter;
-  console.log("koiListFilter: ", koiListFilter);
 
-  const koiResponseList = KoiList?.koiFishReponseList;
+
+  filteredKoiBatchList;
+
+
+
+  const koiResponseList = KoiList?.batchReponses;
   const updateKoiList = koiResponseList?.map((item) => {
     return {
       ...item,
       koiImage: "./img/showa2.jpg",
     };
   });
-  const koiToDisplay = isFiltered
-    ? koiListFilter?.koiFishReponseList
-    : updateKoiList;
-  console.log("koiToDisplay: ", koiToDisplay);
 
-  const totalPage = isFiltered
-    ? koiListFilter?.totalElements
+
+  const koiToDisplay = isFiltered
+    ? filteredKoiBatchList?.batchReponses
+    : updateKoiList;
+
+  const totalItems = isFiltered
+    ? filteredKoiBatchList?.totalElements
     : KoiList?.totalElements;
+
 
   if (isLoadingKoiList) {
     return <LoadingModal />;
@@ -133,6 +134,7 @@ const BatchFish = () => {
     {
       key: "Danh mục",
       label: "Danh mục",
+      value: ""
     },
     {
       key: "Koi showa",
@@ -156,18 +158,18 @@ const BatchFish = () => {
     },
   ];
 
-  const newDateFilterCategoryItem = [
-    {
-      key: "latest",
-      label: "Ngày Mới nhất",
-      value: "1",
-    },
-    {
-      key: "oldest",
-      label: "Ngày Cũ nhất",
-      value: "2",
-    },
-  ];
+  // const newDateFilterCategoryItem = [
+  //   {
+  //     key: "latest",
+  //     label: "Ngày Mới nhất",
+  //     value: "1",
+  //   },
+  //   {
+  //     key: "oldest",
+  //     label: "Ngày Cũ nhất",
+  //     value: "2",
+  //   },
+  // ];
   const priceCategoryItem = [
     {
       key: "HighestPrices",
@@ -183,55 +185,73 @@ const BatchFish = () => {
   const ageCategoryItem = [
     {
       key: "HighestAge",
-      label: "Tuổi từ Cao đến Thấp",
+      label: "Giá từ thấp đến cao",
       value: "1",
     },
     {
       key: "LowestAge",
-      label: "Tuổi từ Thấp đến Cao",
+      label: "Giá từ Thấp đến Cao",
       value: "2",
     },
   ];
-  const genderCategoryItem = [
-    {
-      key: "Koi Cái",
-      label: "Koi Cái",
-      value: "0",
-    },
-    {
-      key: "Koi Đực",
-      label: "Koi Đực",
-      value: "1",
-    },
-  ];
+  // const genderCategoryItem = [
+  //   {
+  //     key: "Koi Cái",
+  //     label: "Koi Cái",
+  //     value: "0",
+  //   },
+  //   {
+  //     key: "Koi Đực",
+  //     label: "Koi Đực",
+  //     value: "1",
+  //   },
+  // ];
 
   const handleMenuClickCategory = (item) => {
-    // Cập nhật danh mục được chọn
+
     setSelectedCategory(item.value);
-
-    // Cập nhật danh mục trong Redux
-    dispatch(setSelectedCategory(item.value));
-
-    // Kích hoạt bộ lọc
     setIsFiltered(true);
   };
 
-  const handleMenuClickGender = (item) => {
-    setSelectedGender(+item.value);
-    setIsFiltered(true);
-  };
-  const handleMenuClickDate = (item) => {
-    setSelectDate(item.value);
-    setIsFiltered(true);
-  };
+  // const handleMenuClickGender = (item) => {
+  //   setSelectedGender(+item.value);
+  //   setIsFiltered(true);
+  // };
+  // const handleMenuClickDate = (item) => {
+  //   setSelectDate(item.value);
+  //   setIsFiltered(true);
+  // };
   const handleMenuClickAge = (item) => {
     setSelectAge(item.value);
     setIsFiltered(true);
   };
   const handleMenuClickPrice = (item) => {
     setSelectPrice(item.value);
+    setSortDirection(item.value);
     setIsFiltered(true);
   };
+
+  const handleAddToCompare = (item) => {
+    if (selectedItems.length < 2 && !selectedItems.some((i) => i.batchID === item.batchID)) {
+      setSelectedItems([...selectedItems, item]); // Add item to the comparison list
+    } else if (selectedItems.some((i) => i.batchID === item.batchID)) {
+      alert('Lô cá này đã được thêm vào để so sánh');
+    } else {
+      alert('Bạn chỉ có thể thêm tối đa 2 lô cá.');
+    }
+  };
+  const removeItemFromCompare = (itemToRemove) => {
+    const updatedItems = selectedItems.filter((item) => item.batchID !== itemToRemove.batchID);
+    setSelectedItems(updatedItems);
+  };
+  const handleCompare = () => {
+    if (selectedItems.length > 0) {
+      setIsModalOpen(true);
+    } else {
+      alert('Vui lòng chọn ít nhất một lô cá để so sánh.');
+    }
+  };
+
   return (
     <div className="ListFish ">
       <div className="filter flex justify-center items-center  mb-5">
@@ -272,6 +292,8 @@ const BatchFish = () => {
               </div>
               <div className="grid grid-cols-1 gap-5 ">
                 <div className="dropdown_filter">
+
+                  {/* //handlMenuClickCate */}
                   <Dropdown
                     menu={{
                       items: CategoryItem.map((item) => ({
@@ -300,7 +322,9 @@ const BatchFish = () => {
                                 ? "Koi karashi"
                                 : selectedCategory === "4"
                                   ? "Koi Benikoi"
-                                  : "Danh mục"}
+                                  : selectedCategory === " "
+                                    ? "Danh Mục" : 'Danh Mục'
+                          }
                         </p>
                       </div>
                       <div>
@@ -320,7 +344,7 @@ const BatchFish = () => {
                     </Button>
                   </Dropdown>
                 </div>
-                <div className="dropdown_filter">
+                {/* <div className="dropdown_filter">
                   <Dropdown
                     menu={{
                       items: CategoryItem,
@@ -353,8 +377,8 @@ const BatchFish = () => {
                       </div>
                     </Button>
                   </Dropdown>
-                </div>
-                <div className="dropdown_filter">
+                </div> */}
+                {/* <div className="dropdown_filter">
                   <Dropdown
                     menu={{
                       items: genderCategoryItem.map((item) => ({
@@ -392,8 +416,8 @@ const BatchFish = () => {
                       </div>
                     </Button>
                   </Dropdown>
-                </div>
-                <div className="dropdown_filter">
+                </div> */}
+                {/* <div className="dropdown_filter">
                   <Dropdown
                     menu={{
                       items: newDateFilterCategoryItem.map((item) => ({
@@ -433,8 +457,8 @@ const BatchFish = () => {
                       </div>
                     </Button>
                   </Dropdown>
-                </div>
-                <div className="dropdown_filter">
+                </div> */}
+                {/* <div className="dropdown_filter">
                   <Dropdown
                     menu={{
                       items: ageCategoryItem.map((item) => ({
@@ -476,7 +500,7 @@ const BatchFish = () => {
                       </div>
                     </Button>
                   </Dropdown>
-                </div>
+                </div> */}
                 <div className="dropdown_filter">
                   <Dropdown
                     menu={{
@@ -498,9 +522,13 @@ const BatchFish = () => {
                     >
                       <div className="text-center text-xl font-bold flex justify-center items-center  m-0 ">
                         <p>
-                          {selectPrice == 1
-                            ? "Giá từ cao đến thấp"
-                            : "Giá từ thấp đến cao"}
+                          {selectPrice === "1"
+                            ? "Giá từ thấp đến cao"
+                            : selectPrice === "2"
+                              ? "Giá từ cao đến thấp"
+                              : "Sắp xếp theo giá"
+                          }
+
                         </p>
                       </div>
                       <div>
@@ -521,7 +549,7 @@ const BatchFish = () => {
                   </Dropdown>
                 </div>
                 <div className="dropdown_filter">
-                  <div>
+                  {/* <div>
                     <div className="text-xl font-bold">Kích thước (cm)</div>
                     <Slider
                       marks={{
@@ -542,7 +570,7 @@ const BatchFish = () => {
                         setIsFiltered(true);
                       }}
                     />
-                  </div>
+                  </div> */}
                 </div>
                 <div className="dropdown_filter">
                   <div>
@@ -602,8 +630,10 @@ const BatchFish = () => {
               </h2>
             </div>
           )}
+
           <div className="my-[80px] flex justify-center items-start ">
             <Flex className="justify-center ">
+
               <Row
                 gutter={[16, 16]}
                 justify="center"
@@ -611,59 +641,79 @@ const BatchFish = () => {
               >
                 {koiToDisplay?.map((card) => {
                   return (
-                    <Col
-                      key={card.id}
-                      className="w-[250px] h-[645px] mx-10 mb-10"
-                    >
-                      <div className="relative w-[250px]">
-                        <div
-                          className="absolute w-[86px] 
+                    <>
+                      <Link to={`/batch-detail/${card.batchID}`}>
+                        <Col
+                          key={card.id}
+                          className="w-[250px] h-[645px] mx-10 mb-10"
+                        >
+                          <div className="relative w-[250px]">
+                            <div
+                              className="absolute w-[86px] 
                                                 bg-[#FFFFFF] rounded-ee-[10px] 
                                                 rounded-tl-[5px] text-center 
                                                 text-[#FA4444]"
-                        >
-                          {card.status === 1
-                            ? "Đang bán"
-                            : card.status === 2
-                              ? "Đã bán"
-                              : null}
-                        </div>
-                        <div className="rounded-[10px]">
-                          <img
-                            src={card.koiImage}
-                            className="w-[250px] h-[354px] rounded-t-[8px] box-border"
-                            alt={card.category}
-                            style={{ width: "250px" }}
-                          />
-                        </div>
-                      </div>
-                      <div className="flex flex-col w-[250px] h-[300px] bg-[#FFFFFF] border border-t-0 border-x-2 border-b-2 border-[#FA4444] rounded-b-[10px]">
-                        <h1 className="my-0 mx-auto text-[#FA4444] font-bold text-[20px]">
-                          {card.categoryName}
-                        </h1>
-                        <div className="my-[10px] mx-[10px]  ">
-                          <div className="flex flex-col ">
-                            <div className="h-7 text-lg font-bold flex justify-center text-[#FA4444] ">
-                              {card.category} {card.size} cm {card.age} tuổi
+                            >
+                              {card.status === 1
+                                ? "Đang bán"
+                                : card.status === 2
+                                  ? "Đã bán"
+                                  : null}
                             </div>
-                            <div className="h-7">Người bán: {card.origin}</div>
-                            <div className="h-6">
-                              Giới tính: {card.gender ? "Koi Đực" : "Koi Cái"}
+                            <div className="rounded-[10px]">
+                              <img
+                                src={card.batchImg}
+                                className="w-[250px] h-[354px] rounded-t-[8px] box-border"
+                                alt={card.categoryName}
+                                style={{ width: "250px" }}
+                              />
                             </div>
-                            <div className="h-6">Tuổi: {card.age}</div>
-                            <div className="h-6">Kích thước: {card.size}cm</div>
-                            <div className="h-6">Nguồn gốc: {card.origin}</div>
-                            <div className="h-6">Giống: {card.category}</div>
                           </div>
-                          <div className="text-center">
-                            <div className="my-[10px] text-[20px] font-bold">
-                              {new Intl.NumberFormat("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              }).format(card.price)}
-                            </div>
-                            {card.status !== 2 ? (
-                              <Link>
+                          <div className="flex flex-col w-[250px] h-[320px] bg-[#FFFFFF] border border-t-0 border-x-2 border-b-2 border-[#FA4444] rounded-b-[10px]">
+                            <h1 className="my-0 mx-auto text-[#FA4444] font-bold text-[20px]">
+                              {card.categoryName} số lượng {card.quantity} độ tuổi {card.age}
+                            </h1>
+                            <div className="my-[10px] mx-[10px]  ">
+                              <div className="flex flex-col ">
+                                <div className="h-7">Người bán: {card.origin}</div>
+                                <div className="h-6">
+                                  Số lượng: {card.quantity}
+                                </div>
+                                <div className="h-6">Tuổi: {card.age}</div>
+                                <div className="h-6">Kích thước: {card.avgSize}cm</div>
+                                <div className="h-6">Nguồn gốc: {card.origin}</div>
+                                <div className="h-6">Giống: {card.categoryName}</div>
+                              </div>
+                              <div className="text-center">
+                                <div className="my-[10px] text-[20px] font-bold">
+                                  {new Intl.NumberFormat("vi-VN", {
+                                    style: "currency",
+                                    currency: "VND",
+                                  }).format(card.price)}
+                                </div>
+                                {card.status !== 2 ? (
+                                  <>
+                                    <Link to='#'>
+                                      <Button
+                                        onClick={() => {
+                                          handleAddToCart(card);
+                                        }}
+                                        className="w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]"
+                                      >
+                                        Đặt Mua
+                                      </Button>
+                                      <Button
+                                      onClick={() => handleAddToCompare(card)}
+                                      className="w-[120px] h-[30px] absolute top-[3px] right-[3px] text-[#FFFFFF] bg-[#EA9B00] rounded-[10px] mt-2"
+                                    >
+                                      Thêm So Sánh
+                                    </Button>
+                                    </Link>
+
+                                  </>
+                                ) : null}
+                              </div>
+                              {/* <>
                                 <Button
                                   onClick={() => {
                                     handleAddToCart(card);
@@ -672,22 +722,31 @@ const BatchFish = () => {
                                 >
                                   Đặt Mua
                                 </Button>
-                              </Link>
-                            ) : null}
+                              </> */}
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                    </Col>
+                        </Col>
+                        <Link>
+
+                        </Link>
+
+                      </Link>
+
+                    </>
+
                   );
                 })}
               </Row>
+
             </Flex>
           </div>
+
           {koiToDisplay?.length > 0 && (
             <div className="pagination flex justify-end mb-3 me-3">
               <Pagination
-                defaultCurrent={currentPage}
-                total={totalPage}
+                current={currentPage}
+                total={totalItems}
+                pageSize={pageSize}
                 onChange={(page) => {
                   setCurrentPage(page);
                 }}
@@ -696,6 +755,21 @@ const BatchFish = () => {
           )}
         </div>
       </div>
+      <BatchComparisonModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        selectedBatches={selectedItems}
+        setSelectedBatches={setSelectedItems}
+        removeBatch={removeItemFromCompare}
+      />
+      <Button
+        onClick={handleCompare}
+        className={`bg-[#FA4444] text-white fixed z-40 left-[100px] top-[200px] ${selectedItems.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+        disabled={selectedItems.length === 0}
+      >
+        Xem So Sánh ({selectedItems.length}) Lô Cá Koi
+      </Button>
+
     </div>
   );
 };
