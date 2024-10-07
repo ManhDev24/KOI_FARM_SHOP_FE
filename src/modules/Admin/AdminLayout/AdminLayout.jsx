@@ -1,11 +1,12 @@
 // src/modules/Admin/AdminLayout/AdminLayout.js
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UploadOutlined,
   UserOutlined,
   VideoCameraOutlined,
+  DashboardOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { useLocation, useNavigate, Outlet } from "react-router-dom";
@@ -22,7 +23,14 @@ const AdminLayout = () => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
 
-  const selectedKey = publicRoutes.find(route => pathname.startsWith(route.path))?.path || "/admin";
+  useEffect(() => {
+    if (pathname === "/admin") {
+      navigate("/admin/dashboard");
+    }
+  }, [pathname, navigate]);
+  const selectedKey =
+    publicRoutes.find((route) => pathname.startsWith(route.path))?.path ||
+    "/admin";
 
   return (
     <Layout className="h-screen">
@@ -48,9 +56,9 @@ const AdminLayout = () => {
               label: "Account Management",
             },
             {
-              key: "/admin/nav2",
+              key: "/admin/fish-management",
               icon: <VideoCameraOutlined />,
-              label: "Nav 2",
+              label: "Fish Management",
             },
             {
               key: "/admin/nav3",
@@ -87,7 +95,7 @@ const AdminLayout = () => {
             borderRadius: borderRadiusLG,
           }}
         >
-          <Outlet /> 
+          <Outlet />
         </Content>
       </Layout>
     </Layout>

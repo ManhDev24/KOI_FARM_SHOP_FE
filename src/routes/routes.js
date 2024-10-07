@@ -1,6 +1,8 @@
 import HomePage from "../components/HomePage/HomePage";
 import DefaultLayout from "../layouts/DefautLayout/DefaultLayout";
 import AdminLayout from "../modules/Admin/AdminLayout/AdminLayout";
+import DashBoard from "../modules/Admin/Dashboard/DashBoard";
+import FishManagement from "../modules/Admin/FishManagement/FishManagement";
 import UserManagement from "../modules/Admin/UserManagement/UserManagement";
 
 import BatchFish from "../modules/BatchFish/BatchFish";
@@ -152,8 +154,21 @@ export const privateRoutes = [
     roles: ["manager", "staff"],
     children: [
       {
+        path: "dashboard",
+        component: DashBoard,
+        layout: null,
+        roles: ["manager", "staff"],
+      },
+      {
         path: "user-management",
         component: UserManagement,
+        layout: null,
+        roles: ["manager", "staff"],
+      },
+
+      {
+        path: "fish-management",
+        component: FishManagement,
         layout: null,
         roles: ["manager", "staff"],
       },
