@@ -18,8 +18,8 @@ const ListFish = () => {
   const [selectAge, setSelectAge] = useState("");
   const [selectPrice, setSelectPrice] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [currentSize, setCurrentSize] = useState(100); // chiều dài max của cá
-  const [currentPrice, setCurrentPrice] = useState(1000000000); // tiền max của cá
+  const [currentSize, setCurrentSize] = useState(100);
+  const [currentPrice, setCurrentPrice] = useState(1000000000); 
   console.log("currentPrice: ", currentPrice);
   const [genderFilter, setGenderFilter] = useState(0);
   const [sortField, setSortField] = useState(0);

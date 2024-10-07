@@ -15,7 +15,7 @@ const BatchComparisonModal = ({ isOpen, onClose, selectedBatches, setSelectedBat
     setSelectedBatches(savedBatches);
   }, [isOpen, setSelectedBatches]);
 
-  // Update localStorage when selectedBatches changes
+
   useEffect(() => {
     localStorage.setItem('comparisonBatches', JSON.stringify(selectedBatches));
   }, [selectedBatches]);

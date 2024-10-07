@@ -162,6 +162,10 @@ const FishDetail = () => {
                   Next
                 </button>
               </div> */}
+              <div>
+
+                aaaaaaa
+              </div>
         </div>
       </div>
 

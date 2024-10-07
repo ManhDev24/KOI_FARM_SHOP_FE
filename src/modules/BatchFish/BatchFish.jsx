@@ -11,7 +11,9 @@ import { toast } from "react-toastify";
 import BatchComparisonModal from "../Modal/BatchComparisonModal ";
 
 const BatchFish = () => {
+
   const [selectedCategory, setSelectedCategory] = useState("");
+
   const [isFiltered, setIsFiltered] = useState(false);
   const [selectAge, setSelectAge] = useState("");
   const [selectPrice, setSelectPrice] = useState("");
@@ -27,16 +29,7 @@ const BatchFish = () => {
   const [selectedItems, setSelectedItems] = useState([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  useEffect(() => {
-    localStorage.setItem('comparisonBatches', JSON.stringify(selectedItems));
-  }, [selectedItems]);
 
-  useEffect(() => {
-    const storedItems = localStorage.getItem('comparisonBatches');
-    if (storedItems) {
-      setSelectedItems(JSON.parse(storedItems));
-    }
-  }, []);
 
   const handleAddToCart = (fish) => {
     dispatch(
