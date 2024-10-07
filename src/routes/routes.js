@@ -2,6 +2,7 @@ import HomePage from "../components/HomePage/HomePage";
 import DefaultLayout from "../layouts/DefautLayout/DefaultLayout";
 
 import BatchFish from "../modules/BatchFish/BatchFish";
+import BatchFishDetail from "../modules/BatchFish/BatchFish-Detail";
 
 import Blog from "../modules/Blog/Blog/Blog";
 import ListBlog from "../modules/Blog/ListBlog/ListBlog";
@@ -9,7 +10,6 @@ import ListBlog from "../modules/Blog/ListBlog/ListBlog";
 import Cart from "../modules/Cart/Cart";
 import ChangePassword from "../modules/ChangePassword/ChangePassword";
 import RequestConsignment from "../modules/Consigment/RequestConsignment";
-
 
 import Error from "../modules/ErrorPage/Error";
 import FishDetail from "../modules/FishDetail/FishDetail";
@@ -121,17 +121,23 @@ export const publicRoutes = [
     component: FishDetail,
     layout: DefaultLayout,
   },
-  
+  {
+    path: "batch-fish/",
+    component: BatchFish,
+    layout: DefaultLayout,
+  },
+  {
+    path: "batch-detail/:id",
+    component: BatchFishDetail,
+    layout: DefaultLayout,
+  },
+
   {
     path: "/consignment",
     component: RequestConsignment,
     layout: DefaultLayout,
   },
   {
-
-    path: "/batch-fish",
-    component: BatchFish,
-
     path: "/list-blog",
     component: ListBlog,
     layout: DefaultLayout,

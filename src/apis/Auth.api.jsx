@@ -134,7 +134,7 @@ export const AuthApi = {
   updatePassword: async (id, accessToken, password) => {
     try {
       const response = await fetcher.put(
-        `http://localhost:8080/koifarm/account/profile/updatePassword/${id}`,
+        `http://localhost:8080/koifarm/account/updatePassword/${id}`,
         { password }, // Gửi mật khẩu trong body của yêu cầu
         {
           headers: {
