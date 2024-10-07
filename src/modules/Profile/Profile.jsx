@@ -78,7 +78,7 @@ const Profile = () => {
   const [passwordChanged, setPasswordChanged] = useState(false);
 
 
-  // Fetch profile data when component is mounted
+ 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -170,46 +170,45 @@ const Profile = () => {
 const handleFileChange = (e) => {
   const file = e.target.files[0];
   if (file) {
-    // Validate file type
+   
     const validTypes = ['image/jpeg', 'image/png'];
     if (!validTypes.includes(file.type)) {
       message.error('Định dạng file không hợp lệ. Chỉ chấp nhận JPEG hoặc PNG.');
       return;
     }
-
-    // Validate file size
-    if (file.size > 20000000) { // 2MB limit
-      message.error('File quá lớn. Kích thước tối đa là 2MB.');
+ 
+    if (file.size > 20000000) {
+      message.error('File quá lớn. Kích thước tối đa là 20MB.');
       return;
     }
 
-    // If the file is valid, set the preview and state
+   
     setSelectedFile(file);
-    setAvatarPreview(URL.createObjectURL(file)); // Update preview for the UI
+    setAvatarPreview(URL.createObjectURL(file)); 
 
-    // Call the function to upload the file immediately
+  
     handleAvatarUpload(file);
-    e.target.value = ''; // Reset the file input for the user to select the same file again
+    e.target.value = ''; 
   }
 };
 
-// Function to upload the file to the server
+
 const handleAvatarUpload = async (file) => {
-  // Create FormData and append the file
+ 
   const formData = new FormData();
   formData.append('file', file);
 
   try {
-    // Get the user ID from localStorage for authentication
+   
     const dataProfile = JSON.parse(localStorage.getItem('user'));
-    const id = dataProfile?.id; // Use optional chaining to avoid errors if dataProfile is null
+    const id = dataProfile?.id;
 
     if (!id) {
       message.error('Không tìm thấy thông tin người dùng.');
       return;
     }
 
-    // Send the POST request with FormData
+   
     const response = await fetch(`http://localhost:8080/koifarm/account/profile/updateAvatar/${id}`, {
       method: 'POST',
       body: formData,
@@ -219,14 +218,13 @@ const handleAvatarUpload = async (file) => {
       throw new Error('Có lỗi xảy ra khi upload ảnh.');
     }
 
-    const data = await response.json(); // Handle the server's response
+    const data = await response.json(); 
     message.success('Upload ảnh thành công!');
     
-    // If the server returns the URL of the uploaded image, you can update the UI here
     console.log(data);
 
   } catch (error) {
-    // Show error message to the user
+    
     message.error(error.message || 'Đã xảy ra lỗi khi upload ảnh, vui lòng thử lại.');
   }
 };
