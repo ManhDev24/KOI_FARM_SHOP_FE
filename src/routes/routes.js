@@ -122,12 +122,12 @@ export const publicRoutes = [
     layout: DefaultLayout,
   },
   {
-    path: "batch-fish/",
+    path: "/batch-fish",
     component: BatchFish,
     layout: DefaultLayout,
   },
   {
-    path: "batch-detail/:id",
+    path: "/batch-detail/:id",
     component: BatchFishDetail,
     layout: DefaultLayout,
   },
