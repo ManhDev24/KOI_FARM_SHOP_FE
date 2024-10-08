@@ -6,6 +6,7 @@ import FishManagement from "../modules/Admin/FishManagement/FishManagement";
 import UserManagement from "../modules/Admin/UserManagement/UserManagement";
 
 import BatchFish from "../modules/BatchFish/BatchFish";
+import BatchFishDetail from "../modules/BatchFish/BatchFish-Detail";
 
 import Blog from "../modules/Blog/Blog/Blog";
 import ListBlog from "../modules/Blog/ListBlog/ListBlog";
