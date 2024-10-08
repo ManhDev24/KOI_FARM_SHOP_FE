@@ -84,7 +84,6 @@ const Login = () => {
   };
   const onSubmit = (data) => {
     handleLogin(data);
-    // console.log(data);
   };
 
   return (
@@ -246,7 +245,6 @@ const Login = () => {
                             credentialResponse.credential
                           );
                           handleLoginWithGoogle(decoded);
-                          console.log("Decoded token: ", decoded);
                         } else {
                           toast.error(
                             "Google login failed: Invalid credentials"
