@@ -199,6 +199,7 @@ const FishDetail = () => {
                         <div>Tuổi: {fishDetails.age}</div>
                         <div>Độ thuần chủng: {fishDetails.purebred ? 'Nhập khẩu nhật': "Lai F1"}</div>
                         <div>Chế độ ăn:</div>
+                        <div>Độ pH: {fishDetails.ph}</div>
                         <div></div>
                         <div></div>
                         <div></div>
