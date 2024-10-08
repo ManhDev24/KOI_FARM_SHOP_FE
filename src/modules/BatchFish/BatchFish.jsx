@@ -703,11 +703,25 @@ const BatchFish = () => {
                                         Đặt Mua
                                       </Button>
                                       <Button
-                                      onClick={() => handleAddToCompare(card)}
-                                      className="w-[120px] h-[30px] absolute top-[3px] right-[3px] text-[#FFFFFF] bg-[#EA9B00] rounded-[10px] mt-2"
-                                    >
-                                      Thêm So Sánh
-                                    </Button>
+                                        onClick={() => handleAddToCompare(card)}
+                                        className="w-[120px] h-[30px] absolute top-[3px] right-[3px] text-[#FFFFFF] bg-[#EA9B00] rounded-[10px] mt-2"
+                                      >
+                                        <svg
+                                          xmlns='http://www.w3.org/2000/svg'
+                                          width='1em'
+                                          height='1em'
+                                          className='flex'
+                                          viewBox='0 0 24 24'
+                                        >
+                                          <g fill='none' fillRule='evenodd'>
+                                            <path
+                                              d='M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4h4a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-4v4a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-4H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h4z'
+                                              fill='currentColor'
+                                            />
+                                          </g>
+                                        </svg>
+                                        So Sánh
+                                      </Button>
                                     </Link>
 
                                   </>

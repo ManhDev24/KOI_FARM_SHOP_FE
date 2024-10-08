@@ -3,25 +3,27 @@ import './Footer.css';
 const Footer = () => {
   return (
     <div className='w-full h-[30vh] grid grid-cols-3  box-border border-t-2 border-t-red-500 pt-[50px]' style={{ fontFamily: 'Arial' }}>
-      <div className='containers'>
-        <div className='font-bold'>
-          CÔNG TY TNHH TMDV FARM KOI
-        </div>
+      <div className='flex flex-col items-center'>
+
         <div className='text-lefts'>
+          <div className='font-bold flex items-start'>
+            CÔNG TY TNHH TMDV FARM KOI
+          </div>
           <div>Hotline: 9999999999</div>
           <div>Email: admin@farmkoi.com</div>
           <div>Địa chỉ: 299 Tên Lửa, Bình Trị Đông B, Bình Tân, Hồ Chí Minh</div>
         </div>
       </div>
-      <div  >
-        <div className='font-bold'> CHÍNH SÁCH</div>
+      <div className='flex flex-col items-center' >
+
         <div className='flex flex-col items-centers text-left'>
+          <div className='font-bold'> CHÍNH SÁCH</div>
           <div>Chính sách bảo mật thông tin</div>
           <div>Chính sách thanh toán</div>
           <div>Chính sách giao hàng</div>
           <div>Chính sách đổi trả</div></div>
       </div>
-      <div >
+      <div className='flex flex-col items-center'>
         <div className='font-bold'>CHỨNG NHẬN LIÊN KẾT</div>
         <div className='flex flex-row justify-around w-[200px]'>
           <div><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 128 128" fill="none">
@@ -67,7 +69,7 @@ const Footer = () => {
           </div>
         </div>
         <div>
-            <img width={200} src="./img/veri.png" alt="" />
+          <img width={200} src="./img/veri.png" alt="" />
         </div>
         <div>
 

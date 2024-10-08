@@ -16,12 +16,12 @@ const RequestConsignment = () => {
                     >
                         <Breadcrumb.Item>
                             <Link to="/" style={{ color: "#EA4444" }} className="">
-                                Home
+                                Trang chủ
                             </Link>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
                             <Link style={{ color: "#EA4444" }} className="">
-                                KoiList
+                                Ký gửi
                             </Link>
                         </Breadcrumb.Item>
                     </Breadcrumb>

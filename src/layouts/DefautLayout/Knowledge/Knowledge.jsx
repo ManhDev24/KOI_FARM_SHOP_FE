@@ -6,6 +6,7 @@ import ComparisonModal from '../../../modules/Modal/ComparisonModal';
 import { Button, Col, Flex, Row } from 'antd';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../../../Redux/Slices/Cart_Slice';
+import LoadingModal from '../../../modules/Modal/LoadingModal';
 
 const Knowledge = () => {
   const [categoryResponses, setCategoryResponses] = useState([]);
@@ -88,7 +89,7 @@ const Knowledge = () => {
   };
 
   if (loading) {
-    return <div>Loading data...</div>;
+    return LoadingModal;
   }
 
   return (
