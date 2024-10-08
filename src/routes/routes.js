@@ -126,6 +126,18 @@ export const publicRoutes = [
   },
 
   {
+    path: "/batch-fish",
+    component: BatchFish,
+    layout: DefaultLayout,
+  },
+  {
+    path: "/batch-detail/:id",
+    component: BatchFishDetail,
+    layout: DefaultLayout,
+  },
+
+
+  {
     path: "/consignment",
     component: RequestConsignment,
     layout: DefaultLayout,
