@@ -1,8 +1,11 @@
 import HomePage from "../components/HomePage/HomePage";
 import DefaultLayout from "../layouts/DefautLayout/DefaultLayout";
+import AdminLayout from "../modules/Admin/AdminLayout/AdminLayout";
+import DashBoard from "../modules/Admin/Dashboard/DashBoard";
+import FishManagement from "../modules/Admin/FishManagement/FishManagement";
+import UserManagement from "../modules/Admin/UserManagement/UserManagement";
 
 import BatchFish from "../modules/BatchFish/BatchFish";
-import BatchFishDetail from "../modules/BatchFish/BatchFish-Detail";
 
 import Blog from "../modules/Blog/Blog/Blog";
 import ListBlog from "../modules/Blog/ListBlog/ListBlog";
@@ -121,6 +124,7 @@ export const publicRoutes = [
     component: FishDetail,
     layout: DefaultLayout,
   },
+
   {
     path: "/batch-fish",
     component: BatchFish,
@@ -132,12 +136,16 @@ export const publicRoutes = [
     layout: DefaultLayout,
   },
 
+
   {
     path: "/consignment",
     component: RequestConsignment,
     layout: DefaultLayout,
   },
   {
+    path: "/batch-fish",
+    component: BatchFish,
+
     path: "/list-blog",
     component: ListBlog,
     layout: DefaultLayout,
@@ -150,4 +158,32 @@ export const publicRoutes = [
   },
 ];
 
-export const privateRoutes = [];
+export const privateRoutes = [
+  {
+    path: "/admin",
+    component: AdminLayout,
+    layout: null,
+    roles: ["manager", "staff"],
+    children: [
+      {
+        path: "dashboard",
+        component: DashBoard,
+        layout: null,
+        roles: ["manager", "staff"],
+      },
+      {
+        path: "user-management",
+        component: UserManagement,
+        layout: null,
+        roles: ["manager", "staff"],
+      },
+
+      {
+        path: "fish-management",
+        component: FishManagement,
+        layout: null,
+        roles: ["manager", "staff"],
+      },
+    ],
+  },
+];

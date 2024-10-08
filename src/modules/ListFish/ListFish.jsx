@@ -278,7 +278,6 @@ const ListFish = () => {
             style={{
               border: "1px solid black",
               borderRadius: "10px",
-              boxShadow: "10px 10px 4px 0 rgba(0, 0, 0, 0.25)",
             }}
             className="w-[280px] h-[920px]  "
           >

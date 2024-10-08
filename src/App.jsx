@@ -1,14 +1,13 @@
+// src/App.js
 import "./App.css";
 import { Navigate, Route, Routes } from "react-router-dom";
-import { publicRoutes } from "./routes/routes";
-import React from "react"; // Import useState to manage modal state
-import DefaultLayout from "./layouts/DefautLayout/DefaultLayout";
+import { privateRoutes, publicRoutes } from "./routes/routes";
+import React from "react";
 import { getLocalStorage } from "./utils/LocalStorage";
 import { useSelector } from "react-redux";
-import ComparisonModal from "./modules/Modal/ComparisonModal";
 
 function App() {
-  // Check if user is authenticated by checking local storage
+  // Kiểm tra xem người dùng đã đăng nhập chưa
   const isAuth = () => {
     return !!getLocalStorage("user");
   };
@@ -16,6 +15,9 @@ function App() {
   const isAllowedToAccessForgotPassword = useSelector(
     (state) => state.auth.isAllowedToAccessForgotPassword
   );
+
+  const user = getLocalStorage("user");
+  const getRoleUser = user?.role;
 
   return (
     <div className="">
@@ -26,11 +28,7 @@ function App() {
 
           if (
             isAuth() &&
-            (route.path === "/login" ||
-              route.path === "/register" ||
-              route.path === "/otp" ||
-              route.path === "/forgotPassword" ||
-              route.path === "/changePassword")
+            ["/login", "/register", "/otp", "/forgotPassword", "/changePassword"].includes(route.path)
           ) {
             return (
               <Route
@@ -59,17 +57,67 @@ function App() {
               key={index}
               path={route.path}
               element={
-                <Layout>
-                  <Component />
-                </Layout>
+                Layout ? <Layout><Component /></Layout> : <Component />
               }
             />
           );
         })}
 
-        
+        {privateRoutes.map((route, index) => {
+          const Layout = route.layout || React.Fragment;
+          const Component = route.component;
 
-        <Route path="*" element={<Navigate to="/404" />} />
+          if (!isAuth()) {
+            return (
+              <Route
+                key={index}
+                path={route.path + "/*"}
+                element={<Navigate to="/login" />}
+              />
+            );
+          }
+
+          if (
+            ["manager", "staff"].includes(getRoleUser) &&
+            isAuth()
+          ) {
+            return (
+              <Route
+                key={index}
+                path={route.path}
+                element={
+                  Layout ? <Layout><Component /></Layout> : <Component />
+                }
+              >
+                {/* Render các route con */}
+                {route.children && route.children.map((child, childIndex) => {
+                  const ChildLayout = child.layout || React.Fragment;
+                  const ChildComponent = child.component;
+
+                  return (
+                    <Route
+                      key={childIndex}
+                      path={child.path}
+                      element={
+                        ChildLayout ? <ChildLayout><ChildComponent /></ChildLayout> : <ChildComponent />
+                      }
+                    />
+                  );
+                })}
+              </Route>
+            );
+          } else {
+            return (
+              <Route
+                key={index}
+                path={route.path + "/*"}
+                element={<Navigate to="/" />}
+              />
+            );
+          }
+        })}
+
+        <Route path="*" element={<Navigate to="/error" />} />
       </Routes>
     </div>
   );
