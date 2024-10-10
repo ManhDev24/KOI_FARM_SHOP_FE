@@ -27,12 +27,12 @@ const Banner = () => {
     }, []);
 
     return (
-        <div className='relative w-full max-h-[700px] flex justify-center'>
+        <div className='relative flex justify-center'>
         
             <img
                 src={banners[currentBannerIndex]}
                 alt={`Banner ${currentBannerIndex + 1}`}
-                className=" w-[2000px] h-[700px] object-cover"
+                className=" w-[2000px] h-[75vh] object-cover"
             />
             
         

@@ -13,7 +13,7 @@ import ListBlog from "../modules/Blog/ListBlog/ListBlog";
 
 import Cart from "../modules/Cart/Cart";
 import ChangePassword from "../modules/ChangePassword/ChangePassword";
-import RequestConsignment from "../modules/Consigment/RequestConsignment";
+import RequestConsignment from "../modules/Consignment/RequestConsignment";
 
 import Error from "../modules/ErrorPage/Error";
 import FishDetail from "../modules/FishDetail/FishDetail";
@@ -139,7 +139,7 @@ export const publicRoutes = [
 
 
   {
-    path: "/consignment",
+    path: "/request-consignment",
     component: RequestConsignment,
     layout: DefaultLayout,
   },
