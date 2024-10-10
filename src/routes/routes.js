@@ -139,7 +139,7 @@ export const publicRoutes = [
 
 
   {
-    path: "/consignment",
+    path: "/request-consignment",
     component: RequestConsignment,
     layout: DefaultLayout,
   },
