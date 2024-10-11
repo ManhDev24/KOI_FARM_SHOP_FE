@@ -248,8 +248,7 @@ const FishManagement = () => {
   };
   const showModalDetailView = (record) => {
     setIsModalDetailFishOpen(true);
-    setDataDetailFish(record)
-
+    setDataDetailFish(record);
   };
   const cancelModalView = () => {
     setIsModalViewOpen(false);
@@ -346,7 +345,9 @@ const FishManagement = () => {
 
     const file = data.koiImage;
     const fileCertificate = data?.image || "";
-
+    if (fileCertificate) {
+      formData.append("image", fileCertificate);
+    }
     formData.append("koiImage", file);
     formData.append("categoryId", data.category);
     formData.append("age", data.age);
