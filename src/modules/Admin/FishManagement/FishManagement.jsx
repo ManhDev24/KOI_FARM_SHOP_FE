@@ -66,11 +66,15 @@ const FishManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalViewOpen, setIsModalViewOpen] = useState(false);
+  const [isModalDetailFishOpen, setIsModalDetailFishOpen] = useState(false);
+  const [dataDetailFish, setDataDetailFish] = useState(null);
+
   const [dataEdit, setDataEdit] = useState(null);
   console.log("dataEdit: ", dataEdit);
   const [dataView, setDataView] = useState(null);
   console.log("dataView: ", dataView);
   const [image, setImage] = useState(undefined);
+  const [imageCertificate, setImageCertificate] = useState(undefined);
   console.log("image: ", image);
 
   const queryClient = useQueryClient();
@@ -115,26 +119,26 @@ const FishManagement = () => {
       dataIndex: "size",
       key: "size",
     },
-    {
-      title: "Tính cách",
-      dataIndex: "personality",
-      key: "personality",
-    },
+    // {
+    //   title: "Tính cách",
+    //   dataIndex: "personality",
+    //   key: "personality",
+    // },
     {
       title: "Nguồn gốc",
       dataIndex: "origin",
       key: "origin",
     },
-    {
-      title: "Chế độ ăn",
-      dataIndex: "food",
-      key: "food",
-    },
-    {
-      title: "Độ cứng nước",
-      dataIndex: "water",
-      key: "water",
-    },
+    // {
+    //   title: "Chế độ ăn",
+    //   dataIndex: "food",
+    //   key: "food",
+    // },
+    // {
+    //   title: "Độ cứng nước",
+    //   dataIndex: "water",
+    //   key: "water",
+    // },
     {
       title: "Giá",
       dataIndex: "price",
@@ -154,21 +158,21 @@ const FishManagement = () => {
         return purebred ? "Thuần chủng" : "F1";
       },
     },
-    {
-      title: "Sức khỏe",
-      dataIndex: "health",
-      key: "health",
-    },
-    {
-      title: "Nhiệt độ nước",
-      dataIndex: "temperature",
-      key: "temperature",
-    },
-    {
-      title: "pH nước",
-      dataIndex: "ph",
-      key: "ph",
-    },
+    // {
+    //   title: "Sức khỏe",
+    //   dataIndex: "health",
+    //   key: "health",
+    // },
+    // {
+    //   title: "Nhiệt độ nước",
+    //   dataIndex: "temperature",
+    //   key: "temperature",
+    // },
+    // {
+    //   title: "pH nước",
+    //   dataIndex: "ph",
+    //   key: "ph",
+    // },
     {
       title: "Trạng thái",
       dataIndex: "status",
@@ -209,6 +213,13 @@ const FishManagement = () => {
             Edit
           </Button>
           <Button
+            type="default"
+            icon={<EditOutlined />}
+            onClick={() => showModalDetailView(record)}
+          >
+            Thông số chi tiết
+          </Button>
+          <Button
             style={{
               backgroundColor: record.status ? "#ff4d4f" : "#52c41a",
               color: "white",
@@ -235,14 +246,23 @@ const FishManagement = () => {
   const showModalView = () => {
     setIsModalViewOpen(true);
   };
+  const showModalDetailView = (record) => {
+    setIsModalDetailFishOpen(true);
+    setDataDetailFish(record)
+
+  };
   const cancelModalView = () => {
     setIsModalViewOpen(false);
+  };
+  const cancelModalDetailView = () => {
+    setIsModalDetailFishOpen(false);
   };
   const handleCancel = () => {
     setIsModalOpen(false);
     reset(); // Reset form fields
     setDataEdit(null);
     setImage(undefined);
+    setImageCertificate(undefined);
   };
 
   const {
@@ -261,6 +281,7 @@ const FishManagement = () => {
       price: "",
       origin: "",
       gender: 1,
+      name: "",
       food: "",
       water: "",
       status: 1,
@@ -268,6 +289,7 @@ const FishManagement = () => {
       health: "",
       temperature: "",
       ph: "",
+      image: null,
       koiImage: null,
     },
     resolver: yupResolver(validationSchema),
@@ -275,6 +297,7 @@ const FishManagement = () => {
   });
 
   const watchhinhAnh = watch("koiImage");
+  const watchCertificate = watch("certificate");
 
   const {
     data: ListKoi,
@@ -322,15 +345,10 @@ const FishManagement = () => {
     const formData = new FormData();
 
     const file = data.koiImage;
-    console.log("ph", data.ph);
-    if (file) {
-      console.log("File name:", file.name);
-      console.log("File type:", file.type);
-      console.log("File size:", file.size);
-    }
+    const fileCertificate = data?.image || "";
 
     formData.append("koiImage", file);
-    formData.append("categoryId", data.categoryId);
+    formData.append("categoryId", data.category);
     formData.append("age", data.age);
     formData.append("size", data.size);
     formData.append("origin", data.origin);
@@ -344,12 +362,19 @@ const FishManagement = () => {
     formData.append("water", data.water);
     formData.append("temperature", data.temperature);
     formData.append("pH", data.ph);
-
+    formData.append("name", "");
+    formData.append("createdDate", new Date().toISOString());
+    formData.append("image", fileCertificate);
+    formData.append("name", data.name);
     if (dataEdit) {
       handleUpdateFish(data);
     } else {
       handleAddFish(formData);
     }
+  };
+  const onDetailFish = (record) => {
+    showModalView();
+    setDataView(record);
   };
 
   const onEditFish = (record) => {
@@ -370,6 +395,7 @@ const FishManagement = () => {
       water: record.water,
       temperature: record.temperature,
       ph: record.ph,
+      certificate: record.certificate,
       koiImage: record?.koiImage,
     });
   };
@@ -446,7 +472,6 @@ const FishManagement = () => {
               columns={columns}
               dataSource={ListKoi?.koiFishReponseList}
               pagination={false}
-              scroll={{ x: "max-content" }}
             />
           </div>
           <div className="flex justify-end mt-2">
@@ -475,7 +500,7 @@ const FishManagement = () => {
       >
         <form onSubmit={handleSubmit(onSubmit)}>
           <Row gutter={[16, 16]}>
-            <Col span={24}>
+            <Col span={12}>
               <label style={{ fontSize: "16px" }}>Ảnh Cá</label>
               <Controller
                 name="koiImage"
@@ -492,7 +517,7 @@ const FishManagement = () => {
                       if (file) {
                         console.log("Selected file:", file);
                         onChange(file);
-                        setImage(URL.createObjectURL(file));
+                        setImage(URL.createObjectURL(file)); // Update for koiImage
                       }
                     }}
                   >
@@ -522,10 +547,63 @@ const FishManagement = () => {
                   </Upload>
                 )}
               />
-
               {errors.koiImage && (
                 <p style={{ color: "red", fontSize: "12px" }}>
                   {errors.koiImage.message}
+                </p>
+              )}
+            </Col>
+
+            <Col span={12}>
+              <label style={{ fontSize: "16px" }}>Ảnh chứng nhận</label>
+              <Controller
+                name="image"
+                control={control}
+                render={({ field: { onChange, value, ...field } }) => (
+                  <Upload
+                    {...field}
+                    listType="picture-card"
+                    className="avatar-uploader"
+                    showUploadList={false}
+                    beforeUpload={() => false}
+                    onChange={(info) => {
+                      const file = info.file.originFileObj || info.file;
+                      if (file) {
+                        console.log("Selected file:", file);
+                        onChange(file);
+                        setImageCertificate(URL.createObjectURL(file)); // Update for certificate
+                      }
+                    }}
+                  >
+                    <button
+                      style={{ border: 0, background: "none" }}
+                      type="button"
+                    >
+                      {(value && value instanceof File) ||
+                      imageCertificate ||
+                      dataEdit?.certificate ? (
+                        <img
+                          className="w-[60px] h-[80px] object-cover"
+                          src={
+                            value && value instanceof File
+                              ? URL.createObjectURL(value)
+                              : imageCertificate
+                          }
+                          alt="certificate"
+                        />
+                      ) : (
+                        <>
+                          <PlusOutlined />
+                          <div style={{ marginTop: 8 }}>Upload</div>
+                        </>
+                      )}
+                    </button>
+                  </Upload>
+                )}
+              />
+              {errors.image && (
+                <p style={{ color: "red", fontSize: "12px" }}>
+                  {errors.image.message}
                 </p>
               )}
             </Col>
@@ -661,6 +739,27 @@ const FishManagement = () => {
               {errors.personality && (
                 <p style={{ color: "red", fontSize: "12px" }}>
                   {errors.personality.message}
+                </p>
+              )}
+            </Col>
+            <Col span={24}>
+              <label style={{ fontSize: "16px" }}>Chứng chỉ của cá</label>
+              <Controller
+                name="name"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="text"
+                    placeholder="Nhập Tên chứng chỉ của cá nếu có"
+                    className="mt-1"
+                    status={errors.name ? "error" : ""}
+                  />
+                )}
+              />
+              {errors.name && (
+                <p style={{ color: "red", fontSize: "12px" }}>
+                  {errors.name.message}
                 </p>
               )}
             </Col>
@@ -921,6 +1020,18 @@ const FishManagement = () => {
             </div>
           </div>
         </Col>
+      </Modal>
+      <Modal
+        visible={isModalDetailFishOpen}
+        footer={null}
+        onCancel={cancelModalDetailView}
+      >
+        <h1>Nhiệt độ của nước :{dataDetailFish?.temperature}</h1>
+        <h1>Độ cứng của nước: {dataDetailFish?.water}</h1>
+        <h1>Chế độ ăn của cá: {dataDetailFish?.food}</h1>
+        <h1>Sức khỏe của cá: {dataDetailFish?.health}</h1>
+        <h1>Tính cách của cá: {dataDetailFish?.personality}</h1>
+        <h1>Độ ph của nước: {dataDetailFish?.ph}</h1>
       </Modal>
     </div>
   );
