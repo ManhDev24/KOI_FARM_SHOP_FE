@@ -6,6 +6,7 @@ import ComparisonModal from '../../../modules/Modal/ComparisonModal';
 import { Button, Col, Flex, Row } from 'antd';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../../../Redux/Slices/Cart_Slice';
+import LoadingModal from '../../../modules/Modal/LoadingModal';
 
 const Knowledge = () => {
   const [categoryResponses, setCategoryResponses] = useState([]);
@@ -46,7 +47,7 @@ const Knowledge = () => {
     fetchKoiFishData();
   }, []);
 
-  // Add Koi fish to comparison list
+
   const handleAddToCompare = (item) => {
     if (selectedItems.length < 2 && !selectedItems.some((i) => i.id === item.id)) {
       setSelectedItems([...selectedItems, item]); // Add item to the comparison list
@@ -57,7 +58,7 @@ const Knowledge = () => {
     }
   };
 
-  // Add Koi fish to cart
+
   const handleAddToCart = (fish) => {
     dispatch(
       addToCart({
@@ -67,13 +68,13 @@ const Knowledge = () => {
     );
   };
 
-  // Remove Koi fish from the comparison list
+  
   const removeItemFromCompare = (itemToRemove) => {
     const updatedItems = selectedItems.filter((item) => item.id !== itemToRemove.id);
     setSelectedItems(updatedItems);
   };
 
-  // Open comparison modal
+ 
   const handleCompare = () => {
     if (selectedItems.length > 0) {
       setIsModalOpen(true);
@@ -82,13 +83,13 @@ const Knowledge = () => {
     }
   };
 
-  // Close comparison modal
+
   const handleModalClose = () => {
     setIsModalOpen(false);
   };
 
   if (loading) {
-    return <div>Loading data...</div>;
+    return LoadingModal;
   }
 
   return (

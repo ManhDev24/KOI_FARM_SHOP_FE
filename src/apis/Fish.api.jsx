@@ -1,7 +1,7 @@
 import fetcher from "./Fetcher";
 
 export const FishApi = {
-  getBatchFishDetail: async ( id) => {
+  getBatchFishDetail: async (id) => {
     try {
       const response = await fetcher.get(
         `http://localhost:8080/koifarm/BatchKoi/${id}`
@@ -11,7 +11,7 @@ export const FishApi = {
       throw new Error(error.response.data.message);
     }
   },
-  getFishDetail: async ( id) => {
+  getFishDetail: async (id) => {
     try {
       const response = await fetcher.get(
         `http://localhost:8080/koifarm/koifish/${id}`
@@ -21,9 +21,9 @@ export const FishApi = {
       throw new Error(error.response.data.message);
     }
   },
-  getListFish: async ( currentPage, pageSize = 9) => {
+  getListFish: async (currentPage, pageSize = 9) => {
     try {
-      console.log('pageSize: ', pageSize);
+      console.log("pageSize: ", pageSize);
       const response = await fetcher.get(
         `http://localhost:8080/koifarm/koifish/allkoi?page=${currentPage}&pageSize=${pageSize}`
       );
@@ -123,7 +123,7 @@ export const FishApi = {
     minPrice,
     maxPrice,
     sortField,
-    sortDirection    
+    sortDirection
   ) => {
     try {
       const response = await fetcher.get(
@@ -134,7 +134,11 @@ export const FishApi = {
       throw new Error(error.response.data.message);
     }
   },
-  getListBatchFishByCategory: async (categoryID, currentPage = 1, pageSize = 9) => {
+  getListBatchFishByCategory: async (
+    categoryID,
+    currentPage = 1,
+    pageSize = 9
+  ) => {
     try {
       // if (categoryID) {
       // Call the filter API if categoryID is provided
@@ -152,8 +156,38 @@ export const FishApi = {
       throw new Error(error.response.data.message);
     }
   },
-  
-  
+  addFish: async (formdata) => {
+    try {
+      const response = await fetcher.post(
+        `http://localhost:8080/koifarm/koifish/add`,
+        formdata,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Đảm bảo header là multipart/form-data
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || "Error uploading data");
+    }
+  },
+  updateFish: async (formdata, id) => {
+    try {
+      const response = await fetcher.put(
+        `http://localhost:8080/koifarm/koifish/update/${id}`,
+        formdata,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || "Error uploading data");
+    }
+  },
 };
 
 export default FishApi;

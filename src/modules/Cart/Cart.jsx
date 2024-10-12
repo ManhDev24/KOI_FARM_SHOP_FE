@@ -27,7 +27,7 @@ const Cart = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [isPaymentSuccess, setIsPaymentSuccess] = useState(0);
   const [disCountRate, setDisCountRate] = useState(0);
-  console.log('disCountRate: ', disCountRate);
+  console.log("disCountRate: ", disCountRate);
   const dispatch = useDispatch();
   const totalPrice = useSelector((state) => state.cart.total);
   const onCart = getLocalStorage("cartItems");
@@ -127,7 +127,6 @@ const Cart = () => {
       return;
     }
     handleApplyPromotion(data.code);
-
   };
 
   const columns = [
