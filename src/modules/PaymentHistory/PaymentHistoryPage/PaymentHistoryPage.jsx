@@ -86,7 +86,7 @@ const PaymentHistoryPage = () => {
       title: "Chi tiết",
       render: (payment) => (
         <div>
-          <Link to={"/payment-detail"}>
+          <Link to={`/payment-detail/${payment.paymentId}`}>
             <button
               onClick={() => handleSaveOrderId(payment.orderId)}
               className="bg-blue-500 text-white font-bold py-1 px-3 rounded m-4"

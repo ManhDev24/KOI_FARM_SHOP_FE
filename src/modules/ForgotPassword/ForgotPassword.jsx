@@ -2,7 +2,7 @@ import React from "react";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
-import { Button, Col, Form, Input, Row, Checkbox } from "antd";
+import { Button, Col, Form, Input, Row, Checkbox, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import "./ForgotPassword.css";
 import { useMutation } from "@tanstack/react-query";
@@ -40,7 +40,7 @@ const ForgotPassword = () => {
 
       onSuccess: (result) => {
         console.log("result: ", result);
-        toast.success("Gửi email thành công vui lòng nhập otp");
+        message.success("Gửi email thành công vui lòng nhập otp");
         dispatch(saveIsResetPassword(true));
         navigate("/otp");
       },

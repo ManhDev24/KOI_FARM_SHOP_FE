@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Col, Form, Input, Row, Checkbox } from "antd";
+import { Button, Col, Form, Input, Row, Checkbox, message } from "antd";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import { Controller, useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
@@ -53,7 +53,7 @@ const Login = () => {
       console.log("data: ", data);
       setLocalStorage("user", data.data);
       dispatch(setUser(data));
-      toast.success("Đăng nhập thành công");
+      message.success("Đăng nhập thành công");
       navigate("/");
     },
     onError: (error) => {
@@ -68,7 +68,7 @@ const Login = () => {
     onSuccess: (data) => {
       setLocalStorage("user", data.data);
       dispatch(setUser(data));
-      toast.success("Đăng nhập thành công");
+      message.success("Đăng nhập thành công");
       navigate("/");
     },
     onError: (error) => {

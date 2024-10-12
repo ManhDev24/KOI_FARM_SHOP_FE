@@ -3,7 +3,8 @@ import { Pagination, Table } from "antd";
 import React from "react";
 import orderApi from "../../../apis/Order.api";
 import { useDispatch, useSelector } from "react-redux";
-
+import LoadingModal from "../../Modal/LoadingModal";
+import { useParams } from "react-router-dom";
 
 const columns = [
   {
@@ -39,7 +40,7 @@ const columns = [
   },
   {
     title: "Giá Cá Koi",
-    dataIndex: "koiPrice",
+    dataIndex: "price",
     render: (price) => (
       <span className="">
         {new Intl.NumberFormat("vi-VN", {
@@ -63,6 +64,9 @@ const columns = [
 const PaymentDetailPage = () => {
   const dispatch = useDispatch();
   const { orderId } = useSelector((state) => state.order);
+
+  const { paymentId } = useParams();
+
   console.log("orderId: ", orderId);
   const {
     data: orderDetail,
@@ -70,10 +74,17 @@ const PaymentDetailPage = () => {
     isError: orderDetailError,
   } = useQuery({
     queryKey: ["orderDetail"],
-    queryFn: () => orderApi.getOrderDetail(orderId),
+    queryFn: () => orderApi.getOrderDetail(paymentId),
     keepPreviousData: true,
   });
   const orderDetailData = orderDetail?.data;
+  if (orderDetailLoading) {
+    return <LoadingModal />;
+  }
+
+  if (orderDetailError) {
+    return <div>Lỗi rồi</div>;
+  }
   return (
     <div>
       <div className="container flex justify-center items-center mx-auto">

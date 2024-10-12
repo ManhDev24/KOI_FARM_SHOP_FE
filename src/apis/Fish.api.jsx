@@ -32,13 +32,13 @@ export const FishApi = {
       throw new Error(error.response.data.message);
     }
   },
-  getListFishByCategory: async (categoryID, currentPage=1, pageSize = 9) => {
+  getListFishByCategory: async (categoryID, currentPage = 1, pageSize = 9) => {
     try {
       // if (categoryID) {
-        // Call the filter API if categoryID is provided
-        response = await fetcher.get(
-          `http://localhost:8080/koifarm/koifish/filter?categoryID=${categoryID}&page=${currentPage}&pageSize=${pageSize}`
-        );
+      // Call the filter API if categoryID is provided
+      response = await fetcher.get(
+        `http://localhost:8080/koifarm/koifish/filter?categoryID=${categoryID}&page=${currentPage}&pageSize=${pageSize}`
+      );
       // } else {
       //   // Call the all koi fish API if no categoryID is provided
       //   response = await fetcher.get(
@@ -163,7 +163,7 @@ export const FishApi = {
         formdata,
         {
           headers: {
-            "Content-Type": "multipart/form-data", // Đảm bảo header là multipart/form-data
+            "Content-Type": "multipart/form-data",
           },
         }
       );
@@ -186,6 +186,15 @@ export const FishApi = {
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || "Error uploading data");
+    }
+  },
+  changeStatus: async (id, status = 1) => {
+    try {
+      const response = await fetcher.post(
+        `http://localhost:8080/koifarm/koifish/changeStatus/${id}/${status}`
+      );
+    } catch (error) {
+      throw new Error(error.response.data.message);
     }
   },
 };
