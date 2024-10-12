@@ -7,6 +7,7 @@ import {
   UserOutlined,
   VideoCameraOutlined,
   DashboardOutlined,
+  SafetyCertificateOutlined,
   HomeOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
@@ -104,9 +105,9 @@ const AdminLayout = () => {
               label: "Fish Management",
             },
             {
-              key: "/admin/nav3",
-              icon: <UploadOutlined />,
-              label: "Nav 3",
+              key: "/admin/category-management",
+              icon: <SafetyCertificateOutlined />,
+              label: "Category ",
             },
             {
               key: "/",

@@ -1,6 +1,7 @@
 import HomePage from "../components/HomePage/HomePage";
 import DefaultLayout from "../layouts/DefautLayout/DefaultLayout";
 import AdminLayout from "../modules/Admin/AdminLayout/AdminLayout";
+import CategoryManagement from "../modules/Admin/CategoryManagement/CategoryManagement";
 import DashBoard from "../modules/Admin/Dashboard/DashBoard";
 import FishManagement from "../modules/Admin/FishManagement/FishManagement";
 import UserManagement from "../modules/Admin/UserManagement/UserManagement";
@@ -137,7 +138,6 @@ export const publicRoutes = [
     layout: DefaultLayout,
   },
 
-
   {
     path: "/consignment",
     component: RequestConsignment,
@@ -182,6 +182,12 @@ export const privateRoutes = [
       {
         path: "fish-management",
         component: FishManagement,
+        layout: null,
+        roles: ["manager", "staff"],
+      },
+      {
+        path: "category-management",
+        component: CategoryManagement,
         layout: null,
         roles: ["manager", "staff"],
       },
