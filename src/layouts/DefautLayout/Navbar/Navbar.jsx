@@ -11,13 +11,14 @@ import logo from "/img/logo.png";
 import Vector from "/img/Vector.png";
 import { AuthApi } from "../../../apis/Auth.api";
 import { setSelectedCategory } from "../../../Redux/Slices/FishList_Slice";
+import { data } from "autoprefixer";
 const Navbar = () => {
   const dispatch = useDispatch();
-
+  const user = getLocalStorage("user");
   const fetchEmail = () => {
-    const dataProfile = getLocalStorage("user"); // Get 'user' from localStorage
+    const dataProfile = getLocalStorage("user");
     if (dataProfile && dataProfile.email) {
-      return dataProfile.email; // Return email if found
+      return dataProfile.email;
     } else {
       console.error("No user profile found in localStorage");
       return null;
@@ -87,10 +88,7 @@ const Navbar = () => {
   };
   // Function to handle category selection and call API
   const handleCategorySelection = (categoryID) => {
-
-
     dispatch(setSelectedCategory(categoryID));
-
   };
 
   useEffect(() => {
@@ -104,7 +102,7 @@ const Navbar = () => {
     {
       key: "9",
       label: (
-        <Link to='/koiList' target="_self" rel="noopener noreferrer" >
+        <Link to="/koiList" target="_self" rel="noopener noreferrer">
           Cá Koi Nhật
         </Link>
       ),
@@ -112,12 +110,11 @@ const Navbar = () => {
     {
       key: "10",
       label: (
-        <Link to='/batch-fish' target="_self" rel="noopener noreferrer" >
+        <Link to="/batch-fish" target="_self" rel="noopener noreferrer">
           Cá Koi theo lô
         </Link>
       ),
     },
-
   ];
 
   const newsMenuItems = [
@@ -131,11 +128,7 @@ const Navbar = () => {
     },
     {
       key: "2",
-      label: (
-        <Link to={"/list-blog"}>
-          Tin tức cá Koi
-        </Link>
-      ),
+      label: <Link to={"/list-blog"}>Tin tức cá Koi</Link>,
     },
     {
       key: "3",
@@ -151,30 +144,33 @@ const Navbar = () => {
     {
       key: "5",
       label: (
-        <Link to="/profile"
-          target="_self"
-          rel="noopener noreferrer"
-        >
-
-          { }
+        <Link to="/profile" target="_self" rel="noopener noreferrer">
           Thông tin cá nhân
         </Link>
-
       ),
     },
     {
       key: "6",
       label: <Link to="/payment-history">Lịch sử mua hàng</Link>,
     },
+    ...(user?.role === "manager"
+      ? [
+          {
+            key: "8",
+            label: (
+              <Link to="/admin" target="_self" rel="noopener noreferrer">
+                Quản lý
+              </Link>
+            ),
+          },
+        ]
+      : []),
+
     {
-      key: "7",
-      label: (
-        <Link to="/setting" target="_self" rel="noopener noreferrer" >
-          Cài đặt
-        </Link>
-      ),
+      key: "9",
+      label: "Đăng xuất",
+      onClick: () => handleSignOut(),
     },
-    { key: "8", label: "Đăng xuất", onClick: () => handleSignOut() },
   ];
 
   const handleSignOut = () => {

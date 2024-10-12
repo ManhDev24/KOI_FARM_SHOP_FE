@@ -2,13 +2,16 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Button,
   Col,
+  Image,
   Input,
+  message,
   Modal,
   Pagination,
   Row,
   Select,
   Table,
   Tag,
+  Upload,
 } from "antd";
 import Search from "antd/es/transfer/search";
 import React, { useState } from "react";
@@ -19,31 +22,33 @@ import {
   StopOutlined,
   EyeTwoTone,
   EyeInvisibleOutlined,
+  PlusOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import { Controller, useForm } from "react-hook-form";
 import CategoryApi from "../../../apis/Category.api";
-
+import { Typography } from "antd";
+import TextArea from "antd/es/input/TextArea";
+const { Paragraph } = Typography;
 const validationSchema = yup.object().shape({
-  fullName: yup.string().required("Họ và tên là bắt buộc"),
-  email: yup
+  cateName: yup
     .string()
-    .required("Email là bắt buộc")
-    .email("Email không hợp lệ")
-    .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Email không hợp lệ"),
-  password: yup
+    .required("Tên danh mục là bắt buộc")
+    .min(3, "Tên danh mục phải có ít nhất 3 ký tự"),
+  description: yup
     .string()
-    .required("Mật khẩu là bắt buộc")
-    .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
-    .matches(
-      /[!@#$%^&*(),.?":{}|<>]/,
-      "Mật khẩu phải chứa ít nhất một ký tự đặc biệt"
-    ),
+    .required("Mô tả là bắt buộc")
+    .max(500, "Mô tả không được quá 500 ký tự"),
+  status: yup.boolean().required("Trạng thái là bắt buộc"),
 });
-const totalPages = 0;
 const CategoryManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [value, setValue] = useState("");
+  const [dataEdit, setDataEdit] = useState(null);
+  const [image, setImage] = useState(undefined);
+
   const queryClient = useQueryClient();
 
   const showModal = () => {
@@ -51,21 +56,21 @@ const CategoryManagement = () => {
   };
   const handleCancel = () => {
     setIsModalOpen(false);
+    reset();
+    setImage(undefined);
   };
   const {
     handleSubmit,
     control,
+    reset,
+    watch,
     formState: { errors },
   } = useForm({
     defaultValues: {
-      fullName: "",
-      email: "",
-      password: "",
-      address: "",
-      phone: "",
-      role: 3,
+      cateName: "",
+      description: "",
+      cateImg: "",
       status: true,
-      verified: true,
     },
     resolver: yupResolver(validationSchema),
     criteriaMode: "all",
@@ -78,12 +83,12 @@ const CategoryManagement = () => {
     isError: isErrorCategory,
   } = useQuery({
     queryKey: ["ListCategory", currentPage],
-    queryFn: () => CategoryApi.getAllCategory(currentPage, 9),
+    queryFn: () => CategoryApi.getAllCategory(currentPage, 4),
   });
   console.log("ListCategory: ", ListCategory);
-  const onSubmit = (data) => {
-    console.log(data);
-  };
+  const watchCateogryImg = watch("cateImg");
+  const totalElements = ListCategory?.data?.totalElements;
+  console.log("totalElements: ", totalElements);
 
   const columns = [
     {
@@ -102,7 +107,11 @@ const CategoryManagement = () => {
       key: "cateImg",
       render: (cateImg) => {
         return cateImg ? (
-          <img src={cateImg} alt="cateImg" style={{ width: 50 }} />
+          <Image
+            width={200}
+            src={cateImg}
+            fallback="data:image/png;base64,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"
+          />
         ) : (
           "No Image"
         );
@@ -110,10 +119,22 @@ const CategoryManagement = () => {
     },
 
     {
-      title: "Vai trò",
-      dataIndex: "role",
-      key: "role",
-      
+      title: "Mô tả",
+      dataIndex: "description",
+      key: "description",
+      width: 550,
+      render: (description) => (
+        <Paragraph
+          ellipsis={{
+            rows: 2,
+            expandable: true,
+            symbol: "Xem thêm",
+          }}
+          style={{ width: "100%" }}
+        >
+          {description}
+        </Paragraph>
+      ),
     },
     {
       title: "Trạng thái",
@@ -123,7 +144,7 @@ const CategoryManagement = () => {
         return status ? (
           <Tag color="lime">Bình thường</Tag>
         ) : (
-          <Tag color="red">Bị chặn</Tag>
+          <Tag color="red">Ẩn</Tag>
         );
       },
     },
@@ -133,23 +154,69 @@ const CategoryManagement = () => {
       render: (text, record) => (
         <Button
           style={{
-            backgroundColor: "#ff4d4f",
+            backgroundColor: record.status ? "#ff4d4f" : "#52c41a", 
             color: "white",
           }}
           icon={<StopOutlined />}
-          onClick={() => onSubmitBanUser(record.id)}
+          onClick={() => handleUpdateCategory(record.id)}
         >
-          {record.status ? "Ban" : "Unban"}
+          {record.status ? "Ẩn" : "Hiển thị"}
         </Button>
       ),
     },
   ];
+  const {
+    mutate: handleCreateCategory,
+    isLoading: isLoadingCreateCategory,
+    isError: isErrorCreateCategory,
+  } = useMutation({
+    mutationFn: (data) => CategoryApi.addCategory(data),
+    onSuccess: (data) => {
+      message.success("Thêm danh mục thành công");
+      queryClient.invalidateQueries(["ListCategory"]);
+    },
+  });
+  const {
+    mutate: handleUpdateCategory,
+    isLoading: isLoadingUpdateCategory,
+    isError: isErrorUpdateCategory,
+  } = useMutation({
+    mutationFn: (id) => CategoryApi.deleteCategory(id),
+    onSuccess: (data) => {
+      message.success("X<location th-Christian thành công");
+      queryClient.invalidateQueries(["ListCategory"]);
+    },
+    onError: (error) => {
+      const errorMessage =
+        error?.message || "Đã có lỗi xử lý vui thúy được thuật toán";
+      message.error(errorMessage);
+    },
+  });
 
+  const onSubmit = (data) => {
+    const formData = new FormData();
+    const file = data?.cateImg;
+    formData.append("cateName", data?.cateName);
+    formData.append("description", data?.description);
+    formData.append("status", data?.status);
+    formData.append("file", file);
+
+    if (dataEdit) {
+    } else {
+      handleCreateCategory(formData);
+    }
+  };
+  if (isErrorCreateCategory || isErrorUpdateCategory) {
+    return <div>Lỗi</div>;
+  }
+  if (isLoadingCreateCategory || isLoadingUpdateCategory) {
+    return <LoadingModal />;
+  }
   return (
     <div>
       <div className="flex flex-col justify-center items-center ">
         <div className="w-[450px]">
-          <Search placeholder="Nhập tên hoặc email..." style={{ width: 300 }} />
+          <Search placeholder="Nhập tên danh mục..." style={{ width: 300 }} />
         </div>
         <div className="flex flex-col mt-2 w-full">
           <div className="w-full">
@@ -159,7 +226,7 @@ const CategoryManagement = () => {
               className="flex justify-center items-center"
             >
               <span>+</span>
-              Thêm người dùng
+              Thêm danh mục
             </Button>
           </div>
           <div className="mt-3">
@@ -168,18 +235,20 @@ const CategoryManagement = () => {
               columns={columns}
               dataSource={ListCategory?.data?.categoryReponses}
               pagination={false}
+              showSizeChanger={false}
             />
             <div className="flex justify-end mt-2">
               <Pagination
                 defaultCurrent={currentPage}
-                total={totalPages}
+                total={totalElements}
+                pageSize={4}
                 onChange={(page) => setCurrentPage(page)}
               />
             </div>
           </div>
         </div>
         <Modal
-          title="Thêm người dùng"
+          title="Thêm danh mục"
           open={isModalOpen}
           footer={null}
           onCancel={handleCancel}
@@ -187,134 +256,134 @@ const CategoryManagement = () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <Row gutter={[48, 15]} className="mt-6">
               <Col span={24}>
-                <label style={{ fontSize: "20px", marginLeft: "8px" }}>
-                  Họ và Tên
-                </label>
+                <label style={{ fontSize: "16px" }}>Ảnh Cá</label>
                 <Controller
-                  name="fullName"
+                  name="cateImg"
                   control={control}
-                  render={({ field }) => (
-                    <Input
+                  render={({ field: { onChange, value, ...field } }) => (
+                    <Upload
                       {...field}
-                      placeholder="Nhập Họ và Tên"
-                      className="mt-1"
-                      status={errors.fullName ? "error" : ""}
-                    />
-                  )}
-                />
-                {errors.fullName && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.fullName.message}
-                  </p>
-                )}
-              </Col>
-              <Col span={24}>
-                <label style={{ fontSize: "20px", marginLeft: "8px" }}>
-                  Email
-                </label>
-                <Controller
-                  name="email"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      placeholder="Nhập Email"
-                      className="mt-1"
-                      status={errors.email ? "error" : ""}
-                    />
-                  )}
-                />
-                {errors.email && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.email.message}
-                  </p>
-                )}
-              </Col>
-              <Col span={24}>
-                <label style={{ fontSize: "20px", marginLeft: "8px" }}>
-                  Địa chỉ
-                </label>
-                <Controller
-                  name="address"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      placeholder="Nhập địa chỉ"
-                      className="mt-1"
-                    />
-                  )}
-                />
-              </Col>
-              <Col span={24}>
-                <label style={{ fontSize: "20px", marginLeft: "8px" }}>
-                  Số điện thoại
-                </label>
-                <Controller
-                  name="phone"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      placeholder="Nhập số điện thoại"
-                      className="mt-1"
-                    />
-                  )}
-                />
-              </Col>
-              <Col span={24}>
-                <label style={{ fontSize: "20px", marginLeft: "8px" }}>
-                  Mật khẩu
-                </label>
-                <Controller
-                  name="password"
-                  control={control}
-                  render={({ field }) => (
-                    <Input.Password
-                      {...field}
-                      placeholder="Nhập mật khẩu"
-                      className="mt-1"
-                      status={errors.password ? "error" : ""}
-                      iconRender={(visible) =>
-                        visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
-                      }
-                    />
-                  )}
-                />
-                {errors.password && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.password.message}
-                  </p>
-                )}
-              </Col>
-              <Col span={24}>
-                <label style={{ fontSize: "20px", marginLeft: "8px" }}>
-                  Quyền:
-                </label>
-                <Controller
-                  name="role"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      {...field}
-                      style={{
-                        width: "100%",
-                        marginTop: "10px",
+                      listType="picture-card"
+                      className="avatar-uploader relative w-fit"
+                      showUploadList={false}
+                      beforeUpload={(file) => {
+                        const isImage = file.type.startsWith("image/");
+                        if (!isImage) {
+                          message.error("Chỉ được phép tải lên tệp hình ảnh!");
+                          return Upload.LIST_IGNORE;
+                        }
+
+                        const isLt2M = file.size / 1024 / 1024 < 2;
+                        if (!isLt2M) {
+                          message.error("Ảnh phải có kích thước nhỏ hơn 2MB!");
+                          return Upload.LIST_IGNORE;
+                        }
+
+                        onChange(file);
+                        setImage(URL.createObjectURL(file));
+                        return false;
                       }}
-                      placeholder="Chọn quyền"
-                      options={[
-                        { value: 3, label: "User" },
-                        { value: 1, label: "Manager" },
-                        { value: 2, label: "Staff" },
-                      ]}
-                      onChange={(value) => field.onChange(value)}
+                      onChange={(info) => {
+                        const file = info.file.originFileObj || info.file;
+                        if (file) {
+                          onChange(file);
+                          setImage(URL.createObjectURL(file));
+                        }
+                      }}
+                    >
+                      <button
+                        style={{ border: 0, background: "none" }}
+                        type="button"
+                      >
+                        {(value && value instanceof File) ||
+                        image ||
+                        dataEdit?.cateImg ? (
+                          <>
+                            <img
+                              className="w-[60px] h-[80px] object-cover"
+                              src={
+                                value && value instanceof File
+                                  ? URL.createObjectURL(value)
+                                  : image
+                              }
+                              alt="koiImage"
+                            />
+                            <div className="absolute top-0 right-0">
+                              <DeleteOutlined
+                                onClick={() => {
+                                  onChange(null);
+                                  setImage(null);
+                                }}
+                              ></DeleteOutlined>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <PlusOutlined />
+                            <div style={{ marginTop: 8 }}>Upload</div>
+                          </>
+                        )}
+                      </button>
+                    </Upload>
+                  )}
+                />
+
+                {errors.cateImg && (
+                  <p style={{ color: "red", fontSize: "12px" }}>
+                    {errors.cateImg.message}
+                  </p>
+                )}
+              </Col>
+              <Col span={24}>
+                <label style={{ fontSize: "20px", marginLeft: "8px" }}>
+                  Tên danh mục
+                </label>
+                <Controller
+                  name="cateName"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      placeholder="Nhập Tên danh mục"
+                      className="mt-1"
+                      status={errors.cateName ? "error" : ""}
                     />
                   )}
                 />
+                {errors.cateName && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.cateName.message}
+                  </p>
+                )}
+              </Col>
+              <Col span={24}>
+                <label style={{ fontSize: "20px", marginLeft: "8px" }}>
+                  Mô tả của danh mục
+                </label>
+                <Controller
+                  name="description"
+                  control={control}
+                  render={({ field }) => (
+                    <TextArea
+                      {...field}
+                      status={errors.description ? "error" : ""}
+                      placeholder="Nhập mô tả"
+                      autoSize={{
+                        minRows: 3,
+                        maxRows: 5,
+                      }}
+                    />
+                  )}
+                />
+                {errors.description && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.description.message}
+                  </p>
+                )}
               </Col>
               <Col span={24} className="flex justify-end">
                 <Button htmlType="submit" type="primary" className="me-2">
-                  Tạo tài khoản
+                  Tạo danh mục
                 </Button>
                 <Button onClick={handleCancel}>Hủy</Button>
               </Col>

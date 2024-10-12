@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { useContext, useEffect } from "react";
 import CheckoutApi from "../../../apis/Checkout.api";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { Button } from "antd";
+import { Button, message } from "antd";
 import {
   getLocalStorage,
   removeLocalStorage,
@@ -35,7 +35,7 @@ const ThankPage = () => {
   } = useMutation({
     mutationFn: (data) => CheckoutApi.saveOrder(data, paymentCode),
     onSuccess: (data) => {
-      toast.success("Thực hiện giao dịch thành công");
+      message.success("Thanh toán hoàn tất thành công");
       removeLocalStorage("cartItems");
       removeLocalStorage("discountRate");
       removeLocalStorage("PromotionCode");
@@ -50,6 +50,7 @@ const ThankPage = () => {
 
   const accountID = user?.id;
   const koiFishs = order?.map((fish) => fish.id);
+  const price = order?.map((fish) => fish.price);
   const batchs = [];
   const quantity = order?.map((item) => item.quantity);
   let totalPrice = useSelector((state) => state.cart.total);
@@ -59,6 +60,7 @@ const ThankPage = () => {
     accountID,
     koiFishs,
     batchs,
+    price,
     quantity,
     totalPrice,
     promoCode,

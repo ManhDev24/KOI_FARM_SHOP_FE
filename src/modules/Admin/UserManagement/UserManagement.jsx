@@ -3,6 +3,7 @@ import {
   Button,
   Col,
   Input,
+  message,
   Modal,
   Pagination,
   Row,
@@ -156,7 +157,7 @@ const UserManagement = () => {
   } = useMutation({
     mutationFn: (id) => AccountApi.banUser(id),
     onSuccess: () => {
-      toast.success("Ban thành công");
+      message.success("Đã ban người dùng thành công");
       queryClient.refetchQueries({
         queryKey: ["ListUser"],
         type: "active",
@@ -175,7 +176,7 @@ const UserManagement = () => {
   } = useMutation({
     mutationFn: (data) => AccountApi.createAccount(data),
     onSuccess: (d) => {
-      toast.success("Tạo người dùng thành công");
+      message.success("Tạo người dùng thành công");
       queryClient.refetchQueries({
         queryKey: ["ListUser"],
         type: "active",

@@ -57,7 +57,11 @@ const AdminLayout = () => {
   return (
     <Layout className="h-screen bg-green-600">
       <Sider theme="white" trigger={null} collapsible collapsed={collapsed}>
-        <div className="icon-avatar flex justify-center items-center mt-5 mb-5 flex-col">
+        <div
+          onClick={() => navigate("/admin")}
+          style={{ cursor: "pointer" }}
+          className="icon-avatar flex justify-center items-center mt-5 mb-5 flex-col"
+        >
           <div
             style={{ border: "2px solid white" }}
             className="text-center flex items-center justify-center cursor-pointer h-[120px] w-[120px] rounded-full"

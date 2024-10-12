@@ -1,4 +1,4 @@
-import { Breadcrumb, Button, Form, Input, Table } from "antd";
+import { Breadcrumb, Button, Form, Input, message, Table } from "antd";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Cart.css";
@@ -64,7 +64,7 @@ const Cart = () => {
   } = useMutation({
     mutationFn: (data) => CheckoutApi.saveOrder(data),
     onSuccess: (data) => {
-      toast.success("Đặt hàng thành công");
+      message.success("Đặt hàng thành công");
     },
     onError: (error) => {
       const errorMessage =
@@ -100,7 +100,7 @@ const Cart = () => {
       setDisCountRate(data?.data?.discountRate);
       setLocalStorage("discountRate", data.data.discountRate);
       setLocalStorage("PromotionCode", data?.data?.promoCode);
-      toast.success("Áp dụng khuyến mãi thành công");
+      message.success("Áp dụng khuyến mãi thành công");
     },
     onError: (error) => {
       const errorMessage =

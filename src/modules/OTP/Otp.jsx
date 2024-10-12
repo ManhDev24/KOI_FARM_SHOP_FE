@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
-import { Button, Col, Form, Input, Row, Checkbox } from "antd";
+import { Button, Col, Form, Input, Row, Checkbox, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import "./otp.css";
 import { useMutation } from "@tanstack/react-query";
@@ -47,13 +47,14 @@ const Otp = () => {
     onSuccess: (data) => {
       console.log("data OTP: ", data);
       if (isResetPassword) {
-        toast.success("Xac nhận otp thành công");
+        message.success("Xác nhận opt thành công");
         dispatch(saveOtpToken(data.data));
         setLocalStorage("otpToken", data.data);
         dispatch(isAllowedToAccessForgotPassword(true));
         navigate("/changePassword");
       } else {
-        toast.success("Xác nhận OTP thành công vui lòng đăng nhập");
+        message.success("Xác nhận OTP thành công vui lòng đăng nhập");
+        navigate("/login");
       }
     },
     onError: (error) => {
@@ -63,11 +64,10 @@ const Otp = () => {
     },
   });
 
-
   const { mutate: resendOtp, isPending } = useMutation({
     mutationFn: () => AuthApi.resendOtp(emailRegister),
     onSuccess: (data) => {
-      toast.success("Gửi otp thành công");
+      message.success("Gửi otp thành công");
     },
     onError: (error) => {
       const errorMessage =

@@ -17,6 +17,7 @@ import {
   Input,
   Upload,
   message,
+  Image,
 } from "antd";
 import {
   StopOutlined,
@@ -70,12 +71,9 @@ const FishManagement = () => {
   const [dataDetailFish, setDataDetailFish] = useState(null);
 
   const [dataEdit, setDataEdit] = useState(null);
-  console.log("dataEdit: ", dataEdit);
   const [dataView, setDataView] = useState(null);
-  console.log("dataView: ", dataView);
   const [image, setImage] = useState(undefined);
   const [imageCertificate, setImageCertificate] = useState(undefined);
-  console.log("image: ", image);
 
   const queryClient = useQueryClient();
 
@@ -98,7 +96,7 @@ const FishManagement = () => {
       key: "koiImage",
       render: (image) => {
         return image ? (
-          <img src={image} alt="koi" style={{ width: 100, height: 100 }} />
+          <Image src={image} alt="koi" style={{ width: 100, height: 100 }} />
         ) : (
           "No Image"
         );
@@ -216,20 +214,32 @@ const FishManagement = () => {
             type="default"
             icon={<EditOutlined />}
             onClick={() => showModalDetailView(record)}
+            style={{
+              backgroundColor: "#d9d9d9", // Màu xám nhạt
+              color: "#000", // Màu đen cho chữ để dễ đọc
+            }}
           >
             Thông số chi tiết
           </Button>
-          <Button
-            style={{
-              backgroundColor: record.status ? "#ff4d4f" : "#52c41a",
-              color: "white",
-            }}
-            icon={<StopOutlined />}
-            onClick={() => onSubmitBanFish(record.id, record.status)}
-          >
-            {record.status ? "Ban" : "Unban"}
-          </Button>
         </Space>
+      ),
+    },
+    {
+      title: "Trạng thái",
+      key: "status",
+      render: (text, record) => (
+        <Select
+          defaultValue={record.status}
+          onChange={(value) => onStatusChange(record.id, value)}
+          style={{ width: 150 }}
+          options={[
+            { value: 1, label: "Còn Hàng" },
+            { value: 2, label: "Đã Bán" },
+            { value: 3, label: "Ký Gửi" },
+            { value: 4, label: "Chờ Duyệt Đơn Ký Gửi" },
+            { value: 5, label: "Ký gửi chăm sóc" },
+          ]}
+        />
       ),
     },
   ];
@@ -238,6 +248,9 @@ const FishManagement = () => {
     event.stopPropagation();
     setValue("koiImage", null);
     setImage(undefined);
+  };
+  const onStatusChange = (id, status) => {
+    handleChangeStatusFish(id, status);
   };
 
   const showModal = () => {
@@ -279,7 +292,7 @@ const FishManagement = () => {
       personality: "",
       price: "",
       origin: "",
-      gender: 1,
+      gender: true,
       name: "",
       food: "",
       water: "",
@@ -338,6 +351,21 @@ const FishManagement = () => {
       message.error(errorMessage);
     },
   });
+  const {
+    mutate: handleChangeStatusFish,
+    isLoading: isLoadingChangeStatusFish,
+    isError: isErrorChangeStatusFish,
+  } = useMutation({
+    mutationFn: (id, status) => FishApi.changeStatus(id, status),
+    onSuccess: () => {
+      message.success("Chỉnh sửa trạng thái thành công");
+      queryClient.invalidateQueries(["ListKoi"]);
+    },
+    onError: (error) => {
+      const errorMessage = error?.message || "Lỗi rồi!";
+      message.error(errorMessage);
+    },
+  });
 
   const onSubmit = (data) => {
     console.log("data: ", data);
@@ -365,7 +393,6 @@ const FishManagement = () => {
     formData.append("pH", data.ph);
     formData.append("name", "");
     formData.append("createdDate", new Date().toISOString());
-    formData.append("image", fileCertificate);
     formData.append("name", data.name);
     if (dataEdit) {
       handleUpdateFish(data);
@@ -377,12 +404,18 @@ const FishManagement = () => {
     showModalView();
     setDataView(record);
   };
+  const fetchImageAsBinary = async (url) => {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    return blob;
+  };
 
-  const onEditFish = (record) => {
+  const onEditFish = async (record) => {
+    console.log("record: ", record);
     showModal();
-    setDataEdit(record); // Lưu dữ liệu cá đang chỉnh sửa
+    setDataEdit(record);
     reset({
-      categoryId: record.categoryId,
+      category: record.category,
       age: record.age,
       size: record.size,
       origin: record.origin,
@@ -420,6 +453,7 @@ const FishManagement = () => {
     queryKey: ["ListCategory"],
     queryFn: () => FishApi.getCategories(),
   });
+  console.log("ListCategory: ", ListCategory);
   const handleChangeImage = (e) => {
     const file = e.target.files[0];
     e.stopPropagation();
@@ -430,11 +464,21 @@ const FishManagement = () => {
     }
   };
 
-  if (isLoadingListKoi || isLoadingListCategory || isLoadingAddFish) {
+  if (
+    isLoadingListKoi ||
+    isLoadingListCategory ||
+    isLoadingAddFish ||
+    isLoadingChangeStatusFish
+  ) {
     return <LoadingModal />;
   }
 
-  if (isErrorListKoi || isErrorListCategory || isErrorAddFish) {
+  if (
+    isErrorListKoi ||
+    isErrorListCategory ||
+    isErrorAddFish ||
+    isErrorChangeStatusFish
+  ) {
     return <div>Error</div>;
   }
 
@@ -457,7 +501,6 @@ const FishManagement = () => {
       <div className="flex flex-col mt-2 w-full">
         <div className="w-full flex justify-start">
           <Button
-            type="primary"
             onClick={showModal}
             danger
             className="flex justify-center items-center"
@@ -518,7 +561,7 @@ const FishManagement = () => {
                       if (file) {
                         console.log("Selected file:", file);
                         onChange(file);
-                        setImage(URL.createObjectURL(file)); // Update for koiImage
+                        setImage(URL.createObjectURL(file));
                       }
                     }}
                   >
@@ -529,15 +572,31 @@ const FishManagement = () => {
                       {(value && value instanceof File) ||
                       image ||
                       dataEdit?.koiImage ? (
-                        <img
-                          className="w-[60px] h-[80px] object-cover"
-                          src={
-                            value && value instanceof File
-                              ? URL.createObjectURL(value)
-                              : image
-                          }
-                          alt="koiImage"
-                        />
+                        <>
+                          <img
+                            className="w-[60px] h-[80px] object-cover"
+                            src={
+                              value && value instanceof File
+                                ? URL.createObjectURL(value)
+                                : image
+                            }
+                            alt="koiImage"
+                          />
+                          <div
+                            style={{
+                              top: 30,
+                              right: "140px",
+                            }}
+                            className="absolute "
+                          >
+                            <DeleteOutlined
+                              onClick={() => {
+                                onChange(null);
+                                setImage(null);
+                              }}
+                            ></DeleteOutlined>
+                          </div>
+                        </>
                       ) : (
                         <>
                           <PlusOutlined />
@@ -572,7 +631,7 @@ const FishManagement = () => {
                       if (file) {
                         console.log("Selected file:", file);
                         onChange(file);
-                        setImageCertificate(URL.createObjectURL(file)); // Update for certificate
+                        setImageCertificate(URL.createObjectURL(file));
                       }
                     }}
                   >
@@ -581,17 +640,33 @@ const FishManagement = () => {
                       type="button"
                     >
                       {(value && value instanceof File) ||
-                      imageCertificate ||
-                      dataEdit?.certificate ? (
-                        <img
-                          className="w-[60px] h-[80px] object-cover"
-                          src={
-                            value && value instanceof File
-                              ? URL.createObjectURL(value)
-                              : imageCertificate
-                          }
-                          alt="certificate"
-                        />
+                      image ||
+                      dataEdit?.image ? (
+                        <>
+                          <img
+                            className="w-[60px] h-[80px] object-cover"
+                            src={
+                              value && value instanceof File
+                                ? URL.createObjectURL(value)
+                                : image
+                            }
+                            alt="image"
+                          />
+                          <div
+                            style={{
+                              top: 30,
+                              right: "140px",
+                            }}
+                            className="absolute "
+                          >
+                            <DeleteOutlined
+                              onClick={() => {
+                                onChange(null);
+                                setImage(null);
+                              }}
+                            ></DeleteOutlined>
+                          </div>
+                        </>
                       ) : (
                         <>
                           <PlusOutlined />
@@ -619,13 +694,11 @@ const FishManagement = () => {
                     {...field}
                     style={{ width: "100%", marginTop: "8px" }}
                     placeholder="Chọn danh mục"
-                  >
-                    {ListCategory?.map((item) => (
-                      <Select.Option key={item.id} value={item.id}>
-                        {item.categoryName}
-                      </Select.Option>
-                    ))}
-                  </Select>
+                    options={ListCategory?.map((item) => ({
+                      value: item.id,
+                      label: `${item.categoryName}`,
+                    }))}
+                  />
                 )}
               />
               {errors.category && (
@@ -644,10 +717,11 @@ const FishManagement = () => {
                     {...field}
                     style={{ width: "100%", marginTop: "8px" }}
                     placeholder="Chọn danh mục"
-                  >
-                    <Select.Option value={true}>Koi Đực</Select.Option>
-                    <Select.Option value={false}>Koi cái</Select.Option>
-                  </Select>
+                    options={[
+                      { value: true, label: "Koi Đực" },
+                      { value: false, label: "Koi cái" },
+                    ]}
+                  />
                 )}
               />
               {errors.gender && (
