@@ -176,6 +176,35 @@ const Navbar = () => {
     },
     { key: "8", label: "Đăng xuất", onClick: () => handleSignOut() },
   ];
+  const consignmentMenuitems = [
+    {
+      key: "8",
+      label: (
+        <Link to="/request-consignment"
+          target="_self"
+          rel="noopener noreferrer"
+        >
+
+          { }
+          Yêu cầu ký gửi Koi
+        </Link>
+
+      ),
+    },
+    {
+      key: "9",
+      label: <Link to="/consignment-history">Lịch sử ký gửi</Link>,
+    },
+    {
+      key: "7",
+      label: (
+        <Link to="/setting" target="_self" rel="noopener noreferrer" >
+          Cài đặt
+        </Link>
+      ),
+    },
+    { key: "8", label: "Đăng xuất", },
+  ];
 
   const handleSignOut = () => {
     dispatch(signOut());
@@ -275,7 +304,7 @@ const Navbar = () => {
             </li>
 
             <li className="me-x">
-              <Dropdown menu={{ items: koiMenuItems }} trigger={["hover"]}>
+              <Dropdown menu={{ items: consignmentMenuitems }} trigger={["hover"]}>
                 <Button
                   type="primary"
                   danger

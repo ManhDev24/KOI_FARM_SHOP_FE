@@ -78,7 +78,7 @@ const Profile = () => {
   const [passwordChanged, setPasswordChanged] = useState(false);
 
 
- 
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -96,7 +96,7 @@ const Profile = () => {
             avatar: profileData.avatar || './img/avatar.svg',
           });
           setAvatarPreview(profileData.avatar || './img/avatar.svg');
-         
+
           setValue('fullName', profileData.fullName);
           setValue('email', profileData.email);
           setValue('address', profileData.address);
@@ -167,68 +167,69 @@ const Profile = () => {
   const [selectedFile, setSelectedFile] = useState(null);
 
 
-const handleFileChange = (e) => {
-  const file = e.target.files[0];
-  if (file) {
-   
-    const validTypes = ['image/jpeg', 'image/png'];
-    if (!validTypes.includes(file.type)) {
-      message.error('Định dạng file không hợp lệ. Chỉ chấp nhận JPEG hoặc PNG.');
-      return;
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+
+      const validTypes = ['image/jpeg', 'image/png'];
+      if (!validTypes.includes(file.type)) {
+        message.error('Định dạng file không hợp lệ. Chỉ chấp nhận JPEG hoặc PNG.');
+        return;
+      }
+
+      if (file.size > 20000000) {
+        message.error('File quá lớn. Kích thước tối đa là 20MB.');
+        return;
+      }
+
+
+      setSelectedFile(file);
+      console.log(file)
+      setAvatarPreview(URL.createObjectURL(file));
+
+
+      handleAvatarUpload(file);
+      e.target.value = '';
     }
- 
-    if (file.size > 20000000) {
-      message.error('File quá lớn. Kích thước tối đa là 20MB.');
-      return;
+  };
+
+
+  const handleAvatarUpload = async (file) => {
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+
+      const dataProfile = JSON.parse(localStorage.getItem('user'));
+      const id = dataProfile?.id;
+
+      if (!id) {
+        message.error('Không tìm thấy thông tin người dùng.');
+        return;
+      }
+
+
+      const response = await fetch(`http://localhost:8080/koifarm/account/profile/updateAvatar/${id}`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Có lỗi xảy ra khi upload ảnh.');
+      }
+
+      const data = await response.json();
+      message.success('Upload ảnh thành công!');
+
+      console.log(data);
+
+    } catch (error) {
+
+      message.error(error.message || 'Đã xảy ra lỗi khi upload ảnh, vui lòng thử lại.');
     }
+  };
 
-   
-    setSelectedFile(file);
-    setAvatarPreview(URL.createObjectURL(file)); 
-
-  
-    handleAvatarUpload(file);
-    e.target.value = ''; 
-  }
-};
-
-
-const handleAvatarUpload = async (file) => {
- 
-  const formData = new FormData();
-  formData.append('file', file);
-
-  try {
-   
-    const dataProfile = JSON.parse(localStorage.getItem('user'));
-    const id = dataProfile?.id;
-
-    if (!id) {
-      message.error('Không tìm thấy thông tin người dùng.');
-      return;
-    }
-
-   
-    const response = await fetch(`http://localhost:8080/koifarm/account/profile/updateAvatar/${id}`, {
-      method: 'POST',
-      body: formData,
-    });
-
-    if (!response.ok) {
-      throw new Error('Có lỗi xảy ra khi upload ảnh.');
-    }
-
-    const data = await response.json(); 
-    message.success('Upload ảnh thành công!');
-    
-    console.log(data);
-
-  } catch (error) {
-    
-    message.error(error.message || 'Đã xảy ra lỗi khi upload ảnh, vui lòng thử lại.');
-  }
-};
-  
 
   const handleOldPasswordSubmit = async () => {
     try {
