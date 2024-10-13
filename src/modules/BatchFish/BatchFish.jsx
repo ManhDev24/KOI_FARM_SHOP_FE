@@ -6,20 +6,19 @@ import { useQuery } from "@tanstack/react-query";
 import FishApi from "../../apis/Fish.api";
 import LoadingModal from "../Modal/LoadingModal";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart } from "../../Redux/Slices/Cart_Slice";
+import { addToCart, addToCartBatch } from "../../Redux/Slices/Cart_Slice";
 import { toast } from "react-toastify";
 import BatchComparisonModal from "../Modal/BatchComparisonModal ";
 
 const BatchFish = () => {
-
   const [selectedCategory, setSelectedCategory] = useState("");
 
   const [isFiltered, setIsFiltered] = useState(false);
   const [selectAge, setSelectAge] = useState("");
   const [selectPrice, setSelectPrice] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [currentSize, setCurrentSize] = useState(); // Max size
-  const [currentPrice, setCurrentPrice] = useState(1000000000); // Max price
+  const [currentSize, setCurrentSize] = useState();
+  const [currentPrice, setCurrentPrice] = useState(1000000000);
   const [avgSize, setAvgSize] = useState("");
   const [sortField, setSortField] = useState("");
   const [sortDirection, setSortDirection] = useState("");
@@ -30,25 +29,10 @@ const BatchFish = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-
   const handleAddToCart = (fish) => {
-    dispatch(
-      addToCart({
-        ...fish,
-        quantity: 1,
-      })
-    );
+    console.log("fish: ", fish);
+    dispatch(addToCartBatch([{ ...fish, quantity: 1, isBatch: true }]));
   };
-
-  // const {
-  //   data: KoiLists,
-  //   isLoading: isLoadingKoiLists,
-  //   isError: isErrorLoadingKoiLists,
-  // } = useQuery({
-  //   queryKey: ["KoiLists", currentPage],
-  //   queryFn: () => FishApi.getListBatchFishByCategory(currentPage),
-  //   keepPreviousData: true,
-  // });
 
 
   //koibatchfish
@@ -61,8 +45,6 @@ const BatchFish = () => {
     queryFn: () => FishApi.getListBatchFish(currentPage, pageSize),
     keepPreviousData: true,
   });
-
-
 
   //koiListFilter
   const {
@@ -98,11 +80,7 @@ const BatchFish = () => {
     keepPreviousData: true,
   });
 
-
-
   filteredKoiBatchList;
-
-
 
   const koiResponseList = KoiList?.batchReponses;
   const updateKoiList = koiResponseList?.map((item) => {
@@ -112,7 +90,6 @@ const BatchFish = () => {
     };
   });
 
-
   const koiToDisplay = isFiltered
     ? filteredKoiBatchList?.batchReponses
     : updateKoiList;
@@ -121,7 +98,6 @@ const BatchFish = () => {
     ? filteredKoiBatchList?.totalElements
     : KoiList?.totalElements;
 
-
   if (isLoadingKoiList) {
     return <LoadingModal />;
   }
@@ -129,12 +105,11 @@ const BatchFish = () => {
     return <h1>Error</h1>;
   }
 
-
   const CategoryItem = [
     {
       key: "Danh mục",
       label: "Danh mục",
-      value: ""
+      value: "",
     },
     {
       key: "Koi showa",
@@ -208,7 +183,6 @@ const BatchFish = () => {
   // ];
 
   const handleMenuClickCategory = (item) => {
-
     setSelectedCategory(item.value);
     setIsFiltered(true);
   };
@@ -232,23 +206,28 @@ const BatchFish = () => {
   };
 
   const handleAddToCompare = (item) => {
-    if (selectedItems.length < 2 && !selectedItems.some((i) => i.batchID === item.batchID)) {
+    if (
+      selectedItems.length < 2 &&
+      !selectedItems.some((i) => i.batchID === item.batchID)
+    ) {
       setSelectedItems([...selectedItems, item]); // Add item to the comparison list
     } else if (selectedItems.some((i) => i.batchID === item.batchID)) {
-      alert('Lô cá này đã được thêm vào để so sánh');
+      alert("Lô cá này đã được thêm vào để so sánh");
     } else {
-      alert('Bạn chỉ có thể thêm tối đa 2 lô cá.');
+      alert("Bạn chỉ có thể thêm tối đa 2 lô cá.");
     }
   };
   const removeItemFromCompare = (itemToRemove) => {
-    const updatedItems = selectedItems.filter((item) => item.batchID !== itemToRemove.batchID);
+    const updatedItems = selectedItems.filter(
+      (item) => item.batchID !== itemToRemove.batchID
+    );
     setSelectedItems(updatedItems);
   };
   const handleCompare = () => {
     if (selectedItems.length > 0) {
       setIsModalOpen(true);
     } else {
-      alert('Vui lòng chọn ít nhất một lô cá để so sánh.');
+      alert("Vui lòng chọn ít nhất một lô cá để so sánh.");
     }
   };
 
@@ -292,7 +271,6 @@ const BatchFish = () => {
               </div>
               <div className="grid grid-cols-1 gap-5 ">
                 <div className="dropdown_filter">
-
                   {/* //handlMenuClickCate */}
                   <Dropdown
                     menu={{
@@ -317,14 +295,14 @@ const BatchFish = () => {
                           {selectedCategory === "1"
                             ? "Koi showa"
                             : selectedCategory === "2"
-                              ? "Koi asagi"
-                              : selectedCategory === "3"
-                                ? "Koi karashi"
-                                : selectedCategory === "4"
-                                  ? "Koi Benikoi"
-                                  : selectedCategory === " "
-                                    ? "Danh Mục" : 'Danh Mục'
-                          }
+                            ? "Koi asagi"
+                            : selectedCategory === "3"
+                            ? "Koi karashi"
+                            : selectedCategory === "4"
+                            ? "Koi Benikoi"
+                            : selectedCategory === " "
+                            ? "Danh Mục"
+                            : "Danh Mục"}
                         </p>
                       </div>
                       <div>
@@ -525,10 +503,8 @@ const BatchFish = () => {
                           {selectPrice === "1"
                             ? "Giá từ thấp đến cao"
                             : selectPrice === "2"
-                              ? "Giá từ cao đến thấp"
-                              : "Sắp xếp theo giá"
-                          }
-
+                            ? "Giá từ cao đến thấp"
+                            : "Sắp xếp theo giá"}
                         </p>
                       </div>
                       <div>
@@ -633,7 +609,6 @@ const BatchFish = () => {
 
           <div className="my-[80px] flex justify-center items-start ">
             <Flex className="justify-center ">
-
               <Row
                 gutter={[16, 16]}
                 justify="center"
@@ -657,8 +632,8 @@ const BatchFish = () => {
                               {card.status === 1
                                 ? "Đang bán"
                                 : card.status === 2
-                                  ? "Đã bán"
-                                  : null}
+                                ? "Đã bán"
+                                : null}
                             </div>
                             <div className="rounded-[10px]">
                               <img
@@ -671,18 +646,27 @@ const BatchFish = () => {
                           </div>
                           <div className="flex flex-col w-[250px] h-[320px] bg-[#FFFFFF] border border-t-0 border-x-2 border-b-2 border-[#FA4444] rounded-b-[10px]">
                             <h1 className="my-0 mx-auto text-[#FA4444] font-bold text-[20px]">
-                              {card.categoryName} số lượng {card.quantity} độ tuổi {card.age}
+                              {card.categoryName} số lượng {card.quantity} độ
+                              tuổi {card.age}
                             </h1>
                             <div className="my-[10px] mx-[10px]  ">
                               <div className="flex flex-col ">
-                                <div className="h-7">Người bán: {card.origin}</div>
+                                <div className="h-7">
+                                  Người bán: {card.origin}
+                                </div>
                                 <div className="h-6">
                                   Số lượng: {card.quantity}
                                 </div>
                                 <div className="h-6">Tuổi: {card.age}</div>
-                                <div className="h-6">Kích thước: {card.avgSize}cm</div>
-                                <div className="h-6">Nguồn gốc: {card.origin}</div>
-                                <div className="h-6">Giống: {card.categoryName}</div>
+                                <div className="h-6">
+                                  Kích thước: {card.avgSize}cm
+                                </div>
+                                <div className="h-6">
+                                  Nguồn gốc: {card.origin}
+                                </div>
+                                <div className="h-6">
+                                  Giống: {card.categoryName}
+                                </div>
                               </div>
                               <div className="text-center">
                                 <div className="my-[10px] text-[20px] font-bold">
@@ -693,7 +677,7 @@ const BatchFish = () => {
                                 </div>
                                 {card.status !== 2 ? (
                                   <>
-                                    <Link to='#'>
+                                    <Link to="#">
                                       <Button
                                         onClick={() => {
                                           handleAddToCart(card);
@@ -707,23 +691,22 @@ const BatchFish = () => {
                                         className="w-[120px] h-[30px] absolute top-[3px] right-[3px] text-[#FFFFFF] bg-[#EA9B00] rounded-[10px] mt-2"
                                       >
                                         <svg
-                                          xmlns='http://www.w3.org/2000/svg'
-                                          width='1em'
-                                          height='1em'
-                                          className='flex'
-                                          viewBox='0 0 24 24'
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          width="1em"
+                                          height="1em"
+                                          className="flex"
+                                          viewBox="0 0 24 24"
                                         >
-                                          <g fill='none' fillRule='evenodd'>
+                                          <g fill="none" fillRule="evenodd">
                                             <path
-                                              d='M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4h4a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-4v4a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-4H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h4z'
-                                              fill='currentColor'
+                                              d="M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4h4a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-4v4a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-4H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h4z"
+                                              fill="currentColor"
                                             />
                                           </g>
                                         </svg>
                                         So Sánh
                                       </Button>
                                     </Link>
-
                                   </>
                                 ) : null}
                               </div>
@@ -740,18 +723,12 @@ const BatchFish = () => {
                             </div>
                           </div>
                         </Col>
-                        <Link>
-
-                        </Link>
-
+                        <Link></Link>
                       </Link>
-
                     </>
-
                   );
                 })}
               </Row>
-
             </Flex>
           </div>
 
@@ -778,12 +755,13 @@ const BatchFish = () => {
       />
       <Button
         onClick={handleCompare}
-        className={`bg-[#FA4444] text-white fixed z-40 left-[100px] top-[200px] ${selectedItems.length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={`bg-[#FA4444] text-white fixed z-40 left-[100px] top-[200px] ${
+          selectedItems.length === 0 ? "opacity-50 cursor-not-allowed" : ""
+        }`}
         disabled={selectedItems.length === 0}
       >
         Xem So Sánh ({selectedItems.length}) Lô Cá Koi
       </Button>
-
     </div>
   );
 };

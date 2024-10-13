@@ -64,6 +64,7 @@ const Knowledge = () => {
       addToCart({
         ...fish,
         quantity: 1,
+        isBatch: false,
       })
     );
   };
