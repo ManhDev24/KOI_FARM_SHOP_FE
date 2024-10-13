@@ -240,7 +240,7 @@ const RequestConsignment = () => {
         {
             key: "24",
             label: "6 Tháng 18% giá trị",
-            value: "3",
+            value: "3S",
         },
 
     ];
@@ -282,6 +282,7 @@ const RequestConsignment = () => {
             if (!accountId) {
                 throw new Error("Account ID not found in localStorage");
             }
+            formData.append('serviceFee', serviceFee);
             formData.append('accountId', accountId);
             formData.append('water', 'lanh');
             // Send the form data through the API request
@@ -760,9 +761,9 @@ const RequestConsignment = () => {
                             </div>
                             <div className=" col-span-2 right flex-col justify-start items-start gap-10 inline-flex">
                                 <div className="self-stretch h-[2215.65px] flex-col justify-start items-start gap-[25px] flex">
-                                    <div className="self-stretch w-full h-[1250px] px-2.5 py-5  border-2 border-gray-200  flex-col justify-start items-start gap-[25px] flex  relative right-5">
+                                    <div className="self-stretch w-full h-[1250px] px-2.5 py-5 rounded-xl  border-2 border-gray-200  flex-col justify-start items-start gap-[25px] flex  relative right-5">
 
-                                        <div className="w-full text-black text-2xl font-bold font-['Arial']">Thông tin cá Koi</div>
+                                        <div className="w-full text-black text-2xl text-center font-bold my-0 font-['Arial']">Thông tin cá Koi</div>
                                         <div className="self-stretch h-[55.65px] justify-start items-start gap-2.5 inline-flex">
                                             <div className="h-[50px] w-full m-0 p-0 justify-start items-start gap-2.5 flex">
                                                 <Form.Item
@@ -1024,7 +1025,7 @@ const RequestConsignment = () => {
                                             </Form.Item>
                                         </div>
                                     </div>
-                                    <div className="self-stretch h-[full] px-2.5 py-5 rounded-[10px] border border-black flex-col justify-start items-start gap-[25px] flex">
+                                    <div className="self-stretch h-[full] px-2.5 relative right-5 py-5 rounded-[10px] border border-black flex-col justify-start items-start gap-[25px] flex">
                                         <div className="text-black text-2xl w-full font-bold font-['Arial'] text-center">Thông tin ký gửi & liên hệ</div>
                                         <div className="h-[50px] pr-[243px] justify-start items-center inline-flex">
                                             <div className="w-full self-stretch p-2.5 bg-white  justify-center items-center gap-2.5 inline-flex">
@@ -1055,18 +1056,18 @@ const RequestConsignment = () => {
                                             </div>
                                         </div>
                                         <div className="h-[50px] pr-[304px] justify-start items-center inline-flex">
-                                            <div className="w-full self-stretch p-[10px] bg-white  justify-center items-center gap-2.5 inline-flex">
+                                            <div className="w-full relative self-stretch p-[10px] bg-white  justify-center items-center gap-2.5 inline-flex">
                                                 <Form.Item
                                                     label={<span className="relative top-1 w-[200px] p-0">Loại ký gửi</span>}
                                                     labelAlign="right"
                                                     labelCol={{ span: 24 }}
                                                     wrapperCol={{ span: 15 }}
                                                     name="consignmentType"
-                                                    className="pt-4 w-[20rem]"
+                                                    className="pt-4 w-[20rem] relative"
                                                     rules={[{ required: true, message: <span className='!w-[500px] relative top-1 left-[10px]'>Vui lòng chọn loại ký gửi</span> }]}
                                                 >
                                                     <Select
-                                                        className="w-full h-[40px] flex justify-between items-center" // Flexbox for centering
+                                                        className="w-full h-[40px] relative left-[10px] flex justify-between items-center" 
                                                         defaultValue=""
                                                         onChange={handleSelectConsigmentType}
                                                         dropdownStyle={{ width: 200, marginLeft: 20 }}
@@ -1082,7 +1083,7 @@ const RequestConsignment = () => {
 
                                             </div>
                                         </div>
-                                        <div className="h-[50px] pr-[304px] justify-start items-center inline-flex">
+                                        <div className="h-[50px] pr-[0] justify-start items-center inline-flex">
                                             <div className="w-full p-[10px] mt-12 self-stretch  bg-white rounded-[10px]  justify-center items-center gap-2.5 inline-flex">
                                                 <Form.Item
                                                     label={<span className="relative top-1">Gói ký gửi</span>}
@@ -1094,7 +1095,7 @@ const RequestConsignment = () => {
                                                     rules={[{ required: true, message: <span className='!w-[500px] relative bottom-3 left-[10px]'>Vui lòng chọn gói ký gửi</span> }]}
                                                 >
                                                     <Select
-                                                        className="w-full h-[40px] ms-10 relative bottom-3 right-[30px]"
+                                                        className="w-full h-[40px] ms-10 relative bottom-3  right-[30px]"
                                                         defaultValue=""
                                                         onChange={handleSelectPackage}
                                                         dropdownStyle={{ width: 200, marginLeft: 20 }}
@@ -1116,15 +1117,15 @@ const RequestConsignment = () => {
                                                 </Form.Item>
                                             </div>
                                         </div>
-                                        <div className="w-full h-full ">
-                                            <div className=" grid grid-flow-col p-[10px] pt-0 grid-cols-5 text-black  font-['Arial']">
+                                        <div className=" h-full ">
+                                            <div className="w-full grid grid-flow-col p-[8px] pt-0 grid-cols-5 text-black  font-['Arial']">
                                                 <Form.Item
                                                     label={<span className="relative top-1">Số điện thoại</span>}
                                                     labelAlign=""
                                                     labelCol={{ span: 24 }}
-                                                    wrapperCol={{ span: 11 }}
+                                                    wrapperCol={{ span: 18 }}
                                                     name="phoneNumber"
-                                                    className='m-0 w-[500px] right-2 relative self-stretch p-[10px] '
+                                                    className='m-0 w-[20rem] right-2 relative self-stretch p-[10px] '
                                                     rules={[{
                                                         required: true, message: <span className='!w-[500px] relative top-1 left-10'>Vui lòng nhập số điện thoại</span>
                                                     },
