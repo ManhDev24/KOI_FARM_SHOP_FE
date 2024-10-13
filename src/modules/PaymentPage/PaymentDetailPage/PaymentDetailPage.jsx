@@ -11,7 +11,9 @@ const columns = [
     title: "Tên Cá Koi",
     dataIndex: "koiFishId",
     render: (text, record) => {
-      return `${record.categoryName} - ${record.koiSize}cm - ${record.koiAge} tuổi`;
+      return record?.type
+        ? `${record.categoryName} - ${record.koiSize} cm - ${record.koiAge} tuổi`
+        : `${record.categoryName} - ${record.avgSize} cm - ${record.batchAge} tuổi `;
     },
   },
   {
@@ -32,29 +34,35 @@ const columns = [
   {
     title: "Giới Tính",
     dataIndex: "gender",
-    render: (gender) => (gender ? "Koi đực" : "Koi cái"),
+
+    render: (_, record) => {
+      return record?.type
+        ? record?.gender
+          ? "Koi đực"
+          : "Koi cái"
+        : "Ngẫu nhiên";
+    },
   },
   {
     title: "Kích Cỡ Cá Koi",
     dataIndex: "koiSize",
-    render: (koiSize) => `${koiSize} cm`,
+    render: (_, record) => {
+      return record?.type ? `${record?.koiSize} cm` : `${record?.avgSize} cm`;
+    },
   },
   {
     title: "Giá Cá Koi",
     dataIndex: "price",
-    render: (price) => (
-      <span className="">
-        {new Intl.NumberFormat("vi-VN", {
-          style: "currency",
-          currency: "VND",
-        }).format(price)}
-      </span>
-    ),
+    render: (_, record) => {
+      return record?.type ? record?.price : 0;
+    },
   },
   {
     title: "Giá Batch",
     dataIndex: "batchPrice",
-    render: (batchPrice) => (batchPrice ? batchPrice : "Không mua theo lô"),
+    render: (_, record) => {
+      return record?.type ? 0 : record?.price;
+    },
   },
   {
     title: "Số lượng",
@@ -79,7 +87,7 @@ const PaymentDetailPage = () => {
     keepPreviousData: true,
   });
   const orderDetailData = orderDetail?.data;
-  console.log('orderDetailData: ', orderDetailData);
+  console.log("orderDetailData: ", orderDetailData);
   if (orderDetailLoading) {
     return <LoadingModal />;
   }
