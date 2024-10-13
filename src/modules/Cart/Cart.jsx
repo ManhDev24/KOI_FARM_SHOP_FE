@@ -150,6 +150,7 @@ const Cart = () => {
   };
   const handleDelete = (fish) => {
     dispatch(removeFromCart(fish));
+    window.location.reload();
   };
   const onSubmitPromotionCode = (data) => {
     if (onCart?.length == null) {

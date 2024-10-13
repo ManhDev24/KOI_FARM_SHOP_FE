@@ -64,6 +64,7 @@ const ThankPage = () => {
     ?.filter((item) => item.batchID !== undefined && item.batchID !== null)
     .map((item) => item.batchID);
   const quantity = order?.map((item) => item.quantity);
+  console.log('quantity: ', quantity);
   let totalPrice = useSelector((state) => state.cart.total);
   totalPrice = totalPrice - totalPrice * +disCountRate;
   console.log("totalPrice: ", totalPrice);

@@ -74,6 +74,7 @@ const FishManagement = () => {
   const [dataView, setDataView] = useState(null);
   const [image, setImage] = useState(undefined);
   const [imageCertificate, setImageCertificate] = useState(undefined);
+  const [status, setStatus] = useState(1);
 
   const queryClient = useQueryClient();
 
@@ -176,6 +177,7 @@ const FishManagement = () => {
       dataIndex: "status",
       key: "status",
       render: (status) => {
+        console.log("status: ", status);
         switch (status) {
           case 1:
             return <Tag color="lime">Còn Hàng</Tag>;
@@ -185,6 +187,8 @@ const FishManagement = () => {
             return <Tag color="orange">Ký Gửi</Tag>;
           case 4:
             return <Tag color="purple">Chờ Duyệt Đơn Ký Gửi</Tag>;
+            case 5 :
+              return <Tag color="red">Ký gửi chăm sóc</Tag>;
         }
       },
     },
@@ -230,7 +234,10 @@ const FishManagement = () => {
       render: (text, record) => (
         <Select
           defaultValue={record.status}
-          onChange={(value) => onStatusChange(record.id, value)}
+          onChange={(value) => {
+            onStatusChange(record.id);
+            setStatus(value);
+          }}
           style={{ width: 150 }}
           options={[
             { value: 1, label: "Còn Hàng" },
@@ -250,7 +257,9 @@ const FishManagement = () => {
     setImage(undefined);
   };
   const onStatusChange = (id, status) => {
-    handleChangeStatusFish(id, status);
+    console.log("status: ", status);
+    console.log("id: ", id);
+    handleChangeStatusFish(id);
   };
 
   const showModal = () => {
@@ -356,7 +365,7 @@ const FishManagement = () => {
     isLoading: isLoadingChangeStatusFish,
     isError: isErrorChangeStatusFish,
   } = useMutation({
-    mutationFn: (id, status) => FishApi.changeStatus(id, status),
+    mutationFn: (id) => FishApi.changeStatus(id, status),
     onSuccess: () => {
       message.success("Chỉnh sửa trạng thái thành công");
       queryClient.invalidateQueries(["ListKoi"]);
@@ -433,6 +442,13 @@ const FishManagement = () => {
       koiImage: record?.koiImage,
     });
   };
+
+  useEffect(() => {
+    return () => {
+      if (image) URL.revokeObjectURL(image);
+      if (imageCertificate) URL.revokeObjectURL(imageCertificate);
+    };
+  }, [image, imageCertificate]);
 
   const onSubmitBanFish = async (id, currentStatus) => {
     try {
@@ -594,7 +610,7 @@ const FishManagement = () => {
                                 onChange(null);
                                 setImage(null);
                               }}
-                            ></DeleteOutlined>
+                            />
                           </div>
                         </>
                       ) : (
@@ -640,7 +656,7 @@ const FishManagement = () => {
                       type="button"
                     >
                       {(value && value instanceof File) ||
-                      image ||
+                      imageCertificate ||
                       dataEdit?.image ? (
                         <>
                           <img
@@ -648,9 +664,9 @@ const FishManagement = () => {
                             src={
                               value && value instanceof File
                                 ? URL.createObjectURL(value)
-                                : image
+                                : imageCertificate
                             }
-                            alt="image"
+                            alt="imageCertificate"
                           />
                           <div
                             style={{
@@ -662,9 +678,9 @@ const FishManagement = () => {
                             <DeleteOutlined
                               onClick={() => {
                                 onChange(null);
-                                setImage(null);
+                                setImageCertificate(null);
                               }}
-                            ></DeleteOutlined>
+                            />
                           </div>
                         </>
                       ) : (

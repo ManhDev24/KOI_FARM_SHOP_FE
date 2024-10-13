@@ -183,7 +183,7 @@ const CategoryManagement = () => {
   } = useMutation({
     mutationFn: (id) => CategoryApi.deleteCategory(id),
     onSuccess: (data) => {
-      message.success("X<location th-Christian thành công");
+      message.success("Cập nhập trạng thái thành công");
       queryClient.invalidateQueries(["ListCategory"]);
     },
     onError: (error) => {
