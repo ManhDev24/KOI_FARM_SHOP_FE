@@ -117,7 +117,7 @@ export const publicRoutes = [
     layout: DefaultLayout,
   },
   {
-    path: "/payment-detail/:paymentId",
+    path: "/payment-detail/:orderId",
     component: PaymentDetailPage,
     layout: DefaultLayout,
   },

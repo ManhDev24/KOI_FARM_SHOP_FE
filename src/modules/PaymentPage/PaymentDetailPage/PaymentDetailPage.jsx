@@ -27,6 +27,7 @@ const columns = [
   {
     title: "Tuổi Cá Koi",
     dataIndex: "koiAge",
+    render: (koiAge) => (koiAge ? `${koiAge} tuội` : "Tuổi theo lô"),
   },
   {
     title: "Giới Tính",
@@ -63,9 +64,9 @@ const columns = [
 
 const PaymentDetailPage = () => {
   const dispatch = useDispatch();
-  const { orderId } = useSelector((state) => state.order);
+  // const { orderId } = useSelector((state) => state.order);
 
-  const { paymentId } = useParams();
+  const { orderId } = useParams();
 
   console.log("orderId: ", orderId);
   const {
@@ -74,10 +75,11 @@ const PaymentDetailPage = () => {
     isError: orderDetailError,
   } = useQuery({
     queryKey: ["orderDetail"],
-    queryFn: () => orderApi.getOrderDetail(paymentId),
+    queryFn: () => orderApi.getOrderDetail(orderId),
     keepPreviousData: true,
   });
   const orderDetailData = orderDetail?.data;
+  console.log('orderDetailData: ', orderDetailData);
   if (orderDetailLoading) {
     return <LoadingModal />;
   }

@@ -17,9 +17,6 @@ const PaymentHistoryPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const dispatch = useDispatch();
 
-  const handleSaveOrderId = (orderId) => {
-    dispatch(saveOrderId(orderId));
-  };
   const {
     data: orderData,
     isLoading: orderDataLoading,
@@ -45,6 +42,13 @@ const PaymentHistoryPage = () => {
     {
       title: "Mã giao dịch",
       dataIndex: "transactionCode",
+      render: (value) => {
+        return <div className="font-bold">{value}</div>;
+      },
+    },
+    {
+      title: "Mã đơn hàng",
+      dataIndex: "orderId",
       render: (value) => {
         return <div className="font-bold">{value}</div>;
       },
@@ -86,11 +90,8 @@ const PaymentHistoryPage = () => {
       title: "Chi tiết",
       render: (payment) => (
         <div>
-          <Link to={`/payment-detail/${payment.paymentId}`}>
-            <button
-              onClick={() => handleSaveOrderId(payment.orderId)}
-              className="bg-blue-500 text-white font-bold py-1 px-3 rounded m-4"
-            >
+          <Link to={`/payment-detail/${payment?.orderId}`}>
+            <button className="bg-blue-500 text-white font-bold py-1 px-3 rounded m-4">
               Xem chi tiết
             </button>
           </Link>

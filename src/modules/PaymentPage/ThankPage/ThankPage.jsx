@@ -10,6 +10,7 @@ import {
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { removeFromCart } from "../../../Redux/Slices/Cart_Slice";
+import LoadingModal from "../../Modal/LoadingModal";
 
 const ThankPage = () => {
   const [searchParams] = useSearchParams();
@@ -30,8 +31,8 @@ const ThankPage = () => {
   const order = getLocalStorage("cartItems");
   const {
     mutate: handleSaveOrder,
-    isLoading,
-    isError,
+    isLoading: isHandleSaveOrderLoading,
+    isError: isHandleSaveOrderError,
   } = useMutation({
     mutationFn: (data) => CheckoutApi.saveOrder(data, paymentCode),
     onSuccess: (data) => {
@@ -45,13 +46,23 @@ const ThankPage = () => {
       const errorMessage =
         error?.message || "Đã có lỗi xảy ra vui lòng thử lại !!!";
       toast.error(errorMessage);
+      navigate("/payment-fail");
     },
   });
-
+  if (isHandleSaveOrderLoading) {
+    return <LoadingModal />;
+  }
+  if (isHandleSaveOrderError) {
+    return <div>Lỗi rồi</div>;
+  }
   const accountID = user?.id;
-  const koiFishs = order?.map((fish) => fish.id);
+  const koiFishs = order
+    ?.filter((item) => item.id !== undefined && item.id !== null)
+    .map((item) => item.id);
   const price = order?.map((fish) => fish.price);
-  const batchs = [];
+  const batchs = order
+    ?.filter((item) => item.batchID !== undefined && item.batchID !== null)
+    .map((item) => item.batchID);
   const quantity = order?.map((item) => item.quantity);
   let totalPrice = useSelector((state) => state.cart.total);
   totalPrice = totalPrice - totalPrice * +disCountRate;
