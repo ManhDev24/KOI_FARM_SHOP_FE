@@ -15,9 +15,7 @@ import ListBlog from "../modules/Blog/ListBlog/ListBlog";
 
 import Cart from "../modules/Cart/Cart";
 import ChangePassword from "../modules/ChangePassword/ChangePassword";
-import KoiConsignmentPolicies from "../modules/Consignment/KoiConsignmentPolicies";
 import RequestConsignment from "../modules/Consignment/RequestConsignment";
-import StatusConsignment from "../modules/Consignment/StatusConsignment";
 
 import Error from "../modules/ErrorPage/Error";
 import FishDetail from "../modules/FishDetail/FishDetail";
@@ -143,12 +141,6 @@ export const publicRoutes = [
 
   {
     path: "/request-consignment",
-    component: KoiConsignmentPolicies,
-
-    layout: DefaultLayout,
-  },
-  {
-    path: "/Form-consignment",
     component: RequestConsignment,
     layout: DefaultLayout,
   },
@@ -163,12 +155,6 @@ export const publicRoutes = [
   {
     path: "/blog",
     component: Blog,
-
-    layout: DefaultLayout,
-  },
-  {
-    path: "/status-consignment",
-    component: StatusConsignment,
 
     layout: DefaultLayout,
   },
@@ -206,7 +192,7 @@ export const privateRoutes = [
         layout: null,
         roles: ["manager", "staff"],
       },
-
+      
       {
         path: "payment-management",
         component: PaymentManagement,
