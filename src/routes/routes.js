@@ -1,8 +1,10 @@
 import HomePage from "../components/HomePage/HomePage";
 import DefaultLayout from "../layouts/DefautLayout/DefaultLayout";
 import AdminLayout from "../modules/Admin/AdminLayout/AdminLayout";
+import CategoryManagement from "../modules/Admin/CategoryManagement/CategoryManagement";
 import DashBoard from "../modules/Admin/Dashboard/DashBoard";
 import FishManagement from "../modules/Admin/FishManagement/FishManagement";
+import PaymentManagement from "../modules/Admin/PaymentManagement/PaymentManagement";
 import UserManagement from "../modules/Admin/UserManagement/UserManagement";
 
 import BatchFish from "../modules/BatchFish/BatchFish";
@@ -13,7 +15,9 @@ import ListBlog from "../modules/Blog/ListBlog/ListBlog";
 
 import Cart from "../modules/Cart/Cart";
 import ChangePassword from "../modules/ChangePassword/ChangePassword";
+import KoiConsignmentPolicies from "../modules/Consignment/KoiConsignmentPolicies";
 import RequestConsignment from "../modules/Consignment/RequestConsignment";
+import StatusConsignment from "../modules/Consignment/StatusConsignment";
 
 import Error from "../modules/ErrorPage/Error";
 import FishDetail from "../modules/FishDetail/FishDetail";
@@ -116,7 +120,7 @@ export const publicRoutes = [
     layout: DefaultLayout,
   },
   {
-    path: "/payment-detail",
+    path: "/payment-detail/:orderId",
     component: PaymentDetailPage,
     layout: DefaultLayout,
   },
@@ -136,10 +140,14 @@ export const publicRoutes = [
     component: BatchFishDetail,
     layout: DefaultLayout,
   },
-
-
   {
     path: "/request-consignment",
+    component: KoiConsignmentPolicies,
+
+    layout: DefaultLayout,
+  },
+  {
+    path: "/Form-consignment",
     component: RequestConsignment,
     layout: DefaultLayout,
   },
@@ -154,6 +162,12 @@ export const publicRoutes = [
   {
     path: "/blog",
     component: Blog,
+
+    layout: DefaultLayout,
+  },
+  {
+    path: "/status-consignment",
+    component: StatusConsignment,
 
     layout: DefaultLayout,
   },
@@ -182,6 +196,19 @@ export const privateRoutes = [
       {
         path: "fish-management",
         component: FishManagement,
+        layout: null,
+        roles: ["manager", "staff"],
+      },
+      {
+        path: "category-management",
+        component: CategoryManagement,
+        layout: null,
+        roles: ["manager", "staff"],
+      },
+
+      {
+        path: "payment-management",
+        component: PaymentManagement,
         layout: null,
         roles: ["manager", "staff"],
       },
