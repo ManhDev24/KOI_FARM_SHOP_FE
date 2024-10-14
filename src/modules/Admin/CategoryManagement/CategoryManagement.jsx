@@ -9,6 +9,7 @@ import {
   Pagination,
   Row,
   Select,
+  Space,
   Table,
   Tag,
   Upload,
@@ -23,6 +24,7 @@ import {
   EyeTwoTone,
   EyeInvisibleOutlined,
   PlusOutlined,
+  EditOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
 import { toast } from "react-toastify";
@@ -40,7 +42,7 @@ const validationSchema = yup.object().shape({
     .string()
     .required("Mô tả là bắt buộc")
     .max(500, "Mô tả không được quá 500 ký tự"),
-  status: yup.boolean().required("Trạng thái là bắt buộc"),
+  status: yup.boolean(),
 });
 const CategoryManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -48,16 +50,33 @@ const CategoryManagement = () => {
   const [value, setValue] = useState("");
   const [dataEdit, setDataEdit] = useState(null);
   const [image, setImage] = useState(undefined);
-
+  const [imageUrl, setImageUrl] = useState(undefined);
+  const [isChangeImage, setIsChangeImage] = useState(false);
   const queryClient = useQueryClient();
 
   const showModal = () => {
     setIsModalOpen(true);
+    reset({
+      cateName: "",
+      description: "",
+      cateImg: "",
+      status: true,
+    });
+    setImage(undefined);
+    setImageUrl(undefined);
+    setDataEdit(null);
   };
   const handleCancel = () => {
     setIsModalOpen(false);
-    reset();
+    reset({
+      cateName: "",
+      description: "",
+      cateImg: "",
+      status: true,
+    });
     setImage(undefined);
+    setIsChangeImage(false);
+    setDataEdit(null);
   };
   const {
     handleSubmit,
@@ -85,10 +104,17 @@ const CategoryManagement = () => {
     queryKey: ["ListCategory", currentPage],
     queryFn: () => CategoryApi.getAllCategory(currentPage, 4),
   });
-  console.log("ListCategory: ", ListCategory);
+
+  const handleUploadChange = (info) => {
+    if (info.file.status === "done") {
+      // Sau khi upload thành công, hiển thị hình ảnh
+      setImageUrl(
+        info.file.response?.url || URL.createObjectURL(info.file.originFileObj)
+      );
+    }
+  };
   const watchCateogryImg = watch("cateImg");
   const totalElements = ListCategory?.data?.totalElements;
-  console.log("totalElements: ", totalElements);
 
   const columns = [
     {
@@ -152,16 +178,25 @@ const CategoryManagement = () => {
       title: "Hành động",
       key: "action",
       render: (text, record) => (
-        <Button
-          style={{
-            backgroundColor: record.status ? "#ff4d4f" : "#52c41a", 
-            color: "white",
-          }}
-          icon={<StopOutlined />}
-          onClick={() => handleUpdateCategory(record.id)}
-        >
-          {record.status ? "Ẩn" : "Hiển thị"}
-        </Button>
+        <Space size="middle">
+          <Button
+            style={{
+              backgroundColor: record.status ? "#ff4d4f" : "#52c41a",
+              color: "white",
+            }}
+            icon={<StopOutlined />}
+            onClick={() => handleUpdateStatusCategory(record.id)}
+          >
+            {record.status ? "Ẩn" : "Hiển thị"}
+          </Button>
+          <Button
+            type="default"
+            icon={<EditOutlined />}
+            onClick={() => onEditFish(record)}
+          >
+            Edit
+          </Button>
+        </Space>
       ),
     },
   ];
@@ -177,9 +212,9 @@ const CategoryManagement = () => {
     },
   });
   const {
-    mutate: handleUpdateCategory,
-    isLoading: isLoadingUpdateCategory,
-    isError: isErrorUpdateCategory,
+    mutate: handleUpdateStatusCategory,
+    isLoading: isLoadingUpdateStatusCategory,
+    isError: isErrorUpdateStatusCategory,
   } = useMutation({
     mutationFn: (id) => CategoryApi.deleteCategory(id),
     onSuccess: (data) => {
@@ -192,26 +227,68 @@ const CategoryManagement = () => {
       message.error(errorMessage);
     },
   });
+  const {
+    mutate: handleUpdateCategory,
+    isLoading: isLoadingUpdateCategory,
+    isError: isErrorUpdateCategory,
+  } = useMutation({
+    mutationFn: (data) => CategoryApi.updateCategory(data),
+    onSuccess: (data) => {
+      message.success("Cập nhật danh mục thành công");
+      queryClient.invalidateQueries(["ListCategory"]);
+    },
+    onError: (error) => {
+      const errorMessage = error?.message || "Đã  xảy ra lỗi";
+      message.error(errorMessage);
+    },
+  });
+  if (
+    isErrorCreateCategory ||
+    isErrorUpdateCategory ||
+    isErrorUpdateStatusCategory
+  ) {
+    return <div>Lỗi</div>;
+  }
+  if (
+    isLoadingCreateCategory ||
+    isLoadingUpdateCategory ||
+    isLoadingUpdateStatusCategory
+  ) {
+    return <LoadingModal />;
+  }
 
   const onSubmit = (data) => {
+    console.log("data: ", data);
     const formData = new FormData();
-    const file = data?.cateImg;
+    // let file = data?.cateImg;
+    formData.append("file", data?.cateImg);
+
     formData.append("cateName", data?.cateName);
     formData.append("description", data?.description);
-    formData.append("status", data?.status);
-    formData.append("file", file);
+    if (!dataEdit) {
+      formData.append("status", data?.status);
+    }
 
     if (dataEdit) {
+      console.log("Update: ", dataEdit);
+      formData.append("status", true);
+      handleUpdateCategory(formData);
     } else {
+      console.log("Tạo mới category với dữ liệu: ", data);
       handleCreateCategory(formData);
     }
   };
-  if (isErrorCreateCategory || isErrorUpdateCategory) {
-    return <div>Lỗi</div>;
-  }
-  if (isLoadingCreateCategory || isLoadingUpdateCategory) {
-    return <LoadingModal />;
-  }
+
+  const onEditFish = (data) => {
+    console.log("data: ", data);
+    showModal();
+    setDataEdit(data);
+    reset({
+      cateName: data?.categoryName,
+      description: data?.description,
+      cateImg: data?.cateImg,
+    });
+  };
   return (
     <div>
       <div className="flex flex-col justify-center items-center ">
@@ -248,7 +325,7 @@ const CategoryManagement = () => {
           </div>
         </div>
         <Modal
-          title="Thêm danh mục"
+          title={dataEdit ? "Chỉnh sửa danh mục" : "Thêm danh mục"}
           open={isModalOpen}
           footer={null}
           onCancel={handleCancel}
@@ -281,13 +358,15 @@ const CategoryManagement = () => {
 
                         onChange(file);
                         setImage(URL.createObjectURL(file));
+
                         return false;
                       }}
                       onChange={(info) => {
+                        setIsChangeImage(true);
                         const file = info.file.originFileObj || info.file;
                         if (file) {
-                          onChange(file);
-                          setImage(URL.createObjectURL(file));
+                          onChange(file); // Lưu hình ảnh mới
+                          setImage(URL.createObjectURL(file)); // Hiển thị ảnh mới
                         }
                       }}
                     >
@@ -303,18 +382,18 @@ const CategoryManagement = () => {
                               className="w-[60px] h-[80px] object-cover"
                               src={
                                 value && value instanceof File
-                                  ? URL.createObjectURL(value)
-                                  : image
+                                  ? URL.createObjectURL(value) // Hiển thị ảnh mới nếu được chọn
+                                  : image || dataEdit?.cateImg // Hiển thị ảnh cũ nếu không thay đổi
                               }
                               alt="koiImage"
                             />
                             <div className="absolute top-0 right-0">
                               <DeleteOutlined
                                 onClick={() => {
-                                  onChange(null);
+                                  onChange(null); // Xóa ảnh nếu cần
                                   setImage(null);
                                 }}
-                              ></DeleteOutlined>
+                              />
                             </div>
                           </>
                         ) : (
@@ -383,7 +462,7 @@ const CategoryManagement = () => {
               </Col>
               <Col span={24} className="flex justify-end">
                 <Button htmlType="submit" type="primary" className="me-2">
-                  Tạo danh mục
+                  {dataEdit ? "Cập nhật" : "Tạo danh mục"}
                 </Button>
                 <Button onClick={handleCancel}>Hủy</Button>
               </Col>
