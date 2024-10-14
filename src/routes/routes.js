@@ -4,6 +4,7 @@ import AdminLayout from "../modules/Admin/AdminLayout/AdminLayout";
 import CategoryManagement from "../modules/Admin/CategoryManagement/CategoryManagement";
 import DashBoard from "../modules/Admin/Dashboard/DashBoard";
 import FishManagement from "../modules/Admin/FishManagement/FishManagement";
+import PaymentManagement from "../modules/Admin/PaymentManagement/PaymentManagement";
 import UserManagement from "../modules/Admin/UserManagement/UserManagement";
 
 import BatchFish from "../modules/BatchFish/BatchFish";
@@ -188,6 +189,13 @@ export const privateRoutes = [
       {
         path: "category-management",
         component: CategoryManagement,
+        layout: null,
+        roles: ["manager", "staff"],
+      },
+
+      {
+        path: "payment-management",
+        component: PaymentManagement,
         layout: null,
         roles: ["manager", "staff"],
       },

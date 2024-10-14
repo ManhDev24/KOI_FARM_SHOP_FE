@@ -43,4 +43,14 @@ export const AccountApi = {
       throw new Error(error.response.data.message);
     }
   },
+  searchAccountByEmail: async (email) => {
+    try {
+      const response = await fetcher.get(
+        `http://localhost:8080/koifarm/manage/search?email=${email}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
 };

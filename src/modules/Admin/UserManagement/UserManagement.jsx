@@ -12,11 +12,12 @@ import {
   Tag,
 } from "antd";
 import Search from "antd/es/transfer/search";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AccountApi } from "../../../apis/Account.api";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import LoadingModal from "../../Modal/LoadingModal";
+import _ from 'lodash';
 
 import {
   StopOutlined,
@@ -47,7 +48,8 @@ const UserManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const queryClient = useQueryClient();
-
+  const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const columns = [
     {
       title: "ID",
@@ -132,6 +134,25 @@ const UserManagement = () => {
       ),
     },
   ];
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(query);
+      setCurrentPage(1);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [query]);
+
+  const fetchUsers = async ({ queryKey }) => {
+    const [_key, page, search] = queryKey;
+    if (search) {
+      return await AccountApi.searchAccountByEmail(search, page);
+    } else {
+      return await AccountApi.getAllAccount(page);
+    }
+  };
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -144,9 +165,10 @@ const UserManagement = () => {
     data: ListUser,
     isLoading: isLoadingListUser,
     isError: isErrorListUser,
+    error: errorListUser,
   } = useQuery({
-    queryKey: ["ListUser", currentPage],
-    queryFn: () => AccountApi.getAllAccount(currentPage),
+    queryKey: ["ListUser", currentPage, debouncedQuery],
+    queryFn: fetchUsers,
     keepPreviousData: true,
   });
 
@@ -207,7 +229,15 @@ const UserManagement = () => {
     criteriaMode: "all",
     mode: "onBlur",
   });
-
+  // const {
+  //   data: ListSearch,
+  //   isLoading: isLoadingListSearch,
+  //   isError: isErrorListSearch,
+  // } = useQuery({
+  //   queryKey: ["ListSearch"],
+  //   queryFn: (email) => AccountApi.searchAccountByEmail(email),
+  //   keepPreviousData: true,
+  // });
   const totalPages = ListUser?.data?.totalElements;
   if (isErrorListUser || isErrorCreateUser) {
     return <div>Có lỗi xảy ra</div>;
@@ -232,7 +262,13 @@ const UserManagement = () => {
   return (
     <div className="flex flex-col justify-center items-center ">
       <div className="w-[450px]">
-        <Search placeholder="Nhập tên hoặc email..." style={{ width: 300 }} />
+        <Search
+          placeholder="Nhập email để tìm kiếm..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          style={{ width: 300 }}
+          allowClear
+        />
       </div>
       <div className="flex flex-col mt-2 w-full">
         <div className="w-full">
@@ -249,7 +285,7 @@ const UserManagement = () => {
           <Table
             rowKey="id"
             columns={columns}
-            dataSource={ListUser?.data?.accounts}
+            dataSource={ListUser?.data?.accounts }
             pagination={false}
           />
           <div className="flex justify-end mt-2">

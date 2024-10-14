@@ -1,38 +1,21 @@
-import { useQuery } from "@tanstack/react-query";
-import { Pagination, Table, Tag } from "antd";
 import React, { useState } from "react";
-import moment from "moment";
-import "moment/locale/vi";
-import orderApi from "../../../apis/Order.api";
-import { getLocalStorage } from "../../../utils/LocalStorage";
-import LoadingModal from "../../Modal/LoadingModal";
-import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { saveOrderId } from "../../../Redux/Slices/Order_Slice";
+import {
+    Button,
+    Col,
+    Input,
+    message,
+    Modal,
+    Pagination,
+    Row,
+    Select,
+    Table,
+    Tag,
+  } from "antd";
+  import Search from "antd/es/transfer/search";
+  import LoadingModal from "../../Modal/LoadingModal";
 
-moment.locale("vi");
-
-const PaymentHistoryPage = () => {
-  const user = getLocalStorage("user");
-  const [currentPage, setCurrentPage] = useState(1);
-  const dispatch = useDispatch();
-
-  const {
-    data: orderData,
-    isLoading: orderDataLoading,
-    isError: orderDataError,
-  } = useQuery({
-    queryKey: ["orderData", currentPage],
-    queryFn: () => orderApi.getOrderHistory(user?.id, currentPage, 9),
-    keepPreviousData: true,
-  });
-  console.log("orderData: ", orderData);
-  const orderContent = orderData?.data?.content;
-  const total = orderData?.data?.totalElements;
-  console.log("orderContent: ", orderContent);
-  if (orderDataLoading) {
-    return <LoadingModal />;
-  }
+const PaymentManagement = () => {
+    const [currentPage, setCurrentPage] = useState(1);
   const columns = [
     {
       title: "Mã thanh toán",
@@ -117,32 +100,42 @@ const PaymentHistoryPage = () => {
       ),
     },
   ];
-  return (
-    <div className="m-5">
-      <div className="container flex justify-center items-center mx-auto flex-col">
-        <div>
+
+  return <div>
+     <div className="flex flex-col justify-center items-center ">
+      <div className="w-[450px]">
+        <Search placeholder="Nhập tên hoặc email..." style={{ width: 300 }} />
+      </div>
+      <div className="flex flex-col mt-2 w-full">
+        {/* <div className="w-full">
+          <Button
+            onClick={showModal}
+            danger
+            className="flex justify-center items-center"
+          >
+            <span>+</span>
+            Thêm người dùng
+          </Button>
+        </div> */}
+        <div className="mt-3">
           <Table
-            pagination={false}
-            rowKey={(payment) => payment.paymentId}
+            rowKey="id"
             columns={columns}
-            showSizeChanger={false}
-            dataSource={orderContent}
+            dataSource={[]}
+            pagination={false}
           />
-        </div>
-        <div className="w-full flex justify-end me-[550px]">
-          <Pagination
-            className="mt-5 items-end"
-            rowKey
-            defaultCurrent={currentPage}
-            total={total}
-            onChange={(page) => {
-              setCurrentPage(page);
-            }}
-          />
+          <div className="flex justify-end mt-2">
+            <Pagination
+              defaultCurrent={currentPage}
+              total={50}
+              onChange={(page) => setCurrentPage(page)}
+            />
+          </div>
         </div>
       </div>
+     
     </div>
-  );
+  </div>;
 };
 
-export default PaymentHistoryPage;
+export default PaymentManagement;
