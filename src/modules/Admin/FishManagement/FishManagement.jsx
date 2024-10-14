@@ -502,7 +502,7 @@ const FishManagement = () => {
   const totalPages = ListKoi?.totalPages;
 
   return (
-    <div className="flex flex-col justify-center items-center ">
+    <div className="flex flex-col justify-center items-center  ">
       <div className="w-[450px]">
         <Search
           placeholder="Nhập tên hoặc email..."
@@ -534,7 +534,7 @@ const FishManagement = () => {
               pagination={false}
             />
           </div>
-          <div className="flex justify-end mt-2">
+          <div className="flex justify-end mt-2 mb-2">
             <Pagination
               current={currentPage}
               total={totalElements}
@@ -594,7 +594,7 @@ const FishManagement = () => {
                             src={
                               value && value instanceof File
                                 ? URL.createObjectURL(value)
-                                : image
+                                : image || dataEdit?.koiImage
                             }
                             alt="koiImage"
                           />

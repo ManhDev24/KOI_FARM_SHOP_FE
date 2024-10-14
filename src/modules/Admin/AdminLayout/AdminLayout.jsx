@@ -93,6 +93,9 @@ const AdminLayout = () => {
           onSelect={({ key }) => {
             navigate(key);
           }}
+          style={{
+            height:"500px"
+          }}
           items={[
             {
               key: "/admin/dashboard",
@@ -128,7 +131,8 @@ const AdminLayout = () => {
           ]}
         ></Menu>
       </Sider>
-      <Layout>
+      <Layout
+      >
         <Header
           style={{
             padding: 0,
@@ -147,8 +151,9 @@ const AdminLayout = () => {
           />
         </Header>
         <Content
+          className="site-layout-background"
           style={{
-            margin: "24px 16px",
+       
             padding: 24,
             minHeight: 280,
             background: colorBgContainer,
