@@ -8,6 +8,7 @@ import {
   VideoCameraOutlined,
   DashboardOutlined,
   SafetyCertificateOutlined,
+  PayCircleOutlined,
   HomeOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
@@ -113,6 +114,12 @@ const AdminLayout = () => {
               icon: <SafetyCertificateOutlined />,
               label: "Category ",
             },
+            {
+              key: "/admin/payment-management",
+              icon: <PayCircleOutlined />,
+              label: "Payment",
+            },
+
             {
               key: "/",
               icon: <HomeOutlined />,
