@@ -1,4 +1,6 @@
-gimport { Steps } from 'antd'
+
+import { Steps } from 'antd'
+
 import React from 'react'
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
