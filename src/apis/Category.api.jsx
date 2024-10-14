@@ -36,10 +36,10 @@ export const CategoryApi = {
       throw new Error(error.response.data.message);
     }
   },
-  updateCategory: async (data) => {
+  updateCategory: async (data, id) => {
     try {
       const response = await fetcher.put(
-        "http://localhost:8080/koifarm/manage/updateCategory",
+        `http://localhost:8080/koifarm/manage/updateCategory/${id}`,
         data,
         {
           headers: {
