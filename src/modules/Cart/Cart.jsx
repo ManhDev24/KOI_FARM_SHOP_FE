@@ -1,4 +1,4 @@
-import { Breadcrumb, Button, Form, Input, Table } from "antd";
+import { Breadcrumb, Button, Form, Input, message, Table } from "antd";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Cart.css";
@@ -27,11 +27,41 @@ const Cart = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [isPaymentSuccess, setIsPaymentSuccess] = useState(0);
   const [disCountRate, setDisCountRate] = useState(0);
-  console.log('disCountRate: ', disCountRate);
+
   const dispatch = useDispatch();
-  const totalPrice = useSelector((state) => state.cart.total);
+  
   const onCart = getLocalStorage("cartItems");
+  const [dataSource, setDataSource] = useState(onCart);
+  console.log("onCart: ", onCart);
+  const totalPrice = onCart?.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
   const user = getLocalStorage("user");
+  const updateQuantity = (identifier, newQuantity) => {
+    // Kiểm tra giá trị nhập vào là số và lớn hơn hoặc bằng 1
+    const parsedQuantity = parseInt(newQuantity, 10);
+    if (isNaN(parsedQuantity) || parsedQuantity < 1) {
+      message.error("Số lượng phải là số nguyên lớn hơn hoặc bằng 1.");
+      return;
+    }
+
+    // Cập nhật dữ liệu trong state
+    const updatedData = dataSource.map((item) => {
+      // Kiểm tra cả id và batchID để cập nhật đúng mục
+      if (
+        (item.id && item.id === identifier) ||
+        (item.batchID && item.batchID === identifier)
+      ) {
+        return { ...item, quantity: parsedQuantity };
+      }
+      return item;
+    });
+
+    setDataSource(updatedData);
+    localStorage.setItem("cartItems", JSON.stringify(updatedData));
+    message.success("Cập nhật số lượng thành công!");
+  };
 
   const finalPrice = totalPrice - totalPrice * disCountRate;
   console.log("finalPrice: ", finalPrice);
@@ -64,7 +94,7 @@ const Cart = () => {
   } = useMutation({
     mutationFn: (data) => CheckoutApi.saveOrder(data),
     onSuccess: (data) => {
-      toast.success("Đặt hàng thành công");
+      message.success("Đặt hàng thành công");
     },
     onError: (error) => {
       const errorMessage =
@@ -100,7 +130,7 @@ const Cart = () => {
       setDisCountRate(data?.data?.discountRate);
       setLocalStorage("discountRate", data.data.discountRate);
       setLocalStorage("PromotionCode", data?.data?.promoCode);
-      toast.success("Áp dụng khuyến mãi thành công");
+      message.success("Áp dụng khuyến mãi thành công");
     },
     onError: (error) => {
       const errorMessage =
@@ -120,6 +150,7 @@ const Cart = () => {
   };
   const handleDelete = (fish) => {
     dispatch(removeFromCart(fish));
+    window.location.reload();
   };
   const onSubmitPromotionCode = (data) => {
     if (onCart?.length == null) {
@@ -127,7 +158,6 @@ const Cart = () => {
       return;
     }
     handleApplyPromotion(data.code);
-
   };
 
   const columns = [
@@ -156,10 +186,16 @@ const Cart = () => {
       render: (data) => (
         <div>
           <h3 style={{ color: "#EA4444" }} className="text-xl font-medium">
-            {data.category} {data.size} {data.age} tuổi
+            {data.isBatch
+              ? `Lô ${data.categoryName} - Kích thước trung bình: ${data.avgSize} - Tuổi: ${data.age}`
+              : `${data.category} - Kích thước: ${data.size} - Tuổi: ${data.age} tuổi`}
           </h3>
-          <p>Giới tính: {data.gender}</p>
-          <p>Người bán: {data.seller}</p>
+          {!data.isBatch && (
+            <>
+              <p>Giới tính: {data.gender ? "Nam" : "Nữ"}</p>
+              <p>Người bán: {data.seller}</p>
+            </>
+          )}
           <p>Nguồn gốc: {data.origin}</p>
         </div>
       ),
@@ -175,13 +211,24 @@ const Cart = () => {
       }),
       render: (data) => (
         <div className="flex justify-center items-center">
-          <Input
-            style={{ border: "1px solid #EA4444" }}
-            className="w-[60px] h-[30px] text-center"
-            value={data.quantity}
-          />
+          {data.isBatch ? (
+            <Input
+              style={{ border: "1px solid #EA4444" }}
+              className="w-[60px] h-[30px] text-center"
+              value={data.quantity}
+              onChange={(e) => {
+                const newQuantity = e.target.value;
+                updateQuantity(data.id || data.batchID, newQuantity);
+              }}
+            />
+          ) : (
+            <span className="w-[60px] h-[30px] text-center inline-block">
+              {data.quantity}
+            </span>
+          )}
         </div>
       ),
+      width: "150px",
     },
     {
       title: "Giá",

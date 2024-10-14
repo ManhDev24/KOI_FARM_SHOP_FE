@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Button, Col, Form, Input, Row, Checkbox } from "antd";
+import { Button, Col, Form, Input, Row, Checkbox, message } from "antd";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import * as yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
@@ -60,7 +60,7 @@ const Register = () => {
       console.log("data: ", data);
       console.log("Email from response:", data.data.email);
       dispatch(saveEmail(data.data.email));
-      toast.success("Đăng ký thành công");
+      message.success("Đăng ký thành công");
       navigate("/otp");
     },
     onError: (error) => {
@@ -74,7 +74,7 @@ const Register = () => {
     onSuccess: (data) => {
       setLocalStorage("user", data.data);
       dispatch(setUser(data));
-      toast.success("Đăng nhập thành công");
+      message.success("Đăng nhập thành công");
       navigate("/");
     },
     onError: (error) => {

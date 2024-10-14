@@ -140,6 +140,7 @@ export const publicRoutes = [
     component: BatchFishDetail,
     layout: DefaultLayout,
   },
+
   {
     path: "/request-consignment",
     component: KoiConsignmentPolicies,
