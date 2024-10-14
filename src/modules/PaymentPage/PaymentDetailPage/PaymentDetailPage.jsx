@@ -3,14 +3,17 @@ import { Pagination, Table } from "antd";
 import React from "react";
 import orderApi from "../../../apis/Order.api";
 import { useDispatch, useSelector } from "react-redux";
-
+import LoadingModal from "../../Modal/LoadingModal";
+import { useParams } from "react-router-dom";
 
 const columns = [
   {
     title: "Tên Cá Koi",
     dataIndex: "koiFishId",
     render: (text, record) => {
-      return `${record.categoryName} - ${record.koiSize}cm - ${record.koiAge} tuổi`;
+      return record?.type
+        ? `${record.categoryName} - ${record.koiSize} cm - ${record.koiAge} tuổi`
+        : `${record.categoryName} - ${record.avgSize} cm - ${record.batchAge} tuổi `;
     },
   },
   {
@@ -26,33 +29,52 @@ const columns = [
   {
     title: "Tuổi Cá Koi",
     dataIndex: "koiAge",
+    render: (koiAge) => (koiAge ? `${koiAge} tuội` : "Tuổi theo lô"),
   },
   {
     title: "Giới Tính",
     dataIndex: "gender",
-    render: (gender) => (gender ? "Koi đực" : "Koi cái"),
+
+    render: (_, record) => {
+      return record?.type
+        ? record?.gender
+          ? "Koi đực"
+          : "Koi cái"
+        : "Ngẫu nhiên";
+    },
   },
   {
     title: "Kích Cỡ Cá Koi",
     dataIndex: "koiSize",
-    render: (koiSize) => `${koiSize} cm`,
+    render: (_, record) => {
+      return record?.type ? `${record?.koiSize} cm` : `${record?.avgSize} cm`;
+    },
   },
   {
-    title: "Giá Cá Koi",
-    dataIndex: "koiPrice",
-    render: (price) => (
-      <span className="">
-        {new Intl.NumberFormat("vi-VN", {
-          style: "currency",
-          currency: "VND",
-        }).format(price)}
-      </span>
-    ),
+    title: "Giá Cá Koi",
+    dataIndex: "price",
+    render: (_, record) => {
+      const formattedPrice = record?.price
+        ? new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          }).format(record.price)
+        : "0 ₫";
+      return record?.type ? formattedPrice : "0 ₫";
+    },
   },
   {
     title: "Giá Batch",
     dataIndex: "batchPrice",
-    render: (batchPrice) => (batchPrice ? batchPrice : "Không mua theo lô"),
+    render: (_, record) => {
+      const formattedPrice = record?.price
+        ? new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          }).format(record.price)
+        : "0 ₫";
+      return record?.type ? "0 ₫" :formattedPrice;
+    },
   },
   {
     title: "Số lượng",
@@ -62,7 +84,10 @@ const columns = [
 
 const PaymentDetailPage = () => {
   const dispatch = useDispatch();
-  const { orderId } = useSelector((state) => state.order);
+  // const { orderId } = useSelector((state) => state.order);
+
+  const { orderId } = useParams();
+
   console.log("orderId: ", orderId);
   const {
     data: orderDetail,
@@ -74,6 +99,14 @@ const PaymentDetailPage = () => {
     keepPreviousData: true,
   });
   const orderDetailData = orderDetail?.data;
+  console.log("orderDetailData: ", orderDetailData);
+  if (orderDetailLoading) {
+    return <LoadingModal />;
+  }
+
+  if (orderDetailError) {
+    return <div>Lỗi rồi</div>;
+  }
   return (
     <div>
       <div className="container flex justify-center items-center mx-auto">

@@ -19,13 +19,13 @@ const ListFish = () => {
   const [selectPrice, setSelectPrice] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [currentSize, setCurrentSize] = useState(100);
-  const [currentPrice, setCurrentPrice] = useState(1000000000); 
+  const [currentPrice, setCurrentPrice] = useState(1000000000);
   console.log("currentPrice: ", currentPrice);
   const [genderFilter, setGenderFilter] = useState(0);
   const [sortField, setSortField] = useState(0);
   const [sortDirection, setSortDirection] = useState(0);
   const [pageSize, setPageSize] = useState(9);
-  const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
   const dispatch = useDispatch();
   const handleAddToCart = (fish) => {
@@ -33,6 +33,7 @@ const ListFish = () => {
       addToCart({
         ...fish,
         quantity: 1,
+        isBatch: false,
       })
     );
   };
@@ -86,7 +87,7 @@ const ListFish = () => {
   console.log("koiListFilter: ", koiListFilter);
 
   const koiResponseList = KoiList?.koiFishReponseList;
- 
+
   const koiToDisplay = isFiltered
     ? koiListFilter?.koiFishReponseList
     : koiResponseList;
@@ -221,17 +222,22 @@ const ListFish = () => {
     setIsFiltered(true);
   };
   const handleAddToCompare = (item) => {
-    if (selectedItems.length < 2 && !selectedItems.some((i) => i.id === item.id)) {
+    if (
+      selectedItems.length < 2 &&
+      !selectedItems.some((i) => i.id === item.id)
+    ) {
       setSelectedItems([...selectedItems, item]); // Add item to the comparison list
     } else if (selectedItems.some((i) => i.id === item.id)) {
-      alert('Koi này đã được thêm vào để so sánh');
+      alert("Koi này đã được thêm vào để so sánh");
     } else {
-      alert('Bạn chi có thể thêm tối đa 2 Koi.');
+      alert("Bạn chi có thể thêm tối đa 2 Koi.");
     }
   };
   // Remove Koi fish from the comparison list
   const removeItemFromCompare = (itemToRemove) => {
-    const updatedItems = selectedItems.filter((item) => item.id !== itemToRemove.id);
+    const updatedItems = selectedItems.filter(
+      (item) => item.id !== itemToRemove.id
+    );
     setSelectedItems(updatedItems);
   };
 
@@ -240,7 +246,7 @@ const ListFish = () => {
     if (selectedItems.length > 0) {
       setIsModalOpen(true);
     } else {
-      alert('Please select at least one fish to compare.');
+      alert("Please select at least one fish to compare.");
     }
   };
 
@@ -310,12 +316,12 @@ const ListFish = () => {
                           {selectedCategory === "1"
                             ? "Koi showa"
                             : selectedCategory === "2"
-                              ? "Koi asagi"
-                              : selectedCategory === "3"
-                                ? "Koi karashi"
-                                : selectedCategory === "4"
-                                  ? "Koi Benikoi"
-                                  : "Danh mục"}
+                            ? "Koi asagi"
+                            : selectedCategory === "3"
+                            ? "Koi karashi"
+                            : selectedCategory === "4"
+                            ? "Koi Benikoi"
+                            : "Danh mục"}
                         </p>
                       </div>
                       <div>
@@ -393,8 +399,8 @@ const ListFish = () => {
                           {selectedGender === "0"
                             ? "Koi Cái"
                             : selectedGender === "1"
-                              ? "Koi Đực"
-                              : "Giới tính"}
+                            ? "Koi Đực"
+                            : "Giới tính"}
                         </p>
                       </div>
                       <div>
@@ -483,8 +489,8 @@ const ListFish = () => {
                           {selectAge === "1"
                             ? "Tuổi từ Thấp đến Cao"
                             : selectAge === "2"
-                              ? "Tuổi từ Cao đến Thấp "
-                              : "Tuổi"}
+                            ? "Tuổi từ Cao đến Thấp "
+                            : "Tuổi"}
                         </p>
                       </div>
                       <div>
@@ -528,8 +534,8 @@ const ListFish = () => {
                           {selectPrice === "1"
                             ? "Giá từ thâp đến cao"
                             : selectPrice === "2"
-                              ? "Giá từ cao đến thâp"
-                              : "Sắp xếp theo giá"}
+                            ? "Giá từ cao đến thâp"
+                            : "Sắp xếp theo giá"}
                         </p>
                       </div>
                       <div>
@@ -655,8 +661,14 @@ const ListFish = () => {
                             {card.status === 1
                               ? "Đang bán"
                               : card.status === 2
-                                ? "Đã bán"
-                                : null}
+                              ? "Đã bán"
+                              : card.status === 3
+                              ? "Ký gửi"
+                              : card.status === 4
+                              ? "Chờ duyệt đơn ký gửi"
+                              : card.status === 5
+                              ? "Ký gửi chăm sóc"
+                              : ""}
                           </div>
                           <div className="rounded-[10px]">
                             <img
@@ -676,13 +688,19 @@ const ListFish = () => {
                               <div className="h-7 text-lg font-bold flex justify-center text-[#FA4444] ">
                                 {card.category} {card.size} cm {card.age} tuổi
                               </div>
-                              <div className="h-7">Người bán: {card.origin}</div>
+                              <div className="h-7">
+                                Người bán: {card.origin}
+                              </div>
                               <div className="h-6">
                                 Giới tính: {card.gender ? "Koi Đực" : "Koi Cái"}
                               </div>
                               <div className="h-6">Tuổi: {card.age}</div>
-                              <div className="h-6">Kích thước: {card.size} cm</div>
-                              <div className="h-6">Nguồn gốc: {card.origin}</div>
+                              <div className="h-6">
+                                Kích thước: {card.size} cm
+                              </div>
+                              <div className="h-6">
+                                Nguồn gốc: {card.origin}
+                              </div>
                               <div className="h-6">Giống: {card.category}</div>
                             </div>
                             <div className="text-center">
@@ -704,41 +722,40 @@ const ListFish = () => {
                                   </Button>
                                   <Link>
                                     <div
-                                      className='absolute  top-[3px] right-[-5px] z-50' // Adjusted position: top right of the card
+                                      className="absolute  top-[3px] right-[-5px] z-50" // Adjusted position: top right of the card
                                       onClick={(e) => {
-
                                         handleAddToCompare(card);
                                       }}
                                     >
                                       <Button
                                         onClick={(e) => {
-
                                           handleAddToCompare(card);
                                         }}
-                                        className='!p-0 !py-1 w-[100px] !border-0 h-fit hover:!border-[#FA4444] hover:!text-[#FA4444] flex justify-around'
+                                        className="!p-0 !py-1 w-[100px] !border-0 h-fit hover:!border-[#FA4444] hover:!text-[#FA4444] flex justify-around"
                                       >
-                                        <div className='flex justify-center items-center'>
+                                        <div className="flex justify-center items-center">
                                           <svg
-                                            xmlns='http://www.w3.org/2000/svg'
-                                            width='1em'
-                                            height='1em'
-                                            className='flex'
-                                            viewBox='0 0 24 24'
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="1em"
+                                            height="1em"
+                                            className="flex"
+                                            viewBox="0 0 24 24"
                                           >
-                                            <g fill='none' fillRule='evenodd'>
+                                            <g fill="none" fillRule="evenodd">
                                               <path
-                                                d='M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4h4a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-4v4a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-4H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h4z'
-                                                fill='currentColor'
+                                                d="M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4h4a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-4v4a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-4H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h4z"
+                                                fill="currentColor"
                                               />
                                             </g>
                                           </svg>
-                                          <h5 className='mx-1 my-0 !text-center'>So sánh</h5>
+                                          <h5 className="mx-1 my-0 !text-center">
+                                            So sánh
+                                          </h5>
                                         </div>
                                       </Button>
                                     </div>
                                   </Link>
                                 </Link>
-
                               ) : null}
                             </div>
                           </div>
@@ -768,19 +785,20 @@ const ListFish = () => {
         isOpen={isModalOpen}
         onClose={handleModalClose}
         selectedItems={selectedItems}
-        setSelectedItems={setSelectedItems} 
+        setSelectedItems={setSelectedItems}
         removeItem={removeItemFromCompare}
       />
 
       <Button
         onClick={handleCompare}
-        className={`bg-[#FA4444] text-white fixed z-40 left-[100px] top-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${selectedItems.length === 0 ? 'disabled' : ''}`}
+        className={`bg-[#FA4444] text-white fixed z-40 left-[100px] top-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${
+          selectedItems.length === 0 ? "disabled" : ""
+        }`}
         disabled={selectedItems.length === 0}
       >
         Xem So Sánh ({selectedItems.length}) Cá Koi
       </Button>
     </div>
-
   );
 };
 
