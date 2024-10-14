@@ -296,19 +296,12 @@ const RequestConsignment = () => {
     const onFinish = async (values) => {
         try {
             // Convert the image URLs (or blob URLs) to files
-            const blobToFile = async (blobUrl, fileName) => {
-                const response = await fetch(blobUrl);
-                const blob = await response.blob();
-                return new File([blob], fileName, { type: blob.type });
-            };
-
-            const koiImageFile = await blobToFile(values.koiImg, 'koiImage.jpg');
-            const certImageFile = await blobToFile(values.certImg, 'certImage.jpg');
+      
 
 
             const formData = new FormData();
-            formData.append('koiImg', koiImageFile);
-            formData.append('certImg', certImageFile);
+            formData.append('koiImg', selectedKoiImage);
+            formData.append('certImg', selectedKoiCertificate);
 
 
             Object.keys(values).forEach((key) => {
