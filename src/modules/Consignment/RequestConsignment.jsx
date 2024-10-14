@@ -1,10 +1,10 @@
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Breadcrumb, Button, Form, Input, Row, Select, Upload, Image } from 'antd'
+import { Breadcrumb, Button, Form, Input, Row, Select, Upload, Image, Steps } from 'antd'
 import TextArea from 'antd/es/input/TextArea';
 import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
 import imageSrc from '/img/SOWA.webp'
 import './requestConsignment.css'
@@ -86,6 +86,23 @@ const RequestConsignment = () => {
     const [loading, setLoading] = useState(false);
     const [selectedKoiImage, setSelectedKoiImage] = useState(null);
     const [selectedKoiCertificate, setSelectedKoiCertificate] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1)
+    const [consignmentID, setConsignmentID] = useState();
+    const navigate = useNavigate();
+    const handleCurrentPage = (prevPage) => {
+        prevPage = 1
+        if (prevPage <= 1) {
+            setCurrentPage(prevPage => prevPage + 1);
+            navigate(-1);
+        }
+    };
+    const handleCurrentPages = (prevPage) => {
+        prevPage = 1;
+        if (prevPage <=1) {
+            setCurrentPage(prevPage => prevPage + 1);
+            navigate('/status-consignment');
+        }
+    };
 
     useEffect(() => {
         const fee = handleFee(inputPrice, SelectedPackage);
@@ -246,37 +263,37 @@ const RequestConsignment = () => {
     ];
 
 
+
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: yupResolver(validationSchema),
     });
     const onFinish = async (values) => {
         try {
-            // Helper function to convert Blob URL to File object
+           
             const blobToFile = async (blobUrl, fileName) => {
                 const response = await fetch(blobUrl);
                 const blob = await response.blob();
                 return new File([blob], fileName, { type: blob.type });
             };
 
-            // Convert the koi and cert images from Blob URLs to actual file objects
             const koiImageFile = await blobToFile(values.koiImg, 'koiImage.jpg');
             const certImageFile = await blobToFile(values.certImg, 'certImage.jpg');
 
-            // Initialize FormData to handle file and text data
+            
             const formData = new FormData();
 
-            // Append the image files to FormData
+           
             formData.append('koiImg', koiImageFile);
             formData.append('certImg', certImageFile);
 
-            // Append other form fields except koiImg, certImg, and accountId
+           
             Object.keys(values).forEach(key => {
                 if (key !== 'koiImg' && key !== 'certImg' && key !== 'accountId') {
                     formData.append(key, values[key]);
                 }
             });
 
-            // Retrieve the accountId from local storage
+        
             const dataProfile = JSON.parse(localStorage.getItem('user'));
             const accountId = dataProfile && dataProfile.id ? Number(dataProfile.id) : null;
             if (!accountId) {
@@ -285,10 +302,12 @@ const RequestConsignment = () => {
             formData.append('serviceFee', serviceFee);
             formData.append('accountId', accountId);
             formData.append('water', 'lanh');
-            // Send the form data through the API request
+            
             const response = await ConsignmentApi.requestConsignment(formData); // FormData is passed directly
-
+            handleCurrentPages(currentPage);
             console.log('Success:', response);
+            setConsignmentID(response);
+            console.log(cosignmentID);
             return response;
         } catch (error) {
             console.error('Error in form submission:', error);
@@ -346,7 +365,7 @@ const RequestConsignment = () => {
         formData.append('koiImg', selectedKoiImage);
         formData.append('koiCertificate', selectedKoiCertificate);
 
-        setLoading(true); // Set loading state
+        setLoading(true);
 
         try {
             const dataProfile = JSON.parse(localStorage.getItem('user'));
@@ -425,6 +444,11 @@ const RequestConsignment = () => {
         setSelectedConsignmentType(value);
         console.log("Loại ký gửi", value);
     };
+    const description = "Chính sách ký gửi";
+    const description1 = "Điền thông tin ký gửi";
+    const description2 = "Trạng thái duyệt đơn ký gửi";
+    const description3 = "Thanh toán";
+    const description4 = "Hoàn tất";
 
     return (
         <>
@@ -451,30 +475,19 @@ const RequestConsignment = () => {
                 </div>
             </div>
             <div className='flex flex-col items-center'>
-                <div className="w-[950px] h-[89px] relative ">
-                    <div className="w-[199px] h-[13px] left-0 top-[18px] absolute bg-[#d9d9d9]" />
-                    <div className="w-[198px] h-[13px] left-[251px] top-[18px] absolute bg-[#d9d9d9]" />
-                    <div className="w-[198px] h-[13px] left-[501px] top-[18px] absolute bg-[#d9d9d9]" />
-                    <div className="w-[199px] h-[13px] left-[751px] top-[18px] absolute bg-[#d9d9d9]" />
-                    <div className="w-[50px] h-[50px] left-[200px] top-0 absolute">
-                        <div className="w-[50px] h-[50px] left-0 top-0 absolute bg-[#d9d9d9] rounded-full" />
-                        <div className="w-5 h-5 left-[15px] top-[15px] absolute bg-white rounded-full" />
-                        <div className="left-[19px] top-[14px] absolute text-black text-xl font-bold font-['Arial']">1</div>
+                <div class="w-full max-w-[950px] h-[89px] relative mx-auto p-4">
+                    {/* <!-- Lines --> */}
+                    <div class="w-full max-w-[950px] h-[89px] relative mx-auto my-0 p-4">
+                        <Steps current={currentPage} status="process">
+                            <Steps title="&nbsp;" description={description} />
+                            <Steps title="&nbsp;" description={description1} />
+                            <Steps title="&nbsp;" description={description2} />
+                            <Steps title="&nbsp;" description={description3} />
+                            <Steps title="&nbsp;" description={description4} />
+                        </Steps>
                     </div>
-                    <div className="w-[50px] h-[50px] left-[450px] top-0 absolute">
-                        <div className="w-[50px] h-[50px] left-0 top-0 absolute bg-[#d9d9d9] rounded-full" />
-                        <div className="w-5 h-5 left-[15px] top-[15px] absolute bg-white rounded-full" />
-                        <div className="left-[19px] top-[14px] absolute text-black text-xl font-bold font-['Arial']">2</div>
-                    </div>
-                    <div className="w-[626px] h-[89px] left-[124px] top-0 absolute">
-                        <div className="w-[50px] h-[50px] left-[576px] top-0 absolute bg-[#d9d9d9] rounded-full" />
-                        <div className="w-5 h-5 left-[591px] top-[15px] absolute bg-white rounded-full" />
-                        <div className="left-[595px] top-[14px] absolute text-black text-xl font-bold font-['Arial']">3</div>
-                        <div className="left-0 top-[66px] absolute text-black text-xl font-bold font-['Arial']">Điền thông tin ký gửi</div>
-                    </div>
-                    <div className="left-[394px] top-[66px] absolute text-black text-xl font-bold font-['Arial']">Chờ duyệt ký gửi</div>
-                    <div className="left-[642px] top-[66px] absolute text-black text-xl font-bold font-['Arial']">Trạng thái Ký gửi </div>
                 </div>
+
                 <div className="w-[950px]  mt-10 form-container">
                     <Form onFinish={onFinish}
                         onFinishFailed={onFinishFailed}
@@ -1067,7 +1080,7 @@ const RequestConsignment = () => {
                                                     rules={[{ required: true, message: <span className='!w-[500px] relative top-1 left-[10px]'>Vui lòng chọn loại ký gửi</span> }]}
                                                 >
                                                     <Select
-                                                        className="w-full h-[40px] relative left-[10px] flex justify-between items-center" 
+                                                        className="w-full h-[40px] relative left-[10px] flex justify-between items-center"
                                                         defaultValue=""
                                                         onChange={handleSelectConsigmentType}
                                                         dropdownStyle={{ width: 200, marginLeft: 20 }}
@@ -1212,24 +1225,35 @@ const RequestConsignment = () => {
                                             </div>
 
                                         </div>
+
+                                    </div>
+                                    <div className='w-full'>
+                                        <Form.Item
+                                            wrapperCol={{
+                                                offset: 24,
+                                                span: 24,
+                                            }}
+                                        >
+                                            <Button type="primary" htmlType="submit" >
+                                                Submit
+                                            </Button>
+                                        </Form.Item>
+
                                     </div>
                                 </div>
                             </div>
-                            <div className='w-full'>
-                                <Form.Item
-                                    wrapperCol={{
-                                        offset: 24,
-                                        span: 24,
-                                    }}
-                                >
-                                    <Button type="primary" htmlType="submit">
-                                        Submit
-                                    </Button>
-                                </Form.Item>
-                            </div>
+
+
                         </div>
 
                     </Form >
+                    <button
+                        onClick={() => handleCurrentPage((currentPage))}
+                        className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-500 transition duration-300"
+                    >
+                        Quay lại
+                    </button>
+
 
 
                 </div >
