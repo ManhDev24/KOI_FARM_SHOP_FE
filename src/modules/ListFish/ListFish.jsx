@@ -662,7 +662,13 @@ const ListFish = () => {
                               ? "Đang bán"
                               : card.status === 2
                               ? "Đã bán"
-                              : null}
+                              : card.status === 3
+                              ? "Ký gửi"
+                              : card.status === 4
+                              ? "Chờ duyệt đơn ký gửi"
+                              : card.status === 5
+                              ? "Ký gửi chăm sóc"
+                              : ""}
                           </div>
                           <div className="rounded-[10px]">
                             <img

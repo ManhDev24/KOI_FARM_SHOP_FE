@@ -36,6 +36,22 @@ export const CategoryApi = {
       throw new Error(error.response.data.message);
     }
   },
+  updateCategory: async (data) => {
+    try {
+      const response = await fetcher.put(
+        "http://localhost:8080/koifarm/manage/updateCategory",
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
 };
 
 export default CategoryApi;

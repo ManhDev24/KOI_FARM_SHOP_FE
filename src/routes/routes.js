@@ -192,6 +192,7 @@ export const privateRoutes = [
         layout: null,
         roles: ["manager", "staff"],
       },
+
       {
         path: "payment-management",
         component: PaymentManagement,

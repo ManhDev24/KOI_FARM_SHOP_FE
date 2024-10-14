@@ -187,8 +187,8 @@ const FishManagement = () => {
             return <Tag color="orange">Ký Gửi</Tag>;
           case 4:
             return <Tag color="purple">Chờ Duyệt Đơn Ký Gửi</Tag>;
-            case 5 :
-              return <Tag color="red">Ký gửi chăm sóc</Tag>;
+          case 5:
+            return <Tag color="red">Ký gửi chăm sóc</Tag>;
         }
       },
     },
@@ -219,8 +219,8 @@ const FishManagement = () => {
             icon={<EditOutlined />}
             onClick={() => showModalDetailView(record)}
             style={{
-              backgroundColor: "#d9d9d9", // Màu xám nhạt
-              color: "#000", // Màu đen cho chữ để dễ đọc
+              backgroundColor: "#d9d9d9",
+              color: "#000",
             }}
           >
             Thông số chi tiết
