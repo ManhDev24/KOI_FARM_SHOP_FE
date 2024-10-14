@@ -17,6 +17,7 @@ import Cart from "../modules/Cart/Cart";
 import ChangePassword from "../modules/ChangePassword/ChangePassword";
 import KoiConsignmentPolicies from "../modules/Consignment/KoiConsignmentPolicies";
 import RequestConsignment from "../modules/Consignment/RequestConsignment";
+import ServiceFeeConsignment from "../modules/Consignment/ServiceFeeConsignment";
 import StatusConsignment from "../modules/Consignment/StatusConsignment";
 
 import Error from "../modules/ErrorPage/Error";
@@ -168,6 +169,12 @@ export const publicRoutes = [
   {
     path: "/status-consignment",
     component: StatusConsignment,
+
+    layout: DefaultLayout,
+  },
+  {
+    path: "/servicefee-consignment",
+    component: ServiceFeeConsignment,
 
     layout: DefaultLayout,
   },

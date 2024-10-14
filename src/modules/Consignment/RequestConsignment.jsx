@@ -1,6 +1,6 @@
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Breadcrumb, Button, Form, Input, Row, Select, Upload, Image, Steps } from 'antd'
+import { Breadcrumb, Button, Form, Input, Row, Select, Upload, Image, Steps, message } from 'antd'
 import TextArea from 'antd/es/input/TextArea';
 import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
@@ -9,6 +9,11 @@ import * as Yup from 'yup'
 import imageSrc from '/img/SOWA.webp'
 import './requestConsignment.css'
 import { ConsignmentApi } from '../../apis/Consignment.api';
+import { useMutation } from '@tanstack/react-query';
+import LoadingModal from '../Modal/LoadingModal';
+import { toast } from 'react-toastify';
+import { saveConsignmentID } from '../../Redux/Slices/consignmentID_Slice';
+import { useDispatch } from 'react-redux';
 const validationSchema = Yup.object().shape({
     origin: Yup.string()
         .required('Nguồn gốc là bắt buộc'),
@@ -98,15 +103,16 @@ const RequestConsignment = () => {
     };
     const handleCurrentPages = (prevPage) => {
         prevPage = 1;
-        if (prevPage <=1) {
+        if (prevPage <= 1) {
             setCurrentPage(prevPage => prevPage + 1);
-            navigate('/status-consignment');
+            console.log();
+            navigate(`/status-consignment/`);
         }
     };
 
     useEffect(() => {
         const fee = handleFee(inputPrice, SelectedPackage);
-
+        console.log(fee)
         setServiceFee(fee);
         form.setFieldsValue({ serviceFee: formatVND(serviceFee) });
     }, [inputPrice, SelectedPackage, SelectedConsignmentType]);
@@ -262,14 +268,34 @@ const RequestConsignment = () => {
 
     ];
 
-
+    const dispatch = useDispatch();
 
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: yupResolver(validationSchema),
     });
+
+    const { mutate: handleConsignmentSubmit, isLoading: submitLoading } = useMutation({
+        mutationFn: async (formData) => {
+            return await ConsignmentApi.requestConsignment(formData); // Make API request
+        },
+        onSuccess: (response,formData ) => {
+            const consignmentID = response.data;
+            dispatch(saveConsignmentID(consignmentID));
+           
+            handleCurrentPages(currentPage);
+            console.log('Success:', response.data);
+            message.success();
+        },
+        onError: (error) => {
+            const errorMessage =
+                error?.response?.data?.message || 'An error occurred, please try again!';
+            toast.error(errorMessage);
+        },
+    });
+
     const onFinish = async (values) => {
         try {
-           
+            // Convert the image URLs (or blob URLs) to files
             const blobToFile = async (blobUrl, fileName) => {
                 const response = await fetch(blobUrl);
                 const blob = await response.blob();
@@ -279,38 +305,37 @@ const RequestConsignment = () => {
             const koiImageFile = await blobToFile(values.koiImg, 'koiImage.jpg');
             const certImageFile = await blobToFile(values.certImg, 'certImage.jpg');
 
-            
-            const formData = new FormData();
 
-           
+            const formData = new FormData();
             formData.append('koiImg', koiImageFile);
             formData.append('certImg', certImageFile);
 
-           
-            Object.keys(values).forEach(key => {
+
+            Object.keys(values).forEach((key) => {
                 if (key !== 'koiImg' && key !== 'certImg' && key !== 'accountId') {
                     formData.append(key, values[key]);
                 }
             });
 
-        
+
             const dataProfile = JSON.parse(localStorage.getItem('user'));
             const accountId = dataProfile && dataProfile.id ? Number(dataProfile.id) : null;
+            console.log(accountId);
             if (!accountId) {
-                throw new Error("Account ID not found in localStorage");
+                throw new Error('Account ID not found in localStorage');
             }
-            formData.append('serviceFee', serviceFee);
+            console.log("tess", serviceFee);
+            const x = serviceFee;
+            formData.append('serviceFee', x);
             formData.append('accountId', accountId);
             formData.append('water', 'lanh');
-            
-            const response = await ConsignmentApi.requestConsignment(formData); // FormData is passed directly
-            handleCurrentPages(currentPage);
-            console.log('Success:', response);
-            setConsignmentID(response);
-            console.log(cosignmentID);
-            return response;
+
+            // Trigger the mutation
+            handleConsignmentSubmit(formData);
+
         } catch (error) {
             console.error('Error in form submission:', error);
+            toast.error('Error in form submission');
         }
     };
 
@@ -326,18 +351,18 @@ const RequestConsignment = () => {
     };
     const handleUploadKoiImage = ({ file }) => {
         if (validateFile(file)) {
-            setSelectedKoiImage(file); // Save the file for later upload
-            const previewUrl = URL.createObjectURL(file); // Create preview URL
-            setImageSrc(previewUrl); // Set image source for preview
+            setSelectedKoiImage(file);
+            const previewUrl = URL.createObjectURL(file);
+            setImageSrc(previewUrl);
         }
     };
 
     const handleUploadKoiCertificate = ({ file }) => {
         if (validateFile(file)) {
             console.log(file)
-            setSelectedKoiCertificate(file); // Save the file for later upload
-            const previewUrl = URL.createObjectURL(file); // Create preview URL
-            setImageSrcCer(previewUrl); // Set image source for preview
+            setSelectedKoiCertificate(file);
+            const previewUrl = URL.createObjectURL(file);
+            setImageSrcCer(previewUrl);
         }
     };
 
@@ -487,12 +512,14 @@ const RequestConsignment = () => {
                         </Steps>
                     </div>
                 </div>
-
+               
                 <div className="w-[950px]  mt-10 form-container">
+                   
                     <Form onFinish={onFinish}
-                        onFinishFailed={onFinishFailed}
-                        autoComplete="off">
+                        onFinishFailed={onFinishFailed} autoComplete="off">
+
                         <div className="w-[950px] h-[2530px] px-20 py-[50px]   placeholder: bg-white border border-[#FA4444] justify-between items-start  grid grid-cols-4">
+                           
                             <div className='col-span-4 flex justify-center'>
                                 <h1 className='text-[28px] font-bold'>BIỂU MẪU KÝ GỬI CÁ KOI</h1>
                             </div>
@@ -1197,7 +1224,7 @@ const RequestConsignment = () => {
 
                                             <div className="w-full h-full ">
                                                 <div className=" grid grid-flow-col p-[10px] pt-0 grid-cols-5 text-black text-2xl font-bold font-['Arial']">
-                                                    <Form.Item name="serviceFee"
+                                                    <Form.Item
                                                         initialValue={serviceFee}
                                                         preserve={true} hidden >
                                                         <Input value="12345" disabled hidden />
@@ -1223,7 +1250,7 @@ const RequestConsignment = () => {
                                                 </div>
 
                                             </div>
-
+                                          
                                         </div>
 
                                     </div>
