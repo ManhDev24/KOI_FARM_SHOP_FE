@@ -1,12 +1,12 @@
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Breadcrumb, Button, Form, Input, Row, Select, Upload, Image } from 'antd'
+import { Breadcrumb, Button, Form, Input, Row, Select, Upload, Image, Steps, theme } from 'antd'
 import TextArea from 'antd/es/input/TextArea';
 import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom'
 import * as Yup from 'yup'
-import imageSrc from '/img/SOWA.webp'
+
 import './requestConsignment.css'
 import { ConsignmentApi } from '../../apis/Consignment.api';
 const validationSchema = Yup.object().shape({
@@ -69,6 +69,20 @@ const CustomSVGIcon = () => (
     </svg>
 );
 
+const steps = [
+    {
+        title: <><div className='absolute z-0 w-fit mx-auto my-0 top-[30px] left-[150px] h-[100px]'>aaaaaaaaaaaaa</div></>,
+        
+    },
+    {
+        title: 'Second',
+        content: 'Second-content',
+    },
+    {
+        title: 'Last',
+        content: 'Last-content',
+    },
+];
 
 console.log(validationSchema);
 const RequestConsignment = () => {
@@ -91,8 +105,8 @@ const RequestConsignment = () => {
         const fee = handleFee(inputPrice, SelectedPackage);
 
         setServiceFee(fee);
-        form.setFieldsValue({ serviceFee: formatVND(serviceFee) });
-    }, [inputPrice, SelectedPackage, SelectedConsignmentType]);
+
+    }, [inputPrice, SelectedPackage]);
 
     const CategoryItem = [
         {
@@ -425,7 +439,27 @@ const RequestConsignment = () => {
         setSelectedConsignmentType(value);
         console.log("Loại ký gửi", value);
     };
-
+    const { token } = theme.useToken();
+    const [current, setCurrent] = useState(0);
+    const next = () => {
+        setCurrent(current + 1);
+    };
+    const prev = () => {
+        setCurrent(current - 1);
+    };
+    const items = steps.map((item) => ({
+        key: item.title,
+        title: item.title,
+    }));
+    const contentStyle = {
+        lineHeight: '260px',
+        textAlign: 'center',
+        color: token.colorTextTertiary,
+        backgroundColor: token.colorFillAlter,
+        borderRadius: token.borderRadiusLG,
+        border: `1px dashed ${token.colorBorder}`,
+        marginTop: 16,
+    };
     return (
         <>
             <div className="filter flex justify-center items-center  mb-5">
@@ -452,34 +486,14 @@ const RequestConsignment = () => {
             </div>
             <div className='flex flex-col items-center'>
                 <div className="w-[950px] h-[89px] relative ">
-                    <div className="w-[199px] h-[13px] left-0 top-[18px] absolute bg-[#d9d9d9]" />
-                    <div className="w-[198px] h-[13px] left-[251px] top-[18px] absolute bg-[#d9d9d9]" />
-                    <div className="w-[198px] h-[13px] left-[501px] top-[18px] absolute bg-[#d9d9d9]" />
-                    <div className="w-[199px] h-[13px] left-[751px] top-[18px] absolute bg-[#d9d9d9]" />
-                    <div className="w-[50px] h-[50px] left-[200px] top-0 absolute">
-                        <div className="w-[50px] h-[50px] left-0 top-0 absolute bg-[#d9d9d9] rounded-full" />
-                        <div className="w-5 h-5 left-[15px] top-[15px] absolute bg-white rounded-full" />
-                        <div className="left-[19px] top-[14px] absolute text-black text-xl font-bold font-['Arial']">1</div>
-                    </div>
-                    <div className="w-[50px] h-[50px] left-[450px] top-0 absolute">
-                        <div className="w-[50px] h-[50px] left-0 top-0 absolute bg-[#d9d9d9] rounded-full" />
-                        <div className="w-5 h-5 left-[15px] top-[15px] absolute bg-white rounded-full" />
-                        <div className="left-[19px] top-[14px] absolute text-black text-xl font-bold font-['Arial']">2</div>
-                    </div>
-                    <div className="w-[626px] h-[89px] left-[124px] top-0 absolute">
-                        <div className="w-[50px] h-[50px] left-[576px] top-0 absolute bg-[#d9d9d9] rounded-full" />
-                        <div className="w-5 h-5 left-[591px] top-[15px] absolute bg-white rounded-full" />
-                        <div className="left-[595px] top-[14px] absolute text-black text-xl font-bold font-['Arial']">3</div>
-                        <div className="left-0 top-[66px] absolute text-black text-xl font-bold font-['Arial']">Điền thông tin ký gửi</div>
-                    </div>
-                    <div className="left-[394px] top-[66px] absolute text-black text-xl font-bold font-['Arial']">Chờ duyệt ký gửi</div>
-                    <div className="left-[642px] top-[66px] absolute text-black text-xl font-bold font-['Arial']">Trạng thái Ký gửi </div>
+                    <Steps className='h-[100px]' current={current} items={items} />
+                   
                 </div>
                 <div className="w-[950px]  mt-10 form-container">
                     <Form onFinish={onFinish}
                         onFinishFailed={onFinishFailed}
                         autoComplete="off">
-                        <div className="w-[950px] h-[2530px] px-20 py-[50px]   placeholder: bg-white border border-[#FA4444] justify-between items-start  grid grid-cols-4">
+                        <div className="w-[950px] h-[full] px-20 py-[50px]   placeholder: bg-white border border-[#FA4444] justify-between items-start  grid grid-cols-4">
                             <div className='col-span-4 flex justify-center'>
                                 <h1 className='text-[28px] font-bold'>BIỂU MẪU KÝ GỬI CÁ KOI</h1>
                             </div>
@@ -760,7 +774,7 @@ const RequestConsignment = () => {
                                 </div>
                             </div>
                             <div className=" col-span-2 right flex-col justify-start items-start gap-10 inline-flex">
-                                <div className="self-stretch h-[2215.65px] flex-col justify-start items-start gap-[25px] flex">
+                                <div className="self-stretch h-full flex-col justify-start items-start gap-[25px] flex">
                                     <div className="self-stretch w-full h-[1250px] px-2.5 py-5 rounded-xl  border-2 border-gray-200  flex-col justify-start items-start gap-[25px] flex  relative right-5">
 
                                         <div className="w-full text-black text-2xl text-center font-bold my-0 font-['Arial']">Thông tin cá Koi</div>
@@ -1067,7 +1081,7 @@ const RequestConsignment = () => {
                                                     rules={[{ required: true, message: <span className='!w-[500px] relative top-1 left-[10px]'>Vui lòng chọn loại ký gửi</span> }]}
                                                 >
                                                     <Select
-                                                        className="w-full h-[40px] relative left-[10px] flex justify-between items-center" 
+                                                        className="w-full h-[40px] relative left-[10px] flex justify-between items-center"
                                                         defaultValue=""
                                                         onChange={handleSelectConsigmentType}
                                                         dropdownStyle={{ width: 200, marginLeft: 20 }}
@@ -1214,8 +1228,7 @@ const RequestConsignment = () => {
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div className='w-full'>
+                                <div className='w-full flex relative '>
                                 <Form.Item
                                     wrapperCol={{
                                         offset: 24,
@@ -1227,6 +1240,8 @@ const RequestConsignment = () => {
                                     </Button>
                                 </Form.Item>
                             </div>
+                            </div>
+                           
                         </div>
 
                     </Form >
