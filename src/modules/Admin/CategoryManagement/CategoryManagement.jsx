@@ -390,8 +390,8 @@ const CategoryManagement = () => {
                               className="w-[60px] h-[80px] object-cover"
                               src={
                                 value && value instanceof File
-                                  ? URL.createObjectURL(value) // Hiển thị ảnh mới nếu được chọn
-                                  : image || dataEdit?.cateImg // Hiển thị ảnh cũ nếu không thay đổi
+                                  ? URL.createObjectURL(value) 
+                                  : image || dataEdit?.cateImg 
                               }
                               alt="koiImage"
                             />
