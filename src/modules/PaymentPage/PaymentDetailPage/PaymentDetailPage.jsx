@@ -51,17 +51,29 @@ const columns = [
     },
   },
   {
-    title: "Giá Cá Koi",
+    title: "Giá Cá Koi",
     dataIndex: "price",
     render: (_, record) => {
-      return record?.type ? record?.price : 0;
+      const formattedPrice = record?.price
+        ? new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          }).format(record.price)
+        : "0 ₫";
+      return record?.type ? formattedPrice : "0 ₫";
     },
   },
   {
     title: "Giá Batch",
     dataIndex: "batchPrice",
     render: (_, record) => {
-      return record?.type ? 0 : record?.price;
+      const formattedPrice = record?.price
+        ? new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          }).format(record.price)
+        : "0 ₫";
+      return record?.type ? "0 ₫" :formattedPrice;
     },
   },
   {
