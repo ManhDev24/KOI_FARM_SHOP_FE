@@ -269,10 +269,11 @@ const RequestConsignment = () => {
     ];
 
     const dispatch = useDispatch();
-
+    
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: yupResolver(validationSchema),
     });
+    
 
     const { mutate: handleConsignmentSubmit, isLoading: submitLoading } = useMutation({
         mutationFn: async (formData) => {
@@ -295,10 +296,7 @@ const RequestConsignment = () => {
 
     const onFinish = async (values) => {
         try {
-            // Convert the image URLs (or blob URLs) to files
-      
-
-
+            // Convert the image URLs (or blob URLs) to files    
             const formData = new FormData();
             formData.append('koiImg', selectedKoiImage);
             formData.append('certImg', selectedKoiCertificate);
