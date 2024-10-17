@@ -120,6 +120,16 @@ const ThankPage = () => {
     
   }, [status, paymentCode, type, order, data, handleSaveOrder, handleSaveConsignment]);
 
+ if (isHandleSaveOrderError) {
+    navigate("/payment-fail");
+  }
+  if (isHandleSaveOrderPending ) {
+    return (
+      <div className="h-[600px] w-full flex items-center justify-center items-center">
+        <Spin indicator={<LoadingOutlined spin />} size="large" />
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col items-center justify-center h-[600px] w-full">
       <div className="text-center text-3xl font-bold mb-10">

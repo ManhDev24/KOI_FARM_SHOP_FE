@@ -113,6 +113,11 @@ const AdminLayout = () => {
               label: "Fish Management",
             },
             {
+              key: "/admin/batch-management",
+              icon: <VideoCameraOutlined />,
+              label: "Batch Management",
+            },
+            {
               key: "/admin/category-management",
               icon: <SafetyCertificateOutlined />,
               label: "Category ",
