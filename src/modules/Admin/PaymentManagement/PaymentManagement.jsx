@@ -123,6 +123,8 @@ const PaymentManagement = () => {
     },
   ];
   const total = ListOfOrder?.data.totalElements;
+  console.log('ListOfOrder: ', ListOfOrder);
+  console.log('total: ', total);
   return (
     <div>
       <div className="flex flex-col justify-center items-center ">

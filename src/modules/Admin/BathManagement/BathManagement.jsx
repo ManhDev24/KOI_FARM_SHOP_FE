@@ -1,23 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Controller, useForm } from "react-hook-form";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import Search from "antd/es/input/Search";
 import {
   Button,
   Col,
+  Image,
+  Input,
+  message,
   Modal,
   Pagination,
   Row,
+  Select,
+  Space,
   Table,
   Tag,
-  Space,
-  Select,
-  Input,
   Upload,
-  message,
-  Image,
 } from "antd";
 import {
   StopOutlined,
@@ -26,30 +24,29 @@ import {
   PlusOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
+import Search from "antd/es/transfer/search";
+import { Controller, useForm } from "react-hook-form";
 import FishApi from "../../../apis/Fish.api";
-import LoadingModal from "../../Modal/LoadingModal";
 import { Link } from "react-router-dom";
 
 const validationSchema = yup.object().shape({
-  category: yup.string().required("Danh mục là bắt buộc"),
+  categoryID: yup.string().required("Danh mục là bắt buộc"),
   age: yup
     .number()
     .typeError("Tuổi phải là số")
     .required("Tuổi là bắt buộc")
     .min(0, "Tuổi không thể âm"),
-  size: yup
+  avgSize: yup
     .number()
     .typeError("Kích thước phải là số")
     .required("Kích thước là bắt buộc")
     .min(0, "Kích thước không thể âm"),
-  personality: yup.string().required("Tính cách là bắt buộc"),
   origin: yup.string().required("Nguồn gốc là bắt buộc"),
   price: yup
     .number()
     .typeError("Giá phải là số")
     .required("Giá là bắt buộc")
     .min(0, "Giá không thể âm"),
-  gender: yup.boolean().required("Gioi tinh là bắt buộc"),
   purebred: yup
     .number()
     .typeError("Thuần chủng phải là số 0 hoặc 1")
@@ -61,40 +58,179 @@ const validationSchema = yup.object().shape({
   health: yup.string().required("Sức khỏe là bắt buộc"),
   temperature: yup.string().required("Nhiệt độ nước là bắt buộc"),
   ph: yup.string().required("pH nước là bắt buộc"),
+  quantity: yup
+    .number()
+    .typeError("Số lượng cá phải là số")
+    .required("Số lượng cá là bắt buộc"),
 });
 
-const FishManagement = () => {
+const BathManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isModalViewOpen, setIsModalViewOpen] = useState(false);
-  const [isModalDetailFishOpen, setIsModalDetailFishOpen] = useState(false);
-  const [dataDetailFish, setDataDetailFish] = useState(null);
-
   const [dataEdit, setDataEdit] = useState(null);
+  console.log("dataEdit: ", dataEdit);
   const [dataView, setDataView] = useState(null);
   const [image, setImage] = useState(undefined);
-  const [imageCertificate, setImageCertificate] = useState(undefined);
+  const [isModalDetailBatchOpen, setIsModalDetailBatchOpen] = useState(false);
+  const [isModalViewOpen, setIsModalViewOpen] = useState(false);
+  const [dataDetailBatch, setDataDetailBatch] = useState(null);
   const [status, setStatus] = useState(1);
 
   const queryClient = useQueryClient();
 
+  const {
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      categoryID: 1,
+      origin: "",
+      quantity: "",
+      age: "",
+      avgSize: "",
+      price: "",
+      purebred: true,
+      status: 1,
+      food: "",
+      water: "",
+      health: "",
+      temperature: "",
+      ph: "",
+      batchImg: "",
+    },
+    resolver: yupResolver(validationSchema),
+    mode: "onBlur",
+  });
+
+  const {
+    data: listOfBatch,
+    isLoading: isLoadingListOfBatch,
+    isError: isErrorListOfBatch,
+  } = useQuery({
+    queryKey: ["listOfBatch", currentPage],
+    queryFn: () => FishApi.getAllBatch(currentPage, 4),
+  });
+  console.log("listOfBatch: ", listOfBatch);
+  const total = listOfBatch?.data?.totalElements;
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const cancelModalView = () => {
+    setIsModalViewOpen(false);
+  };
+  const showModalView = () => {
+    setIsModalViewOpen(true);
+  };
+  const showModalDetailView = (record) => {
+    setIsModalDetailBatchOpen(true);
+    setDataDetailBatch(record);
+  };
+  const cancelModalDetailView = () => {
+    setIsModalDetailBatchOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    reset(); // Reset form fields
+    setDataEdit(null);
+    setImage(undefined);
+  };
+  const onStatusChange =(id ,status)=>{
+    console.log('id: ', id);
+    handleChangeStatusBatch(id)
+  }
+  const {
+    mutate: handleCreateBatch,
+    isLoading: isLoadingCreateBatch,
+    isError: isErrorCreateBatch,
+  } = useMutation({
+    mutationFn: (data) => FishApi.createBatch(data),
+    onSuccess: (data) => {
+      message.success("Thêm thành công");
+      queryClient.invalidateQueries(["listOfBatch"]);
+    },
+    onError: (error) => {
+      const errorMessage = error?.message || "Có lỗi xảy ra, vui lòng thử lại";
+      message.error(errorMessage);
+    },
+  });
+  const onSubmit = (payload) => {
+    console.log("payload: ", payload);
+    const data = { ...payload };
+    const formData = new FormData();
+    const file = data?.batchImg;
+    console.log("file: ", file);
+    formData.append("categoryId", data?.categoryID);
+    formData.append("quantity", data?.quantity);
+    formData.append("age", data?.age);
+    formData.append("avgSize", data?.avgSize);
+    formData.append("price", data?.price);
+    formData.append("purebred", data?.purebred);
+    formData.append("status", data?.status);
+    formData.append("food", data?.food);
+    formData.append("water", data?.water);
+    formData.append("health", data?.health);
+    formData.append("temperature", data?.temperature);
+    formData.append("pH", data?.ph);
+    formData.append("batchImg", file);
+    formData.append("origin", data?.origin);
+    formData.append("categoryID", data?.categoryID);
+    if (dataEdit) {
+      if (!image) {
+        const { batchImg, ph, ...rest } = data;
+        const dataEdit = { ...rest, pH: data.ph };
+        handleUpdateBatchFish(dataEdit);
+      } else {
+        const dataToEdit = { ...data };
+        handleUpdateBatchFish(dataToEdit);
+      }
+    } else {
+      handleCreateBatch(formData);
+    }
+  };
+ 
+  const onEditBatch = (record) => {
+    console.log("record: ", record);
+    showModal();
+    setDataEdit(record);
+    reset({
+      categoryID: record?.categoryID,
+      origin: record?.origin,
+      quantity: record?.quantity,
+      age: record?.age,
+      avgSize: record?.avgSize,
+      price: record?.price,
+      purebred: record?.purebred,
+      status: record?.status,
+      food: record?.food,
+      water: record?.water,
+      health: record?.health,
+      temperature: record?.temperature,
+      ph: record?.ph,
+      batchImg: record?.batchImg, // Đã sửa
+    });
+  };
+
   const columns = [
     {
       title: "ID",
-      dataIndex: "id",
-      key: "id",
+      dataIndex: "batchID",
+      key: "batchID",
     },
     {
-      title: "Tên cá",
+      title: "Tên Lô cá",
       key: "fishName",
       render: (record) => {
-        return `${record.origin} - Tuổi: ${record.age} - Kích thước: ${record.size} cm`;
+        return `${record?.origin} - Tuổi: ${record?.age} - Kích thước: ${record?.avgSize} cm`;
       },
     },
     {
       title: "Ảnh",
-      dataIndex: "koiImage",
-      key: "koiImage",
+      dataIndex: "batchImg",
+      key: "batchImg",
+
       render: (image) => {
         return image ? (
           <Image src={image} alt="koi" style={{ width: 100, height: 100 }} />
@@ -105,8 +241,8 @@ const FishManagement = () => {
     },
     {
       title: "Danh mục",
-      dataIndex: "category",
-      key: "category",
+      dataIndex: "categoryName",
+      key: "categoryName",
     },
     {
       title: "Tuổi",
@@ -115,8 +251,8 @@ const FishManagement = () => {
     },
     {
       title: "Kích thước (cm)",
-      dataIndex: "size",
-      key: "size",
+      dataIndex: "avgSize",
+      key: "avgSize",
     },
     // {
     //   title: "Tính cách",
@@ -210,7 +346,7 @@ const FishManagement = () => {
           <Button
             type="default"
             icon={<EditOutlined />}
-            onClick={() => onEditFish(record)}
+            onClick={() => onEditBatch(record)}
           >
             Edit
           </Button>
@@ -235,7 +371,7 @@ const FishManagement = () => {
         <Select
           defaultValue={record.status}
           onChange={(value) => {
-            onStatusChange(record.id);
+            onStatusChange(record.batchID);
             setStatus(value);
           }}
           style={{ width: 150 }}
@@ -250,128 +386,12 @@ const FishManagement = () => {
       ),
     },
   ];
-
-  const handleRemoveImage = (event) => {
-    event.stopPropagation();
-    setValue("koiImage", null);
-    setImage(undefined);
-  };
-  const onStatusChange = (id, status) => {
-    console.log("status: ", status);
-    console.log("id: ", id);
-    handleChangeStatusFish(id);
-  };
-
-  const showModal = () => {
-    setIsModalOpen(true);
-    reset({
-      category: 1,
-      age: "",
-      size: "",
-      personality: "",
-      price: "",
-      origin: "",
-      gender: true,
-      name: "",
-      food: "",
-      water: "",
-      status: 1,
-      purebred: true,
-      health: "",
-      temperature: "",
-      ph: "",
-      certificate: "",
-      koiImage: "",
-    });
-    setDataEdit(null);
-    setImage(undefined);
-    setImageCertificate(undefined);
-  };
-  const showModalView = () => {
-    setIsModalViewOpen(true);
-  };
-  const showModalDetailView = (record) => {
-    setIsModalDetailFishOpen(true);
-    setDataDetailFish(record);
-  };
-  const cancelModalView = () => {
-    setIsModalViewOpen(false);
-  };
-  const cancelModalDetailView = () => {
-    setIsModalDetailFishOpen(false);
-  };
-  const handleCancel = () => {
-    setIsModalOpen(false);
-    reset(); // Reset form fields
-    setDataEdit(null);
-    setImage(undefined);
-    setImageCertificate(undefined);
-  };
-
   const {
-    handleSubmit,
-    control,
-    watch,
-    setValue,
-    reset,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      category: 1,
-      age: "",
-      size: "",
-      personality: "",
-      price: "",
-      origin: "",
-      gender: true,
-      name: "",
-      food: "",
-      water: "",
-      status: 1,
-      purebred: 1,
-      health: "",
-      temperature: "",
-      ph: "",
-      image: null,
-      koiImage: null,
-    },
-    resolver: yupResolver(validationSchema),
-    mode: "onBlur",
-  });
-
-  const watchhinhAnh = watch("koiImage");
-  const watchCertificate = watch("certificate");
-
-  const {
-    data: ListKoi,
-    isLoading: isLoadingListKoi,
-    isError: isErrorListKoi,
-  } = useQuery({
-    queryKey: ["ListKoi", currentPage],
-    queryFn: () => FishApi.getListFish(currentPage, 4),
-  });
-
-  const {
-    mutate: handleAddFish,
-    isLoading: isLoadingAddFish,
-    isError: isErrorAddFish,
+    mutate: handleUpdateBatchFish,
+    isLoading: isLoadingUpdateBatchFish,
+    isError: isErrorUpdateBatchFish,
   } = useMutation({
-    mutationFn: (data) => FishApi.addFish(data),
-    onSuccess: () => {
-      message.success("Thêm thành công");
-      queryClient.invalidateQueries(["ListKoi"]);
-    },
-    onError: (error) => {
-      const errorMessage = error?.message || "Có lỗi xảy ra, vui lòng thử lại";
-      message.error(errorMessage);
-    },
-  });
-  const {
-    mutate: handleUpdateFish,
-    isLoading: isLoadingUpdateFish,
-    isError: isErrorUpdateFish,
-  } = useMutation({
-    mutationFn: (data) => FishApi.updateFish(data, dataEdit?.id),
+    mutationFn: (data) => FishApi.updateBatch(data, dataEdit?.batchID),
     onSuccess: () => {
       message.success("Cập nhật thành công");
       queryClient.invalidateQueries(["ListKoi"]);
@@ -383,11 +403,19 @@ const FishManagement = () => {
     },
   });
   const {
-    mutate: handleChangeStatusFish,
-    isLoading: isLoadingChangeStatusFish,
-    isError: isErrorChangeStatusFish,
+    data: ListCategory,
+    isLoading: isLoadingListCategory,
+    isError: isErrorListCategory,
+  } = useQuery({
+    queryKey: ["ListCategory"],
+    queryFn: () => FishApi.getCategories(),
+  });
+  const {
+    mutate: handleChangeStatusBatch,
+    isLoading: isLoadingChangeStatusBatch,
+    isError: isErrorChangeStatusBatch,
   } = useMutation({
-    mutationFn: (id) => FishApi.changeStatus(id, status),
+    mutationFn: (id) => FishApi.changeStatusBatch(id, status),
     onSuccess: () => {
       message.success("Chỉnh sửa trạng thái thành công");
       queryClient.invalidateQueries(["ListKoi"]);
@@ -397,193 +425,47 @@ const FishManagement = () => {
       message.error(errorMessage);
     },
   });
-
-  const onSubmit = (payload) => {
-    const data = { ...payload, pH: payload?.ph };
-    console.log("data: ", data);
-
-    const formData = new FormData();
-
-    const file = data.koiImage;
-    const fileCertificate = data?.image || "";
-    if (fileCertificate) {
-      formData.append("image", fileCertificate);
-    }
-    formData.append("koiImage", file);
-    formData.append("categoryId", data.category);
-    formData.append("age", data.age);
-    formData.append("size", data.size);
-    formData.append("origin", data.origin);
-    formData.append("personality", data.personality);
-    formData.append("price", data.price);
-    formData.append("gender", data.gender);
-    formData.append("status", data.status);
-    formData.append("purebred", data.purebred);
-    formData.append("health", data.health);
-    formData.append("food", data.food);
-    formData.append("water", data.water);
-    formData.append("temperature", data.temperature);
-    formData.append("pH", data.ph);
-    formData.append("name", "");
-    formData.append("createdDate", new Date().toISOString());
-    formData.append("name", data.name);
-    if (dataEdit) {
-      if (!image) {
-        const { koiImage, ...rest } = data;
-
-        const dataToEdit = { status, ...rest, categoryId: data?.category };
-        console.log("dataToEdit2: ", dataToEdit);
-
-        handleUpdateFish(dataToEdit);
-      } else {
-        const dataToEdit = { ...data, Status: 1, categoryId: data?.category };
-        console.log("dataToEdit1: ", dataToEdit);
-
-        handleUpdateFish(dataToEdit);
-      }
-    } else {
-      handleAddFish(formData);
-    }
-  };
-  const onDetailFish = (record) => {
-    showModalView();
-    setDataView(record);
-  };
-  const fetchImageAsBinary = async (url) => {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    return blob;
-  };
-
-  const onEditFish = async (record) => {
-    console.log("record: ", record);
-    showModal();
-    setDataEdit(record);
-    reset({
-      category: record?.categoryId,
-      age: record.age,
-      size: record.size,
-      origin: record.origin,
-      gender: record.gender,
-      personality: record.personality,
-      price: record.price,
-      status: record.status,
-      purebred: record.purebred,
-      health: record.health,
-      food: record.food,
-      water: record.water,
-      temperature: record.temperature,
-      ph: record.ph,
-      certificate: record.certificate,
-      koiImage: record?.koiImage,
-    });
-  };
-
-  useEffect(() => {
-    return () => {
-      if (image) URL.revokeObjectURL(image);
-      if (imageCertificate) URL.revokeObjectURL(imageCertificate);
-    };
-  }, [image, imageCertificate]);
-
-  const onSubmitBanFish = async (id, currentStatus) => {
-    try {
-      await FishApi.toggleFishStatus(id, !currentStatus);
-      message.success(
-        currentStatus ? "Đã ban cá thành công" : "Đã unban cá thành công"
-      );
-      queryClient.invalidateQueries(["ListKoi"]);
-    } catch (error) {
-      message.error("Có lỗi xảy ra. Vui lòng thử lại.");
-    }
-  };
-  const {
-    data: ListCategory,
-    isLoading: isLoadingListCategory,
-    isError: isErrorListCategory,
-  } = useQuery({
-    queryKey: ["ListCategory"],
-    queryFn: () => FishApi.getCategories(),
-  });
-  console.log("ListCategory: ", ListCategory);
-  const handleChangeImage = (e) => {
-    const file = e.target.files[0];
-    e.stopPropagation();
-    if (file) {
-      const newImageUrl = URL.createObjectURL(file);
-      setImage(newImageUrl);
-      setValue("koiImage", file);
-    }
-  };
-
-  if (
-    isLoadingListKoi ||
-    isLoadingListCategory ||
-    isLoadingAddFish ||
-    isLoadingChangeStatusFish
-  ) {
-    return <LoadingModal />;
-  }
-
-  if (
-    isErrorListKoi ||
-    isErrorListCategory ||
-    isErrorAddFish ||
-    isErrorChangeStatusFish
-  ) {
-    return <div>Error</div>;
-  }
-
-  const totalElements = ListKoi?.totalElements;
-  const totalPages = ListKoi?.totalPages;
-
   return (
-    <div className="flex flex-col justify-center items-center  ">
+    <div className="flex flex-col justify-center items-center ">
       <div className="w-[450px]">
         <Search
-          placeholder="Nhập tên hoặc email..."
+          placeholder="Nhập email để tìm kiếm..."
+          value={[]}
           style={{ width: 300 }}
           allowClear
-          onSearch={(value) => {
-            // Implement search functionality if needed
-            console.log("Search:", value);
-          }}
         />
       </div>
       <div className="flex flex-col mt-2 w-full">
-        <div className="w-full flex justify-start">
+        <div className="w-full">
           <Button
             onClick={showModal}
             danger
             className="flex justify-center items-center"
-            icon={<PlusOutlined />}
           >
-            Thêm Cá
+            <span>+</span>
+            Thêm Lô
           </Button>
         </div>
         <div className="mt-3">
-          <div className="overflow-x-auto scrollbar-custom">
-            <Table
-              rowKey="id"
-              columns={columns}
-              dataSource={ListKoi?.koiFishReponseList}
-              pagination={false}
-              loading={isLoadingListKoi}
-            />
-          </div>
-          <div className="flex justify-end mt-2 mb-2">
+          <Table
+            rowKey="batchID"
+            columns={columns}
+            dataSource={listOfBatch?.data?.batchReponses}
+            pagination={false}
+            isLoading={isLoadingListOfBatch}
+          />
+          <div className="flex justify-end mt-2">
             <Pagination
-              current={currentPage}
-              total={totalElements}
+              defaultCurrent={currentPage}
+              total={total}
               pageSize={4}
               onChange={(page) => setCurrentPage(page)}
-              showSizeChanger={false}
             />
           </div>
         </div>
       </div>
       <Modal
-        title={dataEdit ? "Chỉnh sửa cá" : "Thêm cá"}
+        title={dataEdit ? "Chỉnh sửa  Lô cá" : "Thêm Lô cá"}
         visible={isModalOpen}
         footer={[
           <Button key="cancel" onClick={handleCancel}>
@@ -598,9 +480,9 @@ const FishManagement = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <Row gutter={[16, 16]}>
             <Col span={12}>
-              <label style={{ fontSize: "16px" }}>Ảnh Cá</label>
+              <label style={{ fontSize: "16px" }}>Ảnh Lô Cá</label>
               <Controller
-                name="koiImage"
+                name="batchImg"
                 control={control}
                 render={({ field: { onChange, value, ...field } }) => (
                   <Upload
@@ -624,16 +506,16 @@ const FishManagement = () => {
                     >
                       {(value && value instanceof File) ||
                       image ||
-                      dataEdit?.koiImage ? (
+                      dataEdit?.batchImg ? (
                         <>
                           <img
                             className="w-[60px] h-[80px] object-cover"
                             src={
                               value && value instanceof File
                                 ? URL.createObjectURL(value)
-                                : image || dataEdit?.koiImage
+                                : image || dataEdit?.batchImg
                             }
-                            alt="koiImage"
+                            alt="batchImg"
                           />
                           <div
                             style={{
@@ -660,79 +542,9 @@ const FishManagement = () => {
                   </Upload>
                 )}
               />
-              {errors.koiImage && (
+              {errors.batchImg && (
                 <p style={{ color: "red", fontSize: "12px" }}>
-                  {errors.koiImage.message}
-                </p>
-              )}
-            </Col>
-
-            <Col span={12}>
-              <label style={{ fontSize: "16px" }}>Ảnh chứng nhận</label>
-              <Controller
-                name="image"
-                control={control}
-                render={({ field: { onChange, value, ...field } }) => (
-                  <Upload
-                    {...field}
-                    listType="picture-card"
-                    className="avatar-uploader"
-                    showUploadList={false}
-                    beforeUpload={() => false}
-                    onChange={(info) => {
-                      const file = info.file.originFileObj || info.file;
-                      if (file) {
-                        console.log("Selected file:", file);
-                        onChange(file);
-                        setImageCertificate(URL.createObjectURL(file));
-                      }
-                    }}
-                  >
-                    <button
-                      style={{ border: 0, background: "none" }}
-                      type="button"
-                    >
-                      {(value && value instanceof File) ||
-                      imageCertificate ||
-                      dataEdit?.image ? (
-                        <>
-                          <img
-                            className="w-[60px] h-[80px] object-cover"
-                            src={
-                              value && value instanceof File
-                                ? URL.createObjectURL(value)
-                                : imageCertificate
-                            }
-                            alt="imageCertificate"
-                          />
-                          <div
-                            style={{
-                              top: 30,
-                              right: "140px",
-                            }}
-                            className="absolute "
-                          >
-                            <DeleteOutlined
-                              onClick={() => {
-                                onChange(null);
-                                setImageCertificate(null);
-                              }}
-                            />
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <PlusOutlined />
-                          <div style={{ marginTop: 8 }}>Upload</div>
-                        </>
-                      )}
-                    </button>
-                  </Upload>
-                )}
-              />
-              {errors.image && (
-                <p style={{ color: "red", fontSize: "12px" }}>
-                  {errors.image.message}
+                  {errors.batchImg.message}
                 </p>
               )}
             </Col>
@@ -740,7 +552,7 @@ const FishManagement = () => {
             <Col span={24}>
               <label style={{ fontSize: "16px" }}>Danh mục</label>
               <Controller
-                name="category"
+                name="categoryID"
                 control={control}
                 render={({ field }) => (
                   <Select
@@ -757,29 +569,6 @@ const FishManagement = () => {
               {errors.category && (
                 <p style={{ color: "red", fontSize: "12px" }}>
                   {errors.category.message}
-                </p>
-              )}
-            </Col>
-            <Col span={24}>
-              <label style={{ fontSize: "16px" }}>Giới tính</label>
-              <Controller
-                name="gender"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    {...field}
-                    style={{ width: "100%", marginTop: "8px" }}
-                    placeholder="Chọn danh mục"
-                    options={[
-                      { value: true, label: "Koi Đực" },
-                      { value: false, label: "Koi cái" },
-                    ]}
-                  />
-                )}
-              />
-              {errors.gender && (
-                <p style={{ color: "red", fontSize: "12px" }}>
-                  {errors.gender.message}
                 </p>
               )}
             </Col>
@@ -809,7 +598,7 @@ const FishManagement = () => {
             <Col span={12}>
               <label style={{ fontSize: "16px" }}>Kích thước (cm)</label>
               <Controller
-                name="size"
+                name="avgSize"
                 control={control}
                 render={({ field }) => (
                   <Input
@@ -817,18 +606,18 @@ const FishManagement = () => {
                     type="number"
                     placeholder="Nhập kích thước cá"
                     className="mt-1"
-                    status={errors.size ? "error" : ""}
+                    status={errors.avgSize ? "error" : ""}
                   />
                 )}
               />
-              {errors.size && (
+              {errors.avgSize && (
                 <p style={{ color: "red", fontSize: "12px" }}>
-                  {errors.size.message}
+                  {errors.avgSize.message}
                 </p>
               )}
             </Col>
 
-            <Col span={24}>
+            <Col span={12}>
               <label style={{ fontSize: "16px" }}>Nguồn gốc của cá</label>
               <Controller
                 name="origin"
@@ -849,48 +638,28 @@ const FishManagement = () => {
                 </p>
               )}
             </Col>
-            <Col span={24}>
-              <label style={{ fontSize: "16px" }}>Tính cách</label>
+            <Col span={12}>
+              <label style={{ fontSize: "16px" }}>Số lượng cá trong lô</label>
               <Controller
-                name="personality"
+                name="quantity"
                 control={control}
                 render={({ field }) => (
                   <Input
                     {...field}
                     type="text"
-                    placeholder="Nhập tính cách"
+                    placeholder="Nhập nguồn gốc của cá"
                     className="mt-1"
-                    status={errors.personality ? "error" : ""}
+                    status={errors.quantity ? "error" : ""}
                   />
                 )}
               />
-              {errors.personality && (
+              {errors.quantity && (
                 <p style={{ color: "red", fontSize: "12px" }}>
-                  {errors.personality.message}
+                  {errors.quantity.message}
                 </p>
               )}
             </Col>
-            <Col span={24}>
-              <label style={{ fontSize: "16px" }}>Chứng chỉ của cá</label>
-              <Controller
-                name="name"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    {...field}
-                    type="text"
-                    placeholder="Nhập Tên chứng chỉ của cá nếu có"
-                    className="mt-1"
-                    status={errors.name ? "error" : ""}
-                  />
-                )}
-              />
-              {errors.name && (
-                <p style={{ color: "red", fontSize: "12px" }}>
-                  {errors.name.message}
-                </p>
-              )}
-            </Col>
+
             <Col span={24}>
               <label style={{ fontSize: "16px" }}>Chế độ ăn</label>
               <Controller
@@ -1044,7 +813,6 @@ const FishManagement = () => {
           </Row>
         </form>
       </Modal>
-
       <Modal
         visible={isModalViewOpen}
         footer={null}
@@ -1067,7 +835,7 @@ const FishManagement = () => {
             </div>
             <div className="rounded-[10px]">
               <img
-                src={dataView?.koiImage}
+                src={dataView?.batchImg}
                 className="w-[250px] h-[354px] rounded-t-[8px] box-border"
                 alt={dataView?.category}
                 style={{ width: "250px" }}
@@ -1150,19 +918,18 @@ const FishManagement = () => {
         </Col>
       </Modal>
       <Modal
-        visible={isModalDetailFishOpen}
+        visible={isModalDetailBatchOpen}
         footer={null}
         onCancel={cancelModalDetailView}
       >
-        <h1>Nhiệt độ của nước :{dataDetailFish?.temperature}</h1>
-        <h1>Độ cứng của nước: {dataDetailFish?.water}</h1>
-        <h1>Chế độ ăn của cá: {dataDetailFish?.food}</h1>
-        <h1>Sức khỏe của cá: {dataDetailFish?.health}</h1>
-        <h1>Tính cách của cá: {dataDetailFish?.personality}</h1>
-        <h1>Độ ph của nước: {dataDetailFish?.ph}</h1>
+        <h1>Nhiệt độ của nước :{dataDetailBatch?.temperature}</h1>
+        <h1>Độ cứng của nước: {dataDetailBatch?.water}</h1>
+        <h1>Chế độ ăn của cá: {dataDetailBatch?.food}</h1>
+        <h1>Sức khỏe của cá: {dataDetailBatch?.health}</h1>
+        <h1>Độ ph của nước: {dataDetailBatch?.ph}</h1>
       </Modal>
     </div>
   );
 };
 
-export default FishManagement;
+export default BathManagement;

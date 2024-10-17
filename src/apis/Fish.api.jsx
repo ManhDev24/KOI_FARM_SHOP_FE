@@ -188,7 +188,7 @@ export const FishApi = {
       throw new Error(error.response?.data?.message || "Error uploading data");
     }
   },
-  changeStatus: async (id, status = 1 ) => {
+  changeStatus: async (id, status = 1) => {
     try {
       const response = await fetcher.post(
         `http://localhost:8080/koifarm/koifish/changeStatus/${id}/${status}`
@@ -211,6 +211,58 @@ export const FishApi = {
     try {
       const response = await fetcher.get(
         `http://localhost:8080/koifarm/dashboard/total-batch`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
+  getAllBatch: async (currentPage, pageSize = 9) => {
+    try {
+      const response = await fetcher.get(
+        `http://localhost:8080/koifarm/BatchKoi/getAllBatch?pageNo=${currentPage}&pageSize=${pageSize}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
+  createBatch: async (formdata) => {
+    try {
+      const response = await fetcher.post(
+        `http://localhost:8080/koifarm/BatchKoi/createBatch`,
+        formdata,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || "Error uploading data");
+    }
+  },
+  updateBatch: async (formdata, id) => {
+    try {
+      const response = await fetcher.put(
+        `http://localhost:8080/koifarm/BatchKoi/updateBatch/${id}`,
+        formdata,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || "Error uploading data");
+    }
+  },
+  changeStatusBatch: async (id, status = 1) => {
+    try {
+      const response = await fetcher.put(
+        `http://localhost:8080/koifarm/BatchKoi/changeStatus/${id}/${status}`
       );
       return response.data;
     } catch (error) {
