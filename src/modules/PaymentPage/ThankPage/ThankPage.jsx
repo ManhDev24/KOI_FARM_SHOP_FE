@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import React, { useEffect, useRef } from "react";
 import CheckoutApi from "../../../apis/Checkout.api";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { Button, message, Spin } from "antd";
+import { Button, message } from "antd";
 import {
   getLocalStorage,
   removeLocalStorage,
@@ -10,7 +10,6 @@ import {
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import LoadingModal from "../../Modal/LoadingModal";
-import { LoadingOutlined } from "@ant-design/icons";
 
 const ThankPage = () => {
   const hasCalledApi = useRef(false); // Sử dụng useRef để lưu trạng thái
@@ -33,7 +32,7 @@ const ThankPage = () => {
 
   const {
     mutate: handleSaveOrder,
-    isPending: isHandleSaveOrderPending,
+    isLoading: isHandleSaveOrderLoading,
     isError: isHandleSaveOrderError,
   } = useMutation({
     mutationFn: (data) => CheckoutApi.saveOrder(data, paymentCode),
@@ -120,16 +119,6 @@ const ThankPage = () => {
     }
   }, [status, paymentCode, type, order, data, handleSaveOrder, handleSaveConsignment]);
 
-  if (isHandleSaveOrderError) {
-    navigate("/payment-fail");
-  }
-  if (isHandleSaveOrderPending == true) {
-    return (
-      <div className="h-[600px] w-full flex items-center justify-center items-center">
-        <Spin indicator={<LoadingOutlined spin />} size="large" />
-      </div>
-    );
-  }
   return (
     <div className="flex flex-col items-center justify-center h-[600px] w-full">
       <div className="text-center text-3xl font-bold mb-10">
