@@ -84,7 +84,7 @@ const ThankPage = () => {
   if (isHandleSaveOrderError) {
     navigate("/payment-fail");
   }
-  if (isHandleSaveOrderPending == true) {
+  if (isHandleSaveOrderPending ) {
     return (
       <div className="h-[600px] w-full flex items-center justify-center items-center">
         <Spin indicator={<LoadingOutlined spin />} size="large" />
