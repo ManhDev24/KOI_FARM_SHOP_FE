@@ -117,6 +117,7 @@ const ThankPage = () => {
       }
       hasCalledApi.current = true; // Đánh dấu đã gọi API
     }
+    
   }, [status, paymentCode, type, order, data, handleSaveOrder, handleSaveConsignment]);
 
   return (
