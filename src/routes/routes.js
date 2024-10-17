@@ -17,6 +17,7 @@ import ListBlog from "../modules/Blog/ListBlog/ListBlog";
 
 import Cart from "../modules/Cart/Cart";
 import ChangePassword from "../modules/ChangePassword/ChangePassword";
+import ConsignmentHistoryDetail from "../modules/Consignment/ConsignmentHistoryDetail";
 import KoiConsignmentPolicies from "../modules/Consignment/KoiConsignmentPolicies";
 import RequestConsignment from "../modules/Consignment/RequestConsignment";
 import ServiceFeeConsignment from "../modules/Consignment/ServiceFeeConsignment";
@@ -177,6 +178,12 @@ export const publicRoutes = [
   {
     path: "/servicefee-consignment",
     component: ServiceFeeConsignment,
+
+    layout: DefaultLayout,
+  },
+  {
+    path: "/consignment-history",
+    component: ConsignmentHistoryDetail,
 
     layout: DefaultLayout,
   },

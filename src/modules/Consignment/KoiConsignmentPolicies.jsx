@@ -1,7 +1,7 @@
 
 import { Steps } from 'antd'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -24,6 +24,17 @@ const KoiConsignmentPolicies = () => {
 
 
     };
+    const [statePage, setStatePage] = useState();
+    useEffect(() => {
+        const dataProfile = JSON.parse(localStorage.getItem('user'));
+        const accountId = dataProfile && dataProfile.id ? Number(dataProfile.id) : null;
+
+        if (!accountId) {
+            
+            navigate('/login');
+        }
+    }, [navigate]);
+
     return (
         <>
             <div class="w-full max-w-[950px] h-[89px] relative mx-auto p-4">

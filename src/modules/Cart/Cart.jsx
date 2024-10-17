@@ -62,7 +62,7 @@ const Cart = () => {
     localStorage.setItem("cartItems", JSON.stringify(updatedData));
     message.success("Cập nhật số lượng thành công!");
   };
-
+ const isBuy =true;
   const finalPrice = totalPrice - totalPrice * disCountRate;
 
   const navigate = useNavigate();
@@ -107,7 +107,9 @@ const Cart = () => {
     isLoading: isVnPayLoading,
     isError: isVnPayError,
   } = useMutation({
-    mutationFn: (amount) => CheckoutApi.payByVnPay(amount, "ncb", true),
+
+    mutationFn: (amount) => CheckoutApi.payByVnPay(amount,"NCB",true),
+
     onSuccess: (data) => {
       window.location.assign(data.data.paymentUrl);
     },
@@ -143,7 +145,8 @@ const Cart = () => {
   }
 
   const handleOrder = () => {
-    handlePayOrderByVnPay(finalPrice);
+    if (!finalPrice || isVnPayLoading) return; 
+  handlePayOrderByVnPay(finalPrice);
   };
   const handleDelete = (fish) => {
     dispatch(removeFromCart(fish));

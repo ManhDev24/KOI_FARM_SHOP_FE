@@ -1,21 +1,21 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
-import React, { useContext, useEffect } from "react";
+import { useMutation } from "@tanstack/react-query";
+import React, { useEffect, useRef } from "react";
 import CheckoutApi from "../../../apis/Checkout.api";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { Button, message, Spin } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
+import { Button, message } from "antd";
 import {
   getLocalStorage,
   removeLocalStorage,
 } from "../../../utils/LocalStorage";
 import { toast } from "react-toastify";
-import { useDispatch, useSelector } from "react-redux";
-import { removeFromCart } from "../../../Redux/Slices/Cart_Slice";
+import { useSelector } from "react-redux";
 import LoadingModal from "../../Modal/LoadingModal";
 
 const ThankPage = () => {
+  const hasCalledApi = useRef(false); // Sử dụng useRef để lưu trạng thái
   const [searchParams] = useSearchParams();
   const status = searchParams.get("paymentStatus");
+  const type = searchParams.get("type");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,7 +24,6 @@ const ThankPage = () => {
     }
   }, [status, navigate]);
 
-  const dispatch = useDispatch();
   const paymentCode = searchParams.get("paymentCode");
   const disCountRate = getLocalStorage("discountRate");
   const promoCode = getLocalStorage("PromotionCode");
@@ -33,12 +32,12 @@ const ThankPage = () => {
 
   const {
     mutate: handleSaveOrder,
-    isPending: isHandleSaveOrderPending,
+    isLoading: isHandleSaveOrderLoading,
     isError: isHandleSaveOrderError,
   } = useMutation({
     mutationFn: (data) => CheckoutApi.saveOrder(data, paymentCode),
-    onSuccess: (data) => {
-      message.success("Thanh toán hoàn tất thành công");
+    onSuccess: () => {
+      message.success("Thanh toán hoàn tất thành công");
       removeLocalStorage("cartItems");
       removeLocalStorage("discountRate");
       removeLocalStorage("PromotionCode");
@@ -46,13 +45,39 @@ const ThankPage = () => {
     },
     onError: (error) => {
       const errorMessage =
-        error?.message || "Đã có lỗi xảy ra vui lòng thử lại !!!";
+        error?.message || "Đã có lỗi xảy ra, vui lòng thử lại !!!";
       toast.error(errorMessage);
       navigate("/payment-fail");
     },
   });
 
-  console.log("isHandleSaveOrderPending: ", isHandleSaveOrderPending);
+  const {
+    mutate: handleSaveConsignment,
+    isLoading: isHandleSaveConsignmentLoading,
+    isError: isHandleSaveConsignmentError,
+  } = useMutation({
+    mutationFn: (consignmentID) =>
+      CheckoutApi.saveConsignment(paymentCode, consignmentID),
+    onSuccess: () => {
+      message.success("Thanh toán hoàn tất thành công");
+      removeLocalStorage("consignmentID");
+      window.location.reload();
+    },
+    onError: (error) => {
+      const errorMessage =
+        error?.message || "Đã có lỗi xảy ra, vui lòng thử lại !!!";
+      toast.error(errorMessage);
+      navigate("/payment-fail");
+    },
+  });
+
+  if (isHandleSaveOrderLoading || isHandleSaveConsignmentLoading) {
+    return <LoadingModal />;
+  }
+  if (isHandleSaveOrderError || isHandleSaveConsignmentError) {
+    return <div>Lỗi trong quá trình xử lý dữ liệu</div>;
+  }
+
   const accountID = user?.id;
   const koiFishs = order
     ?.filter((item) => item.id !== undefined && item.id !== null)
@@ -77,11 +102,25 @@ const ThankPage = () => {
   };
 
   useEffect(() => {
-    if (status == 1 && paymentCode && order) {
-      handleSaveOrder(data);
+    const consignmentID = localStorage.getItem("consignmentID");
+
+    if (
+      !hasCalledApi.current &&
+      status === "1" &&
+      paymentCode &&
+      type !== null
+    ) {
+      if (type === "true" && order) {
+        handleSaveOrder(data);
+      } else if (type === "false" && consignmentID) {
+        handleSaveConsignment(consignmentID);
+      }
+      hasCalledApi.current = true; // Đánh dấu đã gọi API
     }
-  }, [paymentCode]);
-  if (isHandleSaveOrderError) {
+    
+  }, [status, paymentCode, type, order, data, handleSaveOrder, handleSaveConsignment]);
+
+ if (isHandleSaveOrderError) {
     navigate("/payment-fail");
   }
   if (isHandleSaveOrderPending ) {
@@ -93,9 +132,8 @@ const ThankPage = () => {
   }
   return (
     <div className="flex flex-col items-center justify-center h-[600px] w-full">
-      {isHandleSaveOrderPending && <LoadingModal />}
       <div className="text-center text-3xl font-bold mb-10">
-        <h1>Cảm ơn bạn , thanh toán hoàn tất</h1>
+        <h1>Cảm ơn bạn, thanh toán hoàn tất</h1>
       </div>
       <div className="flex justify-center items-center">
         <Button
