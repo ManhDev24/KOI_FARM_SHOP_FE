@@ -255,13 +255,13 @@ const BatchFish = () => {
           </Breadcrumb>
         </div>
       </div>
-      <div className="grid grid-cols-12 gap-2 mt-20">
+      <div className="grid grid-cols-12 gap-2 my-20">
         <div className="flex  items-start justify-end filter col-span-3">
           <div
             style={{
               border: "1px solid black",
               borderRadius: "10px",
-              boxShadow: "10px 10px 4px 0 rgba(0, 0, 0, 0.25)",
+              // boxShadow: "10px 10px 4px 0 rgba(0, 0, 0, 0.25)",
             }}
             className="w-[280px] h-[920px]  "
           >

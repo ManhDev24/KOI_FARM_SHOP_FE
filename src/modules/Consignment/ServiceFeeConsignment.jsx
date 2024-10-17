@@ -30,7 +30,7 @@ const ServiceFeeConsignment = () => {
         isLoading: isVnPayLoading,
         isError: isVnPayError,
     } = useMutation({
-        mutationFn: (amount) => CheckoutApi.payByVnPay(amount),
+        mutationFn: (amount) => CheckoutApi.payByVnPay(amount,'NCB',false),
         onSuccess: (data) => {
             console.log("data: ", data);
 
