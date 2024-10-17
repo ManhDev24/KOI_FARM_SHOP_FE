@@ -11,8 +11,8 @@ import {
   CategoryScale,
   LinearScale,
   BarElement,
-  PointElement, // Đăng ký cho Line chart
-  LineElement,  // Đăng ký cho Line chart
+  PointElement,
+  LineElement,
   Title,
   Tooltip,
   Legend,
@@ -22,13 +22,13 @@ ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
-  PointElement, 
-  LineElement,  
+  PointElement,
+  LineElement,
   Title,
   Tooltip,
   Legend
 );
-import { Bar, Line } from "react-chartjs-2"; 
+import { Bar, Line } from "react-chartjs-2";
 const DashBoard = () => {
   const {
     data: totalAccount,
@@ -133,6 +133,7 @@ const DashBoard = () => {
 
   const optionsOfYear = {
     responsive: true,
+    maintainAspectRatio: true,
     plugins: {
       legend: {
         position: "top",
@@ -146,6 +147,7 @@ const DashBoard = () => {
 
   const optionsOfMonth = {
     responsive: true,
+    maintainAspectRatio: true,
     plugins: {
       legend: {
         position: "top",
@@ -353,14 +355,22 @@ const DashBoard = () => {
           </div>
         </div>
       </div>
-      <div className="bottom h-[400px] w-full">
-        <div className="flex h-full gap-20">
+      <div className="bottom h-[400px] w-full flex">
+        <div className="flex-1 flex justify-center items-center">
           <Bar
-            className="h-[300px] w-full"
             data={dataOfYear}
             options={optionsOfYear}
+            width={500} 
+            height={300} 
           />
-          <Line data={dataOfMonth} options={optionsOfMonth} />
+        </div>
+        <div className="flex-1 flex justify-center items-center">
+          <Line
+            data={dataOfMonth}
+            options={optionsOfMonth}
+            width={500} 
+            height={300} 
+          />
         </div>
       </div>
     </div>
