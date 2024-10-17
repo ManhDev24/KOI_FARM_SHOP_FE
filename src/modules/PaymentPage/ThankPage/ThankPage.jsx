@@ -1,9 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import CheckoutApi from "../../../apis/Checkout.api";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, message, Spin } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
 import {
   getLocalStorage,
   removeLocalStorage,
@@ -11,9 +10,10 @@ import {
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import LoadingModal from "../../Modal/LoadingModal";
+import { LoadingOutlined } from "@ant-design/icons";
 
 const ThankPage = () => {
-  const [hasCalledApi, setHasCalledApi] = useState(false); // Cờ kiểm soát việc gọi API
+  const hasCalledApi = useRef(false); // Sử dụng useRef để lưu trạng thái
   const [searchParams] = useSearchParams();
   const status = searchParams.get("paymentStatus");
   const type = searchParams.get("type");
@@ -52,7 +52,6 @@ const ThankPage = () => {
     },
   });
 
-
   const {
     mutate: handleSaveConsignment,
     isLoading: isHandleSaveConsignmentLoading,
@@ -62,9 +61,7 @@ const ThankPage = () => {
       CheckoutApi.saveConsignment(paymentCode, consignmentID),
     onSuccess: () => {
       message.success("Thanh toán hoàn tất thành công");
-      removeLocalStorage("cartItems");
-      removeLocalStorage("discountRate");
-      removeLocalStorage("PromotionCode");
+      removeLocalStorage("consignmentID");
       window.location.reload();
     },
     onError: (error) => {
@@ -81,7 +78,6 @@ const ThankPage = () => {
   if (isHandleSaveOrderError || isHandleSaveConsignmentError) {
     return <div>Lỗi trong quá trình xử lý dữ liệu</div>;
   }
-
 
   const accountID = user?.id;
   const koiFishs = order
@@ -107,19 +103,22 @@ const ThankPage = () => {
   };
 
   useEffect(() => {
-    const consignmentID = localStorage.getItem('consignmentID');
+    const consignmentID = localStorage.getItem("consignmentID");
 
-    if (!hasCalledApi && status === "1" && paymentCode) {
-      if (order && type === 'true') {
+    if (
+      !hasCalledApi.current &&
+      status === "1" &&
+      paymentCode &&
+      type !== null
+    ) {
+      if (type === "true" && order) {
         handleSaveOrder(data);
-      } else if (consignmentID && type === 'false') {
+      } else if (type === "false" && consignmentID) {
         handleSaveConsignment(consignmentID);
       }
-      setHasCalledApi(true); // Đánh dấu đã gọi API
+      hasCalledApi.current = true; // Đánh dấu đã gọi API
     }
-
-  });
-  }, [paymentCode]);
+  }, [status, paymentCode, type, order, data, handleSaveOrder, handleSaveConsignment]);
 
   if (isHandleSaveOrderError) {
     navigate("/payment-fail");
@@ -131,10 +130,8 @@ const ThankPage = () => {
       </div>
     );
   }
-
   return (
     <div className="flex flex-col items-center justify-center h-[600px] w-full">
-      {isHandleSaveOrderPending && <LoadingModal />}
       <div className="text-center text-3xl font-bold mb-10">
         <h1>Cảm ơn bạn, thanh toán hoàn tất</h1>
       </div>
