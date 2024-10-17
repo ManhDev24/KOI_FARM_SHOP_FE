@@ -264,6 +264,28 @@ const FishManagement = () => {
 
   const showModal = () => {
     setIsModalOpen(true);
+    reset({
+      category: 1,
+      age: "",
+      size: "",
+      personality: "",
+      price: "",
+      origin: "",
+      gender: true,
+      name: "",
+      food: "",
+      water: "",
+      status: 1,
+      purebred: true,
+      health: "",
+      temperature: "",
+      ph: "",
+      certificate: "",
+      koiImage: "",
+    });
+    setDataEdit(null);
+    setImage(undefined);
+    setImageCertificate(undefined);
   };
   const showModalView = () => {
     setIsModalViewOpen(true);
@@ -376,8 +398,10 @@ const FishManagement = () => {
     },
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = (payload) => {
+    const data = { ...payload, pH: payload?.ph };
     console.log("data: ", data);
+
     const formData = new FormData();
 
     const file = data.koiImage;
@@ -386,7 +410,7 @@ const FishManagement = () => {
       formData.append("image", fileCertificate);
     }
     formData.append("koiImage", file);
-    formData.append("categoryId", data.category);
+    formData.append("category", data.category);
     formData.append("age", data.age);
     formData.append("size", data.size);
     formData.append("origin", data.origin);
@@ -404,7 +428,8 @@ const FishManagement = () => {
     formData.append("createdDate", new Date().toISOString());
     formData.append("name", data.name);
     if (dataEdit) {
-      handleUpdateFish(data);
+      const dataToEdit = { ...data, status: 1 };
+      handleUpdateFish(dataToEdit);
     } else {
       handleAddFish(formData);
     }
@@ -424,7 +449,7 @@ const FishManagement = () => {
     showModal();
     setDataEdit(record);
     reset({
-      category: record.category,
+      categoryId: record?.categoryId,
       age: record.age,
       size: record.size,
       origin: record.origin,
@@ -437,7 +462,7 @@ const FishManagement = () => {
       food: record.food,
       water: record.water,
       temperature: record.temperature,
-      ph: record.ph,
+      pH: record.ph,
       certificate: record.certificate,
       koiImage: record?.koiImage,
     });
@@ -502,7 +527,7 @@ const FishManagement = () => {
   const totalPages = ListKoi?.totalPages;
 
   return (
-    <div className="flex flex-col justify-center items-center ">
+    <div className="flex flex-col justify-center items-center  ">
       <div className="w-[450px]">
         <Search
           placeholder="Nhập tên hoặc email..."
@@ -532,9 +557,10 @@ const FishManagement = () => {
               columns={columns}
               dataSource={ListKoi?.koiFishReponseList}
               pagination={false}
+              loading={isLoadingListKoi}
             />
           </div>
-          <div className="flex justify-end mt-2">
+          <div className="flex justify-end mt-2 mb-2">
             <Pagination
               current={currentPage}
               total={totalElements}
@@ -594,7 +620,7 @@ const FishManagement = () => {
                             src={
                               value && value instanceof File
                                 ? URL.createObjectURL(value)
-                                : image
+                                : image || dataEdit?.koiImage
                             }
                             alt="koiImage"
                           />

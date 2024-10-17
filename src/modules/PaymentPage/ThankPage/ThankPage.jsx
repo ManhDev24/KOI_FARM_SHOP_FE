@@ -2,7 +2,8 @@ import { useMutation } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import CheckoutApi from "../../../apis/Checkout.api";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { Button, message } from "antd";
+import { Button, message, Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 import {
   getLocalStorage,
   removeLocalStorage,
@@ -32,7 +33,7 @@ const ThankPage = () => {
 
   const {
     mutate: handleSaveOrder,
-    isLoading: isHandleSaveOrderLoading,
+    isPending: isHandleSaveOrderPending,
     isError: isHandleSaveOrderError,
   } = useMutation({
     mutationFn: (data) => CheckoutApi.saveOrder(data, paymentCode),
@@ -50,6 +51,7 @@ const ThankPage = () => {
       navigate("/payment-fail");
     },
   });
+
 
   const {
     mutate: handleSaveConsignment,
@@ -79,6 +81,7 @@ const ThankPage = () => {
   if (isHandleSaveOrderError || isHandleSaveConsignmentError) {
     return <div>Lỗi trong quá trình xử lý dữ liệu</div>;
   }
+
 
   const accountID = user?.id;
   const koiFishs = order
@@ -114,10 +117,24 @@ const ThankPage = () => {
       }
       setHasCalledApi(true); // Đánh dấu đã gọi API
     }
+
   });
+  }, [paymentCode]);
+
+  if (isHandleSaveOrderError) {
+    navigate("/payment-fail");
+  }
+  if (isHandleSaveOrderPending == true) {
+    return (
+      <div className="h-[600px] w-full flex items-center justify-center items-center">
+        <Spin indicator={<LoadingOutlined spin />} size="large" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center justify-center h-[600px] w-full">
+      {isHandleSaveOrderPending && <LoadingModal />}
       <div className="text-center text-3xl font-bold mb-10">
         <h1>Cảm ơn bạn, thanh toán hoàn tất</h1>
       </div>

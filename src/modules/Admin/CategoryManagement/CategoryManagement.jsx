@@ -52,6 +52,7 @@ const CategoryManagement = () => {
   const [image, setImage] = useState(undefined);
   const [imageUrl, setImageUrl] = useState(undefined);
   const [isChangeImage, setIsChangeImage] = useState(false);
+  const [idFish, setIdFish] = useState();
   const queryClient = useQueryClient();
 
   const showModal = () => {
@@ -192,7 +193,10 @@ const CategoryManagement = () => {
           <Button
             type="default"
             icon={<EditOutlined />}
-            onClick={() => onEditFish(record)}
+            onClick={() => {
+              onEditFish(record);
+              setIdFish(record.id);
+            }}
           >
             Edit
           </Button>
@@ -232,7 +236,7 @@ const CategoryManagement = () => {
     isLoading: isLoadingUpdateCategory,
     isError: isErrorUpdateCategory,
   } = useMutation({
-    mutationFn: (data) => CategoryApi.updateCategory(data),
+    mutationFn: (data) => CategoryApi.updateCategory(data, dataEdit?.id),
     onSuccess: (data) => {
       message.success("Cập nhật danh mục thành công");
       queryClient.invalidateQueries(["ListCategory"]);
@@ -260,8 +264,10 @@ const CategoryManagement = () => {
   const onSubmit = (data) => {
     console.log("data: ", data);
     const formData = new FormData();
-    // let file = data?.cateImg;
-    formData.append("file", data?.cateImg);
+    let file = data?.cateImg;
+    if (!dataEdit) {
+      formData.append("file", file);
+    }
 
     formData.append("cateName", data?.cateName);
     formData.append("description", data?.description);
@@ -270,8 +276,10 @@ const CategoryManagement = () => {
     }
 
     if (dataEdit) {
-      console.log("Update: ", dataEdit);
+      formData.append("categoryName", data?.cateName);
+      formData.append("categoryDescription", data?.description)
       formData.append("status", true);
+      formData.append("imgFile",file)
       handleUpdateCategory(formData);
     } else {
       console.log("Tạo mới category với dữ liệu: ", data);
@@ -313,6 +321,7 @@ const CategoryManagement = () => {
               dataSource={ListCategory?.data?.categoryReponses}
               pagination={false}
               showSizeChanger={false}
+              loading={isLoadingCategory}
             />
             <div className="flex justify-end mt-2">
               <Pagination
@@ -382,8 +391,8 @@ const CategoryManagement = () => {
                               className="w-[60px] h-[80px] object-cover"
                               src={
                                 value && value instanceof File
-                                  ? URL.createObjectURL(value) // Hiển thị ảnh mới nếu được chọn
-                                  : image || dataEdit?.cateImg // Hiển thị ảnh cũ nếu không thay đổi
+                                  ? URL.createObjectURL(value) 
+                                  : image || dataEdit?.cateImg 
                               }
                               alt="koiImage"
                             />

@@ -29,10 +29,10 @@ const Cart = () => {
   const [disCountRate, setDisCountRate] = useState(0);
 
   const dispatch = useDispatch();
-  
+
   const onCart = getLocalStorage("cartItems");
   const [dataSource, setDataSource] = useState(onCart);
-  console.log("onCart: ", onCart);
+
   const totalPrice = onCart?.reduce(
     (total, item) => total + item.price * item.quantity,
     0
@@ -64,7 +64,7 @@ const Cart = () => {
   };
  const isBuy =true;
   const finalPrice = totalPrice - totalPrice * disCountRate;
-  console.log("finalPrice: ", finalPrice);
+
   const navigate = useNavigate();
   const onSelectChange = (newSelectedRowKeys) => {
     setSelectedRowKeys(newSelectedRowKeys);
@@ -107,10 +107,10 @@ const Cart = () => {
     isLoading: isVnPayLoading,
     isError: isVnPayError,
   } = useMutation({
-    mutationFn: (amount) => CheckoutApi.payByVnPay(amount,"NCB",true),
-    onSuccess: (data) => {
-      console.log("data: ", data);
 
+    mutationFn: (amount) => CheckoutApi.payByVnPay(amount,"NCB",true),
+
+    onSuccess: (data) => {
       window.location.assign(data.data.paymentUrl);
     },
     onError: (error) => {
@@ -126,7 +126,6 @@ const Cart = () => {
   } = useMutation({
     mutationFn: (promoCode) => PromotionApi.applyPromotion(promoCode, user?.id),
     onSuccess: (data) => {
-      console.log("data: ", data.data.discountRate);
       setDisCountRate(data?.data?.discountRate);
       setLocalStorage("discountRate", data.data.discountRate);
       setLocalStorage("PromotionCode", data?.data?.promoCode);
