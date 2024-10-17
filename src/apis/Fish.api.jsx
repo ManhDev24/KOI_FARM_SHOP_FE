@@ -197,6 +197,26 @@ export const FishApi = {
       throw new Error(error.response.data.message);
     }
   },
+  totalKoiFish: async () => {
+    try {
+      const response = await fetcher.get(
+        `http://localhost:8080/koifarm/dashboard/total-koi`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
+  totalBatchFish: async () => {
+    try {
+      const response = await fetcher.get(
+        `http://localhost:8080/koifarm/dashboard/total-batch`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
 };
 
 export default FishApi;

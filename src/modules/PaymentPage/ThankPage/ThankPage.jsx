@@ -2,7 +2,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { useContext, useEffect } from "react";
 import CheckoutApi from "../../../apis/Checkout.api";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { Button, message } from "antd";
+import { Button, message, Spin } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 import {
   getLocalStorage,
   removeLocalStorage,
@@ -16,6 +17,7 @@ const ThankPage = () => {
   const [searchParams] = useSearchParams();
   const status = searchParams.get("paymentStatus");
   const navigate = useNavigate();
+
   useEffect(() => {
     if (status !== "1") {
       navigate("/");
@@ -26,12 +28,12 @@ const ThankPage = () => {
   const paymentCode = searchParams.get("paymentCode");
   const disCountRate = getLocalStorage("discountRate");
   const promoCode = getLocalStorage("PromotionCode");
-  console.log("disCountRate: ", disCountRate);
   const user = getLocalStorage("user");
   const order = getLocalStorage("cartItems");
+
   const {
     mutate: handleSaveOrder,
-    isLoading: isHandleSaveOrderLoading,
+    isPending: isHandleSaveOrderPending,
     isError: isHandleSaveOrderError,
   } = useMutation({
     mutationFn: (data) => CheckoutApi.saveOrder(data, paymentCode),
@@ -49,12 +51,8 @@ const ThankPage = () => {
       navigate("/payment-fail");
     },
   });
-  if (isHandleSaveOrderLoading) {
-    return <LoadingModal />;
-  }
-  if (isHandleSaveOrderError) {
-    return <div>Lỗi rồi</div>;
-  }
+
+  console.log("isHandleSaveOrderPending: ", isHandleSaveOrderPending);
   const accountID = user?.id;
   const koiFishs = order
     ?.filter((item) => item.id !== undefined && item.id !== null)
@@ -64,10 +62,10 @@ const ThankPage = () => {
     ?.filter((item) => item.batchID !== undefined && item.batchID !== null)
     .map((item) => item.batchID);
   const quantity = order?.map((item) => item.quantity);
-  console.log('quantity: ', quantity);
+
   let totalPrice = useSelector((state) => state.cart.total);
   totalPrice = totalPrice - totalPrice * +disCountRate;
-  console.log("totalPrice: ", totalPrice);
+
   const data = {
     accountID,
     koiFishs,
@@ -83,8 +81,19 @@ const ThankPage = () => {
       handleSaveOrder(data);
     }
   }, [paymentCode]);
+  if (isHandleSaveOrderError) {
+    navigate("/payment-fail");
+  }
+  if (isHandleSaveOrderPending == true) {
+    return (
+      <div className="h-[600px] w-full flex items-center justify-center items-center">
+        <Spin indicator={<LoadingOutlined spin />} size="large" />
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col items-center justify-center h-[600px] w-full">
+      {isHandleSaveOrderPending && <LoadingModal />}
       <div className="text-center text-3xl font-bold mb-10">
         <h1>Cảm ơn bạn , thanh toán hoàn tất</h1>
       </div>

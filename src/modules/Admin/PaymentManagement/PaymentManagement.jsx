@@ -27,7 +27,7 @@ const PaymentManagement = () => {
     isError: isErrorListOfOrder,
   } = useQuery({
     queryKey: ["ListOfOrder"],
-    queryFn: () => orderApi.getAllOrder(currentPage, 9),
+    queryFn: () => orderApi.getAllOrder(currentPage, 7),
     keepPreviousData: true,
   });
   console.log("ListOfOrder: ", ListOfOrder);
@@ -146,12 +146,13 @@ const PaymentManagement = () => {
               columns={columns}
               dataSource={ListOfOrder?.data.content}
               pagination={false}
+              loading={isLoadingListOfOrder}
             />
             <div className="flex justify-end mt-2">
               <Pagination
                 defaultCurrent={currentPage}
                 total={total}
-                pageSize={9}
+                pageSize={7}
                 onChange={(page) => setCurrentPage(page)}
               />
             </div>
