@@ -398,8 +398,10 @@ const FishManagement = () => {
     },
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = (payload) => {
+    const data = { ...payload, pH: payload?.ph };
     console.log("data: ", data);
+
     const formData = new FormData();
 
     const file = data.koiImage;
@@ -408,7 +410,7 @@ const FishManagement = () => {
       formData.append("image", fileCertificate);
     }
     formData.append("koiImage", file);
-    formData.append("categoryId", data.category);
+    formData.append("category", data.category);
     formData.append("age", data.age);
     formData.append("size", data.size);
     formData.append("origin", data.origin);
@@ -426,7 +428,8 @@ const FishManagement = () => {
     formData.append("createdDate", new Date().toISOString());
     formData.append("name", data.name);
     if (dataEdit) {
-      handleUpdateFish(data);
+      const dataToEdit = { ...data, status: 1 };
+      handleUpdateFish(dataToEdit);
     } else {
       handleAddFish(formData);
     }
@@ -459,7 +462,7 @@ const FishManagement = () => {
       food: record.food,
       water: record.water,
       temperature: record.temperature,
-      ph: record.ph,
+      pH: record.ph,
       certificate: record.certificate,
       koiImage: record?.koiImage,
     });
