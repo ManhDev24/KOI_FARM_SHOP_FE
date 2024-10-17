@@ -94,7 +94,7 @@ const AdminLayout = () => {
             navigate(key);
           }}
           style={{
-            height:"500px"
+            height: "500px",
           }}
           items={[
             {
@@ -131,12 +131,11 @@ const AdminLayout = () => {
           ]}
         ></Menu>
       </Sider>
-      <Layout
-      >
+      <Layout>
         <Header
           style={{
             padding: 0,
-            background: colorBgContainer,
+            background: "#F5F5F5",
           }}
         >
           <Button
@@ -153,10 +152,9 @@ const AdminLayout = () => {
         <Content
           className="site-layout-background"
           style={{
-       
+            backgroundColor: "#F5F5F5 !important",
             padding: 24,
             minHeight: 280,
-            background: colorBgContainer,
             borderRadius: borderRadiusLG,
           }}
         >

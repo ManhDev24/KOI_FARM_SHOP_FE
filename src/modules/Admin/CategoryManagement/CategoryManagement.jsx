@@ -321,6 +321,7 @@ const CategoryManagement = () => {
               dataSource={ListCategory?.data?.categoryReponses}
               pagination={false}
               showSizeChanger={false}
+              loading={isLoadingCategory}
             />
             <div className="flex justify-end mt-2">
               <Pagination

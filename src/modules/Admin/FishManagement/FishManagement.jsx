@@ -264,6 +264,28 @@ const FishManagement = () => {
 
   const showModal = () => {
     setIsModalOpen(true);
+    reset({
+      category: 1,
+      age: "",
+      size: "",
+      personality: "",
+      price: "",
+      origin: "",
+      gender: true,
+      name: "",
+      food: "",
+      water: "",
+      status: 1,
+      purebred: true,
+      health: "",
+      temperature: "",
+      ph: "",
+      certificate: "",
+      koiImage: "",
+    });
+    setDataEdit(null);
+    setImage(undefined);
+    setImageCertificate(undefined);
   };
   const showModalView = () => {
     setIsModalViewOpen(true);
@@ -424,7 +446,7 @@ const FishManagement = () => {
     showModal();
     setDataEdit(record);
     reset({
-      category: record.category,
+      categoryId: record?.categoryId,
       age: record.age,
       size: record.size,
       origin: record.origin,
@@ -532,6 +554,7 @@ const FishManagement = () => {
               columns={columns}
               dataSource={ListKoi?.koiFishReponseList}
               pagination={false}
+              loading={isLoadingListKoi}
             />
           </div>
           <div className="flex justify-end mt-2 mb-2">

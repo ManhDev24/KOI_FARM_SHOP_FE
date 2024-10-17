@@ -12,10 +12,10 @@ export const CheckoutApi = {
       throw new Error(error.response.data.message);
     }
   },
-  payByVnPay: async (amount, bankCode = "ncb") => {
+  payByVnPay: async (amount, bankCode = "ncb", type) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/payment/vn-pay?amount=${amount}&bankCode=${bankCode}`
+        `http://localhost:8080/koifarm/payment/vn-pay?amount=${amount}&bankCode=${bankCode}&type=${type}`
       );
       return response.data;
     } catch (error) {

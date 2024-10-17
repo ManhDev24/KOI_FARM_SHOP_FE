@@ -53,4 +53,14 @@ export const AccountApi = {
       throw new Error(error.response.data.message);
     }
   },
+  totalAccount: async () => {
+    try {
+      const response = await fetcher.get(
+        `http://localhost:8080/koifarm/dashboard/total-accounts`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
 };
