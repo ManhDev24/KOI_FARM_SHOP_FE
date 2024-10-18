@@ -32,7 +32,7 @@ const ThankPage = () => {
 
   const {
     mutate: handleSaveOrder,
-    isLoading: isHandleSaveOrderLoading,
+    isLoading: isHandleSaveOrderPending,
     isError: isHandleSaveOrderError,
   } = useMutation({
     mutationFn: (data) => CheckoutApi.saveOrder(data, paymentCode),
@@ -71,12 +71,7 @@ const ThankPage = () => {
     },
   });
 
-  if (isHandleSaveOrderLoading || isHandleSaveConsignmentLoading) {
-    return <LoadingModal />;
-  }
-  if (isHandleSaveOrderError || isHandleSaveConsignmentError) {
-    return <div>Lỗi trong quá trình xử lý dữ liệu</div>;
-  }
+  
 
   const accountID = user?.id;
   const koiFishs = order

@@ -28,15 +28,14 @@ const cartSlice = createSlice({
     addToCart: (state, action) => {
       const itemToAdd = action.payload;
       const existingItem = state.items.find((item) => item.id === itemToAdd.id);
-
+    
       if (!existingItem) {
         state.items.push(itemToAdd);
-        state.total += itemToAdd.price * (itemToAdd.quantity || 1);
+        state.total += itemToAdd.price; 
         setLocalStorage("cartItems", state.items);
       } else {
-        existingItem.quantity += itemToAdd.quantity || 1;
-        state.total += itemToAdd.price * (itemToAdd.quantity || 1);
-        setLocalStorage("cartItems", state.items);
+        
+        console.log("Cá này đã có trong giỏ hàng!");
       }
     },
     removeFromCart: (state, action) => {
