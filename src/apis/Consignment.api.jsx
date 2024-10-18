@@ -27,6 +27,16 @@ export const ConsignmentApi = {
             throw new Error(error.response?.data?.message || 'Error during consignment request');
         }
     },
+    getCertificateByID: async (id) => {
+        try {
+            const response = await fetcher.get(
+                `http://localhost:8080/koifarm/certificate/getCertifate?koiId=${id}`,
+            );
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || 'Error during consignment request');
+        }
+    },
     
 
 };

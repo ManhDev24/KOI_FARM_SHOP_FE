@@ -61,6 +61,8 @@ const ThankPage = () => {
     onSuccess: () => {
       message.success("Thanh toán hoàn tất thành công");
       removeLocalStorage("consignmentID");
+      removeLocalStorage("fishConsignmentID");
+      removeLocalStorage("agreedToPolicy");
       window.location.reload();
     },
     onError: (error) => {
