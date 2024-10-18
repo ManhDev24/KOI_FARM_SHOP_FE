@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 import LoadingModal from "../../Modal/LoadingModal";
 
 const ThankPage = () => {
-  const hasCalledApi = useRef(false); // Sử dụng useRef để lưu trạng thái
+  const hasCalledApi = useRef(false); 
   const [searchParams] = useSearchParams();
   const status = searchParams.get("paymentStatus");
   const type = searchParams.get("type");
@@ -116,6 +116,7 @@ const ThankPage = () => {
         handleSaveConsignment(consignmentID);
       }
       hasCalledApi.current = true; // Đánh dấu đã gọi API
+
     }
     
   }, [status, paymentCode, type, order, data, handleSaveOrder, handleSaveConsignment]);

@@ -1,9 +1,9 @@
 
-import { Steps } from 'antd'
+import { Breadcrumb, Steps } from 'antd'
 
 import React, { useEffect } from 'react'
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const KoiConsignmentPolicies = () => {
     const description = "Chính sách ký gửi";
@@ -14,7 +14,10 @@ const KoiConsignmentPolicies = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const navigate = useNavigate();
     // Hàm xử lý cập nhật currentPage
+    const storedValue = JSON.parse(localStorage.getItem('agreedToPolicy'));
+    console.log(storedValue+ 'aaaaa');
     const handleCurrentPage = (prevPage) => {
+        localStorage.setItem('agreedToPolicy', true);
         prevPage = 0
         if (prevPage <= 0) {
             setCurrentPage(prevPage => prevPage + 1);
@@ -30,13 +33,38 @@ const KoiConsignmentPolicies = () => {
         const accountId = dataProfile && dataProfile.id ? Number(dataProfile.id) : null;
 
         if (!accountId) {
-            
+
             navigate('/login');
+        }else if(storedValue){
+            navigate('/Form-consignment');
         }
+        
     }, [navigate]);
 
     return (
         <>
+            <div className="filter flex justify-center items-center  mb-5">
+                <div
+                    style={{ backgroundColor: "#FFF8F8" }}
+                    className="w-[950px] h-[30px] flex items-center ps-3 "
+                >
+                    <Breadcrumb
+                        separator=">"
+                        className="flex justify-center items-center font-bold text-lg m-3"
+                    >
+                        <Breadcrumb.Item>
+                            <Link to="/" style={{ color: "#EA4444" }} className="">
+                                Trang chủ
+                            </Link>
+                        </Breadcrumb.Item>
+                        <Breadcrumb.Item>
+                            <Link style={{ color: "#EA4444" }} className="">
+                                Yêu Cầu Ký gửi
+                            </Link>
+                        </Breadcrumb.Item>
+                    </Breadcrumb>
+                </div>
+            </div>
             <div class="w-full max-w-[950px] h-[89px] relative mx-auto p-4">
                 {/* <!-- Lines --> */}
                 <div class="w-full max-w-[950px] h-[89px] relative mx-auto my-0 p-4">

@@ -27,5 +27,6 @@ export const ConsignmentApi = {
             throw new Error(error.response?.data?.message || 'Error during consignment request');
         }
     },
+    
 
 };
