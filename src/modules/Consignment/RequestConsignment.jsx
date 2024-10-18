@@ -14,6 +14,7 @@ import LoadingModal from '../Modal/LoadingModal';
 import { toast } from 'react-toastify';
 import { saveConsignmentID } from '../../Redux/Slices/consignmentID_Slice';
 import { useDispatch } from 'react-redux';
+import FishApi from '../../apis/Fish.api';
 const validationSchema = Yup.object().shape({
     origin: Yup.string()
         .required('Nguồn gốc là bắt buộc'),
@@ -95,12 +96,14 @@ const RequestConsignment = () => {
     const [consignmentID, setConsignmentID] = useState();
     const navigate = useNavigate();
     const handleCurrentPage = (prevPage) => {
+        localStorage.setItem('agreedToPolicy', false);
         prevPage = 1
         if (prevPage <= 1) {
             setCurrentPage(prevPage => prevPage + 1);
             navigate(-1);
         }
     };
+
     const handleCurrentPages = (prevPage) => {
         prevPage = 1;
         if (prevPage <= 1) {
@@ -110,12 +113,70 @@ const RequestConsignment = () => {
         }
     };
 
+
     useEffect(() => {
         const fee = handleFee(inputPrice, SelectedPackage);
         console.log(fee)
         setServiceFee(fee);
         form.setFieldsValue({ serviceFee: formatVND(serviceFee) });
     }, [inputPrice, SelectedPackage, SelectedConsignmentType]);
+    useEffect(() => {
+        const fishFromOrderDetail = localStorage.getItem('fishConsignmentID');
+        console.log('IDfish:', fishFromOrderDetail);
+
+        const fetchKoiData = async () => {
+            try {
+                // Fetch koi data from the API
+                const koiData = await FishApi.getFishDetail(fishFromOrderDetail);
+                console.log('Dữ liệu từ API:', koiData);
+
+                // Process `categoryId`
+                const selectedCateId = koiData.categoryId?.toString() || '';
+                setSelectedCategory(selectedCateId);
+
+                // Process `gender`
+                const selectedGender = koiData.gender;
+                const gender =
+                    selectedGender === true ||
+                        selectedGender === 'true' ||
+                        selectedGender === 1
+                        ? '1'
+                        : '0';
+                console.log('Selected gender:', gender);
+                setSelectedGender(gender);
+
+                // Process `purebred`
+                const pureBredValue = koiData.purebred?.toString() || '';
+                console.log('Purebred:', pureBredValue);
+                setSelectedPureBred(pureBredValue);
+
+                // Set image source
+                console.log('Koi Image URL:', koiData.koiImage);
+                setImageSrc(koiData.koiImage);
+
+                // Set form fields
+                form.setFieldsValue({
+                    origin: koiData.origin,
+                    gender: gender,
+                    age: koiData.age,
+                    koiImg: koiData.koiImage,
+                    size: koiData.size,
+                    categoryId: selectedCateId,
+                    pureBred: pureBredValue,
+                    personality: koiData.personality,
+                    health: koiData.health,
+                    ph: koiData.ph,
+                    temperature: koiData.temperature
+
+                });
+            } catch (error) {
+                console.error('Lỗi khi lấy dữ liệu cá Koi:', error);
+                message.error('Lỗi khi lấy dữ liệu cá Koi');
+            }
+        };
+
+        fetchKoiData();
+    }, []);
 
     const CategoryItem = [
         {
@@ -269,20 +330,20 @@ const RequestConsignment = () => {
     ];
 
     const dispatch = useDispatch();
-    
+
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: yupResolver(validationSchema),
     });
-    
+
 
     const { mutate: handleConsignmentSubmit, isLoading: submitLoading } = useMutation({
         mutationFn: async (formData) => {
             return await ConsignmentApi.requestConsignment(formData); // Make API request
         },
-        onSuccess: (response,formData ) => {
+        onSuccess: (response, formData) => {
             const consignmentID = response.data;
             dispatch(saveConsignmentID(consignmentID));
-           
+
             handleCurrentPages(currentPage);
             console.log('Success:', response.data);
             message.success();
@@ -484,7 +545,7 @@ const RequestConsignment = () => {
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
                             <Link style={{ color: "#EA4444" }} className="">
-                                Ký gửi
+                                Yêu Cầu Ký gửi
                             </Link>
                         </Breadcrumb.Item>
                     </Breadcrumb>
@@ -503,18 +564,20 @@ const RequestConsignment = () => {
                         </Steps>
                     </div>
                 </div>
-               
+
                 <div className="w-[950px]  mt-10 form-container">
-                   
-                    <Form onFinish={onFinish}
+
+                    <Form
+                        form={form}
+                        onFinish={onFinish}
                         onFinishFailed={onFinishFailed} autoComplete="off">
 
-                        <div className="w-[950px] h-[2530px] px-20 py-[50px]   placeholder: bg-white border border-[#FA4444] justify-between items-start  grid grid-cols-4">
-                           
-                            <div className='col-span-4 flex justify-center'>
+                        <div className="w-[950px] h-full px-20 py-[50px]   placeholder: bg-white border border-[#FA4444] justify-between items-start  grid grid-cols-4">
+
+                            <div className='col-span-4 flex justify-center mb-10'>
                                 <h1 className='text-[28px] font-bold'>BIỂU MẪU KÝ GỬI CÁ KOI</h1>
                             </div>
-                            <div className=" col-span-2 left w-[311px] h-[1387px] flex-col justify-start items-start gap-[250px] inline-flex">
+                            <div className=" col-span-2 left w-[311px] h-full flex-col justify-start items-start gap-[250px] inline-flex">
                                 <div className="self-stretch h-[300px] flex-col justify-center items-center gap-2.5 flex">
                                     <div className="flex-col justify-center items-center gap-2.5 flex">
                                         <Form.Item
@@ -526,7 +589,7 @@ const RequestConsignment = () => {
                                             rules={[
                                                 {
                                                     required: true,
-                                                    message: <span className='w-[500px] relative bottom-1 left-[10px]'>Ảnh Koi là bắt buộc</span>
+                                                    message: <span className='w-[500px] relative '>Ảnh Koi là bắt buộc</span>
                                                 }
                                             ]}
                                         >
@@ -564,7 +627,7 @@ const RequestConsignment = () => {
                                             rules={[
                                                 {
                                                     required: true,
-                                                    message: <span className='w-[500px] relative bottom-1 left-[10px]'>Ảnh Koi là bắt buộc</span>
+                                                    message: <span className='w-[500px] relative '></span>
                                                 }
                                             ]}
                                         >
@@ -632,7 +695,7 @@ const RequestConsignment = () => {
                                 <div className="w-[300px] h-[725px] flex-col justify-start items-center gap-5 flex">
                                     <div className="flex-col justify-center items-center gap-2.5 flex">
 
-                                        <div className="flex-col justify-center items-center gap-2.5 flex">
+                                        <div className="flex-col justify-center items-center gap-2.5 flex ms-[4px]">
                                             <Form.Item
                                                 labelCol={{ span: 24 }}
                                                 wrapperCol={{ span: 24 }}
@@ -642,12 +705,12 @@ const RequestConsignment = () => {
                                                 rules={[
                                                     {
                                                         required: true,
-                                                        message: <span className='w-[500px] relative bottom-1 left-[10px]'>Ảnh Koi là bắt buộc</span>
+                                                        message: <span className='w-[500px] relative '>Chứng chỉ của Koi là bắt buộc</span>
                                                     }
                                                 ]}
                                             >
                                                 {imageSrcCer && (
-                                                    <div className="relative top-[112px] left-[5px] w-[221px] h-0 bg-white flex items-center justify-center">
+                                                    <div className="relative top-[112px] left-[2px] w-[221px] h-0 bg-white flex items-center justify-center">
                                                         <Image
                                                             width={222}
                                                             height={220}
@@ -680,15 +743,15 @@ const RequestConsignment = () => {
                                                 rules={[
                                                     {
                                                         required: true,
-                                                        message: <span className='w-[500px] relative bottom-1 left-[10px]'>Ảnh Koi là bắt buộc</span>
+                                                        message: <span className='w-[500px] relative '></span>
                                                     }
                                                 ]}
                                             >
                                                 {imageSrcCer && (
-                                                    <div className="relative top-[112px] left-[5px] w-[221px] h-0 bg-white flex items-center justify-center">
+                                                    <div className="relative top-[112px] left-[px] w-[221px] h-0 bg-white flex items-center justify-center">
                                                         <Image hidden
                                                             width={222}
-                                                            height={220}
+                                                            height={222}
                                                             src={imageSrcCer}
                                                         />
                                                     </div>
@@ -751,16 +814,16 @@ const RequestConsignment = () => {
                                                     name="name"
                                                     className='p-0 m-0 w-[full] relative bottom-28  left-10  '
                                                     rules={[{
-                                                        required: true, message: <span className='w-[500px] relative bottom-1 left-[10px]'>Vui long tên chứng chỉ</span>
+                                                        required: true, message: <span className='w-[500px] relative '>Vui lòng điền tên chứng chỉ</span>
                                                     },
 
                                                     ]}
                                                 >
-                                                    <div className='flex justify-center '>
-                                                        <TextArea className='w-full me-20' showCount maxLength={50} placeholder='Vui lòng điền tên chứng chỉ' cols={12} rows={2}
-                                                            autoSize={{ minRows: 2, maxRows: 4 }} />
 
-                                                    </div>
+                                                    <TextArea className='w-[75%] me-20' placeholder='Vui lòng điền tên chứng chỉ' cols={12} rows={2}
+                                                        autoSize={{ minRows: 2, maxRows: 4 }} />
+
+
 
                                                 </Form.Item>
                                             </div>
@@ -773,15 +836,13 @@ const RequestConsignment = () => {
                                                     name="notes"
                                                     className='p-0 m-0 w-[full] relative bottom-28 left-10  '
                                                     rules={[{
-                                                        required: true, message: <span className='w-[500px] relative bottom-1 left-[10px]'>Vui lòng điền nội dung của chứng chỉ</span>
+                                                        required: true, message: <span className='w-[500px] relative '>Vui lòng điền nội dung của chứng chỉ</span>
                                                     },
 
                                                     ]}
                                                 >
-                                                    <div className='flex justify-center '>
-                                                        <TextArea className='w-full me-20' showCount maxLength={200} placeholder='Vui lòng điền nội dung' cols={12} rows={2} />
-
-                                                    </div>
+                                                    <TextArea className='w-[75%] me-20' placeholder='Vui lòng điền tên chứng chỉ' cols={12} rows={2}
+                                                        autoSize={{ minRows: 2, maxRows: 4 }} />
 
                                                 </Form.Item>
                                             </div>
@@ -791,12 +852,12 @@ const RequestConsignment = () => {
                                 </div>
                             </div>
                             <div className=" col-span-2 right flex-col justify-start items-start gap-10 inline-flex">
-                                <div className="self-stretch h-[2215.65px] flex-col justify-start items-start gap-[25px] flex">
-                                    <div className="self-stretch w-full h-[1250px] px-2.5 py-5 rounded-xl  border-2 border-gray-200  flex-col justify-start items-start gap-[25px] flex  relative right-5">
+                                <div className="self-stretch h-full flex-col justify-start items-start gap-[25px] flex">
+                                    <div className="self-stretch w-full h-[1200px]  px-2.5 py-5 rounded-xl  border-[1px] border-black  flex-col justify-start items-start gap-[25px] flex  relative right-5">
 
                                         <div className="w-full text-black text-2xl text-center font-bold my-0 font-['Arial']">Thông tin cá Koi</div>
                                         <div className="self-stretch h-[55.65px] justify-start items-start gap-2.5 inline-flex">
-                                            <div className="h-[50px] w-full m-0 p-0 justify-start items-start gap-2.5 flex">
+                                            <div className="h-[50px] w-full ms-[10px] p-0 justify-start items-start gap-2.5 flex">
                                                 <Form.Item
                                                     label={<span className="relative top-1">Giống</span>}
                                                     labelAlign="right"
@@ -804,10 +865,10 @@ const RequestConsignment = () => {
                                                     wrapperCol={{ span: 15 }}
                                                     name="categoryId"
                                                     className='p-0 w-[200px]'
-                                                    rules={[{ required: true, message: <span className='!w-[500px] relative bottom-3 left-[10px]'>Vui lòng chọn giống</span> }]}
+                                                    rules={[{ required: true, message: <span className='!w-[500px] relative bottom-3 left-[40px]'>Vui lòng chọn giống</span> }]}
                                                 >
                                                     <Select
-                                                        className="w-full h-[40px] ms-10 relative bottom-3 right-[30px]"
+                                                        className="w-full h-[40px] ms-10 relative bottom-3 left-0 right-[30px]"
                                                         defaultValue=""
                                                         onChange={handleSelectCategory}
                                                         dropdownStyle={{ width: 150, marginLeft: 20 }}
@@ -822,7 +883,7 @@ const RequestConsignment = () => {
                                                     </Select>
                                                 </Form.Item>
                                             </div>
-                                            <div className="w-full h-[42px] p-2.5 bg-white relative right-[50px] bottom-[10px] ">
+                                            <div className="w-full h-[42px]  p-2.5 bg-white relative right-[30px] bottom-[10px] ">
                                                 <Form.Item
 
                                                     label={<span className="relative top-1 w-full">Giới tính</span>}
@@ -830,8 +891,8 @@ const RequestConsignment = () => {
                                                     labelCol={{ span: 24 }}
                                                     wrapperCol={{ span: 24 }}
                                                     name="gender"
-                                                    className='p-0 w-full  '
-                                                    rules={[{ required: true, message: <span className='!w-[500px] relative bottom-3 left-[10px]'>Vui lòng chọn giới tính</span> }]}
+                                                    className='p-0 w-[150px]  '
+                                                    rules={[{ required: true, message: <span className='flex relative bottom-3 left-[10px]'>Vui lòng chọn giới tính</span> }]}
                                                 >
                                                     <Select
                                                         className="w-full h-[40px] flex items-center justify-between relative left-[12px] bottom-3 "
@@ -852,7 +913,7 @@ const RequestConsignment = () => {
                                             </div>
                                         </div>
                                         <div className="justify-start items-start inline-flex">
-                                            <div className="flex items-center mt-4">
+                                            <div className="flex items-center mt-4 ms-[10px] ">
                                                 <Form.Item
 
                                                     label={<span className="relative top-1">Tuổi</span>}
@@ -861,22 +922,22 @@ const RequestConsignment = () => {
                                                     wrapperCol={{ span: 9 }}
                                                     name="age"
 
-                                                    className='p-0 m-0 w-[300px]  '
+                                                    className='p-0 m-0 w-[300px] h-[70px]  '
                                                     rules={[{
-                                                        required: true, message: <span className='!w-[500px] relative left-[50px] bottom-[30px]'>Vui lòng nhập tuổi</span>
+                                                        required: true, message: <span className=' relative left-[40px] bottom-[28px]'>Vui lòng nhập tuổi</span>
                                                     },
                                                     {
                                                         pattern: new RegExp(/^[0-9]+$/),
-                                                        message: <span className='!w-[500px] relative left-[50px]  bottom-[30px]'>Tuổi phải là số!</span>
+                                                        message: <span className='!w-[500px] relative left-[40px]  bottom-[28px]'>Tuổi phải là số!</span>
                                                     }
                                                     ]}
                                                 >
-                                                    <Input placeholder="Nhập tuổi" className='w-[150px] relative left-12 bottom-8'></Input>
+                                                    <Input placeholder="Nhập tuổi" className='w-[150px] relative left-[40px] bottom-8'></Input>
                                                 </Form.Item>
 
                                             </div>
                                         </div>
-                                        <div className="relative bottom-10">
+                                        <div className="relative bottom-10 ms-[10px] ">
                                             <Form.Item
                                                 label={<span className="relative top-1">Độ thuần chủng</span>}
                                                 labelAlign=""
@@ -884,10 +945,10 @@ const RequestConsignment = () => {
                                                 wrapperCol={{ span: 9 }}
                                                 name="pureBred"
                                                 className='p-0 w-[500px]  '
-                                                rules={[{ required: true, message: <span className='!w-[500px] relative bottom-1 left-[10px]'>Vui lòng chọn độ thuần chủng</span> }]}
+                                                rules={[{ required: true, message: <span className='!w-[500px] relative bottom-[9px] left-[40px]'>Vui lòng chọn độ thuần chủng</span> }]}
                                             >
                                                 <Select
-                                                    className="w-full h-[40px] flex items-center justify-between relative left-[12px] bottom-3 "
+                                                    className="w-full h-[40px] flex items-center justify-between relative left-[40px] bottom-[10px] "
                                                     defaultValue=""
                                                     onChange={handleSelectPureBred}
                                                     dropdownStyle={{ width: 200, marginLeft: 20 }}
@@ -903,162 +964,161 @@ const RequestConsignment = () => {
                                                 </Select>
                                             </Form.Item>
                                         </div>
-                                        <div className="w-[464px] justify-start items-start gap-2.5 inline-flex">
+                                        <div className="w-[464px] justify-start items-start gap-2.5 inline-flex ms-[10px] ">
                                             <Form.Item
                                                 label={<span className="relative top-1">Kích thước (centimet)</span>}
                                                 labelAlign=""
                                                 labelCol={{ span: 24 }}
                                                 wrapperCol={{ span: 9 }}
                                                 name="size"
-                                                className='p-0 m-0 w-[300px] relative bottom-24  '
+                                                className='p-0 m-0 w-[500px] relative bottom-20  '
                                                 rules={[{
-                                                    required: true, message: <span className='!w-[500px] relative bottom-1 left-[10px]'>Vui lòng kích thước</span>
+                                                    required: true, message: <span className='!w-[500px] relative  left-[40px]'>Vui lòng điền kích thước</span>
                                                 },
                                                 {
                                                     pattern: new RegExp(/^[0-9]+$/),
-                                                    message: <span className='!w-[500px] relative bottom-1 left-[10px]'>Kích thước phải là số!</span>
+                                                    message: <span className='!w-[500px] relative  left-[40px]'>Kích thước phải là số!</span>
                                                 },
                                                 {
                                                     validator: (_, value) => {
                                                         if (value && (value < 0 || value > 200)) {
-                                                            return Promise.reject(<span className='!w-[500px] relative bottom-1 left-[10px]'>Kích thước phải trong khoảng từ 0 đến 200!</span>);
+                                                            return Promise.reject(<span className='!w-[500px] relative  left-[40px]'>Kích thước phải trong khoảng từ 0 đến 200!</span>);
                                                         }
                                                         return Promise.resolve();
                                                     },
                                                 },
                                                 ]}
                                             >
-                                                <Input placeholder='10000' className='w-[100px] ms-10'></Input>
+                                                <Input placeholder='100' className='w-[100px] ms-10'></Input>
                                             </Form.Item>
                                         </div>
-                                        <div className="self-stretch w-full h-[103px] ">
+                                        <div className="self-stretch w-full h-[103px] ms-[10px] my-[40px]">
                                             <Form.Item
                                                 label={<span className="relative top-1">Tính cách</span>}
 
                                                 labelCol={{ span: 24 }}
                                                 wrapperCol={{ span: 24 }}
                                                 name="personality"
-                                                className='p-0 m-0 w-[full] relative bottom-28  '
+                                                className='p-0 m-0 w-[full] relative bottom-32  '
                                                 rules={[{
-                                                    required: true, message: <span className='w-[500px] relative bottom-1 left-[10px]'>Vui lòng mô tả tính cách Koi của bạn</span>
+                                                    required: true, message: <span className='w-[500px] relative left-[40px]'>Vui lòng mô tả tính cách Koi của bạn</span>
                                                 },
 
                                                 ]}
                                             >
-                                                <div className='flex justify-center '>
-                                                    <TextArea className='w-full mx-10' showCount maxLength={200} placeholder='Viết một vài điều gì đó về cá của bạn' cols={12} rows={2} />
 
-                                                </div>
+                                                <TextArea className='w-[80%] mx-[39px]' showCount maxLength={200} placeholder='Viết một vài điều gì đó về cá của bạn' cols={12} rows={2} />
+
 
                                             </Form.Item>
                                         </div>
-                                        <div className="self-stretch h-[103px] ">
+                                        <div className="self-stretch h-[103px] ms-[10px]  ">
                                             <Form.Item
                                                 label={<span className="relative top-1">Thức ăn chính</span>}
 
                                                 labelCol={{ span: 24 }}
                                                 wrapperCol={{ span: 24 }}
                                                 name="food"
-                                                className='p-0 m-0 w-[full] relative bottom-28  '
+                                                className='p-0 m-0 w-[full] relative bottom-44  '
                                                 rules={[{
-                                                    required: true, message: <span className='w-[500px] relative bottom-1 left-[10px]'>Vui long điền thức ăn của Koi</span>
+                                                    required: true, message: <span className='w-[500px] relative left-[40px]'>Vui lòng điền thức ăn của Koi</span>
                                                 },
 
                                                 ]}
                                             >
-                                                <div className='flex justify-center '>
-                                                    <TextArea className='w-full mx-10' showCount maxLength={200} placeholder='Viết về thức ăn mà Koi yêu thích' cols={12} rows={2} />
 
-                                                </div>
+                                                <TextArea className='w-[80%] mx-[39px]' showCount maxLength={200} placeholder='Viết về thức ăn mà Koi yêu thích' cols={12} rows={2} />
+
+
 
                                             </Form.Item>
                                         </div>
-                                        <div className="self-stretch h-[103px] ">
+                                        <div className="self-stretch h-[103px] ms-[10px] ">
                                             <Form.Item
                                                 label={<span className="relative top-1">Sức khỏe</span>}
 
                                                 labelCol={{ span: 24 }}
                                                 wrapperCol={{ span: 24 }}
                                                 name="health"
-                                                className='p-0 m-0 w-[full] relative bottom-28  '
+                                                className='p-0 m-0 w-[full] relative bottom-44  '
                                                 rules={[{
-                                                    required: true, message: <span className='w-[500px] relative bottom-1 left-[10px]'>Vui lòng điền trạng thái sức khỏe của cá</span>
+                                                    required: true, message: <span className='w-[500px] relative left-[40px]'>Vui lòng điền trạng thái sức khỏe của Koi</span>
                                                 },
 
                                                 ]}
                                             >
-                                                <div className='flex justify-center '>
-                                                    <TextArea className='w-full mx-10' showCount maxLength={200} placeholder='Mô tả về sức khỏe của Koi' cols={12} rows={2} />
 
-                                                </div>
+                                                <TextArea className='w-[80%] mx-[39px] flex justify-center' showCount maxLength={200} placeholder='Mô tả về sức khỏe của Koi' cols={12} rows={2} />
+
+
 
                                             </Form.Item>
                                         </div>
-                                        <div className="self-stretch h-[103px] ">
+                                        <div className="self-stretch h-[103px] ms-[10px]  ">
                                             <Form.Item
                                                 label={<span className="relative top-1">Độ pH</span>}
 
                                                 labelCol={{ span: 24 }}
                                                 wrapperCol={{ span: 24 }}
                                                 name="ph"
-                                                className='p-0 m-0 w-[full] relative bottom-28  '
+                                                className='p-0 m-0 w-[full] relative bottom-44  '
                                                 rules={[{
-                                                    required: true, message: <span className='w-[500px] relative bottom-1 left-[10px]'>Vui lòng điền trạng thái sức khỏe của cá</span>
+                                                    required: true, message: <span className='w-[500px] relative left-[40px]'>Vui lòng độ pH thích hợp với Koi</span>
                                                 },
 
                                                 ]}
                                             >
-                                                <div className='flex '>
-                                                    <Input placeholder='7 - 7.5' className='w-[200px] ms-10'></Input>
-                                                </div>
+                                                <TextArea className='w-[80%] mx-[39px] flex justify-center' showCount maxLength={200} placeholder='7 - 7.5' cols={12} rows={2} />
+
+
 
                                             </Form.Item>
                                         </div>
-                                        <div className="self-stretch h-[103px] ">
+                                        <div className="self-stretch h-[103px] ms-[10px]  ">
                                             <Form.Item
                                                 label={<span className="relative top-1">Nhiệt độ môi trường sống (&deg;C)</span>}
 
                                                 labelCol={{ span: 24 }}
                                                 wrapperCol={{ span: 24 }}
                                                 name="temperature"
-                                                className='p-0 m-0 w-[full] relative bottom-28  '
+                                                className='p-0 m-0 w-[full] relative bottom-44 '
                                                 rules={[{
-                                                    required: true, message: <span className='w-[500px] relative bottom-1 left-[10px]'>Vui lòng điền trạng thái sức khỏe của cá</span>
+                                                    required: true, message: <span className='w-[500px] relative left-[40px]'>Vui lòng điền nhiệt độ phù hợp với Koi</span>
                                                 },
 
                                                 ]}
                                             >
-                                                <div className='flex '>
-                                                    <Input placeholder='20 - 27' className='w-[200px] ms-10'></Input>
-                                                </div>
+
+                                                <Input placeholder='20 - 27' className='w-[200px] ms-10'></Input>
+
 
                                             </Form.Item>
                                         </div>
-                                        <div className="self-stretch h-[103px]">
+                                        <div className="self-stretch h-[103px] ms-[10px] ">
                                             <Form.Item
                                                 label={<span className="relative top-1">Nguồn gốc</span>}
 
                                                 labelCol={{ span: 24 }}
                                                 wrapperCol={{ span: 24 }}
                                                 name="origin"
-                                                className='p-0 m-0 w-[full] relative bottom-28  '
+                                                className='p-0 m-0 w-[full] relative bottom-44 '
                                                 rules={[{
-                                                    required: true, message: <span className='w-[500px] relative bottom-1 left-[10px]'>Vui lòng điền thông tin nguồn gốc</span>
+                                                    required: true, message: <span className='w-[500px] relative left-[40px]'>Vui lòng điền thông tin nguồn gốc</span>
                                                 },
 
                                                 ]}
                                             >
-                                                <div className='flex justify-center '>
-                                                    <TextArea className='w-full mx-10' showCount maxLength={200} placeholder='Trang trại Koi Farm' cols={12} rows={2} />
 
-                                                </div>
+                                                <TextArea className='w-[80%] mx-[39px]' showCount maxLength={200} placeholder='Trang trại Koi Farm' cols={12} rows={2} />
+
+
 
                                             </Form.Item>
                                         </div>
                                     </div>
                                     <div className="self-stretch h-[full] px-2.5 relative right-5 py-5 rounded-[10px] border border-black flex-col justify-start items-start gap-[25px] flex">
-                                        <div className="text-black text-2xl w-full font-bold font-['Arial'] text-center">Thông tin ký gửi & liên hệ</div>
-                                        <div className="h-[50px] pr-[243px] justify-start items-center inline-flex">
+                                        <div className="text-black text-2xl w-full font-bold font-['Arial'] text-center">Thông tin ký gửi Koi & liên hệ</div>
+                                        <div className="h-[50px]  justify-start items-center inline-flex">
                                             <div className="w-full self-stretch p-2.5 bg-white  justify-center items-center gap-2.5 inline-flex">
                                                 <Form.Item
                                                     label={<span className="relative top-1 w-[10rem]">Hình thức ký gửi</span>}
@@ -1067,10 +1127,10 @@ const RequestConsignment = () => {
                                                     wrapperCol={{ span: 15 }}
                                                     name="online"
                                                     className='p-0 w-[20rem]'
-                                                    rules={[{ required: true, message: <span className='!w-[500px] relative bottom-3 left-[10px]'>Vui lòng chọn hình thức ký gửi</span> }]}
+                                                    rules={[{ required: true, message: <span className='!w-[500px] relative  left-[10px]'>Vui lòng chọn hình thức ký gửi</span> }]}
                                                 >
                                                     <Select
-                                                        className="w-full h-[40px] ms-10 relative bottom-3 right-[30px]"
+                                                        className="w-full h-[40px] ms-10 relative right-[30px]"
                                                         defaultValue=""
                                                         onChange={handleSelectCategory}
                                                         dropdownStyle={{ width: 200, marginLeft: 20 }}
@@ -1086,7 +1146,7 @@ const RequestConsignment = () => {
                                                 </Form.Item>
                                             </div>
                                         </div>
-                                        <div className="h-[50px] pr-[304px] justify-start items-center inline-flex">
+                                        <div className="h-[50px]  justify-start items-center inline-flex">
                                             <div className="w-full relative self-stretch p-[10px] bg-white  justify-center items-center gap-2.5 inline-flex">
                                                 <Form.Item
                                                     label={<span className="relative top-1 w-[200px] p-0">Loại ký gửi</span>}
@@ -1094,7 +1154,7 @@ const RequestConsignment = () => {
                                                     labelCol={{ span: 24 }}
                                                     wrapperCol={{ span: 15 }}
                                                     name="consignmentType"
-                                                    className="pt-4 w-[20rem] relative"
+                                                    className="pt-4 w-[20rem] my-10 relative"
                                                     rules={[{ required: true, message: <span className='!w-[500px] relative top-1 left-[10px]'>Vui lòng chọn loại ký gửi</span> }]}
                                                 >
                                                     <Select
@@ -1122,11 +1182,11 @@ const RequestConsignment = () => {
                                                     labelCol={{ span: 24 }}
                                                     wrapperCol={{ span: 15 }}
                                                     name="duration"
-                                                    className='p-0 w-[20rem]'
-                                                    rules={[{ required: true, message: <span className='!w-[500px] relative bottom-3 left-[10px]'>Vui lòng chọn gói ký gửi</span> }]}
+                                                    className='p-0 w-[20rem] my-10'
+                                                    rules={[{ required: true, message: <span className='!w-[500px] relative  left-[10px]'>Vui lòng chọn gói ký gửi</span> }]}
                                                 >
                                                     <Select
-                                                        className="w-full h-[40px] ms-10 relative bottom-3  right-[30px]"
+                                                        className="w-full h-[40px] ms-10 relative  right-[30px]"
                                                         defaultValue=""
                                                         onChange={handleSelectPackage}
                                                         dropdownStyle={{ width: 200, marginLeft: 20 }}
@@ -1156,7 +1216,7 @@ const RequestConsignment = () => {
                                                     labelCol={{ span: 24 }}
                                                     wrapperCol={{ span: 18 }}
                                                     name="phoneNumber"
-                                                    className='m-0 w-[20rem] right-2 relative self-stretch p-[10px] '
+                                                    className='m-0 w-[20rem] right-2 relative self-stretch p-[10px] my-10 '
                                                     rules={[{
                                                         required: true, message: <span className='!w-[500px] relative top-1 left-10'>Vui lòng nhập số điện thoại</span>
                                                     },
@@ -1183,13 +1243,13 @@ const RequestConsignment = () => {
                                                         labelCol={{ span: 24 }}
                                                         wrapperCol={{ span: 11 }}
                                                         name="price"
-                                                        className='m-0 w-[500px] relative self-stretch p-[10px] text-black text-2xl font-bold '
+                                                        className=' m-0 w-[500px] relative self-stretch p-[10px] text-black text-2xl font-bold '
                                                         rules={[{
-                                                            required: true, message: <span className='!w-[500px] relative top-1 left-10'>Vui lòng nhập giá bán</span>
+                                                            required: true, message: <span className='!w-[500px] relative left-[40px] !font-normal'>Vui lòng nhập giá bán</span>
                                                         },
                                                         {
                                                             pattern: new RegExp(/^[0-9]+$/),
-                                                            message: <span className='!w-[500px] relative top-1 left-10'>Giá bán phải là số!</span>
+                                                            message: <span className='!w-[500px] relative left-[40px] !font-normal'>Giá bán phải là số!</span>
                                                         },
 
                                                         ]}
@@ -1241,11 +1301,11 @@ const RequestConsignment = () => {
                                                 </div>
 
                                             </div>
-                                          
+
                                         </div>
 
                                     </div>
-                                    <div className='w-full'>
+                                    <div className=''>
                                         <Form.Item
                                             wrapperCol={{
                                                 offset: 24,
@@ -1253,7 +1313,7 @@ const RequestConsignment = () => {
                                             }}
                                         >
                                             <Button type="primary" htmlType="submit" >
-                                                Submit
+                                                Nộp đơn
                                             </Button>
                                         </Form.Item>
 
@@ -1267,7 +1327,7 @@ const RequestConsignment = () => {
                     </Form >
                     <button
                         onClick={() => handleCurrentPage((currentPage))}
-                        className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-500 transition duration-300"
+                        className="bg-blue-600 relative bottom-32 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-500 transition duration-300"
                     >
                         Quay lại
                     </button>

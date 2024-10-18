@@ -12,6 +12,7 @@ import Vector from "/img/Vector.png";
 import { AuthApi } from "../../../apis/Auth.api";
 import { setSelectedCategory } from "../../../Redux/Slices/FishList_Slice";
 import { data } from "autoprefixer";
+import LoadingModal from "../../../modules/Modal/LoadingModal";
 const Navbar = () => {
   const dispatch = useDispatch();
   const user = getLocalStorage("user");
@@ -96,7 +97,7 @@ const Navbar = () => {
     handleCategorySelection();
   }, []);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return LoadingModal;
   if (error) return <p>Error: {error}</p>;
   const dropdownFish = [
     {
@@ -155,15 +156,15 @@ const Navbar = () => {
     },
     ...(user?.role === "manager"
       ? [
-          {
-            key: "8",
-            label: (
-              <Link to="/admin" target="_self" rel="noopener noreferrer">
-                Quản lý
-              </Link>
-            ),
-          },
-        ]
+        {
+          key: "8",
+          label: (
+            <Link to="/admin" target="_self" rel="noopener noreferrer">
+              Quản lý
+            </Link>
+          ),
+        },
+      ]
       : []),
 
     {
@@ -172,16 +173,15 @@ const Navbar = () => {
       onClick: () => handleSignOut(),
     },
   ];
+  const consignmentID = localStorage.getItem("consignmentID");
   const consignmentMenuitems = [
     {
       key: "8",
       label: (
-        <Link to="/request-consignment"
+        <Link  to={consignmentID ? '/status-consignment' : "/request-consignment"}
           target="_self"
           rel="noopener noreferrer"
         >
-
-          { }
           Yêu cầu ký gửi Koi
         </Link>
 
@@ -191,15 +191,7 @@ const Navbar = () => {
       key: "9",
       label: <Link to="/consignment-history">Lịch sử ký gửi</Link>,
     },
-    {
-      key: "7",
-      label: (
-        <Link to="/setting" target="_self" rel="noopener noreferrer" >
-          Cài đặt
-        </Link>
-      ),
-    },
-    { key: "8", label: "Đăng xuất", },
+
   ];
 
   const handleSignOut = () => {
