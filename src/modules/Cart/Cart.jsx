@@ -39,16 +39,13 @@ const Cart = () => {
   );
   const user = getLocalStorage("user");
   const updateQuantity = (identifier, newQuantity) => {
-    // Kiểm tra giá trị nhập vào là số và lớn hơn hoặc bằng 1
     const parsedQuantity = parseInt(newQuantity, 10);
     if (isNaN(parsedQuantity) || parsedQuantity < 1) {
       message.error("Số lượng phải là số nguyên lớn hơn hoặc bằng 1.");
       return;
     }
 
-    // Cập nhật dữ liệu trong state
     const updatedData = dataSource.map((item) => {
-      // Kiểm tra cả id và batchID để cập nhật đúng mục
       if (
         (item.id && item.id === identifier) ||
         (item.batchID && item.batchID === identifier)

@@ -94,7 +94,7 @@ const AdminLayout = () => {
             navigate(key);
           }}
           style={{
-            height: "500px",
+            height: "102%",
           }}
           items={[
             {
