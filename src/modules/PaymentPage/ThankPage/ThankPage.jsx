@@ -120,7 +120,7 @@ const ThankPage = () => {
   }
   if (isHandleSaveOrderPending ) {
     return (
-      <div className="h-[600px] w-full flex items-center justify-center items-center">
+      <div className="h-[600px] w-full flex  justify-center items-center">
         <Spin indicator={<LoadingOutlined spin />} size="large" />
       </div>
     );
