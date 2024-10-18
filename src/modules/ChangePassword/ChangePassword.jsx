@@ -47,7 +47,7 @@ const ChangePassword = () => {
     },
     onError: (error) => {
       const errorMessage = error?.message || "Đã có lỗi xử lý vui thúy bạn !!!";
-      toast.error(errorMessage);
+       message.error(errorMessage)
     },
   });
 

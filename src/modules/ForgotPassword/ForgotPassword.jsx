@@ -47,7 +47,7 @@ const ForgotPassword = () => {
       onError: (error) => {
         const errorMessage =
           error?.message || "Đã có lỗi xử lý vui lòng thử lại";
-        toast.error(errorMessage);
+         message.error(errorMessage)
       },
     });
   const onSubmit = (data) => {
