@@ -351,7 +351,7 @@ const RequestConsignment = () => {
         onError: (error) => {
             const errorMessage =
                 error?.response?.data?.message || 'An error occurred, please try again!';
-            toast.error(errorMessage);
+             message.error(errorMessage)
         },
     });
 

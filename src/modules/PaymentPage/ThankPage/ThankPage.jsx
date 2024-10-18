@@ -46,7 +46,7 @@ const ThankPage = () => {
     onError: (error) => {
       const errorMessage =
         error?.message || "Đã có lỗi xảy ra, vui lòng thử lại !!!";
-      toast.error(errorMessage);
+       message.error(errorMessage)
       navigate("/payment-fail");
     },
   });
@@ -66,7 +66,7 @@ const ThankPage = () => {
     onError: (error) => {
       const errorMessage =
         error?.message || "Đã có lỗi xảy ra, vui lòng thử lại !!!";
-      toast.error(errorMessage);
+       message.error(errorMessage)
       navigate("/payment-fail");
     },
   });
