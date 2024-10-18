@@ -1,6 +1,6 @@
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Breadcrumb, Button, Form, Input, Row, Select, Upload, Image, Steps, message } from 'antd'
+import { Breadcrumb, Button, Form, Input, Row, Select, Upload, Image, Steps, message, Col } from 'antd'
 import TextArea from 'antd/es/input/TextArea';
 import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
@@ -95,7 +95,8 @@ const RequestConsignment = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const [consignmentID, setConsignmentID] = useState();
     const navigate = useNavigate();
-    
+    const [fileList, setFileList] = useState([]);
+
     const handleCurrentPage = (prevPage) => {
         localStorage.setItem('agreedToPolicy', false);
         prevPage = 1
@@ -113,71 +114,84 @@ const RequestConsignment = () => {
             navigate(`/status-consignment/`);
         }
     };
+    const fishFromOrderDetail = localStorage.getItem('fishConsignmentID');
 
-
-    useEffect(() => {
-        const fee = handleFee(inputPrice, SelectedPackage);
-        console.log(fee)
-        setServiceFee(fee);
-        form.setFieldsValue({ serviceFee: formatVND(serviceFee) });
-    }, [inputPrice, SelectedPackage, SelectedConsignmentType]);
     useEffect(() => {
         const fishFromOrderDetail = localStorage.getItem('fishConsignmentID');
         console.log('IDfish:', fishFromOrderDetail);
 
-        const fetchKoiData = async () => {
-            try {
-                // Fetch koi data from the API
-                const koiData = await FishApi.getFishDetail(fishFromOrderDetail);
-                console.log('Dữ liệu từ API:', koiData);
+        if (fishFromOrderDetail) {
+            const fetchKoiData = async () => {
+                try {
+                    
+                    const koiData = await FishApi.getFishDetail(fishFromOrderDetail);
+                    console.log('Dữ liệu từ API:', koiData);
+                    const certificate =  await ConsignmentApi.getCertificateByID(fishFromOrderDetail);
+                    const selectedCateId = koiData.categoryId?.toString() || '';
+                    console.log('Data for certificate image ',certificate.data.image )
+                    setSelectedCategory(selectedCateId);
 
-                // Process `categoryId`
-                const selectedCateId = koiData.categoryId?.toString() || '';
-                setSelectedCategory(selectedCateId);
+                    const selectedGender = koiData.gender;
+                    const gender =
+                        selectedGender === true ||
+                            selectedGender === 'true' ||
+                            selectedGender === 1
+                            ? '1'
+                            : '0';
+                    console.log('Selected gender:', gender);
+                    setSelectedGender(gender);
 
-                // Process `gender`
-                const selectedGender = koiData.gender;
-                const gender =
-                    selectedGender === true ||
-                        selectedGender === 'true' ||
-                        selectedGender === 1
-                        ? '1'
-                        : '0';
-                console.log('Selected gender:', gender);
-                setSelectedGender(gender);
+                    const pureBredValue = koiData.purebred?.toString() || '';
+                    console.log('Purebred:', pureBredValue);
+                    setSelectedPureBred(pureBredValue);
+                    setInputPrice(koiData.price);
 
-                // Process `purebred`
-                const pureBredValue = koiData.purebred?.toString() || '';
-                console.log('Purebred:', pureBredValue);
-                setSelectedPureBred(pureBredValue);
+                    console.log('Koi Image URL:', koiData.koiImage);
+                    setImageSrc(koiData.koiImage);
+                    setImageSrcCer(certificate.data.image);
+                    setSelectedKoiImage(koiData.koiImage)
+                    setSelectedKoiCertificate(certificate.data.image);
+                    // Set form fields
+                    form.setFieldsValue({
+                        origin: koiData.origin,
+                        gender: gender,
+                        age: koiData.age,
+                        koiImg: koiData.koiImage,
+                        certImg: certificate.data.image,
+                        size: koiData.size,
+                        categoryId: selectedCateId,
+                        pureBred: pureBredValue,
+                        personality: koiData.personality,
+                        health: koiData.health,
+                        ph: koiData.ph,
+                        temperature: koiData.temperature,
+                        price: fishFromOrderDetail ? koiData.price : koiData.price,                       
 
-                // Set image source
-                console.log('Koi Image URL:', koiData.koiImage);
-                setImageSrc(koiData.koiImage);
+                    });
+                } catch (error) {
+                    console.error('Lỗi khi lấy dữ liệu cá Koi:', error);
+                    message.error('Lỗi khi lấy dữ liệu cá Koi');
+                }
+            };
 
-                // Set form fields
-                form.setFieldsValue({
-                    origin: koiData.origin,
-                    gender: gender,
-                    age: koiData.age,
-                    koiImg: koiData.koiImage,
-                    size: koiData.size,
-                    categoryId: selectedCateId,
-                    pureBred: pureBredValue,
-                    personality: koiData.personality,
-                    health: koiData.health,
-                    ph: koiData.ph,
-                    temperature: koiData.temperature
+            fetchKoiData();
+        } else {
+            console.log('Không tìm thấy fishConsignmentID trong localStorage.');
+        }
+    }, []); // Empty dependency array to run once on mount
 
-                });
-            } catch (error) {
-                console.error('Lỗi khi lấy dữ liệu cá Koi:', error);
-                message.error('Lỗi khi lấy dữ liệu cá Koi');
-            }
-        };
+    // Second useEffect to handle service fee calculation
+    useEffect(() => {
+        if (inputPrice && SelectedPackage) {
+            console.log(SelectedPackage + 'SelectedPackage')
+            console.log(inputPrice + 'inputPrice')
+            const fee = handleFee(inputPrice, SelectedPackage);
 
-        fetchKoiData();
-    }, []);
+            console.log('Service Fee:eeee', fee);
+            setServiceFee(fee);
+        }
+    }, [inputPrice, SelectedPackage, setSelectedConsignmentType]);
+
 
     const CategoryItem = [
         {
@@ -325,7 +339,7 @@ const RequestConsignment = () => {
         {
             key: "24",
             label: "6 Tháng 18% giá trị",
-            value: "3S",
+            value: "3",
         },
 
     ];
@@ -352,10 +366,10 @@ const RequestConsignment = () => {
         onError: (error) => {
             const errorMessage =
                 error?.response?.data?.message || 'An error occurred, please try again!';
-             message.error(errorMessage)
+            message.error(errorMessage)
         },
     });
-
+    console.log('ssssss'+selectedKoiImage)
     const onFinish = async (values) => {
         try {
             // Convert the image URLs (or blob URLs) to files    
@@ -377,12 +391,15 @@ const RequestConsignment = () => {
             if (!accountId) {
                 throw new Error('Account ID not found in localStorage');
             }
+            console.log('ssssss'+selectedKoiImage)
+            console.log(selectedKoiCertificate)
             console.log("tess", serviceFee);
             const x = serviceFee;
             formData.append('serviceFee', x);
             formData.append('accountId', accountId);
             formData.append('water', 'lanh');
-
+            formData.append('koiImgURL', selectedKoiImage);
+            formData.append('certImgURL', selectedKoiCertificate);
             // Trigger the mutation
             handleConsignmentSubmit(formData);
 
@@ -481,9 +498,23 @@ const RequestConsignment = () => {
         const value = e.target.value.replace(/\D/g, '');
         setInputPrice(Number(value));
     };
+    console.log(SelectedConsignmentType)
     const handleFee = (price, selectedPackages) => {
-        return SelectedConsignmentType === '1' ? price * selectedPackages : 0;
+        if (SelectedConsignmentType === '1') {
+            if (selectedPackages === '1') {
+                return price * 0.1;
+            } else if (selectedPackages === '2') {
+                return price * 0.15;
+            } else if (selectedPackages === '3') {
+                return price * 0.20;
+            }
+        } else if (SelectedConsignmentType === '0') {
+            return price * selectedPackages * 0.06;
+        } else {
+            return 0;
+        }
     };
+
 
 
     const formatVNDs = (value) => {
@@ -511,6 +542,7 @@ const RequestConsignment = () => {
 
 
     const handleSelectGender = (value) => {
+
         setSelectedGender(value);
         console.log("Selected gender:", value);
     };
@@ -518,9 +550,36 @@ const RequestConsignment = () => {
         setSelectedPureBred(value);
         console.log("Độ thuần chủng đã chọn:", value);
     };
+
     const handleSelectConsigmentType = (value) => {
+
         setSelectedConsignmentType(value);
+
+        if (value)
+            if (fishFromOrderDetail) {
+                form.setFieldsValue({
+                    duration: '',
+                    price: '',
+                    
+                });
+                
+                setInputPrice(0);
+            } else {
+                form.setFieldsValue({
+                    duration: '',
+                    
+                });
+            }
         console.log("Loại ký gửi", value);
+        console.log(fishFromOrderDetail,"Loại ký gửi")
+
+
+    };
+    const handleDeleteImage = () => {
+        setImageSrc(null);   // Clear image preview
+        setFileList([]);
+        // Clear file list
+        message.success('Image deleted successfully');
     };
     const description = "Chính sách ký gửi";
     const description1 = "Điền thông tin ký gửi";
@@ -566,773 +625,837 @@ const RequestConsignment = () => {
                     </div>
                 </div>
 
-                <div className="w-[950px]  mt-10 form-container">
+                <div className="w-[70%] border m-10 p-10 form-container">
 
                     <Form
                         form={form}
                         onFinish={onFinish}
-                        onFinishFailed={onFinishFailed} autoComplete="off">
+                        onFinishFailed={onFinishFailed}
+                        autoComplete="off"
+                    >
+                        {/* Form Title */}
+                        <Row justify="center">
+                            <Col span={24}>
+                                <h1 className="text-2xl font-bold text-center my-4">
+                                    BIỂU MẪU KÝ GỬI CÁ KOI
+                                </h1>
+                            </Col>
+                        </Row>
 
-                        <div className="w-[950px] h-full px-20 py-[50px]   placeholder: bg-white border border-[#FA4444] justify-between items-start  grid grid-cols-4">
+                        {/* Main Content */}
+                        <Row gutter={24} span={24}>
+                            {/* Left Column */}
+                            <Col xs={24} sm={24} md={12}>
+                                {/* Koi Image Upload */}
+                                <Form.Item
+                                    labelCol={{ span: 24 }}
+                                    wrapperCol={{ span: 24 }}
+                                    label="Ảnh Koi"
+                                    name="koiImg"
+                                    className="flex justify-center mt-0 p-0"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: <span className='w-[500px] relative '>Ảnh Koi là bắt buộc</span>
+                                        }
+                                    ]}
+                                >
+                                    {imageSrc && (
+                                        <div className="relative top-[112px] left-[39px] w-[221px] h-0 bg-white flex items-center justify-center">
+                                            <Image
+                                                width={222}
+                                                height={220}
+                                                src={imageSrc}
+                                            />
+                                        </div>
 
-                            <div className='col-span-4 flex justify-center mb-10'>
-                                <h1 className='text-[28px] font-bold'>BIỂU MẪU KÝ GỬI CÁ KOI</h1>
-                            </div>
-                            <div className=" col-span-2 left w-[311px] h-full flex-col justify-start items-start gap-[250px] inline-flex">
-                                <div className="self-stretch h-[300px] flex-col justify-center items-center gap-2.5 flex">
-                                    <div className="flex-col justify-center items-center gap-2.5 flex">
-                                        <Form.Item
-                                            labelCol={{ span: 24 }}
-                                            wrapperCol={{ span: 24 }}
-                                            label="Ảnh Koi"
-                                            name="koiImg"
-                                            className="flex mx-10 mt-0 p-0"
-                                            rules={[
-                                                {
-                                                    required: true,
-                                                    message: <span className='w-[500px] relative '>Ảnh Koi là bắt buộc</span>
-                                                }
-                                            ]}
-                                        >
-                                            {imageSrc && (
-                                                <div className="relative top-[112px] left-[5px] w-[221px] h-0 bg-white flex items-center justify-center">
-                                                    <Image
-                                                        width={222}
-                                                        height={220}
-                                                        src={imageSrc}
+                                    )}
+
+                                    <Upload
+                                        name="koiImg"
+                                        listType="picture"
+                                        className="flex flex-col items-center"
+                                        showUploadList={false}
+                                        onChange={handleUploadKoiImage}
+                                        beforeUpload={() => false}
+                                    >
+                                        <div className="w-[225px] h-[224px] bg-white border-2  flex items-center justify-center">
+                                            <span className="text-gray-400">Kéo và thả ảnh hoặc nhấn để chọn</span>
+                                        </div>
+                                    </Upload>
+                                    {/* */}
+                                </Form.Item>
+                                <Form.Item
+                                    labelCol={{ span: 24 }}
+                                    wrapperCol={{ span: 24 }}
+
+                                    name="koiImg"
+                                    className="mt-0 p-0"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: <span className='w-[500px] relative '></span>
+                                        }
+                                    ]}
+                                >
+                                    {imageSrc && (
+                                        <div className="relative top-[112px] left-[25px] w-[221px] h-0 bg-white flex items-center justify-center">
+                                            <Image hidden
+                                                width={222}
+                                                height={220}
+                                                src={imageSrc}
+                                            />
+                                        </div>
+
+                                    )}
+
+                                    <Upload
+                                        name="koiImg"
+
+                                        className="flex justify-center"
+                                        showUploadList={false}
+                                        onChange={handleUploadKoiImage}
+                                        beforeUpload={() => false}
+                                    >
+
+                                        {imageSrc ? <Button className="">
+                                            <div className=" ">
+                                                <svg
+                                                    className="absolute w-5 h-5"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    viewBox="0 0 20 20"
+                                                    fill="none"
+                                                >
+                                                    <path
+                                                        d="M12.5 6.66667H12.5083M10.4167 17.5H5C4.33696 17.5 3.70107 17.2366 3.23223 16.7678C2.76339 16.2989 2.5 15.663 2.5 15V5C2.5 4.33696 2.76339 3.70107 3.23223 3.23223C3.70107 2.76339 4.33696 2.5 5 2.5H15C15.663 2.5 16.2989 2.76339 16.7678 3.23223C17.2366 3.70107 17.5 4.33696 17.5 5V10.4167"
+                                                        stroke="#EA4444"
+                                                        strokeWidth="1.66667"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
                                                     />
-                                                </div>
-
-                                            )}
-
-                                            <Upload
-                                                name="koiImg"
-                                                listType="picture"
-                                                className="flex flex-col items-center"
-                                                showUploadList={false}
-                                                onChange={handleUploadKoiImage}
-                                                beforeUpload={() => false}
-                                            >
-                                                <div className="w-[225px] h-[224px] bg-white border-2 border-[#e94444] flex items-center justify-center">
-                                                    <span className="text-gray-400">Kéo và thả ảnh hoặc nhấn để chọn</span>
-                                                </div>
-                                            </Upload>
-                                            {/* */}
-                                        </Form.Item>
-                                        <Form.Item
-                                            labelCol={{ span: 24 }}
-                                            wrapperCol={{ span: 24 }}
-
-                                            name="koiImg"
-                                            className="flex mx-10 mt-0 p-0"
-                                            rules={[
-                                                {
-                                                    required: true,
-                                                    message: <span className='w-[500px] relative '></span>
-                                                }
-                                            ]}
-                                        >
-                                            {imageSrc && (
-                                                <div className="relative top-[112px] left-[5px] w-[221px] h-0 bg-white flex items-center justify-center">
-                                                    <Image hidden
-                                                        width={222}
-                                                        height={220}
-                                                        src={imageSrc}
+                                                    <path
+                                                        d="M2.5 13.3334L6.66667 9.16677C7.44 8.4226 8.39333 8.4226 9.16667 9.16677L12.5 12.5001"
+                                                        stroke="#EA4444"
+                                                        strokeWidth="1.66667"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
                                                     />
-                                                </div>
+                                                    <path
+                                                        d="M11.667 11.6666L12.5003 10.8333C13.0587 10.2966 13.7087 10.1466 14.3187 10.3833M13.3337 15.8333H18.3337M15.8337 13.3333V18.3333"
+                                                        stroke="#EA4444"
+                                                        strokeWidth="1.66667"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                    />
+                                                </svg>
+                                                <span className="mx-6 text-center">Thay đổi ảnh</span>
+                                            </div>
+                                        </Button> : <Button className="">
+                                            <div className="  ">
+                                                <svg
+                                                    className="absolute w-5 h-5 "
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    viewBox="0 0 20 20"
+                                                    fill="none"
+                                                >
+                                                    <path
+                                                        d="M12.5 6.66667H12.5083M10.4167 17.5H5C4.33696 17.5 3.70107 17.2366 3.23223 16.7678C2.76339 16.2989 2.5 15.663 2.5 15V5C2.5 4.33696 2.76339 3.70107 3.23223 3.23223C3.70107 2.76339 4.33696 2.5 5 2.5H15C15.663 2.5 16.2989 2.76339 16.7678 3.23223C17.2366 3.70107 17.5 4.33696 17.5 5V10.4167"
+                                                        stroke="#EA4444"
+                                                        strokeWidth="1.66667"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                    />
+                                                    <path
+                                                        d="M2.5 13.3334L6.66667 9.16677C7.44 8.4226 8.39333 8.4226 9.16667 9.16677L12.5 12.5001"
+                                                        stroke="#EA4444"
+                                                        strokeWidth="1.66667"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                    />
+                                                    <path
+                                                        d="M11.667 11.6666L12.5003 10.8333C13.0587 10.2966 13.7087 10.1466 14.3187 10.3833M13.3337 15.8333H18.3337M15.8337 13.3333V18.3333"
+                                                        stroke="#EA4444"
+                                                        strokeWidth="1.66667"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                    />
+                                                </svg>
+                                                <span className="mx-6 text-center">Tải ảnh lên</span>
+                                            </div>
+                                        </Button>
 
-                                            )}
-
-                                            <Upload
-                                                name="koiImg"
-
-                                                className="flex flex-col items-center"
-                                                showUploadList={false}
-                                                onChange={handleUploadKoiImage}
-                                                beforeUpload={() => false}
-                                            >
+                                        }
 
 
 
-                                                <Button className="m-0 flex justify-between items-center">
-                                                    <div className="relative flex items-center">
-                                                        <svg
-                                                            className="absolute w-5 h-5"
-                                                            xmlns="http://www.w3.org/2000/svg"
-                                                            viewBox="0 0 20 20"
-                                                            fill="none"
-                                                        >
-                                                            <path
-                                                                d="M12.5 6.66667H12.5083M10.4167 17.5H5C4.33696 17.5 3.70107 17.2366 3.23223 16.7678C2.76339 16.2989 2.5 15.663 2.5 15V5C2.5 4.33696 2.76339 3.70107 3.23223 3.23223C3.70107 2.76339 4.33696 2.5 5 2.5H15C15.663 2.5 16.2989 2.76339 16.7678 3.23223C17.2366 3.70107 17.5 4.33696 17.5 5V10.4167"
-                                                                stroke="#EA4444"
-                                                                strokeWidth="1.66667"
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                            />
-                                                            <path
-                                                                d="M2.5 13.3334L6.66667 9.16677C7.44 8.4226 8.39333 8.4226 9.16667 9.16677L12.5 12.5001"
-                                                                stroke="#EA4444"
-                                                                strokeWidth="1.66667"
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                            />
-                                                            <path
-                                                                d="M11.667 11.6666L12.5003 10.8333C13.0587 10.2966 13.7087 10.1466 14.3187 10.3833M13.3337 15.8333H18.3337M15.8337 13.3333V18.3333"
-                                                                stroke="#EA4444"
-                                                                strokeWidth="1.66667"
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
-                                                            />
-                                                        </svg>
-                                                        <span className="ml-6">Tải ảnh lên</span>
-                                                    </div>
-                                                </Button>
+                                    </Upload>
+                                </Form.Item>
 
-                                            </Upload>
-                                        </Form.Item>
-                                    </div>
+                                {/* Certificate Image Upload */}
 
+                                <Form.Item
+                                    labelCol={{ span: 24 }}
+                                    wrapperCol={{ span: 24 }}
+                                    label={<span >Chứng chỉ</span>}
+                                    name="certImg"
+                                    className="flex justify-center "
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: <span className='w-[500px] relative '>Chứng chỉ của Koi là bắt buộc</span>
+                                        }
+                                    ]}
+                                >
+                                    {imageSrcCer && (
+                                        <div className="relative top-[112px] left-[47px] w-[221px] h-0 bg-white flex items-center justify-center">
+                                            <Image
+                                                width={222}
+                                                height={220}
+                                                src={imageSrcCer}
+                                            />
+                                        </div>
+
+                                    )}
+
+                                    <Upload
+                                        name="certImg"
+                                        listType="picture"
+                                        className="flex flex-col items-center"
+                                        showUploadList={false}
+                                        onChange={handleUploadKoiCertificate}
+                                        beforeUpload={() => false}
+                                    >
+                                        <div className="w-[225px] h-[224px] bg-white border-2  flex items-center justify-center">
+                                            <span className="text-gray-400">Kéo và thả ảnh hoặc nhấn để chọn</span>
+                                        </div>
+                                    </Upload>
+                                    {/**/}
+                                </Form.Item>
+                                <Form.Item
+                                    labelCol={{ span: 24 }}
+                                    wrapperCol={{ span: 24 }}
+
+                                    name="certImg"
+                                    className="mt-0 p-0"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: <span className='w-[500px] relative '></span>
+                                        }
+                                    ]}
+                                >
+                                    {imageSrcCer && (
+                                        <div className="relative top-[112px] left-[25px] w-[221px] h-0 bg-white flex items-center justify-center">
+                                            <Image hidden
+                                                width={222}
+                                                height={220}
+                                                src={imageSrcCer}
+                                            />
+                                        </div>
+
+                                    )}
+
+                                    <Upload
+                                        name="certImg"
+
+                                        className="flex justify-center"
+                                        showUploadList={false}
+                                        onChange={handleUploadKoiCertificate}
+                                        beforeUpload={() => false}
+                                    >
+
+                                        {imageSrcCer ? <Button className="">
+                                            <div className=" ">
+                                                <svg
+                                                    className="absolute w-5 h-5"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    viewBox="0 0 20 20"
+                                                    fill="none"
+                                                >
+                                                    <path
+                                                        d="M12.5 6.66667H12.5083M10.4167 17.5H5C4.33696 17.5 3.70107 17.2366 3.23223 16.7678C2.76339 16.2989 2.5 15.663 2.5 15V5C2.5 4.33696 2.76339 3.70107 3.23223 3.23223C3.70107 2.76339 4.33696 2.5 5 2.5H15C15.663 2.5 16.2989 2.76339 16.7678 3.23223C17.2366 3.70107 17.5 4.33696 17.5 5V10.4167"
+                                                        stroke="#EA4444"
+                                                        strokeWidth="1.66667"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                    />
+                                                    <path
+                                                        d="M2.5 13.3334L6.66667 9.16677C7.44 8.4226 8.39333 8.4226 9.16667 9.16677L12.5 12.5001"
+                                                        stroke="#EA4444"
+                                                        strokeWidth="1.66667"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                    />
+                                                    <path
+                                                        d="M11.667 11.6666L12.5003 10.8333C13.0587 10.2966 13.7087 10.1466 14.3187 10.3833M13.3337 15.8333H18.3337M15.8337 13.3333V18.3333"
+                                                        stroke="#EA4444"
+                                                        strokeWidth="1.66667"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                    />
+                                                </svg>
+                                                <span className="mx-6 text-center">Thay đổi ảnh</span>
+                                            </div>
+                                        </Button> : <Button className="">
+                                            <div className="  ">
+                                                <svg
+                                                    className="absolute w-5 h-5 "
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    viewBox="0 0 20 20"
+                                                    fill="none"
+                                                >
+                                                    <path
+                                                        d="M12.5 6.66667H12.5083M10.4167 17.5H5C4.33696 17.5 3.70107 17.2366 3.23223 16.7678C2.76339 16.2989 2.5 15.663 2.5 15V5C2.5 4.33696 2.76339 3.70107 3.23223 3.23223C3.70107 2.76339 4.33696 2.5 5 2.5H15C15.663 2.5 16.2989 2.76339 16.7678 3.23223C17.2366 3.70107 17.5 4.33696 17.5 5V10.4167"
+                                                        stroke="#EA4444"
+                                                        strokeWidth="1.66667"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                    />
+                                                    <path
+                                                        d="M2.5 13.3334L6.66667 9.16677C7.44 8.4226 8.39333 8.4226 9.16667 9.16677L12.5 12.5001"
+                                                        stroke="#EA4444"
+                                                        strokeWidth="1.66667"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                    />
+                                                    <path
+                                                        d="M11.667 11.6666L12.5003 10.8333C13.0587 10.2966 13.7087 10.1466 14.3187 10.3833M13.3337 15.8333H18.3337M15.8337 13.3333V18.3333"
+                                                        stroke="#EA4444"
+                                                        strokeWidth="1.66667"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                    />
+                                                </svg>
+                                                <span className="mx-6 text-center">Tải ảnh lên</span>
+                                            </div>
+                                        </Button>
+
+                                        }
+
+
+
+                                    </Upload>
+                                </Form.Item>
+
+                                <div >
+                                    <Form.Item
+                                        label={<span className="w-[200px]">Tên chứng chỉ</span>}
+
+                                        labelCol={{ span: 24 }}
+                                        wrapperCol={{ span: 24 }}
+                                        name="name"
+                                        className='flex justify-center '
+                                        rules={[{
+                                            required: true, message: <span className='w-[500px] relative '>Vui lòng điền tên chứng chỉ</span>
+                                        },
+
+                                        ]}
+                                    >
+
+                                        <TextArea className=' ' placeholder='Vui lòng điền tên chứng chỉ' cols={12} rows={2}
+                                            autoSize={{ minRows: 2, maxRows: 4 }} />
+
+
+
+                                    </Form.Item>
                                 </div>
-                                <div className="w-[300px] h-[725px] flex-col justify-start items-center gap-5 flex">
-                                    <div className="flex-col justify-center items-center gap-2.5 flex">
+                                <div>
+                                    <Form.Item
+                                        label={<span className="w-[200px]">Nội dung chứng chỉ</span>}
 
-                                        <div className="flex-col justify-center items-center gap-2.5 flex ms-[4px]">
+                                        labelCol={{ span: 24 }}
+                                        wrapperCol={{ span: 24 }}
+                                        name="notes"
+                                        className='flex justify-center '
+                                        rules={[{
+                                            required: true, message: <span className='w-[500px] relative '>Vui lòng điền nội dung của chứng chỉ</span>
+                                        },
+
+                                        ]}
+                                    >
+                                        <TextArea className='' placeholder='Vui lòng điền nội dung' cols={12} rows={2}
+                                            autoSize={{ minRows: 2, maxRows: 4 }} />
+
+                                    </Form.Item>
+                                </div>
+
+                            </Col>
+
+                            {/* Right Column */}
+                            <Col xs={24} sm={24} md={12}>
+                                {/* Koi Information */}
+                                <div className="border p-4 rounded-md">
+                                    <h2 className="text-xl font-bold text-center mb-4">
+                                        Thông tin cá Koi
+                                    </h2>
+
+
+                                    <Row gutter={16}>
+                                        {/* Category */}
+                                        <Col span={8}>
                                             <Form.Item
                                                 labelCol={{ span: 24 }}
                                                 wrapperCol={{ span: 24 }}
-                                                label="Ảnh Koi"
-                                                name="certImg"
-                                                className="flex mx-10 mt-0 p-0"
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: <span className='w-[500px] relative '>Chứng chỉ của Koi là bắt buộc</span>
-                                                    }
-                                                ]}
+                                                label="Giống"
+                                                name="categoryId"
+                                                rules={[{ required: true, message: 'Vui lòng chọn giống' }]}
                                             >
-                                                {imageSrcCer && (
-                                                    <div className="relative top-[112px] left-[2px] w-[221px] h-0 bg-white flex items-center justify-center">
-                                                        <Image
-                                                            width={222}
-                                                            height={220}
-                                                            src={imageSrcCer}
-                                                        />
-                                                    </div>
-
-                                                )}
-
-                                                <Upload
-                                                    name="certImg"
-                                                    listType="picture"
-                                                    className="flex flex-col items-center"
-                                                    showUploadList={false}
-                                                    onChange={handleUploadKoiCertificate}
-                                                    beforeUpload={() => false}
-                                                >
-                                                    <div className="w-[225px] h-[224px] bg-white border-2 border-[#e94444] flex items-center justify-center">
-                                                        <span className="text-gray-400">Kéo và thả ảnh hoặc nhấn để chọn</span>
-                                                    </div>
-                                                </Upload>
-                                                {/**/}
-                                            </Form.Item>
-                                            <Form.Item
-                                                labelCol={{ span: 24 }}
-                                                wrapperCol={{ span: 24 }}
-
-                                                name="certImg"
-                                                className="flex mx-10 mt-0 p-0"
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: <span className='w-[500px] relative '></span>
-                                                    }
-                                                ]}
-                                            >
-                                                {imageSrcCer && (
-                                                    <div className="relative top-[112px] left-[px] w-[221px] h-0 bg-white flex items-center justify-center">
-                                                        <Image hidden
-                                                            width={222}
-                                                            height={222}
-                                                            src={imageSrcCer}
-                                                        />
-                                                    </div>
-
-                                                )}
-
-                                                <Upload
-                                                    className="flex flex-col items-center"
-                                                    showUploadList={false}
-                                                    name="certImg"
-                                                    listType="picture"
-                                                    onChange={handleUploadKoiCertificate}
-                                                    beforeUpload={() => false} >
-
-                                                    <Button className="m-2 flex justify-between items-center">
-                                                        <div className="relative flex items-center">
-                                                            <svg
-                                                                className="absolute w-5 h-5"
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                viewBox="0 0 20 20"
-                                                                fill="none"
-                                                            >
-                                                                <path
-                                                                    d="M12.5 6.66667H12.5083M10.4167 17.5H5C4.33696 17.5 3.70107 17.2366 3.23223 16.7678C2.76339 16.2989 2.5 15.663 2.5 15V5C2.5 4.33696 2.76339 3.70107 3.23223 3.23223C3.70107 2.76339 4.33696 2.5 5 2.5H15C15.663 2.5 16.2989 2.76339 16.7678 3.23223C17.2366 3.70107 17.5 4.33696 17.5 5V10.4167"
-                                                                    stroke="#EA4444"
-                                                                    strokeWidth="1.66667"
-                                                                    strokeLinecap="round"
-                                                                    strokeLinejoin="round"
-                                                                />
-                                                                <path
-                                                                    d="M2.5 13.3334L6.66667 9.16677C7.44 8.4226 8.39333 8.4226 9.16667 9.16677L12.5 12.5001"
-                                                                    stroke="#EA4444"
-                                                                    strokeWidth="1.66667"
-                                                                    strokeLinecap="round"
-                                                                    strokeLinejoin="round"
-                                                                />
-                                                                <path
-                                                                    d="M11.667 11.6666L12.5003 10.8333C13.0587 10.2966 13.7087 10.1466 14.3187 10.3833M13.3337 15.8333H18.3337M15.8337 13.3333V18.3333"
-                                                                    stroke="#EA4444"
-                                                                    strokeWidth="1.66667"
-                                                                    strokeLinecap="round"
-                                                                    strokeLinejoin="round"
-                                                                />
-                                                            </svg>
-                                                            <span className="ml-6">Tải ảnh lên</span>
-                                                        </div>
-                                                    </Button>
-                                                </Upload>
-                                            </Form.Item>
-
-                                        </div>
-
-                                        <div className='mt-20'>
-                                            <div >
-                                                <Form.Item
-                                                    label={<span className="relative top-1">Tên chứng chỉ</span>}
-
-                                                    labelCol={{ span: 24 }}
-                                                    wrapperCol={{ span: 24 }}
-                                                    name="name"
-                                                    className='p-0 m-0 w-[full] relative bottom-28  left-10  '
-                                                    rules={[{
-                                                        required: true, message: <span className='w-[500px] relative '>Vui lòng điền tên chứng chỉ</span>
-                                                    },
-
-                                                    ]}
-                                                >
-
-                                                    <TextArea className='w-[75%] me-20' placeholder='Vui lòng điền tên chứng chỉ' cols={12} rows={2}
-                                                        autoSize={{ minRows: 2, maxRows: 4 }} />
-
-
-
-                                                </Form.Item>
-                                            </div>
-                                            <div>
-                                                <Form.Item
-                                                    label={<span className="relative top-1">Nội dung</span>}
-
-                                                    labelCol={{ span: 24 }}
-                                                    wrapperCol={{ span: 24 }}
-                                                    name="notes"
-                                                    className='p-0 m-0 w-[full] relative bottom-28 left-10  '
-                                                    rules={[{
-                                                        required: true, message: <span className='w-[500px] relative '>Vui lòng điền nội dung của chứng chỉ</span>
-                                                    },
-
-                                                    ]}
-                                                >
-                                                    <TextArea className='w-[75%] me-20' placeholder='Vui lòng điền tên chứng chỉ' cols={12} rows={2}
-                                                        autoSize={{ minRows: 2, maxRows: 4 }} />
-
-                                                </Form.Item>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                            <div className=" col-span-2 right flex-col justify-start items-start gap-10 inline-flex">
-                                <div className="self-stretch h-full flex-col justify-start items-start gap-[25px] flex">
-                                    <div className="self-stretch w-full h-[1200px]  px-2.5 py-5 rounded-xl  border-[1px] border-black  flex-col justify-start items-start gap-[25px] flex  relative right-5">
-
-                                        <div className="w-full text-black text-2xl text-center font-bold my-0 font-['Arial']">Thông tin cá Koi</div>
-                                        <div className="self-stretch h-[55.65px] justify-start items-start gap-2.5 inline-flex">
-                                            <div className="h-[50px] w-full ms-[10px] p-0 justify-start items-start gap-2.5 flex">
-                                                <Form.Item
-                                                    label={<span className="relative top-1">Giống</span>}
-                                                    labelAlign="right"
-                                                    labelCol={{ span: 24 }}
-                                                    wrapperCol={{ span: 15 }}
-                                                    name="categoryId"
-                                                    className='p-0 w-[200px]'
-                                                    rules={[{ required: true, message: <span className='!w-[500px] relative bottom-3 left-[40px]'>Vui lòng chọn giống</span> }]}
-                                                >
-                                                    <Select
-                                                        className="w-full h-[40px] ms-10 relative bottom-3 left-0 right-[30px]"
-                                                        defaultValue=""
-                                                        onChange={handleSelectCategory}
-                                                        dropdownStyle={{ width: 150, marginLeft: 20 }}
-                                                        suffixIcon={<CustomSVGIcon />}
-                                                    >
-
-                                                        {CategoryItem.map(item => (
-                                                            <Option key={item.key} value={item.value}>
-                                                                {item.label}
-                                                            </Option>
-                                                        ))}
-                                                    </Select>
-                                                </Form.Item>
-                                            </div>
-                                            <div className="w-full h-[42px]  p-2.5 bg-white relative right-[30px] bottom-[10px] ">
-                                                <Form.Item
-
-                                                    label={<span className="relative top-1 w-full">Giới tính</span>}
-                                                    labelAlign=""
-                                                    labelCol={{ span: 24 }}
-                                                    wrapperCol={{ span: 24 }}
-                                                    name="gender"
-                                                    className='p-0 w-[150px]  '
-                                                    rules={[{ required: true, message: <span className='flex relative bottom-3 left-[10px]'>Vui lòng chọn giới tính</span> }]}
-                                                >
-                                                    <Select
-                                                        className="w-full h-[40px] flex items-center justify-between relative left-[12px] bottom-3 "
-                                                        defaultValue=""
-                                                        onChange={handleSelectGender}
-                                                        dropdownStyle={{ width: 100, marginLeft: 20 }}
-
-                                                        suffixIcon={<CustomSVGIcon />}
-                                                    >
-
-                                                        {gender.map(item => (
-                                                            <Option key={item.key} value={item.value}>
-                                                                {item.label}
-                                                            </Option>
-                                                        ))}
-                                                    </Select>
-                                                </Form.Item>
-                                            </div>
-                                        </div>
-                                        <div className="justify-start items-start inline-flex">
-                                            <div className="flex items-center mt-4 ms-[10px] ">
-                                                <Form.Item
-
-                                                    label={<span className="relative top-1">Tuổi</span>}
-                                                    labelAlign=""
-                                                    labelCol={{ span: 24 }}
-                                                    wrapperCol={{ span: 9 }}
-                                                    name="age"
-
-                                                    className='p-0 m-0 w-[300px] h-[70px]  '
-                                                    rules={[{
-                                                        required: true, message: <span className=' relative left-[40px] bottom-[28px]'>Vui lòng nhập tuổi</span>
-                                                    },
-                                                    {
-                                                        pattern: new RegExp(/^[0-9]+$/),
-                                                        message: <span className='!w-[500px] relative left-[40px]  bottom-[28px]'>Tuổi phải là số!</span>
-                                                    }
-                                                    ]}
-                                                >
-                                                    <Input placeholder="Nhập tuổi" className='w-[150px] relative left-[40px] bottom-8'></Input>
-                                                </Form.Item>
-
-                                            </div>
-                                        </div>
-                                        <div className="relative bottom-10 ms-[10px] ">
-                                            <Form.Item
-                                                label={<span className="relative top-1">Độ thuần chủng</span>}
-                                                labelAlign=""
-                                                labelCol={{ span: 24 }}
-                                                wrapperCol={{ span: 9 }}
-                                                name="pureBred"
-                                                className='p-0 w-[500px]  '
-                                                rules={[{ required: true, message: <span className='!w-[500px] relative bottom-[9px] left-[40px]'>Vui lòng chọn độ thuần chủng</span> }]}
-                                            >
-                                                <Select
-                                                    className="w-full h-[40px] flex items-center justify-between relative left-[40px] bottom-[10px] "
-                                                    defaultValue=""
-                                                    onChange={handleSelectPureBred}
-                                                    dropdownStyle={{ width: 200, marginLeft: 20 }}
-
-                                                    suffixIcon={<CustomSVGIcon />}
-                                                >
-
-                                                    {pureBred.map(item => (
+                                                <Select placeholder="Chọn giống" onChange={handleSelectCategory}>
+                                                    {CategoryItem.map((item) => (
                                                         <Option key={item.key} value={item.value}>
                                                             {item.label}
                                                         </Option>
                                                     ))}
                                                 </Select>
                                             </Form.Item>
-                                        </div>
-                                        <div className="w-[464px] justify-start items-start gap-2.5 inline-flex ms-[10px] ">
+                                        </Col>
+
+                                        {/* Gender */}
+                                        <Col span={8}>
                                             <Form.Item
-                                                label={<span className="relative top-1">Kích thước (centimet)</span>}
-                                                labelAlign=""
                                                 labelCol={{ span: 24 }}
-                                                wrapperCol={{ span: 9 }}
-                                                name="size"
-                                                className='p-0 m-0 w-[500px] relative bottom-20  '
-                                                rules={[{
-                                                    required: true, message: <span className='!w-[500px] relative  left-[40px]'>Vui lòng điền kích thước</span>
-                                                },
-                                                {
-                                                    pattern: new RegExp(/^[0-9]+$/),
-                                                    message: <span className='!w-[500px] relative  left-[40px]'>Kích thước phải là số!</span>
-                                                },
-                                                {
-                                                    validator: (_, value) => {
-                                                        if (value && (value < 0 || value > 200)) {
-                                                            return Promise.reject(<span className='!w-[500px] relative  left-[40px]'>Kích thước phải trong khoảng từ 0 đến 200!</span>);
-                                                        }
-                                                        return Promise.resolve();
+                                                wrapperCol={{ span: 24 }}
+                                                label="Giới tính"
+                                                name="gender"
+                                                rules={[{ required: true, message: 'Vui lòng chọn giới tính' }]}
+                                            >
+                                                <Select placeholder="Chọn giới tính" onChange={handleSelectGender}>
+                                                    {gender.map((item) => (
+                                                        <Option key={item.key} value={item.value}>
+                                                            {item.label}
+                                                        </Option>
+                                                    ))}
+                                                </Select>
+                                            </Form.Item>
+                                        </Col>
+
+                                        {/* Pure Bred */}
+                                        <Col span={8}>
+                                            <Form.Item
+                                                labelCol={{ span: 24 }}
+                                                wrapperCol={{ span: 24 }}
+                                                label="Độ thuần chủng"
+                                                name="pureBred"
+                                                rules={[{ required: true, message: 'Vui lòng chọn độ thuần chủng' }]}
+                                            >
+                                                <Select placeholder="--Lựa chọn--" onChange={handleSelectPureBred}>
+                                                    {pureBred.map((item) => (
+                                                        <Option key={item.key} value={item.value}>
+                                                            {item.label}
+                                                        </Option>
+                                                    ))}
+                                                </Select>
+                                            </Form.Item>
+                                        </Col>
+                                    </Row>
+
+                                    <Row gutter={24}>
+                                        <Col span={8}>
+                                            {/* Age Input */}
+                                            <Form.Item
+                                                labelCol={{ span: 24 }}
+                                                wrapperCol={{ span: 24 }}
+                                                label="Tuổi"
+                                                name="age"
+                                                rules={[
+                                                    { required: true, message: 'Vui lòng nhập tuổi' },
+                                                    {
+                                                        pattern: /^[0-9]+$/,
+                                                        message: 'Tuổi phải là số!',
                                                     },
-                                                },
                                                 ]}
                                             >
-                                                <Input placeholder='100' className='w-[100px] ms-10'></Input>
+                                                <Input placeholder="Nhập tuổi" />
                                             </Form.Item>
-                                        </div>
-                                        <div className="self-stretch w-full h-[103px] ms-[10px] my-[40px]">
+                                        </Col>
+                                        {/* Size Input */}
+                                        <Col span={8}>
                                             <Form.Item
-                                                label={<span className="relative top-1">Tính cách</span>}
-
                                                 labelCol={{ span: 24 }}
                                                 wrapperCol={{ span: 24 }}
-                                                name="personality"
-                                                className='p-0 m-0 w-[full] relative bottom-32  '
-                                                rules={[{
-                                                    required: true, message: <span className='w-[500px] relative left-[40px]'>Vui lòng mô tả tính cách Koi của bạn</span>
-                                                },
-
+                                                label="Kích thước (cm)"
+                                                name="size"
+                                                rules={[
+                                                    { required: true, message: 'Vui lòng điền kích thước' },
+                                                    {
+                                                        pattern: /^[0-9]+$/,
+                                                        message: 'Kích thước phải là số!',
+                                                    },
+                                                    {
+                                                        validator: (_, value) =>
+                                                            value && (value < 0 || value > 200)
+                                                                ? Promise.reject('Kích thước phải trong khoảng từ 0 đến 200!')
+                                                                : Promise.resolve(),
+                                                    },
                                                 ]}
                                             >
-
-                                                <TextArea className='w-[80%] mx-[39px]' showCount maxLength={200} placeholder='Viết một vài điều gì đó về cá của bạn' cols={12} rows={2} />
-
-
+                                                <Input placeholder="Nhập kích thước" />
                                             </Form.Item>
-                                        </div>
-                                        <div className="self-stretch h-[103px] ms-[10px]  ">
-                                            <Form.Item
-                                                label={<span className="relative top-1">Thức ăn chính</span>}
+                                        </Col>
+                                    </Row>
+                                    {/* Personality */}
+                                    <Form.Item
+                                        labelCol={{ span: 24 }}
+                                        wrapperCol={{ span: 24 }}
+                                        label="Tính cách"
+                                        name="personality"
+                                        rules={[
+                                            { required: true, message: 'Vui lòng mô tả tính cách Koi của bạn' },
+                                        ]}
+                                    >
+                                        <TextArea
+                                            placeholder="Viết một vài điều về cá của bạn"
+                                            autoSize={{ minRows: 2, maxRows: 4 }}
+                                        />
+                                    </Form.Item>
 
+                                    {/* Food */}
+                                    <Form.Item
+                                        labelCol={{ span: 24 }}
+                                        wrapperCol={{ span: 24 }}
+                                        label="Thức ăn chính"
+                                        name="food"
+                                        rules={[
+                                            { required: true, message: 'Vui lòng điền thức ăn của Koi' },
+                                        ]}
+                                    >
+                                        <TextArea
+                                            placeholder="Viết về thức ăn mà Koi yêu thích"
+                                            autoSize={{ minRows: 2, maxRows: 4 }}
+                                        />
+                                    </Form.Item>
+
+                                    {/* Health */}
+                                    <Form.Item
+                                        labelCol={{ span: 24 }}
+                                        wrapperCol={{ span: 24 }}
+                                        label="Sức khỏe"
+                                        name="health"
+                                        rules={[
+                                            { required: true, message: 'Vui lòng điền trạng thái sức khỏe của Koi' },
+                                        ]}
+                                    >
+                                        <TextArea
+                                            placeholder="Mô tả về sức khỏe của Koi"
+                                            autoSize={{ minRows: 2, maxRows: 4 }}
+                                        />
+                                    </Form.Item>
+
+                                    {/* pH Level */}
+                                    <Form.Item
+                                        labelCol={{ span: 24 }}
+                                        wrapperCol={{ span: 24 }}
+                                        label="Độ pH"
+                                        name="ph"
+                                        rules={[
+                                            { required: true, message: 'Vui lòng điền độ pH thích hợp với Koi' },
+                                        ]}
+                                    >
+                                        <Input placeholder="7 - 7.5" />
+                                    </Form.Item>
+
+                                    {/* Temperature */}
+                                    <Form.Item
+                                        labelCol={{ span: 24 }}
+                                        wrapperCol={{ span: 24 }}
+                                        label="Nhiệt độ môi trường sống (°C)"
+                                        name="temperature"
+                                        rules={[
+                                            { required: true, message: 'Vui lòng điền nhiệt độ phù hợp với Koi' },
+                                        ]}
+                                    >
+                                        <Input placeholder="20 - 27" />
+                                    </Form.Item>
+
+                                    {/* Origin */}
+                                    <Form.Item
+                                        labelCol={{ span: 24 }}
+                                        wrapperCol={{ span: 24 }}
+                                        label="Nguồn gốc"
+                                        name="origin"
+                                        rules={[
+                                            { required: true, message: 'Vui lòng điền thông tin nguồn gốc' },
+                                        ]}
+                                    >
+                                        <TextArea
+                                            placeholder="Trang trại Koi Farm"
+                                            autoSize={{ minRows: 2, maxRows: 4 }}
+                                        />
+                                    </Form.Item>
+
+
+
+                                    {/* First Row: Consignment Form and Consignment Type */}
+                                    <Row gutter={16}>
+                                        {/* Consignment Form */}
+                                        <Col xs={24} sm={12}>
+                                            <Form.Item
                                                 labelCol={{ span: 24 }}
                                                 wrapperCol={{ span: 24 }}
-                                                name="food"
-                                                className='p-0 m-0 w-[full] relative bottom-44  '
-                                                rules={[{
-                                                    required: true, message: <span className='w-[500px] relative left-[40px]'>Vui lòng điền thức ăn của Koi</span>
-                                                },
-
+                                                label="Hình thức ký gửi"
+                                                name="online"
+                                                rules={[
+                                                    { required: true, message: 'Vui lòng chọn hình thức ký gửi' },
                                                 ]}
                                             >
-
-                                                <TextArea className='w-[80%] mx-[39px]' showCount maxLength={200} placeholder='Viết về thức ăn mà Koi yêu thích' cols={12} rows={2} />
-
-
-
-                                            </Form.Item>
-                                        </div>
-                                        <div className="self-stretch h-[103px] ms-[10px] ">
-                                            <Form.Item
-                                                label={<span className="relative top-1">Sức khỏe</span>}
-
-                                                labelCol={{ span: 24 }}
-                                                wrapperCol={{ span: 24 }}
-                                                name="health"
-                                                className='p-0 m-0 w-[full] relative bottom-44  '
-                                                rules={[{
-                                                    required: true, message: <span className='w-[500px] relative left-[40px]'>Vui lòng điền trạng thái sức khỏe của Koi</span>
-                                                },
-
-                                                ]}
-                                            >
-
-                                                <TextArea className='w-[80%] mx-[39px] flex justify-center' showCount maxLength={200} placeholder='Mô tả về sức khỏe của Koi' cols={12} rows={2} />
-
-
-
-                                            </Form.Item>
-                                        </div>
-                                        <div className="self-stretch h-[103px] ms-[10px]  ">
-                                            <Form.Item
-                                                label={<span className="relative top-1">Độ pH</span>}
-
-                                                labelCol={{ span: 24 }}
-                                                wrapperCol={{ span: 24 }}
-                                                name="ph"
-                                                className='p-0 m-0 w-[full] relative bottom-44  '
-                                                rules={[{
-                                                    required: true, message: <span className='w-[500px] relative left-[40px]'>Vui lòng độ pH thích hợp với Koi</span>
-                                                },
-
-                                                ]}
-                                            >
-                                                <TextArea className='w-[80%] mx-[39px] flex justify-center' showCount maxLength={200} placeholder='7 - 7.5' cols={12} rows={2} />
-
-
-
-                                            </Form.Item>
-                                        </div>
-                                        <div className="self-stretch h-[103px] ms-[10px]  ">
-                                            <Form.Item
-                                                label={<span className="relative top-1">Nhiệt độ môi trường sống (&deg;C)</span>}
-
-                                                labelCol={{ span: 24 }}
-                                                wrapperCol={{ span: 24 }}
-                                                name="temperature"
-                                                className='p-0 m-0 w-[full] relative bottom-44 '
-                                                rules={[{
-                                                    required: true, message: <span className='w-[500px] relative left-[40px]'>Vui lòng điền nhiệt độ phù hợp với Koi</span>
-                                                },
-
-                                                ]}
-                                            >
-
-                                                <Input placeholder='20 - 27' className='w-[200px] ms-10'></Input>
-
-
-                                            </Form.Item>
-                                        </div>
-                                        <div className="self-stretch h-[103px] ms-[10px] ">
-                                            <Form.Item
-                                                label={<span className="relative top-1">Nguồn gốc</span>}
-
-                                                labelCol={{ span: 24 }}
-                                                wrapperCol={{ span: 24 }}
-                                                name="origin"
-                                                className='p-0 m-0 w-[full] relative bottom-44 '
-                                                rules={[{
-                                                    required: true, message: <span className='w-[500px] relative left-[40px]'>Vui lòng điền thông tin nguồn gốc</span>
-                                                },
-
-                                                ]}
-                                            >
-
-                                                <TextArea className='w-[80%] mx-[39px]' showCount maxLength={200} placeholder='Trang trại Koi Farm' cols={12} rows={2} />
-
-
-
-                                            </Form.Item>
-                                        </div>
-                                    </div>
-                                    <div className="self-stretch h-[full] px-2.5 relative right-5 py-5 rounded-[10px] border border-black flex-col justify-start items-start gap-[25px] flex">
-                                        <div className="text-black text-2xl w-full font-bold font-['Arial'] text-center">Thông tin ký gửi Koi & liên hệ</div>
-                                        <div className="h-[50px]  justify-start items-center inline-flex">
-                                            <div className="w-full self-stretch p-2.5 bg-white  justify-center items-center gap-2.5 inline-flex">
-                                                <Form.Item
-                                                    label={<span className="relative top-1 w-[10rem]">Hình thức ký gửi</span>}
-                                                    labelAlign="right"
-                                                    labelCol={{ span: 24 }}
-                                                    wrapperCol={{ span: 15 }}
-                                                    name="online"
-                                                    className='p-0 w-[20rem]'
-                                                    rules={[{ required: true, message: <span className='!w-[500px] relative  left-[10px]'>Vui lòng chọn hình thức ký gửi</span> }]}
+                                                <Select
+                                                    placeholder="Chọn hình thức ký gửi"
+                                                    onChange={handleSelectCategory}
                                                 >
-                                                    <Select
-                                                        className="w-full h-[40px] ms-10 relative right-[30px]"
-                                                        defaultValue=""
-                                                        onChange={handleSelectCategory}
-                                                        dropdownStyle={{ width: 200, marginLeft: 20 }}
-                                                        suffixIcon={<CustomSVGIcon />}
-                                                    >
+                                                    {consignmentForm.map((item) => (
+                                                        <Option key={item.key} value={item.value}>
+                                                            {item.label}
+                                                        </Option>
+                                                    ))}
+                                                </Select>
+                                            </Form.Item>
+                                        </Col>
 
-                                                        {consignmentForm.map(item => (
-                                                            <Option key={item.key} value={item.value}>
-                                                                {item.label}
-                                                            </Option>
-                                                        ))}
-                                                    </Select>
-                                                </Form.Item>
-                                            </div>
-                                        </div>
-                                        <div className="h-[50px]  justify-start items-center inline-flex">
-                                            <div className="w-full relative self-stretch p-[10px] bg-white  justify-center items-center gap-2.5 inline-flex">
-                                                <Form.Item
-                                                    label={<span className="relative top-1 w-[200px] p-0">Loại ký gửi</span>}
-                                                    labelAlign="right"
-                                                    labelCol={{ span: 24 }}
-                                                    wrapperCol={{ span: 15 }}
-                                                    name="consignmentType"
-                                                    className="pt-4 w-[20rem] my-10 relative"
-                                                    rules={[{ required: true, message: <span className='!w-[500px] relative top-1 left-[10px]'>Vui lòng chọn loại ký gửi</span> }]}
+                                        {/* Consignment Type */}
+                                        <Col xs={24} sm={12}>
+                                            <Form.Item
+                                                labelCol={{ span: 24 }}
+                                                wrapperCol={{ span: 24 }}
+                                                label="Loại ký gửi"
+                                                name="consignmentType"
+                                                rules={[
+                                                    { required: true, message: 'Vui lòng chọn loại ký gửi' },
+                                                ]}
+                                            >
+                                                <Select
+                                                    placeholder="Chọn loại ký gửi"
+                                                    onChange={handleSelectConsigmentType}
+                                                    value={SelectedConsignmentType}
+
                                                 >
-                                                    <Select
-                                                        className="w-full h-[40px] relative left-[10px] flex justify-between items-center"
-                                                        defaultValue=""
-                                                        onChange={handleSelectConsigmentType}
-                                                        dropdownStyle={{ width: 200, marginLeft: 20 }}
-                                                        suffixIcon={<CustomSVGIcon />}
-                                                    >
-                                                        {consignmentType.map(item => (
-                                                            <Option key={item.key} value={item.value}>
-                                                                {item.label}
-                                                            </Option>
-                                                        ))}
-                                                    </Select>
-                                                </Form.Item>
+                                                    {consignmentType.map((item) => (
+                                                        <Option key={item.key} value={item.value}>
+                                                            {item.label}
+                                                        </Option>
+                                                    ))}
+                                                </Select>
+                                            </Form.Item>
+                                        </Col>
+                                    </Row>
 
-                                            </div>
-                                        </div>
-                                        <div className="h-[50px] pr-[0] justify-start items-center inline-flex">
-                                            <div className="w-full p-[10px] mt-12 self-stretch  bg-white rounded-[10px]  justify-center items-center gap-2.5 inline-flex">
+                                    {/* Second Row: Package and Phone Number */}
+                                    <Row gutter={16}>
+                                        {/* Package */}
+                                        <Col xs={24} sm={12}>
+                                            {SelectedConsignmentType === '1' ?
                                                 <Form.Item
-                                                    label={<span className="relative top-1">Gói ký gửi</span>}
-                                                    labelAlign="right"
                                                     labelCol={{ span: 24 }}
-                                                    wrapperCol={{ span: 15 }}
+                                                    wrapperCol={{ span: 24 }}
+                                                    label="Gói ký gửi"
                                                     name="duration"
-                                                    className='p-0 w-[20rem] my-10'
-                                                    rules={[{ required: true, message: <span className='!w-[500px] relative  left-[10px]'>Vui lòng chọn gói ký gửi</span> }]}
+                                                    rules={[
+                                                        { required: true, message: 'Vui lòng chọn gói ký gửi' },
+                                                    ]}
                                                 >
                                                     <Select
-                                                        className="w-full h-[40px] ms-10 relative  right-[30px]"
-                                                        defaultValue=""
+                                                        placeholder="Chọn gói ký gửi"
                                                         onChange={handleSelectPackage}
-                                                        dropdownStyle={{ width: 200, marginLeft: 20 }}
-                                                        suffixIcon={<CustomSVGIcon />}
+                                                        value={SelectedPackage}
                                                     >
-
-                                                        {SelectedConsignmentType === "1"
-                                                            ? consignmentPackForSell.map(item => (
+                                                        {
+                                                            consignmentPackForSell.map((item) => (
                                                                 <Option key={item.key} value={item.value}>
                                                                     {item.label}
                                                                 </Option>
                                                             ))
-                                                            : consignmentPackForTakeCare.map(item => (
+
+                                                        }
+                                                    </Select>
+                                                </Form.Item>
+                                                : SelectedConsignmentType === '0' ?
+                                                    <Form.Item
+                                                        labelCol={{ span: 24 }}
+                                                        wrapperCol={{ span: 24 }}
+                                                        label="Gói ký gửi"
+                                                        name="duration"
+                                                        rules={[
+                                                            { required: true, message: 'Vui lòng chọn gói ký gửi' },
+                                                        ]}
+                                                    >
+                                                        <Select
+                                                            placeholder="Chọn gói ký gửi"
+                                                            onChange={handleSelectPackage}
+                                                            value={SelectedPackage}
+                                                        >
+                                                            {consignmentPackForTakeCare.map((item) => (
                                                                 <Option key={item.key} value={item.value}>
                                                                     {item.label}
                                                                 </Option>
-                                                            ))}
-                                                    </Select>
-                                                </Form.Item>
-                                            </div>
-                                        </div>
-                                        <div className=" h-full ">
-                                            <div className="w-full grid grid-flow-col p-[8px] pt-0 grid-cols-5 text-black  font-['Arial']">
-                                                <Form.Item
-                                                    label={<span className="relative top-1">Số điện thoại</span>}
-                                                    labelAlign=""
-                                                    labelCol={{ span: 24 }}
-                                                    wrapperCol={{ span: 18 }}
-                                                    name="phoneNumber"
-                                                    className='m-0 w-[20rem] right-2 relative self-stretch p-[10px] my-10 '
-                                                    rules={[{
-                                                        required: true, message: <span className='!w-[500px] relative top-1 left-10'>Vui lòng nhập số điện thoại</span>
-                                                    },
+                                                            ))
+                                                            }
+                                                        </Select>
+                                                    </Form.Item> : <></>
+                                            }
+                                        </Col>
+
+
+                                    </Row>
+                                    <Form.Item
+                                        label="Số điện thoại"
+                                        name="phoneNumber"
+                                        labelCol={{ span: 24 }}
+                                        wrapperCol={{ span: 24 }}
+                                        rules={[
+                                            { required: true, message: 'Vui lòng nhập số điện thoại' },
+                                            {
+                                                pattern: /^[0-9]+$/,
+                                                message: 'Số điện thoại phải là số!',
+                                            },
+                                        ]}
+                                    >
+                                        <Input placeholder="Nhập số điện thoại" />
+                                    </Form.Item>
+
+                                    {/* Conditional Fields for Price and Service Fee */}
+                                    {SelectedConsignmentType === '1' ? (
+                                        <>
+                                            {/* Third Row: Price and Displayed Price */}
+
+
+                                            <Form.Item
+                                                label="Giá bán (VND)"
+                                                name="price"
+                                                labelCol={{ span: 24 }}
+                                                wrapperCol={{ span: 16 }}
+                                                rules={[
+                                                    { required: true, message: 'Vui lòng nhập giá bán' },
                                                     {
-                                                        pattern: new RegExp(/^[0-9]+$/),
-                                                        message: <span className='!w-[500px] relative top-1 left-10'>Số điện thoại phải là số!</span>
+                                                        pattern: /^[0-9]+$/,
+                                                        message: 'Giá bán phải là số!',
                                                     },
-
-                                                    ]}
-                                                >
-                                                    <Input placeholder='' className='w-full ms-10'></Input>
-
-                                                </Form.Item>
-                                            </div>
-                                        </div>
-                                        <div className="self-stretch h-full flex-col justify-start items-start gap-[25px] flex">
-
-                                            {SelectedConsignmentType === "1"
-                                                ?
-                                                <>
-                                                    <Form.Item
-                                                        label={<span className="relative top-1">Giá  bán(VND)  nếu người dùng chọn ký gửi để bán</span>}
-                                                        labelAlign=""
-                                                        labelCol={{ span: 24 }}
-                                                        wrapperCol={{ span: 11 }}
-                                                        name="price"
-                                                        className=' m-0 w-[500px] relative self-stretch p-[10px] text-black text-2xl font-bold '
-                                                        rules={[{
-                                                            required: true, message: <span className='!w-[500px] relative left-[40px] !font-normal'>Vui lòng nhập giá bán</span>
-                                                        },
-                                                        {
-                                                            pattern: new RegExp(/^[0-9]+$/),
-                                                            message: <span className='!w-[500px] relative left-[40px] !font-normal'>Giá bán phải là số!</span>
-                                                        },
-
-                                                        ]}
-                                                    >
-                                                        <Input value={SelectedConsignmentType === '1' ? inputPrice : ''} onChange={handleInputPrice} placeholder='10000' className='w-full ms-10'></Input>
-
-                                                    </Form.Item>
-                                                    <div className="p-[10px] mt-2 w-full">
-                                                        <h1 className='text-black font-bold'>
-                                                            Giá đã nhập
-                                                        </h1>
-                                                        <div className='text-center text-2xl m-0 font-bold text-[#FA4444]'> {
-
-                                                            inputPrice > 0 ? formatVND(Number(inputPrice)) : '0 ₫'
-                                                        }</div>
-                                                    </div></>
-
-                                                : <></>}
+                                                ]}
+                                            >
+                                                <Input
+                                                    placeholder="Nhập giá bán"
+                                                    value={inputPrice}
+                                                    onChange={handleInputPrice}
+                                                />
+                                            </Form.Item>
 
 
-
-
-
-                                            <div className="w-full h-full ">
-                                                <div className=" grid grid-flow-col p-[10px] pt-0 grid-cols-5 text-black text-2xl font-bold font-['Arial']">
-                                                    <Form.Item
-                                                        initialValue={serviceFee}
-                                                        preserve={true} hidden >
-                                                        <Input value="12345" disabled hidden />
-                                                    </Form.Item>
-
-                                                    {/* Display Service Fee */}
-                                                    <Form.Item
-                                                        label={
-                                                            <>
-                                                                <span className="text-black font-['Arial']">Chi phí(</span>
-                                                                <span className="text-[#e94444] font-['Arial']">xem chi tiết</span>
-                                                                <span className="text-black font-['Arial']">): </span>
-                                                            </>
-                                                        }
-                                                        labelCol={{ span: 24 }}
-                                                        wrapperCol={{ span: 24 }}
-                                                        className="w-full col-span-5"
-                                                    >
-                                                        <div className="text-center text-[#FA4444] text-2xl">
-                                                            {SelectedConsignmentType === '1' ? formatVND(serviceFee) : '0 ₫'}
-                                                        </div>
-                                                    </Form.Item>
+                                            {/* Display Entered Price */}
+                                            <Row >
+                                                {/* Price */}
+                                                <div className=" mb-4 w-full">
+                                                    <h3 className="font-bold">Giá đã nhập:</h3>
+                                                    <div className="text-2xl flex justify-center text-center text-red-500">
+                                                        {inputPrice > 0 ? formatVND(Number(inputPrice)) : '0 ₫'}
+                                                    </div>
                                                 </div>
 
-                                            </div>
+                                            </Row>
 
-                                        </div>
+                                            {/* Fourth Row: Service Fee */}
+                                            <Row>
+                                                <div className='w-full'>
+                                                    <h3 className="font-bold">Chi phí (xem chi tiết):</h3>
+                                                    <div className="text-2xl flex justify-center text-red-500">
+                                                        {formatVND(serviceFee)}
+                                                    </div>
+                                                </div>
 
-                                    </div>
-                                    <div className=''>
-                                        <Form.Item
-                                            wrapperCol={{
-                                                offset: 24,
-                                                span: 24,
-                                            }}
-                                        >
-                                            <Button type="primary" htmlType="submit" >
-                                                Nộp đơn
-                                            </Button>
-                                        </Form.Item>
+                                            </Row>
+                                        </>
+                                    ) :
+                                        SelectedConsignmentType === '0' ?
 
-                                    </div>
+                                            <>
+                                                {/* Third Row: Price and Displayed Price */}
+
+
+                                                <Form.Item
+                                                    label="Giá bán (VND)"
+                                                    name="price"
+                                                    labelCol={{ span: 24 }}
+                                                    wrapperCol={{ span: 16 }}
+                                                    rules={[
+                                                        { required: true, message: 'Vui lòng nhập giá bán' },
+                                                        {
+                                                            pattern: /^[0-9]+$/,
+                                                            message: 'Giá bán phải là số!',
+                                                        },
+                                                    ]}
+                                                >
+                                                    <Input
+                                                        placeholder="Nhập giá bán"
+                                                        value={inputPrice}
+                                                        onChange={handleInputPrice}
+                                                    />
+                                                </Form.Item>
+
+                                                {console.log(inputPrice + 'dat la gia ca tu order detail')}
+                                                {/* Display Entered Price */}
+                                                <Row >
+                                                    {/* Price */}
+                                                    <div className=" mb-4 w-full">
+                                                        <h3 className="font-bold">Giá của cá:</h3>
+                                                        <div className="text-2xl flex justify-center text-center text-red-500">
+                                                            {inputPrice > 0 ? formatVND(Number(inputPrice)) : '0 ₫'}
+                                                        </div>
+                                                    </div>
+
+                                                </Row>
+
+                                                {/* Fourth Row: Service Fee */}
+                                                <Row>
+                                                    <div className='w-full'>
+                                                        <h3 className="font-bold">Chi phí (xem chi tiết):</h3>
+                                                        <div className="text-2xl flex justify-center text-red-500">
+                                                            {formatVND(serviceFee)}
+                                                        </div>
+                                                    </div>
+
+                                                </Row>
+                                            </> : <></>
+
+                                             
+
+                                    }
+
+
                                 </div>
-                            </div>
+                            </Col>
+                        </Row>
 
+                        {/* Consignment Information */}
+                        <Row gutter={24} className="mt-6">
+
+                        </Row>
+
+                        {/* Submit Button */}
+                        <div className='flex justify-center'>
+                            <Row justify="center" className="mt-6">
+                                <Col>
+                                    <Button
+                                        onClick={() => handleCurrentPage(currentPage)}
+                                        className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-500 transition duration-300"
+                                    >
+                                        Quay lại
+                                    </Button>
+                                </Col>
+                            </Row>
+                            <Row justify="center" className="mt-6">
+                                <Col>
+                                    <Form.Item>
+                                        <Button
+                                            className=" text-white px-6 bg-[#FA4444] py-3 rounded-lg font-semibold hover:bg-blue-500 transition duration-300"
+                                            type="primary" htmlType="submit">
+                                            Nộp đơn
+                                        </Button>
+                                    </Form.Item>
+                                </Col>
+                            </Row>
+
+                            {/* Back Button */}
 
                         </div>
-
-                    </Form >
-                    <button
-                        onClick={() => handleCurrentPage((currentPage))}
-                        className="bg-blue-600 relative  text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-500 transition duration-300"
-                    >
-                        Quay lại
-                    </button>
-
+                        
+                    </Form>
 
 
                 </div >
