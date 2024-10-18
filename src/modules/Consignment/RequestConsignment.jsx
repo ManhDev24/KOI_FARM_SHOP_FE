@@ -95,12 +95,13 @@ const RequestConsignment = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const [consignmentID, setConsignmentID] = useState();
     const navigate = useNavigate();
+    
     const handleCurrentPage = (prevPage) => {
         localStorage.setItem('agreedToPolicy', false);
         prevPage = 1
         if (prevPage <= 1) {
             setCurrentPage(prevPage => prevPage + 1);
-            navigate(-1);
+            navigate('/request-consignment');
         }
     };
 
@@ -1327,7 +1328,7 @@ const RequestConsignment = () => {
                     </Form >
                     <button
                         onClick={() => handleCurrentPage((currentPage))}
-                        className="bg-blue-600 relative bottom-32 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-500 transition duration-300"
+                        className="bg-blue-600 relative  text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-500 transition duration-300"
                     >
                         Quay lại
                     </button>
