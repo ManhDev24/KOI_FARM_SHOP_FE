@@ -205,14 +205,14 @@ const FishManagement = () => {
               setDataView(record);
             }}
           >
-            View
+            Xem
           </Button>
           <Button
             type="default"
             icon={<EditOutlined />}
             onClick={() => onEditFish(record)}
           >
-            Edit
+            Chỉnh sửa
           </Button>
           <Button
             type="default"
