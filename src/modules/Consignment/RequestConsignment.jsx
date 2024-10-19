@@ -123,12 +123,12 @@ const RequestConsignment = () => {
         if (fishFromOrderDetail) {
             const fetchKoiData = async () => {
                 try {
-                    
+
                     const koiData = await FishApi.getFishDetail(fishFromOrderDetail);
                     console.log('Dữ liệu từ API:', koiData);
-                    const certificate =  await ConsignmentApi.getCertificateByID(fishFromOrderDetail);
+                    const certificate = await ConsignmentApi.getCertificateByID(fishFromOrderDetail);
                     const selectedCateId = koiData.categoryId?.toString() || '';
-                    console.log('Data for certificate image ',certificate.data.image )
+                    console.log('Data for certificate image ', certificate.data.image)
                     setSelectedCategory(selectedCateId);
 
                     const selectedGender = koiData.gender;
@@ -165,7 +165,7 @@ const RequestConsignment = () => {
                         health: koiData.health,
                         ph: koiData.ph,
                         temperature: koiData.temperature,
-                        price: fishFromOrderDetail ? koiData.price : koiData.price,                       
+                        price: fishFromOrderDetail ? koiData.price : koiData.price,
 
                     });
                 } catch (error) {
@@ -311,12 +311,12 @@ const RequestConsignment = () => {
         {
             key: "19",
             label: "3 Tháng 15% giá trị",
-            value: "2",
+            value: "3",
         },
         {
             key: "20",
             label: "6 Tháng 20% giá trị",
-            value: "3",
+            value: "6",
         },
 
     ];
@@ -334,12 +334,12 @@ const RequestConsignment = () => {
         {
             key: "23",
             label: "3 Tháng 12% giá trị",
-            value: "2",
+            value: "3",
         },
         {
             key: "24",
             label: "6 Tháng 18% giá trị",
-            value: "3",
+            value: "6",
         },
 
     ];
@@ -369,7 +369,7 @@ const RequestConsignment = () => {
             message.error(errorMessage)
         },
     });
-    console.log('ssssss'+selectedKoiImage)
+    console.log('ssssss' + selectedKoiImage)
     const onFinish = async (values) => {
         try {
             // Convert the image URLs (or blob URLs) to files    
@@ -391,15 +391,24 @@ const RequestConsignment = () => {
             if (!accountId) {
                 throw new Error('Account ID not found in localStorage');
             }
-            console.log('ssssss'+selectedKoiImage)
+            console.log('ssssss' + selectedKoiImage)
             console.log(selectedKoiCertificate)
             console.log("tess", serviceFee);
             const x = serviceFee;
             formData.append('serviceFee', x);
             formData.append('accountId', accountId);
             formData.append('water', 'lanh');
-            formData.append('koiImgURL', selectedKoiImage);
-            formData.append('certImgURL', selectedKoiCertificate);
+            if (selectedKoiImage instanceof File) {
+                formData.append('koiImgURL', '');
+            } else if (typeof selectedKoiImage === 'string') {
+                formData.append('koiImgURL', selectedKoiImage);
+            }
+            
+            if (selectedKoiCertificate instanceof File) {
+                formData.append('certImgURL', '');
+            } else if (typeof selectedKoiCertificate === 'string') {
+                formData.append('certImgURL', selectedKoiCertificate);
+            }
             // Trigger the mutation
             handleConsignmentSubmit(formData);
 
@@ -503,9 +512,9 @@ const RequestConsignment = () => {
         if (SelectedConsignmentType === '1') {
             if (selectedPackages === '1') {
                 return price * 0.1;
-            } else if (selectedPackages === '2') {
-                return price * 0.15;
             } else if (selectedPackages === '3') {
+                return price * 0.15;
+            } else if (selectedPackages === '6') {
                 return price * 0.20;
             }
         } else if (SelectedConsignmentType === '0') {
@@ -559,11 +568,11 @@ const RequestConsignment = () => {
             if (fishFromOrderDetail) {
                 form.setFieldsValue({
                     duration: '',
-                    price: '',
-                    
+                    price:inputPrice,
+
                 });
-                
-                setInputPrice(0);
+
+                setServiceFee(0)
             } else {
                 form.setFieldsValue({
                     duration: '',
@@ -571,7 +580,7 @@ const RequestConsignment = () => {
                 });
             }
         console.log("Loại ký gửi", value);
-        console.log(fishFromOrderDetail,"Loại ký gửi")
+        console.log(fishFromOrderDetail, "Loại ký gửi")
 
 
     };
@@ -1412,9 +1421,6 @@ const RequestConsignment = () => {
 
                                                 </Row>
                                             </> : <></>
-
-                                             
-
                                     }
 
 
@@ -1454,7 +1460,7 @@ const RequestConsignment = () => {
                             {/* Back Button */}
 
                         </div>
-                        
+
                     </Form>
 
 
