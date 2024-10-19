@@ -141,8 +141,6 @@ const KoiConsignmentPolicies = () => {
             </div>
 
 
-
-
         </>
     )
 }
