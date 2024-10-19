@@ -3,6 +3,8 @@ import DefaultLayout from "../layouts/DefautLayout/DefaultLayout";
 import AdminLayout from "../modules/Admin/AdminLayout/AdminLayout";
 import BathManagement from "../modules/Admin/BathManagement/BathManagement";
 import CategoryManagement from "../modules/Admin/CategoryManagement/CategoryManagement";
+import ConsigmentManagement from "../modules/Admin/ConsigmentManagement/ConsigmentManagement";
+import ConsigmentManagementDetail from "../modules/Admin/ConsigmentManagement/ConsigmentManagementDetail";
 import DashBoard from "../modules/Admin/Dashboard/DashBoard";
 import FishManagement from "../modules/Admin/FishManagement/FishManagement";
 import PaymentManagement from "../modules/Admin/PaymentManagement/PaymentManagement";
@@ -236,6 +238,18 @@ export const privateRoutes = [
       {
         path: "batch-management",
         component: BathManagement,
+        layout: null,
+        roles: ["manager", "staff"],
+      },
+      {
+        path: "consignment-management",
+        component: ConsigmentManagement,
+        layout: null,
+        roles: ["manager", "staff"],
+      },
+      {
+        path: "consignment-management-detail/:consignmentId",
+        component: ConsigmentManagementDetail,
         layout: null,
         roles: ["manager", "staff"],
       },
