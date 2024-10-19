@@ -53,6 +53,7 @@ const CategoryManagement = () => {
   const [imageUrl, setImageUrl] = useState(undefined);
   const [isChangeImage, setIsChangeImage] = useState(false);
   const [idFish, setIdFish] = useState();
+  const [status, setStatus] = useState(1);
   const queryClient = useQueryClient();
 
   const showModal = () => {
@@ -186,7 +187,9 @@ const CategoryManagement = () => {
               color: "white",
             }}
             icon={<StopOutlined />}
-            onClick={() => handleUpdateStatusCategory(record.id)}
+            onClick={() => {handleUpdateStatusCategory(record.id)
+              setStatus(record?.status)
+            }}
           >
             {record.status ? "Ẩn" : "Hiển thị"}
           </Button>
@@ -276,11 +279,23 @@ const CategoryManagement = () => {
     }
 
     if (dataEdit) {
-      formData.append("categoryName", data?.cateName);
-      formData.append("categoryDescription", data?.description)
-      formData.append("status", true);
-      formData.append("imgFile",file)
-      handleUpdateCategory(formData);
+      console.log('dataEdit: ', dataEdit);
+      if(!image){
+        const {cateName,description} = data;
+        const transformData = {
+          categoryName: cateName,
+          categoryDescription:description,
+          status : dataEdit?.status
+        }
+        handleUpdateCategory(transformData);
+      } else{
+        formData.append("categoryName", data?.cateName);
+        formData.append("categoryDescription", data?.description)
+        formData.append("status", true);
+        formData.append("imgFile",file)
+        handleUpdateCategory(formData);
+      }
+     
     } else {
       console.log("Tạo mới category với dữ liệu: ", data);
       handleCreateCategory(formData);

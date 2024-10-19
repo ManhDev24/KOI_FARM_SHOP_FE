@@ -94,44 +94,43 @@ const AdminLayout = () => {
             navigate(key);
           }}
           style={{
-            height: "102%",
           }}
           items={[
             {
               key: "/admin/dashboard",
               icon: <DashboardOutlined />,
-              label: "Dashboard",
+              label: "Biểu đồ",
             },
             {
               key: "/admin/user-management",
               icon: <UserOutlined />,
-              label: "Account ",
+              label: "Quản lý tài khoản ",
             },
             {
               key: "/admin/fish-management",
               icon: <VideoCameraOutlined />,
-              label: "Fish Management",
+              label: "Quản lý cá koi",
             },
             {
               key: "/admin/batch-management",
               icon: <VideoCameraOutlined />,
-              label: "Batch Management",
+              label: "Quản lý lô cá koi",
             },
             {
               key: "/admin/category-management",
               icon: <SafetyCertificateOutlined />,
-              label: "Category ",
+              label: "Quản lý danh mục ",
             },
             {
               key: "/admin/payment-management",
               icon: <PayCircleOutlined />,
-              label: "Payment",
+              label: "Quản lý đơn hàng",
             },
 
             {
               key: "/",
               icon: <HomeOutlined />,
-              label: "Home",
+              label: "Quay về trang chủ",
             },
           ]}
         ></Menu>
@@ -158,8 +157,9 @@ const AdminLayout = () => {
           className="site-layout-background"
           style={{
             backgroundColor: "#F5F5F5 !important",
-            padding: 24,
             minHeight: 280,
+            paddingLeft:20,
+            paddingRight:20,
             borderRadius: borderRadiusLG,
           }}
         >
