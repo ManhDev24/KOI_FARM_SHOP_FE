@@ -10,6 +10,7 @@ import {
   SafetyCertificateOutlined,
   PayCircleOutlined,
   HomeOutlined,
+  FundProjectionScreenOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { useLocation, useNavigate, Outlet } from "react-router-dom";
@@ -93,8 +94,7 @@ const AdminLayout = () => {
           onSelect={({ key }) => {
             navigate(key);
           }}
-          style={{
-          }}
+          style={{}}
           items={[
             {
               key: "/admin/dashboard",
@@ -120,6 +120,11 @@ const AdminLayout = () => {
               key: "/admin/category-management",
               icon: <SafetyCertificateOutlined />,
               label: "Quản lý danh mục ",
+            },
+            {
+              key: "/admin/consignment-management",
+              icon: <FundProjectionScreenOutlined />,
+              label: "Quản lý ký gửi ",
             },
             {
               key: "/admin/payment-management",
@@ -156,11 +161,17 @@ const AdminLayout = () => {
         <Content
           className="site-layout-background"
           style={{
-            backgroundColor: "#F5F5F5 !important",
-            minHeight: 280,
-            paddingLeft:20,
-            paddingRight:20,
+            backgroundColor: "#F5F5F5",
+            paddingLeft: 20,
+            paddingRight: 20,
             borderRadius: borderRadiusLG,
+            flexGrow: 1,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-start",
+            marginTop: 24,
+            minHeight: "calc(100vh - 64px - 48px)",
+            overflow: "auto", 
           }}
         >
           <Outlet />
