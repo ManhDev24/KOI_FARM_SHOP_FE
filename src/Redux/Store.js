@@ -4,16 +4,17 @@ import cartReducer from "./Slices/Cart_Slice";
 import fishListReducer from "./Slices/FishList_Slice";
 import orderReducer from "./Slices/Order_Slice";
 import consignmentIDReducer from "./Slices/consignmentID_Slice";
+import typeReducer  from "./Slices/Type_Slice";
 const rootReducer = combineReducers({
   auth: authReducer,
   cart: cartReducer,
   order: orderReducer,
   category: fishListReducer,
   consignment: consignmentIDReducer,
+  type: typeReducer,
 });
 
 const Store = configureStore({
   reducer: rootReducer,
 });
-
 export default Store;

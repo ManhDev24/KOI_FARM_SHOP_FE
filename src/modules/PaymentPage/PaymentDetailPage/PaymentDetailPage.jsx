@@ -10,6 +10,11 @@ import { useNavigate, useParams } from "react-router-dom";
 
 
 const PaymentDetailPage = () => {
+  const consignmentId = localStorage.getItem('consignmentID');
+  const consignmentID = localStorage.getItem('fishConsignmentID');
+  if(typeof consignmentId !== 'string' || consignmentID  ){
+
+  }
   const columns = [
     {
       title: "Tên Cá Koi",
