@@ -43,6 +43,16 @@ export const ConsignmentApi = {
       );
     }
   },
+  getAllConsignment: async (currentPage, pageSize = 9, accountId) => {
+    try {
+      const response = await fetcher.get(
+        `http://localhost:8080/koifarm/consignment/getAllConsignment?pageNo=${currentPage}&pageSize=${pageSize}&accountId=${accountId}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
   getAllConsignmentManagement: async (currentPage, pageSize = 9) => {
     try {
       const response = await fetcher.get(
@@ -77,6 +87,16 @@ export const ConsignmentApi = {
     try {
       const response = await fetcher.put(
         `http://localhost:8080/koifarm/consignment/reject/${id}?rejectionReason=${rejectionReason}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
+  cancelConsignment: async (id) => {
+    try {
+      const response = await fetcher.delete(
+        `http://localhost:8080/koifarm/consignment/deleteConsignment?consignmentId=${id}`
       );
       return response.data;
     } catch (error) {

@@ -11,7 +11,7 @@ import './requestConsignment.css'
 import { ConsignmentApi } from '../../apis/Consignment.api';
 import { useMutation } from '@tanstack/react-query';
 import LoadingModal from '../Modal/LoadingModal';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import { saveConsignmentID } from '../../Redux/Slices/consignmentID_Slice';
 import { useDispatch } from 'react-redux';
 import FishApi from '../../apis/Fish.api';
@@ -87,7 +87,7 @@ const RequestConsignment = () => {
     const [SelectedPackage, setSelectedPackage] = useState('');
     const [imageSrc, setImageSrc] = useState(null);
     const [imageSrcCer, setImageSrcCer] = useState(null);
-    const [fee, setFee] = useState('');
+  
     const [serviceFee, setServiceFee] = useState(0);
     const [loading, setLoading] = useState(false);
     const [selectedKoiImage, setSelectedKoiImage] = useState(null);
@@ -118,40 +118,32 @@ const RequestConsignment = () => {
 
     useEffect(() => {
         const fishFromOrderDetail = localStorage.getItem('fishConsignmentID');
+        const consignmentIDs = localStorage.getItem('consignmentID');
         console.log('IDfish:', fishFromOrderDetail);
 
-        if (fishFromOrderDetail) {
+        if (fishFromOrderDetail || consignmentIDs) {
             const fetchKoiData = async () => {
                 try {
-
                     const koiData = await FishApi.getFishDetail(fishFromOrderDetail);
                     console.log('Dữ liệu từ API:', koiData);
                     const certificate = await ConsignmentApi.getCertificateByID(fishFromOrderDetail);
+
                     const selectedCateId = koiData.categoryId?.toString() || '';
-                    console.log('Data for certificate image ', certificate.data.image)
                     setSelectedCategory(selectedCateId);
 
-                    const selectedGender = koiData.gender;
-                    const gender =
-                        selectedGender === true ||
-                            selectedGender === 'true' ||
-                            selectedGender === 1
-                            ? '1'
-                            : '0';
-                    console.log('Selected gender:', gender);
+                    const gender = koiData.gender === true || koiData.gender === 'true' || koiData.gender === 1 ? '1' : '0';
                     setSelectedGender(gender);
 
                     const pureBredValue = koiData.purebred?.toString() || '';
-                    console.log('Purebred:', pureBredValue);
                     setSelectedPureBred(pureBredValue);
                     setInputPrice(koiData.price);
 
-                    console.log('Koi Image URL:', koiData.koiImage);
                     setImageSrc(koiData.koiImage);
                     setImageSrcCer(certificate.data.image);
-                    setSelectedKoiImage(koiData.koiImage)
+                    setSelectedKoiImage(koiData.koiImage);
                     setSelectedKoiCertificate(certificate.data.image);
-                    // Set form fields
+
+                    // Đặt giá trị cho form
                     form.setFieldsValue({
                         origin: koiData.origin,
                         gender: gender,
@@ -165,33 +157,40 @@ const RequestConsignment = () => {
                         health: koiData.health,
                         ph: koiData.ph,
                         temperature: koiData.temperature,
-                        price: fishFromOrderDetail ? koiData.price : koiData.price,
-
+                        price: koiData.price,
                     });
                 } catch (error) {
                     console.error('Lỗi khi lấy dữ liệu cá Koi:', error);
-                    message.error('Lỗi khi lấy dữ liệu cá Koi');
+                 
                 }
             };
 
             fetchKoiData();
         } else {
-            console.log('Không tìm thấy fishConsignmentID trong localStorage.');
+
+            toast.error('Không tồn tại đơn yêu cầu ký gửi nào, vui lòng tạo mới');
         }
-    }, []); // Empty dependency array to run once on mount
+        
+    }, [SelectedPackage]);
 
     // Second useEffect to handle service fee calculation
     useEffect(() => {
         if (inputPrice && SelectedPackage) {
-            console.log(SelectedPackage + 'SelectedPackage')
-            console.log(inputPrice + 'inputPrice')
+            console.log(SelectedPackage + 'SelectedPackagessssaasassas')
+            console.log(inputPrice + 'inputPricesasssssssssssssssss')
             const fee = handleFee(inputPrice, SelectedPackage);
 
             console.log('Service Fee:eeee', fee);
             setServiceFee(fee);
+            setServiceFee(fee);
+            
+           
         }
     }, [inputPrice, SelectedPackage, setSelectedConsignmentType]);
 
+    useEffect(() => {
+        console.log("Gói đã chọn:", SelectedPackage);
+    }, [SelectedPackage]);
 
     const CategoryItem = [
         {
@@ -372,7 +371,7 @@ const RequestConsignment = () => {
     console.log('ssssss' + selectedKoiImage)
     const onFinish = async (values) => {
         try {
-            // Convert the image URLs (or blob URLs) to files    
+          
             const formData = new FormData();
             formData.append('koiImg', selectedKoiImage);
             formData.append('certImg', selectedKoiCertificate);
@@ -403,13 +402,13 @@ const RequestConsignment = () => {
             } else if (typeof selectedKoiImage === 'string') {
                 formData.append('koiImgURL', selectedKoiImage);
             }
-            
+
             if (selectedKoiCertificate instanceof File) {
                 formData.append('certImgURL', '');
             } else if (typeof selectedKoiCertificate === 'string') {
                 formData.append('certImgURL', selectedKoiCertificate);
             }
-            // Trigger the mutation
+
             handleConsignmentSubmit(formData);
 
         } catch (error) {
@@ -422,7 +421,7 @@ const RequestConsignment = () => {
     const onFinishFailed = (errorInfo) => {
         errorInfo.values.serviceFee = serviceFee;
         errorInfo.values.koiImg = imageSrc; errorInfo.values.certImg = imageSrcCer;
-        // Add userID dynamically
+
         console.log('Failed:', errorInfo);
     };
     const onSubmit = (data) => {
@@ -509,20 +508,34 @@ const RequestConsignment = () => {
     };
     console.log(SelectedConsignmentType)
     const handleFee = (price, selectedPackages) => {
+        let fee = 0;
+
         if (SelectedConsignmentType === '1') {
             if (selectedPackages === '1') {
-                return price * 0.1;
+                fee = price * 0.1;
             } else if (selectedPackages === '3') {
-                return price * 0.15;
+                fee = price * 0.15;
             } else if (selectedPackages === '6') {
-                return price * 0.20;
+                fee = price * 0.20;
+            }else{
+                return fee;
             }
         } else if (SelectedConsignmentType === '0') {
-            return price * selectedPackages * 0.06;
-        } else {
-            return 0;
+            if (selectedPackages === '1') {
+                fee = price * 0.06;
+            } else if (selectedPackages === '3') {
+                fee = price * 0.12;
+            } else if (selectedPackages === '6') {
+                fee = price * 0.18;
+            }else{
+                return fee;
+            }
         }
+
+        // Trả về kết quả làm tròn về số nguyên
+        return Math.round(fee);
     };
+
 
 
 
@@ -546,7 +559,11 @@ const RequestConsignment = () => {
     };
     const handleSelectPackage = (value) => {
         setSelectedPackage(value);
+        console.log(SelectedPackage + 'return fee;')
+        console.log(inputPrice + 'return fee;')
+        console.log(serviceFee + 'return fee;')
         console.log("Selected category:", value);
+
     };
 
 
@@ -568,7 +585,7 @@ const RequestConsignment = () => {
             if (fishFromOrderDetail) {
                 form.setFieldsValue({
                     duration: '',
-                    price:inputPrice,
+                    price: inputPrice,
 
                 });
 
@@ -576,8 +593,9 @@ const RequestConsignment = () => {
             } else {
                 form.setFieldsValue({
                     duration: '',
-                    
+
                 });
+                setServiceFee(0)
             }
         console.log("Loại ký gửi", value);
         console.log(fishFromOrderDetail, "Loại ký gửi")
@@ -1265,6 +1283,7 @@ const RequestConsignment = () => {
                                                         placeholder="Chọn gói ký gửi"
                                                         onChange={handleSelectPackage}
                                                         value={SelectedPackage}
+                                                       
                                                     >
                                                         {
                                                             consignmentPackForSell.map((item) => (
