@@ -43,10 +43,10 @@ export const AccountApi = {
       throw new Error(error.response.data.message);
     }
   },
-  searchAccountByEmail: async (email , currentPage, pageSize = 9) => {
+  searchAccountByEmail: async (email, currentPage, pageSize = 9) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/manage/searchEmail?email=ma&page=1&pageSize=9`
+        `http://localhost:8080/koifarm/manage/searchEmail?email=${email}&page=${currentPage}&pageSize=${pageSize}`
       );
       return response.data;
     } catch (error) {
