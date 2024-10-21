@@ -71,7 +71,7 @@ const StatusConsignment = () => {
     },
     onSuccess: (response) => {
       if (typeof response.data === 'number') {
-        console.log(typeof response.data )
+        console.log(typeof response.data)
         dispatch(saveConsignmentID(response.data));
         navigate('/Form-consignment');
         message.success('Hủy ký gửi thành công');
@@ -92,9 +92,13 @@ const StatusConsignment = () => {
     cancelConsignment();
   };
 
-  const handleCurrentPages = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
-    navigate('/servicefee-consignment');
+  const handleCurrentPage = (prevPage) => {
+
+    prevPage = 2
+    if (prevPage <= 2) {
+      setCurrentPage(prevPage => prevPage + 1);
+      navigate('/Form-consignment');
+    }
   };
 
   // Formatting service fee for payment
@@ -145,7 +149,7 @@ const StatusConsignment = () => {
       <div className="w-full max-w-[950px] h-[89px] relative mx-auto p-4">
         <Steps current={currentPage} status={data.status === 1 ? 'process' : 'finish'} >
           {descriptions.map((desc, index) => (
-            <Steps.Step key={index} title='&nbsp;'  description={desc} />
+            <Steps.Step key={index} title='&nbsp;' description={desc} />
           ))}
         </Steps>
       </div>
@@ -220,17 +224,24 @@ const StatusConsignment = () => {
             {/* Nút tới trang thanh toán */}
             {data.status === 1 ? (
               <>
+                <button
+                  onClick={handleCurrentPage}
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-500 transition duration-300"
+                >
+                  Quay lại
+                </button>
                 <button onClick={handleCancelClick}
                   className="px-6 py-3 bg-[#FA4444] text-white rounded-md shadow hover:bg-blue-600 hover:shadow-lg transition duration-200"
                 >
                   Hủy ký gửi
                 </button>
-                <button
+
+                {/* <button
                   onClick={handleError}
                   className="px-6 py-3 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 hover:shadow-lg transition duration-200"
                 >
                   Thanh toán
-                </button>
+                </button> */}
 
               </>
             ) : data.status === 4 ? (
@@ -241,6 +252,18 @@ const StatusConsignment = () => {
                 >
                   Tới bước Thanh toán
                 </button> */}
+                <button
+                  onClick={handleCurrentPage}
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-500 transition duration-300"
+                >
+                  Quay lại
+                </button>
+                <button onClick={handleCancelClick}
+                  className="px-6 py-3 bg-[#FA4444] text-white rounded-md shadow hover:bg-blue-600 hover:shadow-lg transition duration-200"
+                >
+                  Hủy ký gửi
+                </button>
+
 
                 <button onClick={() => {
                   handleOrder();
@@ -335,14 +358,7 @@ const StatusConsignment = () => {
 
 
         {/* return to create new */}
-        {/* <div className="text-center mt-8">
-          <button
-            onClick={handleCurrentPage}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-500 transition duration-300"
-          >
-            Quay lại
-          </button>
-        </div> */}
+
       </div>
     </>
   );

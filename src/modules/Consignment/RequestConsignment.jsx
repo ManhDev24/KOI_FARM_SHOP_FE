@@ -15,6 +15,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import { saveConsignmentID } from '../../Redux/Slices/consignmentID_Slice';
 import { useDispatch } from 'react-redux';
 import FishApi from '../../apis/Fish.api';
+import { saveTypePayment } from '../../Redux/Slices/Type_Slice';
 const validationSchema = Yup.object().shape({
     origin: Yup.string()
         .required('Nguồn gốc là bắt buộc'),
@@ -87,7 +88,7 @@ const RequestConsignment = () => {
     const [SelectedPackage, setSelectedPackage] = useState('');
     const [imageSrc, setImageSrc] = useState(null);
     const [imageSrcCer, setImageSrcCer] = useState(null);
-  
+
     const [serviceFee, setServiceFee] = useState(0);
     const [loading, setLoading] = useState(false);
     const [selectedKoiImage, setSelectedKoiImage] = useState(null);
@@ -161,17 +162,17 @@ const RequestConsignment = () => {
                     });
                 } catch (error) {
                     console.error('Lỗi khi lấy dữ liệu cá Koi:', error);
-                 
+
                 }
             };
 
             fetchKoiData();
         } else {
 
-            toast.error('Không tồn tại đơn yêu cầu ký gửi nào, vui lòng tạo mới');
+            // toast.error('Không tồn tại đơn yêu cầu ký gửi nào, vui lòng tạo mới');
         }
-        
-    }, [SelectedPackage]);
+
+    }, [inputPrice, SelectedPackage]);
 
     // Second useEffect to handle service fee calculation
     useEffect(() => {
@@ -183,8 +184,8 @@ const RequestConsignment = () => {
             console.log('Service Fee:eeee', fee);
             setServiceFee(fee);
             setServiceFee(fee);
-            
-           
+
+
         }
     }, [inputPrice, SelectedPackage, setSelectedConsignmentType]);
 
@@ -271,7 +272,7 @@ const RequestConsignment = () => {
         {
             key: "13",
             label: "Ký gửi Offline",
-            value: "2",
+            value: "0",
         },
 
     ];
@@ -371,7 +372,8 @@ const RequestConsignment = () => {
     console.log('ssssss' + selectedKoiImage)
     const onFinish = async (values) => {
         try {
-          
+            const typ = 'false';
+            dispatch(saveTypePayment(typ));
             const formData = new FormData();
             formData.append('koiImg', selectedKoiImage);
             formData.append('certImg', selectedKoiCertificate);
@@ -517,7 +519,7 @@ const RequestConsignment = () => {
                 fee = price * 0.15;
             } else if (selectedPackages === '6') {
                 fee = price * 0.20;
-            }else{
+            } else {
                 return fee;
             }
         } else if (SelectedConsignmentType === '0') {
@@ -527,7 +529,7 @@ const RequestConsignment = () => {
                 fee = price * 0.12;
             } else if (selectedPackages === '6') {
                 fee = price * 0.18;
-            }else{
+            } else {
                 return fee;
             }
         }
@@ -1268,34 +1270,10 @@ const RequestConsignment = () => {
                                     {/* Second Row: Package and Phone Number */}
                                     <Row gutter={16}>
                                         {/* Package */}
-                                        <Col xs={24} sm={12}>
-                                            {SelectedConsignmentType === '1' ?
-                                                <Form.Item
-                                                    labelCol={{ span: 24 }}
-                                                    wrapperCol={{ span: 24 }}
-                                                    label="Gói ký gửi"
-                                                    name="duration"
-                                                    rules={[
-                                                        { required: true, message: 'Vui lòng chọn gói ký gửi' },
-                                                    ]}
-                                                >
-                                                    <Select
-                                                        placeholder="Chọn gói ký gửi"
-                                                        onChange={handleSelectPackage}
-                                                        value={SelectedPackage}
-                                                       
-                                                    >
-                                                        {
-                                                            consignmentPackForSell.map((item) => (
-                                                                <Option key={item.key} value={item.value}>
-                                                                    {item.label}
-                                                                </Option>
-                                                            ))
+                                        {SelectedConsignmentType === '1' ?
+                                            <>
+                                                <Col xs={24} sm={12}>
 
-                                                        }
-                                                    </Select>
-                                                </Form.Item>
-                                                : SelectedConsignmentType === '0' ?
                                                     <Form.Item
                                                         labelCol={{ span: 24 }}
                                                         wrapperCol={{ span: 24 }}
@@ -1309,54 +1287,133 @@ const RequestConsignment = () => {
                                                             placeholder="Chọn gói ký gửi"
                                                             onChange={handleSelectPackage}
                                                             value={SelectedPackage}
+
                                                         >
-                                                            {consignmentPackForTakeCare.map((item) => (
-                                                                <Option key={item.key} value={item.value}>
-                                                                    {item.label}
-                                                                </Option>
-                                                            ))
+                                                            {
+                                                                consignmentPackForSell.map((item) => (
+                                                                    <Option key={item.key} value={item.value}>
+                                                                        {item.label}
+                                                                    </Option>
+                                                                ))
+
                                                             }
                                                         </Select>
-                                                    </Form.Item> : <></>
-                                            }
-                                        </Col>
+                                                    </Form.Item>
+
+
+
+                                                </Col>
+                                                <Col xs={24} sm={12}> <Form.Item
+                                                    label="Số điện thoại"
+                                                    name="phoneNumber"
+                                                    labelCol={{ span: 24 }}
+                                                    wrapperCol={{ span: 24 }}
+                                                    rules={[
+                                                        { required: true, message: 'Vui lòng nhập số điện thoại' },
+                                                        {
+                                                            pattern: /^[0-9]+$/,
+                                                            message: 'Số điện thoại phải là số!',
+                                                        },
+                                                        {
+                                                            pattern: /^(0[3|5|7|8|9])+([0-9]{8})$/,
+                                                            message: 'Số điện thoại không đúng định dạng!',
+                                                        },
+                                                    ]}
+                                                >
+                                                    <Input placeholder="Nhập số điện thoại" />
+                                                </Form.Item>
+
+
+                                                </Col>
+                                            </>
+
+                                            : SelectedConsignmentType === '0' ?
+                                                <>
+                                                    <Col xs={24} sm={12}>
+                                                        <Form.Item
+                                                            labelCol={{ span: 24 }}
+                                                            wrapperCol={{ span: 24 }}
+                                                            label="Gói ký gửi"
+                                                            name="duration"
+                                                            rules={[
+                                                                { required: true, message: 'Vui lòng chọn gói ký gửi' },
+                                                            ]}
+                                                        >
+                                                            <Select
+                                                                placeholder="Chọn gói ký gửi"
+                                                                onChange={handleSelectPackage}
+                                                                value={SelectedPackage}
+                                                            >
+                                                                {consignmentPackForTakeCare.map((item) => (
+                                                                    <Option key={item.key} value={item.value}>
+                                                                        {item.label}
+                                                                    </Option>
+                                                                ))
+                                                                }
+                                                            </Select>
+                                                        </Form.Item>
+
+                                                    </Col>
+                                                    <Col xs={24} sm={12}> <Form.Item
+                                                        label="Số điện thoại"
+                                                        name="phoneNumber"
+                                                        labelCol={{ span: 24 }}
+                                                        wrapperCol={{ span: 24 }}
+                                                        rules={[
+                                                            { required: true, message: 'Vui lòng nhập số điện thoại' },
+                                                            {
+                                                                pattern: /^[0-9]+$/,
+                                                                message: 'Số điện thoại phải là số!',
+                                                            },
+                                                            {
+                                                                pattern: /^(0[3|5|7|8|9])+([0-9]{8})$/,
+                                                                message: 'Số điện thoại không đúng định dạng!',
+                                                            },
+                                                        ]}
+                                                    >
+
+                                                        <Input placeholder="Nhập số điện thoại" />
+                                                    </Form.Item>
+
+
+                                                    </Col>
+
+
+                                                </> : <></>
+                                        }
+
 
 
                                     </Row>
-                                    <Form.Item
-                                        label="Số điện thoại"
-                                        name="phoneNumber"
-                                        labelCol={{ span: 24 }}
-                                        wrapperCol={{ span: 24 }}
-                                        rules={[
-                                            { required: true, message: 'Vui lòng nhập số điện thoại' },
-                                            {
-                                                pattern: /^[0-9]+$/,
-                                                message: 'Số điện thoại phải là số!',
-                                            },
-                                        ]}
-                                    >
-                                        <Input placeholder="Nhập số điện thoại" />
-                                    </Form.Item>
-
-                                    {/* Conditional Fields for Price and Service Fee */}
-                                    {SelectedConsignmentType === '1' ? (
-                                        <>
-                                            {/* Third Row: Price and Displayed Price */}
-
-
+                                    <Row gutter={16}>
+                                        <Col xs={24} sm={12}>
                                             <Form.Item
                                                 label="Giá bán (VND)"
                                                 name="price"
                                                 labelCol={{ span: 24 }}
-                                                wrapperCol={{ span: 16 }}
+                                                wrapperCol={{ span: 24 }}
                                                 rules={[
                                                     { required: true, message: 'Vui lòng nhập giá bán' },
                                                     {
                                                         pattern: /^[0-9]+$/,
                                                         message: 'Giá bán phải là số!',
                                                     },
+                                                    {
+                                                        validator: (_, value) => {
+                                                            if (!value) {
+                                                                return Promise.resolve();
+                                                            }
+                                                            if (value < 100000) {
+                                                                return Promise.reject('Giá bán phải lớn hơn hoặc bằng 100.000!');
+                                                            }
+                                                            if (value > 150000000) {
+                                                                return Promise.reject('Giá bán không được vượt quá 150.000.000!');
+                                                            }
+                                                            return Promise.resolve();
+                                                        },
+                                                    },
                                                 ]}
+
                                             >
                                                 <Input
                                                     placeholder="Nhập giá bán"
@@ -1364,6 +1421,16 @@ const RequestConsignment = () => {
                                                     onChange={handleInputPrice}
                                                 />
                                             </Form.Item>
+                                        </Col>
+
+                                    </Row>
+
+                                    {/* Conditional Fields for Price and Service Fee */}
+                                    {SelectedConsignmentType === '1' ? (
+                                        <>
+
+
+
 
 
                                             {/* Display Entered Price */}
@@ -1396,25 +1463,6 @@ const RequestConsignment = () => {
                                                 {/* Third Row: Price and Displayed Price */}
 
 
-                                                <Form.Item
-                                                    label="Giá bán (VND)"
-                                                    name="price"
-                                                    labelCol={{ span: 24 }}
-                                                    wrapperCol={{ span: 16 }}
-                                                    rules={[
-                                                        { required: true, message: 'Vui lòng nhập giá bán' },
-                                                        {
-                                                            pattern: /^[0-9]+$/,
-                                                            message: 'Giá bán phải là số!',
-                                                        },
-                                                    ]}
-                                                >
-                                                    <Input
-                                                        placeholder="Nhập giá bán"
-                                                        value={inputPrice}
-                                                        onChange={handleInputPrice}
-                                                    />
-                                                </Form.Item>
 
                                                 {console.log(inputPrice + 'dat la gia ca tu order detail')}
                                                 {/* Display Entered Price */}
