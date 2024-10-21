@@ -11,6 +11,7 @@ import {
   PayCircleOutlined,
   HomeOutlined,
   FundProjectionScreenOutlined,
+  PlusOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
 import { useLocation, useNavigate, Outlet } from "react-router-dom";
@@ -28,6 +29,7 @@ const AdminLayout = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const user = getLocalStorage("user");
+  const role = user?.role;
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -41,7 +43,6 @@ const AdminLayout = () => {
     queryFn: () => AccountApi.getProfile(user?.email),
     enabled: !!user?.email,
   });
-  console.log("profile: ", profile?.data);
   useEffect(() => {
     if (pathname === "/admin") {
       navigate("/admin/dashboard");
@@ -96,20 +97,29 @@ const AdminLayout = () => {
           }}
           style={{}}
           items={[
-            {
-              key: "/admin/dashboard",
-              icon: <DashboardOutlined />,
-              label: "Biểu đồ",
-            },
-            {
-              key: "/admin/user-management",
-              icon: <UserOutlined />,
-              label: "Quản lý tài khoản ",
-            },
+            ...(role === "manager"
+              ? [
+                  {
+                    key: "/admin/dashboard",
+                    icon: <DashboardOutlined />,
+                    label: "Biểu đồ",
+                  },
+                  {
+                    key: "/admin/user-management",
+                    icon: <UserOutlined />,
+                    label: "Quản lý tài khoản ",
+                  },
+                ]
+              : []),
             {
               key: "/admin/fish-management",
               icon: <VideoCameraOutlined />,
               label: "Quản lý cá koi",
+            },
+            {
+              key: "/admin/fishCare-management",
+              icon: <PlusOutlined />,
+              label: "Quản tình trạng cá koi",
             },
             {
               key: "/admin/batch-management",
@@ -138,7 +148,7 @@ const AdminLayout = () => {
               label: "Quay về trang chủ",
             },
           ]}
-        ></Menu>
+        />
       </Sider>
       <Layout>
         <Header
@@ -171,7 +181,7 @@ const AdminLayout = () => {
             justifyContent: "flex-start",
             marginTop: 24,
             minHeight: "calc(100vh - 64px - 48px)",
-            overflow: "auto", 
+            overflow: "auto",
           }}
         >
           <Outlet />

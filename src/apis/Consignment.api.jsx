@@ -103,4 +103,14 @@ export const ConsignmentApi = {
       throw new Error(error.response.data.message);
     }
   },
+  sendEmailConsignment: async (id) => {
+    try {
+      const response = await fetcher.get(
+        `http://localhost:8080/koifarm/consignment/sendMail/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
 };

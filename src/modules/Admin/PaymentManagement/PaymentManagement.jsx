@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Col,
@@ -19,18 +19,39 @@ import moment from "moment";
 import { Link } from "react-router-dom";
 
 const PaymentManagement = () => {
+  const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(query);
+      setCurrentPage(1);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [query]);
+
+  const fetchOrder = async ({ queryKey }) => {
+    const [_key, page, search] = queryKey;
+    if (search) {
+      return await orderApi.searchOrder(search, page);
+    } else {
+      return await orderApi.getAllOrder(page);
+    }
+  };
 
   const {
     data: ListOfOrder,
     isLoading: isLoadingListOfOrder,
     isError: isErrorListOfOrder,
   } = useQuery({
-    queryKey: ["ListOfOrder"],
-    queryFn: () => orderApi.getAllOrder(currentPage, 7),
+    queryKey: ["ListOfOrder", currentPage, debouncedQuery],
+    queryFn: fetchOrder,
     keepPreviousData: true,
   });
-  console.log("ListOfOrder: ", ListOfOrder);
   const columns = [
     {
       title: "Mã thanh toán",
@@ -123,13 +144,19 @@ const PaymentManagement = () => {
     },
   ];
   const total = ListOfOrder?.data.totalElements;
-  console.log('ListOfOrder: ', ListOfOrder);
-  console.log('total: ', total);
+  console.log("ListOfOrder: ", ListOfOrder);
+  console.log("total: ", total);
   return (
     <div>
       <div className="flex flex-col justify-center items-center ">
         <div className="w-[450px]">
-          <Search placeholder="Nhập tên hoặc email..." style={{ width: 300 }} />
+          <Search
+            placeholder="Nhập mã giao dịch..."
+            style={{ width: 300 }}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            allowClear
+          />
         </div>
         <div className="flex flex-col mt-2 w-full">
           {/* <div className="w-full">

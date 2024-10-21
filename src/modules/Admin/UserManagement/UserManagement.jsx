@@ -147,7 +147,6 @@ const UserManagement = () => {
 
   const fetchUsers = async ({ queryKey }) => {
     const [_key, page, search] = queryKey;
-    console.log('search: ', search);
     if (search) {
       return await AccountApi.searchAccountByEmail(search, page);
     } else {
