@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Steps, Button, Flex, Spin, Image, message, Card, Descriptions, Col, Row } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { ConsignmentApi } from '../../apis/Consignment.api';
 import { saveConsignmentID, saveFormData } from '../../Redux/Slices/consignmentID_Slice';
 import { LoadingOutlined } from '@ant-design/icons';
 import { ToastContainer, toast } from 'react-toastify';
 import moment from 'moment';
+import CheckoutApi from '../../apis/Checkout.api';
+import { saveTypePayment } from '../../Redux/Slices/Type_Slice';
 
 const StatusConsignment = () => {
   const descriptions = [
@@ -19,71 +21,131 @@ const StatusConsignment = () => {
   ];
 
   const [currentPage, setCurrentPage] = useState(2);
+  const [showDetails, setShowDetails] = useState(false);
   const consignmentID = useSelector((state) => state.consignment.consignmentID);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [showDetails, setShowDetails] = useState(false);
-  useEffect(() => {
-    if (consignmentID) {
-      localStorage.setItem('consignmentID', consignmentID);
-    }
-  }, [consignmentID]);
 
+  // Centralized localStorage fetching logic
   useEffect(() => {
     if (!consignmentID) {
       const storedID = localStorage.getItem('consignmentID');
-      if (storedID) {
-        dispatch(saveConsignmentID(storedID));
+      if (storedID && !isNaN(storedID)) {
+        dispatch(saveConsignmentID(Number(storedID))); // Convert to number
       }
+    } else {
+      localStorage.setItem('consignmentID', consignmentID);
     }
   }, [consignmentID, dispatch]);
 
-
+  // Fetch consignment status
   const { data: consignmentDetails, isLoading, error } = useQuery({
     queryKey: ['consignmentStatus', consignmentID],
     queryFn: () => ConsignmentApi.statusConsignment(consignmentID),
     enabled: !!consignmentID,
   });
+
+  // Save service fee to store
   useEffect(() => {
     if (consignmentDetails?.data?.serviceFee) {
-      console.log(consignmentDetails.data.serviceFee)
       dispatch(saveFormData(consignmentDetails.data.serviceFee));
-
     }
   }, [consignmentDetails, dispatch]);
 
-  const handleCurrentPage = (prevPage) => {
-    prevPage = 2;
-    if (prevPage <= 2) {
-      setCurrentPage(prevPage => prevPage + 1);
-      navigate('/Form-consignment');
-    }
-  };
-  const handleCurrentPages = (prevPage) => {
-    prevPage = 2;
-    if (prevPage <= 2) {
-      setCurrentPage(prevPage => prevPage + 1);
-      console.log();
-      navigate(`/servicefee-consignment`);
-    }
-  };
-  const handleError = () => {
+  // Initial payment status
+  useEffect(() => {
+    const initialPaymentStatus = false;
+    dispatch(saveTypePayment(initialPaymentStatus));
+  }, [dispatch]);
 
+  const consignmentIDs = localStorage.getItem('fishConsignmentID');
+
+  // Cancel consignment mutation
+  const { mutate: cancelConsignment, isPending: isCancelConsignment } = useMutation({
+    mutationFn: async () => {
+      let consignmentid = consignmentID || consignmentIDs;
+      if (!consignmentid) {
+        throw new Error('Consignment ID is not available.');
+      }
+      return await ConsignmentApi.cancelConsignment(consignmentid);
+    },
+    onSuccess: (response) => {
+      if (typeof response.data === 'number') {
+        console.log(typeof response.data )
+        dispatch(saveConsignmentID(response.data));
+        navigate('/Form-consignment');
+        message.success('Hủy ký gửi thành công');
+      } else {
+        console.log(typeof response.data + 'string string string')
+        navigate('/Form-consignment')
+        localStorage.setItem('consignmentID', '');
+        message.success('Hủy ký gửi thành công');
+      }
+    },
+    onError: (error) => {
+      message.error('Lỗi xảy ra khi hủy ký gửi');
+    },
+  });
+
+  // Handle cancel button click
+  const handleCancelClick = () => {
+    cancelConsignment();
+  };
+
+  const handleCurrentPages = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+    navigate('/servicefee-consignment');
+  };
+
+  // Formatting service fee for payment
+  const formatServiceFee = (fee) => {
+    return typeof fee === 'number' ? fee.toString() : String(fee);
+  };
+
+  // Handle order submission
+  const handleOrder = () => {
+    const serviceFee = formatServiceFee(consignmentDetails?.data?.serviceFee);
+    handlePayOrderByVnPay(serviceFee);
+  };
+
+  const handleError = () => {
     toast.error('Vui lòng chờ duyệt đơn');
   };
+
+  // Handle payment mutation
+  const { mutate: handlePayOrderByVnPay, isLoading: isVnPayLoading } = useMutation({
+    mutationFn: (amount) => CheckoutApi.payByVnPay(amount, 'NCB', false),
+    onSuccess: (data) => {
+      window.location.assign(data.data.paymentUrl);
+    },
+    onError: (error) => {
+      message.error('Lỗi xảy ra khi thanh toán');
+    },
+  });
+
+  // Show loading spinner while data is being fetched
+  if (isLoading) {
+    return <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />;
+  }
+
+  // Handle query error
+  if (error) {
+    navigate('/Form-consignment');
+    return null;
+  }
+
   if (!consignmentDetails) {
     return null;
   }
 
   const { data } = consignmentDetails;
   const { koiFish } = data;
-
   return (
     <>
       <div className="w-full max-w-[950px] h-[89px] relative mx-auto p-4">
-        <Steps current={currentPage}>
+        <Steps current={currentPage} status={data.status === 1 ? 'process' : 'finish'} >
           {descriptions.map((desc, index) => (
-            <Steps.Step key={index} title={`Step ${index + 1}`} description={desc} />
+            <Steps.Step key={index} title='&nbsp;'  description={desc} />
           ))}
         </Steps>
       </div>
@@ -157,19 +219,38 @@ const StatusConsignment = () => {
 
             {/* Nút tới trang thanh toán */}
             {data.status === 1 ? (
-              <button
-                onClick={handleError}
-                className="px-6 py-3 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 hover:shadow-lg transition duration-200"
-              >
-                Tới trang Thanh toán
-              </button>
+              <>
+                <button onClick={handleCancelClick}
+                  className="px-6 py-3 bg-[#FA4444] text-white rounded-md shadow hover:bg-blue-600 hover:shadow-lg transition duration-200"
+                >
+                  Hủy ký gửi
+                </button>
+                <button
+                  onClick={handleError}
+                  className="px-6 py-3 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 hover:shadow-lg transition duration-200"
+                >
+                  Thanh toán
+                </button>
+
+              </>
             ) : data.status === 4 ? (
-              <button
-                onClick={handleCurrentPages}
-                className="px-6 py-3 bg-green-500 text-white rounded-md shadow hover:bg-green-600 hover:shadow-lg transition duration-200"
-              >
-                Tới bước Thanh toán
-              </button>
+              <>
+                {/* <button
+                  onClick={handleCurrentPages}
+                  className="px-6 py-3 bg-green-500 text-white rounded-md shadow hover:bg-green-600 hover:shadow-lg transition duration-200"
+                >
+                  Tới bước Thanh toán
+                </button> */}
+
+                <button onClick={() => {
+                  handleOrder();
+                }
+                }
+                  className="px-6 py-3 bg-green-500 text-white rounded-md shadow hover:bg-green-600 hover:shadow-lg transition duration-200"
+                >Thanh toán</button>
+
+              </>
+
             ) : null}
           </div>
 
@@ -253,15 +334,15 @@ const StatusConsignment = () => {
 
 
 
-
-        <div className="text-center mt-8">
+        {/* return to create new */}
+        {/* <div className="text-center mt-8">
           <button
             onClick={handleCurrentPage}
             className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-500 transition duration-300"
           >
             Quay lại
           </button>
-        </div>
+        </div> */}
       </div>
     </>
   );

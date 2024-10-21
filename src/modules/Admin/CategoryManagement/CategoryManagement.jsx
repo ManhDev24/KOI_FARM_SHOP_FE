@@ -15,7 +15,7 @@ import {
   Upload,
 } from "antd";
 import Search from "antd/es/transfer/search";
-import React, { useState } from "react";
+import React, { useState ,useEffect}  from "react";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import LoadingModal from "../../Modal/LoadingModal";
@@ -54,6 +54,8 @@ const CategoryManagement = () => {
   const [isChangeImage, setIsChangeImage] = useState(false);
   const [idFish, setIdFish] = useState();
   const [status, setStatus] = useState(1);
+  const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const queryClient = useQueryClient();
 
   const showModal = () => {
@@ -97,15 +99,35 @@ const CategoryManagement = () => {
     criteriaMode: "all",
     mode: "onBlur",
   });
+  useEffect (() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(query);
+      setCurrentPage(1);
+    }, 500);
 
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [query]);
+  const fetchCategory = async ({ queryKey }) => {
+    const [_key, page, search] = queryKey;
+    if (search) {
+      return await CategoryApi.searchCategory(search);
+    } else {
+      return await CategoryApi.getAllCategory(page ,4);
+    }
+  };
   const {
     data: ListCategory,
     isLoading: isLoadingCategory,
     isError: isErrorCategory,
   } = useQuery({
-    queryKey: ["ListCategory", currentPage],
-    queryFn: () => CategoryApi.getAllCategory(currentPage, 4),
+    queryKey: ["ListCategory", currentPage ,debouncedQuery],
+    queryFn: fetchCategory,
+    keepPreviousData: true,
   });
+  
+  console.log('ListCategory: ', ListCategory);
 
   const handleUploadChange = (info) => {
     if (info.file.status === "done") {
@@ -316,7 +338,11 @@ const CategoryManagement = () => {
     <div>
       <div className="flex flex-col justify-center items-center ">
         <div className="w-[450px]">
-          <Search placeholder="Nhập tên danh mục..." style={{ width: 300 }} />
+          <Search placeholder="Nhập tên danh mục..." style={{ width: 300 }}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          allowClear
+          />
         </div>
         <div className="flex flex-col mt-2 w-full">
           <div className="w-full">

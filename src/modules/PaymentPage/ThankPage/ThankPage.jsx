@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import React, { useEffect, useRef } from "react";
 import CheckoutApi from "../../../apis/Checkout.api";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { Button, message } from "antd";
+import { Button, message, Steps } from "antd";
 import {
   getLocalStorage,
   removeLocalStorage,
@@ -12,7 +12,7 @@ import { useSelector } from "react-redux";
 import LoadingModal from "../../Modal/LoadingModal";
 
 const ThankPage = () => {
-  const hasCalledApi = useRef(false); 
+  const hasCalledApi = useRef(false);
   const [searchParams] = useSearchParams();
   const status = searchParams.get("paymentStatus");
   const type = searchParams.get("type");
@@ -46,7 +46,7 @@ const ThankPage = () => {
     onError: (error) => {
       const errorMessage =
         error?.message || "Đã có lỗi xảy ra, vui lòng thử lại !!!";
-       message.error(errorMessage)
+      message.error(errorMessage)
       navigate("/payment-fail");
     },
   });
@@ -68,12 +68,12 @@ const ThankPage = () => {
     onError: (error) => {
       const errorMessage =
         error?.message || "Đã có lỗi xảy ra, vui lòng thử lại !!!";
-       message.error(errorMessage)
+      message.error(errorMessage)
       navigate("/payment-fail");
     },
   });
 
-  
+
 
   const accountID = user?.id;
   const koiFishs = order
@@ -108,43 +108,79 @@ const ThankPage = () => {
       type !== null
     ) {
       if (type === "true" && order) {
+        localStorage.setItem('agreedToPolicy', false);
         handleSaveOrder(data);
       } else if (type === "false" && consignmentID) {
+        localStorage.setItem('agreedToPolicy', false);
         handleSaveConsignment(consignmentID);
       }
       hasCalledApi.current = true; // Đánh dấu đã gọi API
 
     }
-    
+
   }, [status, paymentCode, type, order, data, handleSaveOrder, handleSaveConsignment]);
 
- if (isHandleSaveOrderError) {
+  if (isHandleSaveOrderError) {
     navigate("/payment-fail");
   }
-  if (isHandleSaveOrderPending ) {
+  if (isHandleSaveOrderPending) {
     return (
       <div className="h-[600px] w-full flex  justify-center items-center">
         <Spin indicator={<LoadingOutlined spin />} size="large" />
       </div>
     );
   }
-  return (
+  const description = "Chính sách ký gửi";
+  const description1 = "Điền thông tin ký gửi";
+  const description2 = "Trạng thái duyệt đơn ký gửi";
+  const description3 = "Thanh toán";
+  const description4 = "Hoàn tất";
+  return type === "true" ? (
     <div className="flex flex-col items-center justify-center h-[600px] w-full">
       <div className="text-center text-3xl font-bold mb-10">
         <h1>Cảm ơn bạn, thanh toán hoàn tất</h1>
       </div>
       <div className="flex justify-center items-center">
-        <Button
-          style={{ backgroundColor: "#FA4444", color: "white" }}
-          className="p-5"
-        >
-          <Link to="/koiList">Tiếp tục mua cá koi nào</Link>
-        </Button>
-        <Button className="ms-3 p-5">
-          <Link to="/">Quay về trang chủ</Link>
-        </Button>
+        <Link to="/koiList">
+          <Button style={{ backgroundColor: "#FA4444", color: "white" }} className="p-5">
+            Tiếp tục mua cá koi nào
+          </Button>
+        </Link>
+        <Link to="/" className="ms-3">
+          <Button className="p-5">Quay về trang chủ</Button>
+        </Link>
       </div>
     </div>
+  ) : (
+    <>  <div class="w-full max-w-[950px]  relative mx-auto p-4">
+
+
+      <div class="w-full max-w-[950px] h-full relative mx-auto my-0 p-4">
+        <Steps current={5} status="process">
+          <Steps title="&nbsp;" description={description} />
+          <Steps title="&nbsp;" description={description1} />
+          <Steps title="&nbsp;" description={description2} />
+          <Steps title="&nbsp;" description={description3} />
+          <Steps title="&nbsp;" description={description4} />
+        </Steps>
+
+      </div>
+      <div className="flex flex-col items-center justify-center h-[600px] w-full">
+        <div className="text-center text-3xl font-bold mb-10">
+          <h1>Cảm ơn bạn, Ký gửi hoàn tất</h1>
+        </div>
+        <div className="flex justify-center items-center">
+          <Link to="/request-consignment">
+            <Button style={{ backgroundColor: "#FA4444", color: "white" }} className="p-5">
+              Tiếp tục ký gửi
+            </Button>
+          </Link>
+          <Link to="/" className="ms-3">
+            <Button className="p-5">Quay về trang chủ</Button>
+          </Link>
+        </div>
+      </div>
+    </div></>
   );
 };
 
