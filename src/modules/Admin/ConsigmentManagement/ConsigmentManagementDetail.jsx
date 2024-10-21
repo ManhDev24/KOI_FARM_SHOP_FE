@@ -74,13 +74,29 @@ const ConsignmentManagementDetail = () => {
     isLoading: isLoadingConsignmentDetail,
     isError: isErrorConsignmentDetail,
     error,
-} = useQuery({
+  } = useQuery({
     queryKey: ["consignmentDetail", consignmentId],
     queryFn: ({ queryKey }) => {
-        const [_key, consignmentId] = queryKey;
-        return ConsignmentApi.getConsignmentDetail(consignmentId);
+      const [_key, consignmentId] = queryKey;
+      return ConsignmentApi.getConsignmentDetail(consignmentId);
     },
     enabled: !!consignmentId,
+  });
+
+  const {
+    mutate: sendEmail,
+    isPending: isLoadingSendEmail,
+    isError: isErrorSendEmail,
+  } = useMutation({
+    mutationFn: (id) => ConsignmentApi.sendEmailConsignment(id),
+    onSuccess: () => {
+      message.success("Gửi email thông báo thành công");
+    },
+    onError: (error) => {
+      const errorMessage =
+        error?.message || "Đã có lỗi xảy ra, vui là thử được!";
+      message.error(errorMessage);
+    },
   });
 
   const cancelModal = useCallback(() => {
@@ -99,11 +115,21 @@ const ConsignmentManagementDetail = () => {
     mode: "onBlur",
   });
 
-  if (isLoadingConsignmentDetail || isLoadingApproval || isLoadingReject) {
+  if (
+    isLoadingConsignmentDetail ||
+    isLoadingApproval ||
+    isLoadingReject ||
+    isLoadingSendEmail
+  ) {
     return <Spin size="large" />;
   }
 
-  if (isErrorConsignmentDetail || isErrorApproval || isErrorReject) {
+  if (
+    isErrorConsignmentDetail ||
+    isErrorApproval ||
+    isErrorReject ||
+    isErrorSendEmail
+  ) {
     return (
       <Alert
         message="Lỗi"
@@ -296,6 +322,9 @@ const ConsignmentManagementDetail = () => {
                     backgroundColor: "#1890ff",
                     borderColor: "#1890ff",
                     color: "#fff",
+                  }}
+                  onClick={() => {
+                    sendEmail(data?.consignmentID);
                   }}
                   icon={<EyeOutlined />}
                 >

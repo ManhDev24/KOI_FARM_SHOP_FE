@@ -52,10 +52,10 @@ export const CategoryApi = {
       throw new Error(error.response.data.message);
     }
   },
-  searchCategory : async (keyword) => {
+  searchCategory: async (name, currentPage, pageSize = 4) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/manage/searchCategory?name=${keyword}`
+        `http://localhost:8080/koifarm/manage/searchCategory?name=${name}&pageNum=${currentPage}&pageSize=${pageSize}`
       );
       return response.data;
     } catch (error) {

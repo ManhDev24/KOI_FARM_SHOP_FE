@@ -42,5 +42,15 @@ const orderApi = {
       throw new Error(error.response.data.message);
     }
   },
+  searchOrder: async (id, currentPage, pageSize = 9) => {
+    try {
+      const response = await fetcher.get(
+        `http://localhost:8080/koifarm/manage/searchOrder?transactionCode=${id}&pageNum=${currentPage}&pageSize=${pageSize}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
 };
 export default orderApi;

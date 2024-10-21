@@ -112,9 +112,9 @@ const CategoryManagement = () => {
   const fetchCategory = async ({ queryKey }) => {
     const [_key, page, search] = queryKey;
     if (search) {
-      return await CategoryApi.searchCategory(search);
+      return await CategoryApi.searchCategory(search , page);
     } else {
-      return await CategoryApi.getAllCategory(page ,4);
+      return await CategoryApi.getAllCategory(page , 4);
     }
   };
   const {
@@ -131,7 +131,6 @@ const CategoryManagement = () => {
 
   const handleUploadChange = (info) => {
     if (info.file.status === "done") {
-      // Sau khi upload thành công, hiển thị hình ảnh
       setImageUrl(
         info.file.response?.url || URL.createObjectURL(info.file.originFileObj)
       );

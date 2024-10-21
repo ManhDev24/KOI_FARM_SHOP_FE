@@ -1,3 +1,4 @@
+import { layouts } from "chart.js";
 import HomePage from "../components/HomePage/HomePage";
 import DefaultLayout from "../layouts/DefautLayout/DefaultLayout";
 import AdminLayout from "../modules/Admin/AdminLayout/AdminLayout";
@@ -6,6 +7,7 @@ import CategoryManagement from "../modules/Admin/CategoryManagement/CategoryMana
 import ConsigmentManagement from "../modules/Admin/ConsigmentManagement/ConsigmentManagement";
 import ConsigmentManagementDetail from "../modules/Admin/ConsigmentManagement/ConsigmentManagementDetail";
 import DashBoard from "../modules/Admin/Dashboard/DashBoard";
+import FishCareManagement from "../modules/Admin/FishCareManagement.jsx/FishCareManagement";
 import FishManagement from "../modules/Admin/FishManagement/FishManagement";
 import PaymentManagement from "../modules/Admin/PaymentManagement/PaymentManagement";
 import PaymentManagementDetail from "../modules/Admin/PaymentManagement/PaymentManagementDetail";
@@ -40,9 +42,9 @@ import Profile from "../modules/Profile/Profile";
 import Register from "../modules/RegisterPage/Register";
 import { getLocalStorage } from "../utils/LocalStorage";
 const fetchEmail = () => {
-  const dataProfile = getLocalStorage("user"); // Get 'user' from localStorage
+  const dataProfile = getLocalStorage("user");
   if (dataProfile && dataProfile.email) {
-    return dataProfile.email; // Return email if found
+    return dataProfile.email;
   } else {
     console.error("No user profile found in localStorage");
     return null;
@@ -158,9 +160,6 @@ export const publicRoutes = [
     layout: DefaultLayout,
   },
   {
-    path: "/batch-fish",
-    component: BatchFish,
-
     path: "/list-blog",
     component: ListBlog,
     layout: DefaultLayout,
@@ -201,57 +200,61 @@ export const privateRoutes = [
       {
         path: "dashboard",
         component: DashBoard,
+        roles: ["manager"],
         layout: null,
-        roles: ["manager", "staff"],
       },
       {
         path: "user-management",
         component: UserManagement,
+        roles: ["manager"],
         layout: null,
-        roles: ["manager", "staff"],
       },
-
       {
         path: "fish-management",
         component: FishManagement,
-        layout: null,
         roles: ["manager", "staff"],
+        layout: null,
       },
       {
         path: "category-management",
         component: CategoryManagement,
-        layout: null,
         roles: ["manager", "staff"],
-      },
-      {
-        path: "payment-management",
-        component: PaymentManagement,
         layout: null,
-        roles: ["manager", "staff"],
-      },
-      {
-        path: "payment-management-detail/:orderId",
-        component: PaymentManagementDetail,
-        layout: null,
-        roles: ["manager", "staff"],
       },
       {
         path: "batch-management",
         component: BathManagement,
-        layout: null,
         roles: ["manager", "staff"],
+        layout: null,
       },
       {
         path: "consignment-management",
         component: ConsigmentManagement,
-        layout: null,
         roles: ["manager", "staff"],
+        layout: null,
       },
       {
         path: "consignment-management-detail/:consignmentId",
         component: ConsigmentManagementDetail,
-        layout: null,
         roles: ["manager", "staff"],
+        layout: null,
+      },
+      {
+        path: "payment-management",
+        component: PaymentManagement,
+        roles: ["manager", "staff"],
+        layout: null,
+      },
+      {
+        path: "payment-management-detail/:orderId",
+        component: PaymentManagementDetail,
+        roles: ["manager", "staff"],
+        layout: null,
+      },
+      {
+        path: "FishCare-management",
+        component: FishCareManagement,
+        layouts: null,
       },
     ],
   },
