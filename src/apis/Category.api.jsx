@@ -52,6 +52,16 @@ export const CategoryApi = {
       throw new Error(error.response.data.message);
     }
   },
+  searchCategory : async (keyword) => {
+    try {
+      const response = await fetcher.get(
+        `http://localhost:8080/koifarm/manage/searchCategory?name=${keyword}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
 };
 
 export default CategoryApi;
