@@ -1,20 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { Button, Pagination, Table } from "antd";
-import React from "react";
+import React, { useEffect } from "react";
 import orderApi from "../../../apis/Order.api";
 import { useDispatch, useSelector } from "react-redux";
 import LoadingModal from "../../Modal/LoadingModal";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 
 
 
 const PaymentDetailPage = () => {
-  const consignmentId = localStorage.getItem('consignmentID');
-  const consignmentID = localStorage.getItem('fishConsignmentID');
-  if(typeof consignmentId !== 'string' || consignmentID  ){
 
-  }
   const columns = [
     {
       title: "Tên Cá Koi",
@@ -101,8 +98,20 @@ const PaymentDetailPage = () => {
   const navigate = useNavigate();
   // const { orderId } = useSelector((state) => state.order);
   const handleConsignment = (id) => {
-    localStorage.setItem('fishConsignmentID', id);
-    navigate('/Form-consignment')
+    const consignmentId = localStorage.getItem('consignmentID');
+    const consignmentIdF = localStorage.getItem('fishConsignmentID');
+    let consignmentID = null
+    if (typeof consignmentId === 'string') {
+      alert('exit consignment')
+      toast.error('exit consignment')
+    } else if (consignmentIdF) {
+      alert('exit consignment')
+      toast.error('exit consignment')
+    } else {
+      localStorage.setItem('fishConsignmentID', id);
+      navigate('/Form-consignment')
+    }
+
 
   }
   const { orderId } = useParams();
