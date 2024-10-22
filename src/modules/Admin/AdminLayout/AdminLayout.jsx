@@ -132,6 +132,11 @@ const AdminLayout = () => {
               label: "Quản lý danh mục ",
             },
             {
+              key: "/admin/create-blog",
+              icon: <SafetyCertificateOutlined />,
+              label: "Tạo bài blog ",
+            },
+            {
               key: "/admin/consignment-management",
               icon: <FundProjectionScreenOutlined />,
               label: "Quản lý ký gửi ",
