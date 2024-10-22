@@ -141,6 +141,7 @@ const ConsignmentManagementDetail = () => {
   }
 
   const data = consignmentDetail?.data;
+  console.log("data: ", data);
 
   const onSubmit = (data) => {
     console.log("data: ", data);
@@ -189,7 +190,7 @@ const ConsignmentManagementDetail = () => {
               <Image
                 width="100%"
                 src={
-                  data?.certificateImage ||
+                  data?.koiFish?.certificate?.image ||
                   "https://cdn.vatgia.com/pictures/thumb/0x0/2022/03/1647487090-asu.jpg"
                 }
                 alt="Ảnh Chứng chỉ"

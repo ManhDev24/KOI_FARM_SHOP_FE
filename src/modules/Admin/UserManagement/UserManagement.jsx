@@ -17,7 +17,7 @@ import { AccountApi } from "../../../apis/Account.api";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import LoadingModal from "../../Modal/LoadingModal";
-import _ from 'lodash';
+import _ from "lodash";
 
 import {
   StopOutlined,
@@ -26,6 +26,8 @@ import {
 } from "@ant-design/icons";
 import { toast } from "react-toastify";
 import { Controller, useForm } from "react-hook-form";
+import { getLocalStorage } from "../../../utils/LocalStorage";
+import { useNavigate } from "react-router-dom";
 
 const validationSchema = yup.object().shape({
   fullName: yup.string().required("Họ và tên là bắt buộc"),
@@ -50,6 +52,13 @@ const UserManagement = () => {
   const queryClient = useQueryClient();
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
+  const user = getLocalStorage("user");
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (user?.role !== "manager") {
+      navigate("/admin/fish-management");
+    }
+  });
   const columns = [
     {
       title: "ID",
@@ -188,7 +197,7 @@ const UserManagement = () => {
     onError: (error) => {
       const errorMessage =
         error?.message || "Đã có lỗi xảy ra vui lòng thử lại !!!";
-        message.error(errorMessage);
+      message.error(errorMessage);
     },
   });
   const {
@@ -285,7 +294,7 @@ const UserManagement = () => {
           <Table
             rowKey="id"
             columns={columns}
-            dataSource={ListUser?.data?.accounts }
+            dataSource={ListUser?.data?.accounts}
             pagination={false}
           />
           <div className="flex justify-end mt-2">

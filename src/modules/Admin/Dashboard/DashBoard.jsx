@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import React from "react";
+import React, { useEffect } from "react";
 import { AccountApi } from "../../../apis/Account.api";
 import orderApi from "../../../apis/Order.api";
 import FishApi from "../../../apis/Fish.api";
@@ -29,7 +29,16 @@ ChartJS.register(
   Legend
 );
 import { Bar, Line } from "react-chartjs-2";
+import { getLocalStorage } from "../../../utils/LocalStorage";
+import { useNavigate } from "react-router-dom";
 const DashBoard = () => {
+  const user = getLocalStorage("user");
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (user?.role !== "manager") {
+      navigate("/admin/fish-management");
+    }
+  });
   const {
     data: totalAccount,
     isLoading: isLoadingTotalAccount,
@@ -360,16 +369,16 @@ const DashBoard = () => {
           <Bar
             data={dataOfYear}
             options={optionsOfYear}
-            width={500} 
-            height={300} 
+            width={500}
+            height={300}
           />
         </div>
         <div className="flex-1 flex justify-center items-center">
           <Line
             data={dataOfMonth}
             options={optionsOfMonth}
-            width={500} 
-            height={300} 
+            width={500}
+            height={300}
           />
         </div>
       </div>
