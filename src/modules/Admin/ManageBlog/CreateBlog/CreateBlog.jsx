@@ -6,6 +6,7 @@ const CreateBlog = () => {
   const editorRef = useRef(null);
   const [savedContents, setSavedContents] = useState([]);
   const [selectedTitle, setSelectedTitle] = useState(""); 
+  const [viewedPost, setViewedPost] = useState(null); // State để lưu bài post đang xem
   const { register, handleSubmit, reset, setValue, watch } = useForm({
     defaultValues: {
       title: "",
@@ -50,7 +51,6 @@ const CreateBlog = () => {
     }
   };
 
-  // Xóa nội dung từ localStorage
   const deleteContent = (title) => {
     const existingContents =
       JSON.parse(localStorage.getItem("savedContents")) || [];
@@ -63,6 +63,7 @@ const CreateBlog = () => {
       editorRef.current.setContent("");
       setSelectedTitle("");
     }
+    window.location.reload();
   };
 
   const loadContent = (title) => {
@@ -78,6 +79,17 @@ const CreateBlog = () => {
       setValue("subtitle", selectedContent.subtitle);
       setValue("status", selectedContent.status);
       setValue("date", selectedContent.date);
+    }
+  };
+
+  const viewPost = (title) => {
+    const existingContents =
+      JSON.parse(localStorage.getItem("savedContents")) || [];
+    const selectedContent = existingContents.find(
+      (content) => content.title === title
+    );
+    if (selectedContent) {
+      setViewedPost(selectedContent); // Lưu bài post vào state để hiển thị
     }
   };
 
@@ -226,9 +238,33 @@ const CreateBlog = () => {
                   >
                     Delete
                   </button>
+                  <button
+                    className="text-green-600 hover:underline ml-4"
+                    onClick={() => viewPost(content.title)}
+                  >
+                    View Post
+                  </button>
                 </li>
               ))}
             </ul>
+          </div>
+        )}
+
+        {/* Hiển thị bài post sau khi nhấn nút View Post */}
+        {viewedPost && (
+          <div className="mt-8 p-4 bg-white border rounded shadow-lg">
+            <h2 className="text-2xl font-bold mb-2">{viewedPost.title}</h2>
+            <h4 className="text-gray-600 mb-4">{viewedPost.subtitle}</h4>
+            {viewedPost.image && (
+              <img
+                src={viewedPost.image}
+                alt={viewedPost.title}
+                className="mb-4"
+              />
+            )}
+            <div dangerouslySetInnerHTML={{ __html: viewedPost.content }} />
+            <p className="mt-4 text-sm text-gray-500">Date: {viewedPost.date}</p>
+            <p className="text-sm text-gray-500">Status: {viewedPost.status}</p>
           </div>
         )}
       </div>
