@@ -239,10 +239,7 @@ const Cart = () => {
         <div>
           <div className="flex justify-end">
             <p>
-              {data.price.toLocaleString("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              })}
+              {data.price}
             </p>
           </div>
         </div>
