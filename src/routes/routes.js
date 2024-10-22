@@ -252,7 +252,7 @@ export const privateRoutes = [
         layout: null,
       },
       {
-        path: "FishCare-management",
+        path: "fishCare-management",
         component: FishCareManagement,
         layouts: null,
       },
