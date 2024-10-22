@@ -294,6 +294,7 @@ const FishManagement = () => {
     setIsModalDetailFishOpen(true);
     setDataDetailFish(record);
   };
+
   const cancelModalView = () => {
     setIsModalViewOpen(false);
   };

@@ -1,7 +1,7 @@
 import { Button } from 'antd';
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { addToCart } from '../../Redux/Slices/Cart_Slice';
+import { addToCart } from './../../Redux/Slices/Cart_Slice';
 import { useDispatch } from 'react-redux';
 
 const ComparisonModal = ({ isOpen, onClose, selectedItems, setSelectedItems, removeItem }) => {
