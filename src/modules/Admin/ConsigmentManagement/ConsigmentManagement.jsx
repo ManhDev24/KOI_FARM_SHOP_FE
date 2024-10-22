@@ -54,7 +54,13 @@ const ConsigmentManagement = () => {
     {
       title: "Tổng tiền",
       dataIndex: "agreedPrice",
-      key: "agreedPrice",
+      render: (data) => {
+        const formattedPrice = data.toLocaleString("vi-VN", {
+          style: "currency",
+          currency: "VND",
+        });
+        return <div>{formattedPrice}</div>;
+      },
     },
     {
       title: "Chi phí ký gửi",
