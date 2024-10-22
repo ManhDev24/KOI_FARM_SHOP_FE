@@ -41,6 +41,7 @@ import ThankPage from "../modules/PaymentPage/ThankPage/ThankPage";
 import Profile from "../modules/Profile/Profile";
 import Register from "../modules/RegisterPage/Register";
 import { getLocalStorage } from "../utils/LocalStorage";
+import CreateBlog from "../modules/Admin/ManageBlog/CreateBlog/CreateBlog";
 const fetchEmail = () => {
   const dataProfile = getLocalStorage("user");
   if (dataProfile && dataProfile.email) {
@@ -255,6 +256,11 @@ export const privateRoutes = [
         path: "fishCare-management",
         component: FishCareManagement,
         layouts: null,
+      },
+      {
+        path: "create-blog",
+        component: CreateBlog,
+        layout: null,
       },
     ],
   },
