@@ -70,7 +70,7 @@ const FishCareManagement = () => {
       mutationFn: (data) => ConsignmentApi.editHeathForKoi(data),
       onSuccess: () => {
         setIsModalAddHealthOpen(false);
-        message.success("Cập nhật tinh trạng sức khỏe thành công");
+      message.success("Cập nhật tinh trạng sức khỏe thành công");
         queryClient.invalidateQueries({ queryKey: ["ListFishCare"] });
       },
       onError: (error) => {
