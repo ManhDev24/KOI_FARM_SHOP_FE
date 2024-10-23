@@ -10,6 +10,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import moment from 'moment';
 import CheckoutApi from '../../apis/Checkout.api';
 import { saveTypePayment } from '../../Redux/Slices/Type_Slice';
+import LoadingModal from '../Modal/LoadingModal';
 
 const StatusConsignment = () => {
   const descriptions = [
@@ -73,8 +74,10 @@ const StatusConsignment = () => {
       if (typeof response.data === 'number') {
         console.log(typeof response.data)
         dispatch(saveConsignmentID(response.data));
+
         navigate('/Form-consignment');
         message.success('Hủy ký gửi thành công');
+
       } else {
         console.log(typeof response.data + 'string string string')
         navigate('/Form-consignment')
@@ -117,7 +120,7 @@ const StatusConsignment = () => {
   };
 
   // Handle payment mutation
-  const { mutate: handlePayOrderByVnPay, isLoading: isVnPayLoading } = useMutation({
+  const { mutate: handlePayOrderByVnPay, isPending: isVnPayLoading } = useMutation({
     mutationFn: (amount) => CheckoutApi.payByVnPay(amount, 'NCB', false),
     onSuccess: (data) => {
       window.location.assign(data.data.paymentUrl);
@@ -127,12 +130,11 @@ const StatusConsignment = () => {
     },
   });
 
-  // Show loading spinner while data is being fetched
-  if (isLoading) {
-    return <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />;
+  // Show loading modal during any ongoing process
+  if (isLoading || isVnPayLoading || isCancelConsignment) {
+    return <LoadingModal isLoading={true} />;
   }
 
-  // Handle query error
   if (error) {
     navigate('/Form-consignment');
     return null;
@@ -146,6 +148,7 @@ const StatusConsignment = () => {
   const { koiFish } = data;
   return (
     <>
+
       <div className="w-full max-w-[950px] h-[89px] relative mx-auto p-4">
         <Steps current={currentPage} status={data.status === 1 ? 'process' : 'finish'} >
           {descriptions.map((desc, index) => (

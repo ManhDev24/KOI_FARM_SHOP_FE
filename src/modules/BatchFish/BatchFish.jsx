@@ -43,7 +43,7 @@ const BatchFish = () => {
   } = useQuery({
     queryKey: ["KoiList", currentPage, pageSize],
     queryFn: () => FishApi.getListBatchFish(currentPage, pageSize),
-    keepPreviousData: true,
+    
   });
 
   //koiListFilter
@@ -77,7 +77,7 @@ const BatchFish = () => {
         sortDirection
       ),
     enabled: isFiltered,
-    keepPreviousData: true,
+    
   });
 
   filteredKoiBatchList;
@@ -97,9 +97,9 @@ const BatchFish = () => {
   const totalItems = isFiltered
     ? filteredKoiBatchList?.totalElements
     : KoiList?.totalElements;
-
+  // isLoadingKoiList ||isErrorLoadingFilteredKoiBatchList ||isErrorLoadingKoiList||isFiltered||isLoadingFilteredKoiBatchList
   if (isLoadingKoiList) {
-    return <LoadingModal />;
+    return <LoadingModal isLoading={isLoadingKoiList} />;
   }
   if (isErrorLoadingKoiList) {
     return <h1>Error</h1>;
@@ -212,9 +212,9 @@ const BatchFish = () => {
     ) {
       setSelectedItems([...selectedItems, item]); // Add item to the comparison list
     } else if (selectedItems.some((i) => i.batchID === item.batchID)) {
-      alert("Lô cá này đã được thêm vào để so sánh");
+      toast.error("Lô cá này đã được thêm vào để so sánh");
     } else {
-      alert("Bạn chỉ có thể thêm tối đa 2 lô cá.");
+      toast.error("Bạn chỉ có thể thêm tối đa 2 lô cá.");
     }
   };
   const removeItemFromCompare = (itemToRemove) => {
@@ -227,7 +227,7 @@ const BatchFish = () => {
     if (selectedItems.length > 0) {
       setIsModalOpen(true);
     } else {
-      alert("Vui lòng chọn ít nhất một lô cá để so sánh.");
+      toast.error("Vui lòng chọn ít nhất một lô cá để so sánh.");
     }
   };
 
@@ -295,14 +295,14 @@ const BatchFish = () => {
                           {selectedCategory === "1"
                             ? "Koi showa"
                             : selectedCategory === "2"
-                            ? "Koi asagi"
-                            : selectedCategory === "3"
-                            ? "Koi karashi"
-                            : selectedCategory === "4"
-                            ? "Koi Benikoi"
-                            : selectedCategory === " "
-                            ? "Danh Mục"
-                            : "Danh Mục"}
+                              ? "Koi asagi"
+                              : selectedCategory === "3"
+                                ? "Koi karashi"
+                                : selectedCategory === "4"
+                                  ? "Koi Benikoi"
+                                  : selectedCategory === " "
+                                    ? "Danh Mục"
+                                    : "Danh Mục"}
                         </p>
                       </div>
                       <div>
@@ -503,8 +503,8 @@ const BatchFish = () => {
                           {selectPrice === "1"
                             ? "Giá từ thấp đến cao"
                             : selectPrice === "2"
-                            ? "Giá từ cao đến thấp"
-                            : "Sắp xếp theo giá"}
+                              ? "Giá từ cao đến thấp"
+                              : "Sắp xếp theo giá"}
                         </p>
                       </div>
                       <div>
@@ -614,10 +614,16 @@ const BatchFish = () => {
                 justify="center"
                 className="w-[950px] grid grid-cols-3"
               >
+                {(isLoadingKoiList || isLoadingFilteredKoiBatchList) && (
+                  <LoadingModal isLoading={true} />
+                )}
                 {koiToDisplay?.map((card) => {
                   return (
                     <>
+
+
                       <Link to={`/batch-detail/${card.batchID}`}>
+
                         <Col
                           key={card.id}
                           className="w-[250px] h-[645px] mx-10 mb-10"
@@ -632,8 +638,8 @@ const BatchFish = () => {
                               {card.status === 1
                                 ? "Đang bán"
                                 : card.status === 2
-                                ? "Đã bán"
-                                : null}
+                                  ? "Đã bán"
+                                  : null}
                             </div>
                             <div className="rounded-[10px]">
                               <img
@@ -728,7 +734,7 @@ const BatchFish = () => {
                     </>
                   );
                 })}
-              </Row>
+              </Row >
             </Flex>
           </div>
 
@@ -755,9 +761,8 @@ const BatchFish = () => {
       />
       <Button
         onClick={handleCompare}
-        className={`bg-[#FA4444] text-white fixed z-40 left-[100px] top-[200px] ${
-          selectedItems.length === 0 ? "opacity-50 cursor-not-allowed" : ""
-        }`}
+        className={`bg-[#FA4444] text-white fixed z-40 left-[100px] top-[200px] ${selectedItems.length === 0 ? "opacity-50 cursor-not-allowed" : ""
+          }`}
         disabled={selectedItems.length === 0}
       >
         Xem So Sánh ({selectedItems.length}) Lô Cá Koi

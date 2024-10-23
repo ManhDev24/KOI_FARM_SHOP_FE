@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ConsignmentApi } from '../../apis/Consignment.api';
 import moment from 'moment';
+import LoadingModal from '../Modal/LoadingModal';
 
 const ConsignmentHistoryDetail = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -95,7 +96,7 @@ const ConsignmentHistoryDetail = () => {
             <div style={{ padding: '20px' }}>
                 <h1>Consignment List</h1>
                 {isLoading ? (
-                    <Spin />
+                    <LoadingModal isLoading={isLoading} />
                 ) : (
                     <>
                         <Table

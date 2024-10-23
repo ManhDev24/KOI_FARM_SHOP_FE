@@ -97,6 +97,7 @@ const RequestConsignment = () => {
     const [consignmentID, setConsignmentID] = useState();
     const navigate = useNavigate();
     const [fileList, setFileList] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleCurrentPage = (prevPage) => {
         localStorage.setItem('agreedToPolicy', false);
@@ -351,24 +352,34 @@ const RequestConsignment = () => {
     });
 
 
-    const { mutate: handleConsignmentSubmit, isLoading: submitLoading } = useMutation({
+    const { mutate: handleConsignmentSubmit } = useMutation({
         mutationFn: async (formData) => {
-            return await ConsignmentApi.requestConsignment(formData); // Make API request
+          setIsLoading(true);  
+          return await ConsignmentApi.requestConsignment(formData);
         },
-        onSuccess: (response, formData) => {
-            const consignmentID = response.data;
-            dispatch(saveConsignmentID(consignmentID));
-
-            handleCurrentPages(currentPage);
-            console.log('Success:', response.data);
-            message.success();
+        onSuccess: async (response, formData) => {
+        
+        //   await new Promise((resolve) => setTimeout(resolve, 3000));
+    
+          const consignmentID = response.data;
+          dispatch(saveConsignmentID(consignmentID));
+    
+          handleCurrentPages(currentPage);
+          console.log('Success:', response.data);
+          message.success('Đăng ký ký gửi thành công');
+          setIsLoading(false); 
         },
-        onError: (error) => {
-            const errorMessage =
-                error?.response?.data?.message || 'An error occurred, please try again!';
-            message.error(errorMessage)
+        onError: async (error) => {
+         
+        //   await new Promise((resolve) => setTimeout(resolve, 3000));
+    
+          const errorMessage =
+            error?.response?.data?.message || 'An error occurred, please try again!';
+          message.error(errorMessage);
+          setIsLoading(false); 
         },
-    });
+      });
+    
     console.log('ssssss' + selectedKoiImage)
     const onFinish = async (values) => {
         try {
@@ -1521,6 +1532,7 @@ const RequestConsignment = () => {
                                             Nộp đơn
                                         </Button>
                                     </Form.Item>
+                                    <LoadingModal isLoading={isLoading} />
                                 </Col>
                             </Row>
 
