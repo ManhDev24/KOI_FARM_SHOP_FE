@@ -98,20 +98,20 @@ const PaymentDetailPage = () => {
   const navigate = useNavigate();
   // const { orderId } = useSelector((state) => state.order);
   const handleConsignment = (id) => {
-    const consignmentId = localStorage.getItem('consignmentID');
-    const consignmentIdF = localStorage.getItem('fishConsignmentID');
-    let consignmentID = null
-    if (typeof consignmentId === 'string') {
-      alert('exit consignment')
-      toast.error('exit consignment')
-    } else if (consignmentIdF) {
-      alert('exit consignment')
-      toast.error('exit consignment')
-    } else {
-      localStorage.setItem('fishConsignmentID', id);
-      navigate('/Form-consignment')
-    }
+    // const consignmentId = localStorage.getItem('consignmentID');
+    // const consignmentIdF = localStorage.getItem('fishConsignmentID');
+    // let consignmentID = null
+    // if (typeof consignmentId === 'string' || consignmentID === '') {
 
+    //   toast.error('')
+    // } else if (consignmentIdF) {
+
+    //   toast.error('exit consignment')
+    // } else {
+
+    // }
+    localStorage.setItem('fishConsignmentID', id);
+    navigate('/Form-consignment')
 
   }
   const { orderId } = useParams();

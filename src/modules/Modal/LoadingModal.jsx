@@ -1,6 +1,7 @@
 // LoadingModal.js
 import React from "react";
 import "./loadingModal.css";
+import img from '/img/loading.png'
 
 const LoadingModal = ({ isLoading }) => {
   if (!isLoading) return null;
@@ -10,7 +11,7 @@ const LoadingModal = ({ isLoading }) => {
       <div className="modal-content ">
         <div className="flex justify-center">
           {" "}
-          <img src="./img/loading.png" alt="" className="loader" />
+          <img src={img} alt="" className="loader" />
         </div>
         <h3>Loading...</h3>
       </div>
