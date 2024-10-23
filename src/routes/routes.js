@@ -42,6 +42,9 @@ import Profile from "../modules/Profile/Profile";
 import Register from "../modules/RegisterPage/Register";
 import { getLocalStorage } from "../utils/LocalStorage";
 import CreateBlog from "../modules/Admin/ManageBlog/CreateBlog/CreateBlog";
+import ManageBlog from "../modules/Admin/ManageBlog/ManageBlog/ManageBlog";
+import ReviewBlog from "../modules/Admin/ManageBlog/ReviewBlog/ReviewBlog";
+import BlogEdit from "../modules/Admin/ManageBlog/BlogEdit/BlogEdit";
 const fetchEmail = () => {
   const dataProfile = getLocalStorage("user");
   if (dataProfile && dataProfile.email) {
@@ -256,6 +259,21 @@ export const privateRoutes = [
         path: "fishCare-management",
         component: FishCareManagement,
         layouts: null,
+      },
+      {
+        path: "blog-management",
+        component: ManageBlog,
+        layout: null,
+      },
+      {
+        path: "blog-review/:id",
+        component: ReviewBlog,
+        layout: null,
+      },
+      {
+        path: "blog-edit/:blogId",
+        component: BlogEdit,
+        layout: null,
       },
       {
         path: "create-blog",

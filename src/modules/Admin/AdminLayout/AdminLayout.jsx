@@ -11,6 +11,7 @@ import {
   PayCircleOutlined,
   HomeOutlined,
   FundProjectionScreenOutlined,
+  BlockOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
@@ -130,6 +131,11 @@ const AdminLayout = () => {
               key: "/admin/category-management",
               icon: <SafetyCertificateOutlined />,
               label: "Quản lý danh mục ",
+            },
+            {
+              key: "/admin/blog-management",
+              icon: <BlockOutlined />,
+              label: "Quản lý bài blog ",
             },
             {
               key: "/admin/create-blog",
