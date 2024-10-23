@@ -87,13 +87,12 @@ const Navbar = () => {
       setLoading(false);
     }
   };
-  // Function to handle category selection and call API
   const handleCategorySelection = (categoryID) => {
     dispatch(setSelectedCategory(categoryID));
   };
 
   useEffect(() => {
-    fetchKoiCategories(); // Gọi hàm bất đồng bộ
+    fetchKoiCategories();
     handleCategorySelection();
   }, []);
 
@@ -154,17 +153,13 @@ const Navbar = () => {
       key: "6",
       label: <Link to="/payment-history">Lịch sử mua hàng</Link>,
     },
-    ...(user?.role === "manager"
+    ...(user?.role === "manager" || user?.role === "staff"
       ? [
-        {
-          key: "8",
-          label: (
-            <Link to="/admin" target="_self" rel="noopener noreferrer">
-              Quản lý
-            </Link>
-          ),
-        },
-      ]
+          {
+            key: "8",
+            label: <Link to="/admin">Quản lý</Link>,
+          },
+        ]
       : []),
 
     {
@@ -178,20 +173,19 @@ const Navbar = () => {
     {
       key: "8",
       label: (
-        <Link  to={consignmentID ? '/status-consignment' : "/request-consignment"}
+        <Link
+          to={consignmentID ? "/status-consignment" : "/request-consignment"}
           target="_self"
           rel="noopener noreferrer"
         >
           Yêu cầu ký gửi Koi
         </Link>
-
       ),
     },
     {
       key: "9",
       label: <Link to="/consignment-history">Lịch sử ký gửi</Link>,
     },
-
   ];
 
   const handleSignOut = () => {
@@ -292,7 +286,10 @@ const Navbar = () => {
             </li>
 
             <li className="me-x">
-              <Dropdown menu={{ items: consignmentMenuitems }} trigger={["hover"]}>
+              <Dropdown
+                menu={{ items: consignmentMenuitems }}
+                trigger={["hover"]}
+              >
                 <Button
                   type="primary"
                   danger

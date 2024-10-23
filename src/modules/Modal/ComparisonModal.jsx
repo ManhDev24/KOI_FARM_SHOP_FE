@@ -1,5 +1,6 @@
 import { Button, Image } from 'antd';
 import React, { useEffect } from 'react';
+
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../../Redux/Slices/Cart_Slice';
 import { Link } from 'react-router-dom';

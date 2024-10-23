@@ -59,7 +59,7 @@ const Cart = () => {
     localStorage.setItem("cartItems", JSON.stringify(updatedData));
     message.success("Cập nhật số lượng thành công!");
   };
- const isBuy =true;
+  const isBuy = true;
   const finalPrice = totalPrice - totalPrice * disCountRate;
 
   const navigate = useNavigate();
@@ -96,7 +96,7 @@ const Cart = () => {
     onError: (error) => {
       const errorMessage =
         error?.message || "Đã có lỗi xảy ra vui lòng thử lại !!!";
-       message.error(errorMessage)
+      message.error(errorMessage);
     },
   });
   const {
@@ -104,8 +104,7 @@ const Cart = () => {
     isLoading: isVnPayLoading,
     isError: isVnPayError,
   } = useMutation({
-
-    mutationFn: (amount) => CheckoutApi.payByVnPay(amount,"NCB",true),
+    mutationFn: (amount) => CheckoutApi.payByVnPay(amount, "NCB", true),
 
     onSuccess: (data) => {
       window.location.assign(data.data.paymentUrl);
@@ -113,7 +112,7 @@ const Cart = () => {
     onError: (error) => {
       const errorMessage =
         error?.message || "Đã có lỗi xảy ra vui lòng thử lại !!!";
-       message.error(errorMessage)
+      message.error(errorMessage);
     },
   });
   const {
@@ -131,7 +130,7 @@ const Cart = () => {
     onError: (error) => {
       const errorMessage =
         error?.message || "Đã có lỗi xảy ra vui lòng thử lại !!!";
-       message.error(errorMessage)
+      message.error(errorMessage);
     },
   });
   if (isOrderError || isVnPayError) {
@@ -142,8 +141,8 @@ const Cart = () => {
   }
 
   const handleOrder = () => {
-    if (!finalPrice || isVnPayLoading) return; 
-  handlePayOrderByVnPay(finalPrice);
+    if (!finalPrice || isVnPayLoading) return;
+    handlePayOrderByVnPay(finalPrice);
   };
   const handleDelete = (fish) => {
     dispatch(removeFromCart(fish));

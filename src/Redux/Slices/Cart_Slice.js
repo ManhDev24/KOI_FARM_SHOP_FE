@@ -28,13 +28,12 @@ const cartSlice = createSlice({
     addToCart: (state, action) => {
       const itemToAdd = action.payload;
       const existingItem = state.items.find((item) => item.id === itemToAdd.id);
-    
+
       if (!existingItem) {
         state.items.push(itemToAdd);
-        state.total += itemToAdd.price; 
+        state.total += itemToAdd.price;
         setLocalStorage("cartItems", state.items);
       } else {
-        
         console.log("Cá này đã có trong giỏ hàng!");
       }
     },
@@ -68,7 +67,7 @@ const cartSlice = createSlice({
 
       itemsToAdd.forEach((itemToAdd) => {
         const existingItem = state.items.find(
-          (item) => item.id === itemToAdd.id
+          (item) => item.batchID === itemToAdd.batchID
         );
 
         if (!existingItem) {

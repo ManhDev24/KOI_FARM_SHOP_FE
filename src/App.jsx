@@ -7,7 +7,6 @@ import { getLocalStorage } from "./utils/LocalStorage";
 import { useSelector } from "react-redux";
 
 function App() {
-  // Kiểm tra xem người dùng đã đăng nhập chưa
   const isAuth = () => {
     return !!getLocalStorage("user");
   };
@@ -28,7 +27,13 @@ function App() {
 
           if (
             isAuth() &&
-            ["/login", "/register", "/otp", "/forgotPassword", "/changePassword"].includes(route.path)
+            [
+              "/login",
+              "/register",
+              "/otp",
+              "/forgotPassword",
+              "/changePassword",
+            ].includes(route.path)
           ) {
             return (
               <Route
@@ -57,7 +62,13 @@ function App() {
               key={index}
               path={route.path}
               element={
-                Layout ? <Layout><Component /></Layout> : <Component />
+                Layout ? (
+                  <Layout>
+                    <Component />
+                  </Layout>
+                ) : (
+                  <Component />
+                )
               }
             />
           );
@@ -72,38 +83,47 @@ function App() {
               <Route
                 key={index}
                 path={route.path + "/*"}
-                element={<Navigate to="/login" />}
+                element={<Navigate to="/" />}
               />
             );
           }
 
-          if (
-            ["manager", "staff"].includes(getRoleUser) &&
-            isAuth()
-          ) {
+          if (["manager", "staff"].includes(getRoleUser) && isAuth()) {
             return (
               <Route
                 key={index}
                 path={route.path}
                 element={
-                  Layout ? <Layout><Component /></Layout> : <Component />
+                  Layout ? (
+                    <Layout>
+                      <Component />
+                    </Layout>
+                  ) : (
+                    <Component />
+                  )
                 }
               >
-                {/* Render các route con */}
-                {route.children && route.children.map((child, childIndex) => {
-                  const ChildLayout = child.layout || React.Fragment;
-                  const ChildComponent = child.component;
+                {route.children &&
+                  route.children.map((child, childIndex) => {
+                    const ChildLayout = child.layout || React.Fragment;
+                    const ChildComponent = child.component;
 
-                  return (
-                    <Route
-                      key={childIndex}
-                      path={child.path}
-                      element={
-                        ChildLayout ? <ChildLayout><ChildComponent /></ChildLayout> : <ChildComponent />
-                      }
-                    />
-                  );
-                })}
+                    return (
+                      <Route
+                        key={childIndex}
+                        path={child.path}
+                        element={
+                          ChildLayout ? (
+                            <ChildLayout>
+                              <ChildComponent />
+                            </ChildLayout>
+                          ) : (
+                            <ChildComponent />
+                          )
+                        }
+                      />
+                    );
+                  })}
               </Route>
             );
           } else {

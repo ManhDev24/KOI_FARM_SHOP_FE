@@ -103,4 +103,46 @@ export const ConsignmentApi = {
       throw new Error(error.response.data.message);
     }
   },
+  sendEmailConsignment: async (id) => {
+    try {
+      const response = await fetcher.get(
+        `http://localhost:8080/koifarm/consignment/sendMail/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
+  getAllFishCare: async (currentPage, pageSize) => {
+    try {
+      const response = await fetcher.get(
+        `http://localhost:8080/koifarm/consignment/getAllFishCare?pageNo=${currentPage}&pageSize=${pageSize}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
+  addHeathForKoi: async (data) => {
+    try {
+      const response = await fetcher.post(
+        `http://localhost:8080/koifarm/consignment/addHealth`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
+  editHeathForKoi: async (data) => {
+    try {
+      const response = await fetcher.put(
+        `http://localhost:8080/koifarm/consignment/updateHealth`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
 };
