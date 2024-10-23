@@ -97,9 +97,11 @@ const ThankPage = () => {
     totalPrice,
     promoCode,
   };
-
+  const consignmentIDFromStore = useSelector(state => state.consignmentDetail.consignmentID);
+ 
   useEffect(() => {
-    const consignmentID = localStorage.getItem("consignmentID");
+    const consignmentIDFromLocalStorage = localStorage.getItem("consignmentID");
+    const consignmentID = type === "false" ? consignmentIDFromStore || consignmentIDFromLocalStorage : null;
 
     if (
       !hasCalledApi.current &&
