@@ -47,6 +47,7 @@ export const BlogApi = {
       throw new Error(error.response.data.message);
     }
   },
+<<<<<<< HEAD
   updateBlog : async (payload , blogId) => {
     try {
       const response = await fetcher.put(
@@ -63,6 +64,9 @@ export const BlogApi = {
       throw new Error(error.response.data.message);
     }
   },
+=======
+  
+>>>>>>> 01e316c (create blog management)
 };
 
 export default BlogApi;
