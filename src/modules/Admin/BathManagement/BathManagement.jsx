@@ -36,11 +36,7 @@ const validationSchema = yup.object().shape({
     .typeError("Tuổi phải là số")
     .required("Tuổi là bắt buộc")
     .min(0, "Tuổi không thể âm"),
-  avgSize: yup
-    .number()
-    .typeError("Kích thước phải là số")
-    .required("Kích thước là bắt buộc")
-    .min(0, "Kích thước không thể âm"),
+  avgSize: yup.string().required("Kích thước là bắt buộc"),
   origin: yup.string().required("Nguồn gốc là bắt buộc"),
   price: yup
     .number()
@@ -137,10 +133,10 @@ const BathManagement = () => {
     setDataEdit(null);
     setImage(undefined);
   };
-  const onStatusChange =(id ,status)=>{
-    console.log('id: ', id);
-    handleChangeStatusBatch(id)
-  }
+  const onStatusChange = (id, status) => {
+    console.log("id: ", id);
+    handleChangeStatusBatch(id);
+  };
   const {
     mutate: handleCreateBatch,
     isLoading: isLoadingCreateBatch,
@@ -190,7 +186,7 @@ const BathManagement = () => {
       handleCreateBatch(formData);
     }
   };
- 
+
   const onEditBatch = (record) => {
     console.log("record: ", record);
     showModal();
@@ -603,7 +599,7 @@ const BathManagement = () => {
                 render={({ field }) => (
                   <Input
                     {...field}
-                    type="number"
+                    type="text"
                     placeholder="Nhập kích thước cá"
                     className="mt-1"
                     status={errors.avgSize ? "error" : ""}
