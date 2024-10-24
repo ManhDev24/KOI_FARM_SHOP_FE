@@ -44,6 +44,7 @@ const StatusConsignment = () => {
     queryKey: ['consignmentStatus', consignmentID],
     queryFn: () => ConsignmentApi.statusConsignment(consignmentID),
     enabled: !!consignmentID,
+    refetchInterval:  consignmentDetails.data.status === 4 ? 50000 : null ,
   });
 
   // Save service fee to store
@@ -77,11 +78,13 @@ const StatusConsignment = () => {
 
         navigate('/Form-consignment');
         message.success('Hủy ký gửi thành công');
+        
 
       } else {
         console.log(typeof response.data + 'string string string')
         navigate('/Form-consignment')
         localStorage.setItem('consignmentID', '');
+        localStorage.setItem('fishConsignmentID');
         message.success('Hủy ký gửi thành công');
       }
     },
@@ -100,6 +103,8 @@ const StatusConsignment = () => {
     prevPage = 2
     if (prevPage <= 2) {
       setCurrentPage(prevPage => prevPage + 1);
+      localStorage.setItem('consignmentID','')
+      localStorage.setItem('fishConsignmentID','')
       navigate('/Form-consignment');
     }
   };
@@ -170,9 +175,30 @@ const StatusConsignment = () => {
               Mã ký gửi: <span className="text-[#FA4444]">#{data.consignmentID}</span>
             </p>
             {console.log(data.status)}
-            <p className={`text-lg font-semibold ${data.status === 1 ? 'text-blue-500' : 'text-green-500'}`}>
-              Trạng thái: {data.status === 1 ? 'Đang duyệt' : 'Đã duyệt'}
+            <p
+              className={`text-lg font-semibold ${data.status === 1
+                ? 'text-blue-500'
+                : data.status === 4
+                  ? 'text-green-500'
+                  : data.status === 2
+                    ? 'text-green-500'
+                    : data.status === 3
+                      ? 'text-red-500'
+                      : 'text-gray-500'
+                }`}
+            >
+              Trạng thái:
+              {data.status === 1
+                ? 'Đang duyệt'
+                : data.status === 4
+                  ? 'Chờ thanh toán'
+                  : data.status === 2
+                    ? 'Đã duyệt'
+                    : data.status === 3
+                      ? 'Từ chối'
+                      : 'Hết hạn'}
             </p>
+
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
@@ -231,7 +257,7 @@ const StatusConsignment = () => {
                   onClick={handleCurrentPage}
                   className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-500 transition duration-300"
                 >
-                  Quay lại
+                  Tạo mới
                 </button>
                 <button onClick={handleCancelClick}
                   className="px-6 py-3 bg-[#FA4444] text-white rounded-md shadow hover:bg-blue-600 hover:shadow-lg transition duration-200"
@@ -259,7 +285,7 @@ const StatusConsignment = () => {
                   onClick={handleCurrentPage}
                   className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-500 transition duration-300"
                 >
-                  Quay lại
+                  Tạo mới
                 </button>
                 <button onClick={handleCancelClick}
                   className="px-6 py-3 bg-[#FA4444] text-white rounded-md shadow hover:bg-blue-600 hover:shadow-lg transition duration-200"
@@ -275,6 +301,24 @@ const StatusConsignment = () => {
                   className="px-6 py-3 bg-green-500 text-white rounded-md shadow hover:bg-green-600 hover:shadow-lg transition duration-200"
                 >Thanh toán</button>
 
+              </>
+
+            ) : data.status === 3 ? (
+              <>
+                {/* <button
+                  onClick={handleCurrentPages}
+                  className="px-6 py-3 bg-green-500 text-white rounded-md shadow hover:bg-green-600 hover:shadow-lg transition duration-200"
+                >
+                  Tới bước Thanh toán
+                </button> */}
+                <button
+                  onClick={() => {
+                    handleCancelClick();
+                  }}
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-500 transition duration-300"
+                >
+                  Tạo mới
+                </button>
               </>
 
             ) : null}
@@ -353,16 +397,11 @@ const StatusConsignment = () => {
             </div>
           )}
 
-        </Card>
-
-
-
-
-
+        </Card >
 
         {/* return to create new */}
 
-      </div>
+      </div >
     </>
   );
 };
