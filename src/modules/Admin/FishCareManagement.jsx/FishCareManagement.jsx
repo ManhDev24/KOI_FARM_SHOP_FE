@@ -1,170 +1,211 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Col,
   Modal,
   Pagination,
+  Row,
   Table,
   Tag,
   Space,
-  Image,
+  Select,
   Input,
-  Tooltip,
-  Spin,
-  Row,
+  Upload,
   message,
+  Image,
 } from "antd";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import { EyeOutlined, PlusOutlined, EditOutlined } from "@ant-design/icons";
+import {
+  StopOutlined,
+  EyeOutlined,
+  EditOutlined,
+  PlusOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ConsignmentApi } from "../../../apis/Consignment.api";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { Controller, useForm } from "react-hook-form";
+import Search from "antd/es/transfer/search";
+import { Link } from "react-router-dom";
 
 const validationSchema = yup.object().shape({
-  healthStatus: yup
-    .string()
-    .required("Tình trạng sức khỏe không được để trống"),
-  growthStatus: yup
+  category: yup.string().required("Danh mục là bắt buộc"),
+  age: yup
     .number()
-    .typeError("Độ dài của cá phải là số")
-    .required("Độ dài của cá khi nuôi không được để trống"),
-  careEnvironment: yup
-    .string()
-    .required("Nôi trường chăm sóc không được để trống"),
-  note: yup.string().required("Ghi chú không được để trống"),
+    .typeError("Tuổi phải là số")
+    .required("Tuổi là bắt buộc")
+    .min(0, "Tuổi không thể âm"),
+  size: yup
+    .number()
+    .typeError("Kích thước phải là số")
+    .required("Kích thước là bắt buộc")
+    .min(0, "Kích thước không thể âm"),
+  personality: yup.string().required("Tính cách là bắt buộc"),
+  origin: yup.string().required("Nguồn gốc là bắt buộc"),
+  price: yup
+    .number()
+    .typeError("Giá phải là số")
+    .required("Giá là bắt buộc")
+    .min(0, "Giá không thể âm"),
+  gender: yup.boolean().required("Gioi tinh là bắt buộc"),
+  purebred: yup
+    .number()
+    .typeError("Thuần chủng phải là số 0 hoặc 1")
+    .oneOf([0, 1], "Thuần chủng phải là 0 hoặc 1")
+    .required("Thuần chủng là bắt buộc"),
+
+  food: yup.string().required("Đồ ăn là bắt buộc"),
+  water: yup.string().required("Nước là bắt buộc"),
+  health: yup.string().required("Sức khỏe là bắt buộc"),
+  temperature: yup.string().required("Nhiệt độ nước là bắt buộc"),
+  ph: yup.string().required("pH nước là bắt buộc"),
 });
 
 const FishCareManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dataEdit, setDataEdit] = useState(null);
+  const [image, setImage] = useState(undefined);
+  const [isModalViewOpen, setIsModalViewOpen] = useState(false);
+  const [dataView, setDataView] = useState(null);
   const [isModalDetailFishOpen, setIsModalDetailFishOpen] = useState(false);
-  const [isModalAddHealthOpen, setIsModalAddHealthOpen] = useState(false);
   const [dataDetailFish, setDataDetailFish] = useState(null);
-  const [isEditMode, setIsEditMode] = useState(false);
 
-  const queryClient = useQueryClient();
-  const {
-    data: ListFishCare,
-    isPending: isLoadingListFishCare,
-    isError: isErrorListFishCare,
-  } = useQuery({
-    queryKey: ["ListFishCare", currentPage],
-    queryFn: () => ConsignmentApi.getAllFishCare(currentPage, 8),
-  });
 
-  const { mutate: addHeathForKoi, isPending: isAddingHealth } = useMutation({
-    mutationFn: (data) => ConsignmentApi.addHeathForKoi(data),
-    onSuccess: () => {
-      setIsModalAddHealthOpen(false);
-      message.success("Thêm tinh trạng sức khỏe thành công");
-      queryClient.invalidateQueries({ queryKey: ["ListFishCare"] });
-    },
-    onError: (error) => {
-      const errorMessage =
-        error?.message || "Đã có lỗi xảy ra vui lòng thử lại !!!";
-      message.error(errorMessage);
-    },
-  });
-  const { mutate: updateHealthForKoi, isPending: isUpdatingHealth } =
-    useMutation({
-      mutationFn: (data) => ConsignmentApi.editHeathForKoi(data),
-      onSuccess: () => {
-        setIsModalAddHealthOpen(false);
-      message.success("Cập nhật tinh trạng sức khỏe thành công");
-        queryClient.invalidateQueries({ queryKey: ["ListFishCare"] });
-      },
-      onError: (error) => {
-        const errorMessage = error?.message || "Đã có lỗi xảy ra vui bạn !!!";
-        message.error(errorMessage);
-      },
-    });
   const {
     handleSubmit,
     control,
-    formState: { errors },
+    watch,
+    setValue,
     reset,
+    formState: { errors },
   } = useForm({
     defaultValues: {
-      healthStatus: "",
-      growthStatus: "",
-      careEnvironment: "",
-      note: "",
+      category: 1,
+      age: "",
+      size: "",
+      personality: "",
+      price: "",
+      origin: "",
+      gender: true,
+      name: "",
+      food: "",
+      water: "",
+      status: 1,
+      purebred: 1,
+      health: "",
+      temperature: "",
+      ph: "",
+      image: null,
+      koiImage: null,
     },
     resolver: yupResolver(validationSchema),
-    criteriaMode: "all",
     mode: "onBlur",
   });
-  console.log("ListFishCare: ", ListFishCare?.data?.koiFishReponseList);
-  if (isLoadingListFishCare || isAddingHealth || isUpdatingHealth) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
-        <Spin size="large" />
-      </div>
-    );
-  }
 
+  const showModal = () => {
+    setIsModalOpen(true);
+    reset({
+      category: 1,
+      age: "",
+      size: "",
+      personality: "",
+      price: "",
+      origin: "",
+      gender: true,
+      name: "",
+      food: "",
+      water: "",
+      status: 1,
+      purebred: true,
+      health: "",
+      temperature: "",
+      ph: "",
+      certificate: "",
+      koiImage: "",
+    });
+    setDataEdit(null);
+    setImage(undefined);
+    setImageCertificate(undefined);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    reset(); // Reset form fields
+    setDataEdit(null);
+    setImage(undefined);
+    setImageCertificate(undefined);
+  };
+  const cancelModalView = () => {
+    setIsModalViewOpen(false);
+  };
   const cancelModalDetailView = () => {
     setIsModalDetailFishOpen(false);
   };
 
-  const onSubmitHealth = (data) => {
-    const payload = {
-      koiCareId: dataDetailFish.id,
-      ...data,
-    };
-    if (isEditMode) {
-      updateHealthForKoi(payload); 
-    } else {
-      addHeathForKoi(payload); 
-    }
+  const onSubmit = (values) => {
+    console.log(values);
   };
-  const handleAddHealth = (record) => {
-    setDataDetailFish(record);
-    setIsModalAddHealthOpen(true);
-  };
-  const handleEditHealth = (record) => {
-    setIsEditMode(true);
-    reset({
-      healthStatus: record?.healthcare?.healthStatus || "",
-      growthStatus: record?.healthcare?.growthStatus || "",
-      careEnvironment: record?.healthcare?.careEnvironment || "",
-      note: record?.healthcare?.note || "",
-    });
-    setDataDetailFish(record);
-    setIsModalAddHealthOpen(true);
-  };
+
   const columns = [
     {
       title: "ID",
       dataIndex: "id",
       key: "id",
-      width: 50,
     },
     {
       title: "Tên cá",
       key: "fishName",
-      render: (record) => (
-        <Tooltip title={`Nguồn gốc: ${record.origin}`}>
-          {`${record.origin} - Tuổi: ${record.age} - Kích thước: ${record.size} cm`}
-        </Tooltip>
-      ),
-      width: 250,
+      render: (record) => {
+        return `${record.origin} - Tuổi: ${record.age} - Kích thước: ${record.size} cm`;
+      },
     },
     {
       title: "Ảnh",
       dataIndex: "koiImage",
       key: "koiImage",
-      render: (image) => (
-        <Image src={image} alt="koi" style={{ width: 80, height: 80 }} />
-      ),
-      width: 100,
+      render: (image) => {
+        return image ? (
+          <Image src={image} alt="koi" style={{ width: 100, height: 100 }} />
+        ) : (
+          "No Image"
+        );
+      },
     },
     {
       title: "Danh mục",
       dataIndex: "category",
       key: "category",
-      width: 120,
     },
+    {
+      title: "Tuổi",
+      dataIndex: "age",
+      key: "age",
+    },
+    {
+      title: "Kích thước (cm)",
+      dataIndex: "size",
+      key: "size",
+    },
+    // {
+    //   title: "Tính cách",
+    //   dataIndex: "personality",
+    //   key: "personality",
+    // },
+    {
+      title: "Nguồn gốc",
+      dataIndex: "origin",
+      key: "origin",
+    },
+    // {
+    //   title: "Chế độ ăn",
+    //   dataIndex: "food",
+    //   key: "food",
+    // },
+    // {
+    //   title: "Độ cứng nước",
+    //   dataIndex: "water",
+    //   key: "water",
+    // },
     {
       title: "Giá",
       dataIndex: "price",
@@ -175,78 +216,49 @@ const FishCareManagement = () => {
           currency: "VND",
         });
       },
-      width: 120,
     },
     {
       title: "Thuần chủng",
       dataIndex: "purebred",
       key: "purebred",
       render: (purebred) => {
-        return purebred ? (
-          <Tag color="green">Thuần chủng</Tag>
-        ) : (
-          <Tag color="orange">F1</Tag>
-        );
+        return purebred ? "Thuần chủng" : "F1";
       },
-      width: 120,
     },
+    // {
+    //   title: "Sức khỏe",
+    //   dataIndex: "health",
+    //   key: "health",
+    // },
+    // {
+    //   title: "Nhiệt độ nước",
+    //   dataIndex: "temperature",
+    //   key: "temperature",
+    // },
+    // {
+    //   title: "pH nước",
+    //   dataIndex: "ph",
+    //   key: "ph",
+    // },
     {
-      title: "Sức khỏe",
-      dataIndex: ["healthcare", "healthStatus"],
-      key: "healthStatus",
-      render: (healthStatus) => {
-        return healthStatus ? (
-          <p>{healthStatus}</p>
-        ) : (
-          <p>Chưa thêm tình trạng</p>
-        );
+      title: "Trạng thái",
+      dataIndex: "status",
+      key: "status",
+      render: (status) => {
+        console.log("status: ", status);
+        switch (status) {
+          case 1:
+            return <Tag color="lime">Còn Hàng</Tag>;
+          case 2:
+            return <Tag color="blue">Đã Bán</Tag>;
+          case 3:
+            return <Tag color="orange">Ký Gửi</Tag>;
+          case 4:
+            return <Tag color="purple">Chờ Duyệt Đơn Ký Gửi</Tag>;
+          case 5:
+            return <Tag color="red">Ký gửi chăm sóc</Tag>;
+        }
       },
-      width: 150,
-    },
-    {
-      title: "Phát triển",
-      dataIndex: ["healthcare", "growthStatus"],
-      key: "growthStatus",
-      render: (growthStatus) => {
-        return growthStatus ? (
-          <p>{growthStatus}</p>
-        ) : (
-          <p>Chưa thêm tình trạng</p>
-        );
-      },
-      width: 150,
-    },
-    {
-      title: "Môi trường",
-      dataIndex: ["healthcare", "careEnvironment"],
-      key: "careEnvironment",
-      render: (careEnvironment) => {
-        return careEnvironment ? (
-          <Tooltip title={careEnvironment}>
-            {careEnvironment.length > 20
-              ? `${careEnvironment.slice(0, 20)}...`
-              : careEnvironment}
-          </Tooltip>
-        ) : (
-          <p>Chưa thêm tình trạng</p>
-        );
-      },
-      width: 150,
-    },
-    {
-      title: "Ghi chú",
-      dataIndex: ["healthcare", "note"],
-      key: "note",
-      render: (note) => {
-        return note ? (
-          <Tooltip title={note}>
-            {note.length > 20 ? `${note.slice(0, 20)}...` : note}
-          </Tooltip>
-        ) : (
-          "Chưa thêm tình trạng"
-        );
-      },
-      width: 200,
     },
     {
       title: "Hành động",
@@ -257,207 +269,682 @@ const FishCareManagement = () => {
             type="primary"
             icon={<EyeOutlined />}
             onClick={() => {
-              setIsModalDetailFishOpen(true);
-              setDataDetailFish(record);
+              showModalView();
+              setDataView(record);
             }}
           >
             Xem
           </Button>
-
-          {!record.healthcare.checked ? (
-            <Button type="default" onClick={() => handleAddHealth(record)}>
-              Thêm tình trạng
-            </Button>
-          ) : (
-            <Button
-              type="default"
-              icon={<EditOutlined />}
-              onClick={() => handleEditHealth(record)}
-            >
-              Cập nhật tình trạng cá
-            </Button>
-          )}
+          <Button
+            type="default"
+            icon={<EditOutlined />}
+            onClick={() => onEditFish(record)}
+          >
+            Chỉnh sửa
+          </Button>
+          <Button
+            type="default"
+            icon={<EditOutlined />}
+            onClick={() => showModalDetailView(record)}
+            style={{
+              backgroundColor: "#d9d9d9",
+              color: "#000",
+            }}
+          >
+            Thông số chi tiết
+          </Button>
         </Space>
       ),
-      width: 200,
+    },
+    {
+      title: "Trạng thái",
+      key: "status",
+      render: (text, record) => (
+        <Select
+          defaultValue={record.status}
+          onChange={(value) => {
+            onStatusChange(record.id);
+            setStatus(value);
+          }}
+          style={{ width: 150 }}
+          options={[
+            { value: 1, label: "Còn Hàng" },
+            { value: 2, label: "Đã Bán" },
+            { value: 3, label: "Ký Gửi" },
+            { value: 4, label: "Chờ Duyệt Đơn Ký Gửi" },
+            { value: 5, label: "Ký gửi chăm sóc" },
+          ]}
+        />
+      ),
     },
   ];
 
-  return (
-    <div>
-      <div className="flex flex-col justify-center items-center">
-        <div className="w-[450px]">
-          <Input.Search
-            placeholder="Nhập tên hoặc email..."
-            style={{ width: 300 }}
-            allowClear
-            onSearch={(value) => {
-              console.log("Search:", value);
-            }}
-          />
-        </div>
-        <div className="flex flex-col mt-2 w-full">
-          <div className="w-full flex justify-start">
-            <Button
-              onClick={() => setIsModalOpen(true)}
-              danger
-              className="flex justify-center items-center"
-              icon={<PlusOutlined />}
-            >
-              Thêm Cá
-            </Button>
-          </div>
-          <div className="mt-3">
-            <div className="overflow-x-auto scrollbar-custom">
-              <Table
-                rowKey="id"
-                columns={columns}
-                dataSource={ListFishCare?.data?.koiFishReponseList || []} // Use data from API
-                pagination={false}
-                loading={isLoadingListFishCare}
-              />
-            </div>
-            <div className="flex justify-end mt-2 mb-2">
-              <Pagination
-                current={currentPage}
-                total={ListFishCare?.data?.totalElements || 0}
-                pageSize={8}
-                onChange={(page) => setCurrentPage(page)}
-                showSizeChanger={false}
-              />
-            </div>
-          </div>
-        </div>
-        <Modal
-          visible={isModalDetailFishOpen}
-          footer={null}
-          onCancel={cancelModalDetailView}
-        >
-          <h1>Nguồn gốc: {dataDetailFish?.origin}</h1>
-          <h1>Chế độ ăn: {dataDetailFish?.food}</h1>
-          <h1>Nhiệt độ nước: {dataDetailFish?.temperature}</h1>
-          <h1>Độ pH nước: {dataDetailFish?.ph}</h1>
-          <h1>Tính cách: {dataDetailFish?.personality}</h1>
-        </Modal>
-        <Modal
-          title="Thêm tình trạng sức khỏe cho cá"
-          visible={isModalAddHealthOpen}
-          footer={null}
-          onCancel={() => setIsModalAddHealthOpen(false)}
-        >
-          <form onSubmit={handleSubmit(onSubmitHealth)}>
-            <Row gutter={[24, 15]}>
-              <Col span={24}>
-                <label style={{ fontSize: "20px", marginLeft: "8px" }}>
-                  Tình trạng sức khỏe
-                </label>
-                <Controller
-                  name="healthStatus"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      placeholder="Nhập tình trạng sức khỏe"
-                      className="mt-1"
-                      status={errors.healthStatus ? "error" : ""}
-                    />
-                  )}
-                />
-                {errors.healthStatus && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.healthStatus.message}
-                  </p>
-                )}
-              </Col>
 
-              <Col span={24}>
-                <label style={{ fontSize: "20px", marginLeft: "8px" }}>
-                  Tình trạng phát triển (độ dài)
-                </label>
-                <Controller
-                  name="growthStatus"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      type="number"
-                      placeholder="Nhập tình trạng phát triển"
-                      className="mt-1"
-                      status={errors.growthStatus ? "error" : ""}
-                    />
-                  )}
-                />
-                {errors.growthStatus && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.growthStatus.message}
-                  </p>
-                )}
-              </Col>
-
-              <Col span={24}>
-                <label style={{ fontSize: "20px", marginLeft: "8px" }}>
-                  Môi trường chăm sóc
-                </label>
-                <Controller
-                  name="careEnvironment"
-                  control={control}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      placeholder="Nhập môi trường chăm sóc"
-                      className="mt-1"
-                      status={errors.careEnvironment ? "error" : ""}
-                    />
-                  )}
-                />
-                {errors.careEnvironment && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.careEnvironment.message}
-                  </p>
-                )}
-              </Col>
-
-              <Col span={24}>
-                <label style={{ fontSize: "20px", marginLeft: "8px" }}>
-                  Ghi chú
-                </label>
-                <Controller
-                  name="note"
-                  control={control}
-                  render={({ field }) => (
-                    <Input.TextArea
-                      {...field}
-                      placeholder="Nhập ghi chú "
-                      className="mt-1"
-                      status={errors.note ? "error" : ""}
-                    />
-                  )}
-                />
-                {errors.note && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.note.message}
-                  </p>
-                )}
-              </Col>
-
-              <Col span={24} className="flex justify-end">
-                <Button
-                  htmlType="submit"
-                  type="primary"
-                  loading={isAddingHealth}
-                >
-                  Thêm
-                </Button>
-                <Button onClick={() => setIsModalAddHealthOpen(false)}>
-                  Hủy
-                </Button>
-              </Col>
-            </Row>
-          </form>
-        </Modal>
+  return <div>
+     <div className="flex flex-col justify-center items-center  ">
+      <div className="w-[450px]">
+        <Search
+          placeholder="Nhập tên hoặc email..."
+          style={{ width: 300 }}
+          allowClear
+          onSearch={(value) => {
+            console.log("Search:", value);
+          }}
+        />
       </div>
+      <div className="flex flex-col mt-2 w-full">
+        <div className="w-full flex justify-start">
+          <Button
+            onClick={showModal}
+            danger
+            className="flex justify-center items-center"
+            icon={<PlusOutlined />}
+          >
+            Thêm Cá
+          </Button>
+        </div>
+        <div className="mt-3">
+          <div className="overflow-x-auto scrollbar-custom">
+            <Table
+              rowKey="id"
+              columns={columns}
+              dataSource={[]}
+              pagination={false}
+              loading={false}
+            />
+          </div>
+          <div className="flex justify-end mt-2 mb-2">
+            <Pagination
+              current={currentPage}
+              total={50}
+              pageSize={4}
+              onChange={(page) => setCurrentPage(page)}
+              showSizeChanger={false}
+            />
+          </div>
+        </div>
+      </div>
+      <Modal
+        title={dataEdit ? "Chỉnh sửa cá" : "Thêm cá"}
+        visible={isModalOpen}
+        footer={[
+          <Button key="cancel" onClick={handleCancel}>
+            Hủy
+          </Button>,
+          <Button key="submit" type="primary" onClick={handleSubmit(onSubmit)}>
+            {dataEdit ? "Cập nhật" : "Thêm"}
+          </Button>,
+        ]}
+        onCancel={handleCancel}
+      >
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Row gutter={[16, 16]}>
+            <Col span={12}>
+              <label style={{ fontSize: "16px" }}>Ảnh Cá</label>
+              <Controller
+                name="koiImage"
+                control={control}
+                render={({ field: { onChange, value, ...field } }) => (
+                  <Upload
+                    {...field}
+                    listType="picture-card"
+                    className="avatar-uploader"
+                    showUploadList={false}
+                    beforeUpload={() => false}
+                    onChange={(info) => {
+                      const file = info.file.originFileObj || info.file;
+                      if (file) {
+                        console.log("Selected file:", file);
+                        onChange(file);
+                        setImage(URL.createObjectURL(file));
+                      }
+                    }}
+                  >
+                    <button
+                      style={{ border: 0, background: "none" }}
+                      type="button"
+                    >
+                      {(value && value instanceof File) ||
+                      image ||
+                      dataEdit?.koiImage ? (
+                        <>
+                          <img
+                            className="w-[60px] h-[80px] object-cover"
+                            src={
+                              value && value instanceof File
+                                ? URL.createObjectURL(value)
+                                : image || dataEdit?.koiImage
+                            }
+                            alt="koiImage"
+                          />
+                          <div
+                            style={{
+                              top: 30,
+                              right: "140px",
+                            }}
+                            className="absolute "
+                          >
+                            <DeleteOutlined
+                              onClick={() => {
+                                onChange(null);
+                                setImage(null);
+                              }}
+                            />
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <PlusOutlined />
+                          <div style={{ marginTop: 8 }}>Upload</div>
+                        </>
+                      )}
+                    </button>
+                  </Upload>
+                )}
+              />
+              {errors.koiImage && (
+                <p style={{ color: "red", fontSize: "12px" }}>
+                  {errors.koiImage.message}
+                </p>
+              )}
+            </Col>
+
+            <Col span={12}>
+              <label style={{ fontSize: "16px" }}>Ảnh chứng nhận</label>
+              <Controller
+                name="image"
+                control={control}
+                render={({ field: { onChange, value, ...field } }) => (
+                  <Upload
+                    {...field}
+                    listType="picture-card"
+                    className="avatar-uploader"
+                    showUploadList={false}
+                    beforeUpload={() => false}
+                    onChange={(info) => {
+                      const file = info.file.originFileObj || info.file;
+                      if (file) {
+                        console.log("Selected file:", file);
+                        onChange(file);
+                        setImageCertificate(URL.createObjectURL(file));
+                      }
+                    }}
+                  >
+                    <button
+                      style={{ border: 0, background: "none" }}
+                      type="button"
+                    >
+                      {(value && value instanceof File) ||
+                      imageCertificate ||
+                      dataEdit?.image ? (
+                        <>
+                          <img
+                            className="w-[60px] h-[80px] object-cover"
+                            src={
+                              value && value instanceof File
+                                ? URL.createObjectURL(value)
+                                : imageCertificate
+                            }
+                            alt="imageCertificate"
+                          />
+                          <div
+                            style={{
+                              top: 30,
+                              right: "140px",
+                            }}
+                            className="absolute "
+                          >
+                            <DeleteOutlined
+                              onClick={() => {
+                                onChange(null);
+                                setImageCertificate(null);
+                              }}
+                            />
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <PlusOutlined />
+                          <div style={{ marginTop: 8 }}>Upload</div>
+                        </>
+                      )}
+                    </button>
+                  </Upload>
+                )}
+              />
+              {errors.image && (
+                <p style={{ color: "red", fontSize: "12px" }}>
+                  {errors.image.message}
+                </p>
+              )}
+            </Col>
+
+            <Col span={24}>
+              <label style={{ fontSize: "16px" }}>Danh mục</label>
+              <Controller
+                name="category"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    style={{ width: "100%", marginTop: "8px" }}
+                    placeholder="Chọn danh mục"
+                    options={ListCategory?.map((item) => ({
+                      value: item.id,
+                      label: `${item.categoryName}`,
+                    }))}
+                  />
+                )}
+              />
+              {errors.category && (
+                <p style={{ color: "red", fontSize: "12px" }}>
+                  {errors.category.message}
+                </p>
+              )}
+            </Col>
+            <Col span={24}>
+              <label style={{ fontSize: "16px" }}>Giới tính</label>
+              <Controller
+                name="gender"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    style={{ width: "100%", marginTop: "8px" }}
+                    placeholder="Chọn danh mục"
+                    options={[
+                      { value: true, label: "Koi Đực" },
+                      { value: false, label: "Koi cái" },
+                    ]}
+                  />
+                )}
+              />
+              {errors.gender && (
+                <p style={{ color: "red", fontSize: "12px" }}>
+                  {errors.gender.message}
+                </p>
+              )}
+            </Col>
+
+            <Col span={12}>
+              <label style={{ fontSize: "16px" }}>Tuổi (năm)</label>
+              <Controller
+                name="age"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="number"
+                    placeholder="Nhập tuổi cá"
+                    className="mt-1"
+                    status={errors.age ? "error" : ""}
+                  />
+                )}
+              />
+              {errors.age && (
+                <p style={{ color: "red", fontSize: "12px" }}>
+                  {errors.age.message}
+                </p>
+              )}
+            </Col>
+
+            <Col span={12}>
+              <label style={{ fontSize: "16px" }}>Kích thước (cm)</label>
+              <Controller
+                name="size"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="number"
+                    placeholder="Nhập kích thước cá"
+                    className="mt-1"
+                    status={errors.size ? "error" : ""}
+                  />
+                )}
+              />
+              {errors.size && (
+                <p style={{ color: "red", fontSize: "12px" }}>
+                  {errors.size.message}
+                </p>
+              )}
+            </Col>
+
+            <Col span={24}>
+              <label style={{ fontSize: "16px" }}>Nguồn gốc của cá</label>
+              <Controller
+                name="origin"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="text"
+                    placeholder="Nhập nguồn gốc của cá"
+                    className="mt-1"
+                    status={errors.origin ? "error" : ""}
+                  />
+                )}
+              />
+              {errors.origin && (
+                <p style={{ color: "red", fontSize: "12px" }}>
+                  {errors.origin.message}
+                </p>
+              )}
+            </Col>
+            <Col span={24}>
+              <label style={{ fontSize: "16px" }}>Tính cách</label>
+              <Controller
+                name="personality"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="text"
+                    placeholder="Nhập tính cách"
+                    className="mt-1"
+                    status={errors.personality ? "error" : ""}
+                  />
+                )}
+              />
+              {errors.personality && (
+                <p style={{ color: "red", fontSize: "12px" }}>
+                  {errors.personality.message}
+                </p>
+              )}
+            </Col>
+            <Col span={24}>
+              <label style={{ fontSize: "16px" }}>Chứng chỉ của cá</label>
+              <Controller
+                name="name"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="text"
+                    placeholder="Nhập Tên chứng chỉ của cá nếu có"
+                    className="mt-1"
+                    status={errors.name ? "error" : ""}
+                  />
+                )}
+              />
+              {errors.name && (
+                <p style={{ color: "red", fontSize: "12px" }}>
+                  {errors.name.message}
+                </p>
+              )}
+            </Col>
+            <Col span={24}>
+              <label style={{ fontSize: "16px" }}>Chế độ ăn</label>
+              <Controller
+                name="food"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="text"
+                    placeholder="Nhập chế độ ăn cho cá"
+                    className="mt-1"
+                    status={errors.food ? "error" : ""}
+                  />
+                )}
+              />
+              {errors.food && (
+                <p style={{ color: "red", fontSize: "12px" }}>
+                  {errors.food.message}
+                </p>
+              )}
+            </Col>
+            <Col span={24}>
+              <label style={{ fontSize: "16px" }}>Độ cứng nước</label>
+              <Controller
+                name="water"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="text"
+                    placeholder="Nhập độ cứng nước cho cá"
+                    className="mt-1"
+                    status={errors.water ? "error" : ""}
+                  />
+                )}
+              />
+              {errors.water && (
+                <p style={{ color: "red", fontSize: "12px" }}>
+                  {errors.water.message}
+                </p>
+              )}
+            </Col>
+
+            <Col span={24}>
+              <label style={{ fontSize: "16px" }}>Giá</label>
+              <Controller
+                name="price"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="number"
+                    placeholder="Nhập giá cá"
+                    className="mt-1"
+                    status={errors.price ? "error" : ""}
+                  />
+                )}
+              />
+              {errors.price && (
+                <p style={{ color: "red", fontSize: "12px" }}>
+                  {errors.price.message}
+                </p>
+              )}
+            </Col>
+
+            <Col span={24}>
+              <label style={{ fontSize: "16px" }}>Thuần chủng</label>
+              <Controller
+                name="purebred"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    style={{ width: "100%", marginTop: "8px" }}
+                    placeholder="Chọn trạng thái"
+                  >
+                    <Select.Option value={0}>Thuần chủng</Select.Option>
+                    <Select.Option value={1}>F1</Select.Option>
+                  </Select>
+                )}
+              />
+              {errors.purebred && (
+                <p style={{ color: "red", fontSize: "12px" }}>
+                  {errors.purebred.message}
+                </p>
+              )}
+            </Col>
+
+            <Col span={24}>
+              <label style={{ fontSize: "16px" }}>Sức khỏe</label>
+              <Controller
+                name="health"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    placeholder="Ví dụ: [khỏe, bình thường, tốt]"
+                    className="mt-1"
+                    status={errors.health ? "error" : ""}
+                  />
+                )}
+              />
+              {errors.health && (
+                <p style={{ color: "red", fontSize: "12px" }}>
+                  {errors.health.message}
+                </p>
+              )}
+            </Col>
+
+            <Col span={12}>
+              <label style={{ fontSize: "16px" }}>Nhiệt độ nước</label>
+              <Controller
+                name="temperature"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    placeholder="Ví dụ: 22°C - 28°C"
+                    className="mt-1"
+                    status={errors.temperature ? "error" : ""}
+                  />
+                )}
+              />
+              {errors.temperature && (
+                <p style={{ color: "red", fontSize: "12px" }}>
+                  {errors.temperature.message}
+                </p>
+              )}
+            </Col>
+
+            <Col span={12}>
+              <label style={{ fontSize: "16px" }}>pH nước</label>
+              <Controller
+                name="ph"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    placeholder="Ví dụ: 7.0 - 7.5"
+                    className="mt-1"
+                    status={errors.ph ? "error" : ""}
+                  />
+                )}
+              />
+              {errors.ph && (
+                <p style={{ color: "red", fontSize: "12px" }}>
+                  {errors.ph.message}
+                </p>
+              )}
+            </Col>
+          </Row>
+        </form>
+      </Modal>
+
+      <Modal
+        visible={isModalViewOpen}
+        footer={null}
+        onCancel={cancelModalView}
+        className="flex justify-center items-center"
+      >
+        <Col key={dataView?.id} className="w-[250px] h-[645px] mx-10 mb-10">
+          <div className="relative w-[250px]">
+            <div
+              className="absolute border-[1px] border-[#FA4444] w-[86px] 
+                                                bg-[#FFFFFF] rounded-ee-[10px] 
+                                                rounded-tl-[5px] text-center 
+                                                text-[#FA4444]"
+            >
+              {dataView?.status === 1
+                ? "Đang bán"
+                : dataView?.status === 2
+                ? "Đã bán"
+                : null}
+            </div>
+            <div className="rounded-[10px]">
+              <img
+                src={dataView?.koiImage}
+                className="w-[250px] h-[354px] rounded-t-[8px] box-border"
+                alt={dataView?.category}
+                style={{ width: "250px" }}
+              />
+            </div>
+          </div>
+          <div className="flex flex-col w-[250px] h-[300px] bg-[#FFFFFF] border border-t-0 border-x-2 border-b-2 border-[#FA4444] rounded-b-[10px]">
+            <h1 className="my-0 mx-auto text-[#FA4444] font-bold text-[20px]">
+              {dataView?.categoryName}
+            </h1>
+            <div className="my-[10px] mx-[10px]  ">
+              <div className="flex flex-col ">
+                <div className="h-7 text-lg font-bold flex justify-center text-[#FA4444] ">
+                  {dataView?.category} {dataView?.size} cm {dataView?.age} tuổi
+                </div>
+                <div className="h-7">Người bán: {dataView?.origin}</div>
+                <div className="h-6">
+                  Giới tính: {dataView?.gender ? "Koi Đực" : "Koi Cái"}
+                </div>
+                <div className="h-6">Tuổi: {dataView?.age}</div>
+                <div className="h-6">Kích thước: {dataView?.size} cm</div>
+                <div className="h-6">Nguồn gốc: {dataView?.origin}</div>
+                <div className="h-6">Giống: {dataView?.category}</div>
+              </div>
+              <div className="text-center">
+                <div className="my-[10px] text-[20px] font-bold">
+                  {new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  }).format(dataView?.price)}
+                </div>
+                {dataView?.status !== 2 ? (
+                  <Link>
+                    <Button
+                      // onClick={() => {
+                      //   handleAddToCart(card);
+                      // }}
+                      className="w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]"
+                    >
+                      Đặt Mua
+                    </Button>
+                    <Link>
+                      <div
+                        className="absolute  top-[3px] right-[-5px] z-50" // Adjusted position: top right of the card
+                        // onClick={(e) => {
+                        //   handleAddToCompare(card);
+                        // }}
+                      >
+                        <Button
+                          onClick={(e) => {
+                            handleAddToCompare(card);
+                          }}
+                          className="!p-0 !py-1 w-[100px] !border-0 h-fit hover:!border-[#FA4444] hover:!text-[#FA4444] flex justify-around"
+                        >
+                          <div className="flex justify-center items-center">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="1em"
+                              height="1em"
+                              className="flex"
+                              viewBox="0 0 24 24"
+                            >
+                              <g fill="none" fillRule="evenodd">
+                                <path
+                                  d="M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4h4a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-4v4a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-4H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h4z"
+                                  fill="currentColor"
+                                />
+                              </g>
+                            </svg>
+                            <h5 className="mx-1 my-0 !text-center">So sánh</h5>
+                          </div>
+                        </Button>
+                      </div>
+                    </Link>
+                  </Link>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        </Col>
+      </Modal>
+      <Modal
+        visible={isModalDetailFishOpen}
+        footer={null}
+        onCancel={cancelModalDetailView}
+      >
+        <h1>Nhiệt độ của nước :{dataDetailFish?.temperature}</h1>
+        <h1>Độ cứng của nước: {dataDetailFish?.water}</h1>
+        <h1>Chế độ ăn của cá: {dataDetailFish?.food}</h1>
+        <h1>Sức khỏe của cá: {dataDetailFish?.health}</h1>
+        <h1>Tính cách của cá: {dataDetailFish?.personality}</h1>
+        <h1>Độ ph của nước: {dataDetailFish?.ph}</h1>
+      </Modal>
     </div>
-  );
+  </div>;
 };
 
 export default FishCareManagement;

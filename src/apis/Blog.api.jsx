@@ -47,6 +47,22 @@ export const BlogApi = {
       throw new Error(error.response.data.message);
     }
   },
+  updateBlog : async (payload , blogId) => {
+    try {
+      const response = await fetcher.put(
+        `http://localhost:8080/koifarm/blog/updateBlog/${blogId}`,
+        payload,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
 };
 
 export default BlogApi;
