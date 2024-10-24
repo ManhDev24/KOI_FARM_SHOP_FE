@@ -34,7 +34,7 @@ export const ConsignmentApi = {
   getCertificateByID: async (id) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/certificate/getCertifate?koiId=${id}`
+        `http://localhost:8080/koifarm/certificate/getCertificate?koiId=${id}`
       );
       return response.data;
     } catch (error) {
