@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import FishApi from '../../apis/Fish.api';
-import { Breadcrumb, Button } from 'antd';
+import { Breadcrumb, Button, Image } from 'antd';
 import { addToCart } from '../../Redux/Slices/Cart_Slice';
 import { useDispatch } from 'react-redux';
 import fish from '/img/SOWA.webp';
@@ -32,7 +32,7 @@ const BatchFishDetail = () => {
   const fishDetails = data || {};  // Access the fish data from the API response
 
   // If koiImage is a string, wrap it in an array for the carousel
-  const images = Array.isArray(fishDetails.koiImage) ? fishDetails.koiImage : [fishDetails.koiImage || '/default-fish.jpg'];
+  const images = Array.isArray(fishDetails.batchImg) ? fishDetails.batchImg : [fishDetails.batchImg || '/default-fish.jpg'];
 
   // Handle moving to the next image
   const handleNextImage = () => {
@@ -60,6 +60,7 @@ const BatchFishDetail = () => {
       addToCart({
         ...fish,
         quantity: 1,
+        isBatch: true,
       })
     );
   };
@@ -104,8 +105,10 @@ const BatchFishDetail = () => {
               <div className="grid grid-cols-4">
                 <div className="col-span-2">
                   <div className="flex justify-end me-10">
-                    <img
+                    <Image
                       src={selectedImage}
+                      width={250}
+                      height={350}
                       // {selectedImage}  // Use the selected image from the carousel
                       className="w-[250px] h-[350px] rounded-[10px]"
                       alt={fishDetails.category || 'Koi Fish'}
@@ -117,20 +120,20 @@ const BatchFishDetail = () => {
                     <div className="col-span-2">
                       <div className='w-[300px] h-[350px] rounded-[10px] border-2 border-[#FA4444]'>
                         <div className='text-center my-2 text-[#FA4444] font-bold'>
-                          {fishDetails.category} {" "}
-                          {fishDetails.gender ? 'Đực' : 'Cái'} {" "}
-                          {fishDetails.age} tuổi {" "}
-                          {fishDetails.size} cm
+                          Lô {' '}
+                          {fishDetails.categoryName} {" "}  <br />                      
+                          {fishDetails.age} tuổi {" "}Kích thước
+                          {fishDetails.avgSize} 
                         </div>
                         <div className='ms-6'>
-                          <div className='mb-2 '>Giới tính: {fishDetails.gender ? 'Koi Đực' : 'Koi Cái'}</div>
-                          <div className='mb-2'>Giống: {fishDetails.category}</div>
+                          <div className='mb-2 '>Độ thuần chủng: {fishDetails.purebred ? 'Thuần chủng' : 'F1'}</div>
+                          <div className='mb-2'>Giống: {fishDetails.categoryName}</div>
                           <div className='mb-2'>Tuổi: {fishDetails.age}</div>
-                          <div className='mb-2'>Kích thước: {fishDetails.size} cm</div>
-                          <div className='mb-2'>Tính cách: {fishDetails.personality || 'Không có thông tin'}</div>
-                          <div className='mb-2'>Nguồn gốc: {fishDetails.origin}</div>
+                          <div className='mb-2'>Kích thước: {fishDetails.avgSize} </div>
+                          <div className='mb-2'>Thức ăn: {fishDetails.food || 'Không có thông tin'}</div>
+                          <div className=''>Nguồn gốc: {fishDetails.origin}</div>
                           <div className=''>
-                            Giá: <div className='text-center font-bold text-[24px] !mb-[5px] text-[#FA4444]'>
+                            Giá: <div className='text-center font-bold text-[24px] h-[24px] !mb-[6px] text-[#FA4444]'>
                               {fishDetails.price != null && !isNaN(fishDetails.price)
                                 ? fishDetails.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
                                 : 'Chưa có giá'}
