@@ -4,13 +4,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import BlogApi from "../../../../apis/Blog.api";
 import { Editor } from "@tinymce/tinymce-react";
-import {
-  UploadOutlined,
-  PlusOutlined,
-  DeleteOutlined,
-} from "@ant-design/icons";
-import LoadingModal from "../../../Modal/LoadingModal";
+import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import moment from "moment";
+import LoadingModal from "../../../Modal/LoadingModal";
 
 const { Option } = Select;
 
@@ -20,34 +16,38 @@ const BlogEdit = () => {
   const queryClient = useQueryClient();
   const editorRef = useRef(null); 
   const [imageUrl, setImageUrl] = useState("");
-  const [content, setContent] = useState("");
+  const [contentPreview, setContentPreview] = useState(""); // State for previewing content
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
-  const [contentPreview, setContentPreview] = useState(""); 
-  const [form] = Form.useForm(); 
-
+  const [form] = Form.useForm(); // Ant Design form instance
 
   // Fetch blog data by blogId
   const { data: blogData, isLoading: isFetchingBlog } = useQuery({
     queryKey: ["Blog", blogId],
     queryFn: () => BlogApi.getDetailBlog(blogId),
     onSuccess: (data) => {
+      // Set form fields with the fetched data
       form.setFieldsValue({
         title: data?.title,
         subTitle: data?.subTitle,
         status: data?.status ? "1" : "0",
-        content: data?.content,
-        image: data?.blogImg,
       });
 
+      // Set content in TinyMCE editor
+      if (editorRef.current) {
+        editorRef.current.setContent(data?.content || "");
+      }
+
+      // Set image URL
       setImageUrl(data?.blogImg);
     },
   });
 
+  // Ensure that TinyMCE content is updated correctly when editor is initialized
   useEffect(() => {
     if (editorRef.current && blogData?.content) {
       editorRef.current.setContent(blogData.content);
     }
-  }, [blogData]); 
+  }, [blogData]);
 
   const { mutate: updateBlog, isLoading: isUpdatingBlog } = useMutation({
     mutationFn: (updatedBlog) => BlogApi.updateBlog(blogId, updatedBlog),

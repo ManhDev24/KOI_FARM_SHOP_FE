@@ -47,7 +47,7 @@ export const BlogApi = {
       throw new Error(error.response.data.message);
     }
   },
-  updateBlog : async (payload , blogId) => {
+  updateBlog: async (payload, blogId) => {
     try {
       const response = await fetcher.put(
         `http://localhost:8080/koifarm/blog/updateBlog/${blogId}`,
