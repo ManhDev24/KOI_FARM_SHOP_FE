@@ -52,50 +52,54 @@ const BatchComparisonModal = ({ isOpen, onClose, selectedBatches, setSelectedBat
           <div className="flex justify-around gap-4 mx-auto my-0">
             {/* Render selected batch fish information */}
             {selectedBatches.map((batch) => (
-              <div key={batch.batchID} className="">
-                {/* Display batch fish image */}
-                <div className="mb-4">
-                  <img
-                    src={batch.batchImg}
-                    alt={batch.categoryName || "Không có tên"}
-                    className="w-[265px] h-[400px] object-cover rounded-lg"
-                  />
-                </div>
+              <Link to={`/batch-detail/${batch.batchID}`}> 
+                <div key={batch.batchID} className="">
+                  {/* Display batch fish image */}
+                  <div className="mb-4">
+                    <img
+                      src={batch.batchImg}
+                      alt={batch.categoryName || "Không có tên"}
+                      className="w-[265px] h-[400px] object-cover rounded-lg"
+                    />
+                  </div>
 
-                {/* Batch fish details */}
-                <div className='border-2 border-[#FA4444] border-t-0'>
-                  <h3 className="text-xl font-semibold ms-3 mb-2 text-[#FA4444]">
-                    {batch.categoryName || "Không có tên"} - Số lượng: {batch.quantity}
-                  </h3>
-                  <p className="mb-2 ms-3">Độ tuổi: {batch.age || "Không có thông tin"}</p>
-                  <p className="mb-2 ms-3">Kích thước trung bình: {batch.avgSize || "Không có thông tin"} cm</p>
-                  <p className="mb-2 ms-3">Nguồn gốc: {batch.origin || "Không có thông tin"}</p>
-                  <p className="mb-2 ms-3">Giống: {batch.categoryName || "Không có thông tin"}</p>
-                  <p className="font-bold text-lg text-center">
-                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(batch.price)}
-                  </p>
+                  {/* Batch fish details */}
+                  <div className='border-2 border-[#FA4444] border-t-0'>
+                    <h3 className="text-xl font-semibold ms-3 mb-2 text-[#FA4444]">
+                      {batch.categoryName || "Không có tên"} - Số lượng: {batch.quantity}
+                    </h3>
+                    <p className="mb-2 ms-3">Độ tuổi: {batch.age || "Không có thông tin"}</p>
+                    <p className="mb-2 ms-3">Kích thước trung bình: {batch.avgSize || "Không có thông tin"} cm</p>
+                    <p className="mb-2 ms-3">Nguồn gốc: {batch.origin || "Không có thông tin"}</p>
+                    <p className="mb-2 ms-3">Giống: {batch.categoryName || "Không có thông tin"}</p>
+                    <p className="font-bold text-lg text-center">
+                      {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(batch.price)}
+                    </p>
 
-                  {/* Remove item from comparison */}
-                  <button
-                    className="bg-red-500 z-50  relative bottom-[640px] left-[200px]  text-white font-bold py-1 px-4 rounded mt-4"
-                    onClick={() => {
-                      removeBatch(batch);
-                      // Update localStorage after removing item
-                      setSelectedBatches(prevBatches => prevBatches.filter(b => b.batchID !== batch.batchID));
-                    }}
-                  >
-                    Xóa
-                  </button>
-                  <Link >
-                    <Button
-                      onClick={() => handleAddToCart(batch)}
-                      className="w-[138px] h-[40px]  text-[#FFFFFF] bg-[#FA4444] rounded-[10px] mt-2"
-                    >
-                      Đặt Mua
-                    </Button>
-                  </Link>
+                    {/* Remove item from comparison */}
+                    <Link>
+                      <button
+                        className="bg-red-500 z-50  relative bottom-[640px] left-[200px]  text-white font-bold py-1 px-4 rounded mt-4"
+                        onClick={() => {
+                          removeBatch(batch);
+                          // Update localStorage after removing item
+                          setSelectedBatches(prevBatches => prevBatches.filter(b => b.batchID !== batch.batchID));
+                        }}
+                      >
+                        Xóa
+                      </button>
+                    </Link>
+                    <Link>
+                      <Button
+                        onClick={() => handleAddToCart(batch)}
+                        className="w-[138px] h-[40px]  text-[#FFFFFF] bg-[#FA4444] rounded-[10px] mt-2"
+                      >
+                        Đặt Mua
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}
