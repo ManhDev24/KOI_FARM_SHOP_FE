@@ -15,21 +15,21 @@ import moment from "moment";
 const { Option } = Select;
 
 const BlogEdit = () => {
-  const { blogId } = useParams();
+  const { blogId } = useParams("blogId");
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const editorRef = useRef(null); // Reference to TinyMCE editor
+  const editorRef = useRef(null); 
   const [imageUrl, setImageUrl] = useState("");
   const [content, setContent] = useState("");
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
-  const [contentPreview, setContentPreview] = useState(""); // State for previewing content
-  const [form] = Form.useForm(); // Ant Design form instance
+  const [contentPreview, setContentPreview] = useState(""); 
+  const [form] = Form.useForm(); 
+
 
   // Fetch blog data by blogId
   const { data: blogData, isLoading: isFetchingBlog } = useQuery({
     queryKey: ["Blog", blogId],
     queryFn: () => BlogApi.getDetailBlog(blogId),
-    staleTime: 300000, // 5 minutes
     onSuccess: (data) => {
       form.setFieldsValue({
         title: data?.title,
@@ -43,12 +43,11 @@ const BlogEdit = () => {
     },
   });
 
-  // Use useEffect to set content when blogData is fetched
   useEffect(() => {
     if (editorRef.current && blogData?.content) {
       editorRef.current.setContent(blogData.content);
     }
-  }, [blogData]); // Runs when blogData changes
+  }, [blogData]); 
 
   const { mutate: updateBlog, isLoading: isUpdatingBlog } = useMutation({
     mutationFn: (updatedBlog) => BlogApi.updateBlog(blogId, updatedBlog),
@@ -65,6 +64,7 @@ const BlogEdit = () => {
 
   // Handle form submission
   const onFinish = (values) => {
+    console.log('values: ', values);
     const content = editorRef.current.getContent();
     if (!content || content.trim() === "") {
       message.error("Vui lòng nhập nội dung trong editor!");
