@@ -432,7 +432,7 @@ const FishManagement = () => {
       if (!image) {
         const { koiImage, ...rest } = data;
 
-        const dataToEdit = { status, ...rest, categoryId: data?.category };
+        const dataToEdit = { status, ...rest, categoryId: data?.category , createdDate: new Date().toISOString() };
         console.log("dataToEdit2: ", dataToEdit);
 
         handleUpdateFish(dataToEdit);
