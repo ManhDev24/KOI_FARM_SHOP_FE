@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 
-import { Button, Dropdown, Menu } from "antd";
+import { Button, Dropdown, Menu, Modal } from "antd";
 import "./navbar.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getLocalStorage } from "../../../utils/LocalStorage";
 import { useDispatch, useSelector } from "react-redux";
 import { signOut } from "../../../Redux/Slices/Auth_Slice";
@@ -33,6 +33,8 @@ const Navbar = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedCategoryID, setSelectedCategoryID] = useState(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const navigate = useNavigate();
   const fetchKoiCategories = async () => {
     try {
       const categoriesArray = await FishApi.getCategories();
@@ -155,11 +157,11 @@ const Navbar = () => {
     },
     ...(user?.role === "manager" || user?.role === "staff"
       ? [
-          {
-            key: "8",
-            label: <Link to="/admin">Quản lý</Link>,
-          },
-        ]
+        {
+          key: "8",
+          label: <Link to="/admin">Quản lý</Link>,
+        },
+      ]
       : []),
 
     {
@@ -168,13 +170,34 @@ const Navbar = () => {
       onClick: () => handleSignOut(),
     },
   ];
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+
+    setIsModalVisible(false);
+    navigate("/login");
+  };
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+  
+
+
   const consignmentID = localStorage.getItem("consignmentID");
   const consignmentMenuitems = [
     {
       key: "8",
       label: (
         <Link
-          to={consignmentID ? "/status-consignment" : "/request-consignment"}
+          to={(consignmentID && user) ? "/status-consignment" :"/request-consignment"}
+          onClick={(e) => {
+            if (!user) {
+              e.preventDefault(); // Prevent navigation if not logged in
+              showModal(); // Show login prompt modal
+            }
+          }}
           target="_self"
           rel="noopener noreferrer"
         >
@@ -189,6 +212,7 @@ const Navbar = () => {
   ];
 
   const handleSignOut = () => {
+    localStorage.removeItem("consignmentID");
     dispatch(signOut());
     window.location.reload();
   };
@@ -310,6 +334,25 @@ const Navbar = () => {
                   </svg>
                 </Button>
               </Dropdown>
+
+
+              {/* Login Modal */}
+              <Modal
+                title="Thông báo"
+                visible={isModalVisible}
+                onOk={handleOk}
+                onCancel={handleCancel}
+                footer={[
+                  <Button key="cancel" onClick={handleCancel}>
+                    Hủy
+                  </Button>,
+                  <Button key="ok" type="primary" onClick={handleOk}>
+                    Đăng nhập
+                  </Button>,
+                ]}
+              >
+                <p>Vui lòng đăng nhập mới để được trãi nghiệm tính năng</p>
+              </Modal>
             </li>
 
             <li className="me-x">

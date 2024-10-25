@@ -42,16 +42,21 @@ const StatusConsignment = () => {
   const dispatch = useDispatch();
 
   // Centralized localStorage fetching logic
-  useEffect(() => {
+   // Centralized localStorage fetching logic
+   // Centralized localStorage fetching logic
+   useEffect(() => {
+    const user = localStorage.getItem("user");
     if (!consignmentID) {
+     
       const storedID = localStorage.getItem("consignmentID");
       if (storedID && !isNaN(storedID)) {
         dispatch(saveConsignmentID(Number(storedID))); // Convert to number
       }
-    } else {
+    } else if(consignmentID && user) {
       localStorage.setItem("consignmentID", consignmentID);
     }
   }, [consignmentID, dispatch]);
+
 
   // Fetch consignment status
 
@@ -118,6 +123,8 @@ const StatusConsignment = () => {
   };
 
   const handleCurrentPage = (prevPage) => {
+    localStorage.removeItem("fishConsignmentID")
+    localStorage.removeItem("consignmentID")
     prevPage = 2;
     if (prevPage <= 2) {
       setCurrentPage((prevPage) => prevPage + 1);
@@ -308,7 +315,7 @@ const StatusConsignment = () => {
                   onClick={handleCurrentPage}
                   className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-500 transition duration-300"
                 >
-                  Quay lại
+                  Tạo mới
                 </button>
                 <button
                   onClick={handleCancelClick}
