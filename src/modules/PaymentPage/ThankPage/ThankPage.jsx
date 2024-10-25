@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import CheckoutApi from "../../../apis/Checkout.api";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, message, Steps } from "antd";
@@ -7,7 +7,6 @@ import {
   getLocalStorage,
   removeLocalStorage,
 } from "../../../utils/LocalStorage";
-import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import LoadingModal from "../../Modal/LoadingModal";
 
@@ -17,6 +16,9 @@ const ThankPage = () => {
   const status = searchParams.get("paymentStatus");
   const type = searchParams.get("type");
   const navigate = useNavigate();
+
+  // State to track if the operation was successful
+  const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
     if (status !== "1") {
@@ -32,7 +34,7 @@ const ThankPage = () => {
 
   const {
     mutate: handleSaveOrder,
-    isLoading: isHandleSaveOrderPending,
+    isPending: isHandleSaveOrderPending,
     isError: isHandleSaveOrderError,
   } = useMutation({
     mutationFn: (data) => CheckoutApi.saveOrder(data, paymentCode),
@@ -41,19 +43,20 @@ const ThankPage = () => {
       removeLocalStorage("cartItems");
       removeLocalStorage("discountRate");
       removeLocalStorage("PromotionCode");
-      window.location.reload();
+      // navigate("/thank-you"); // Remove navigation here
+      setIsSuccess(true); // Set success state
     },
     onError: (error) => {
       const errorMessage =
         error?.message || "Đã có lỗi xảy ra, vui lòng thử lại !!!";
-      message.error(errorMessage)
+      message.error(errorMessage);
       navigate("/payment-fail");
     },
   });
 
   const {
     mutate: handleSaveConsignment,
-    isLoading: isHandleSaveConsignmentLoading,
+    isPending: isHandleSaveConsignmentPending,
     isError: isHandleSaveConsignmentError,
   } = useMutation({
     mutationFn: (consignmentID) =>
@@ -63,17 +66,16 @@ const ThankPage = () => {
       removeLocalStorage("consignmentID");
       removeLocalStorage("fishConsignmentID");
       removeLocalStorage("agreedToPolicy");
-      window.location.reload();
+      // navigate("/thank-you"); // Remove navigation here
+      setIsSuccess(true); // Set success state
     },
     onError: (error) => {
       const errorMessage =
         error?.message || "Đã có lỗi xảy ra, vui lòng thử lại !!!";
-      message.error(errorMessage)
+      message.error(errorMessage);
       navigate("/payment-fail");
     },
   });
-
-
 
   const accountID = user?.id;
   const koiFishs = order
@@ -97,11 +99,17 @@ const ThankPage = () => {
     totalPrice,
     promoCode,
   };
-  const consignmentIDFromStore = useSelector(state => state.consignmentDetail.consignmentID);
+
+  const consignmentIDFromStore = useSelector(
+    (state) => state.consignmentDetail.consignmentID
+  );
 
   useEffect(() => {
     const consignmentIDFromLocalStorage = localStorage.getItem("consignmentID");
-    const consignmentID = type === "false" ? consignmentIDFromStore || consignmentIDFromLocalStorage : null;
+    const consignmentID =
+      type === "false"
+        ? consignmentIDFromStore || consignmentIDFromLocalStorage
+        : null;
 
     if (
       !hasCalledApi.current &&
@@ -110,41 +118,82 @@ const ThankPage = () => {
       type !== null
     ) {
       if (type === "true" && order) {
-        localStorage.setItem('agreedToPolicy', false);
+        localStorage.setItem("agreedToPolicy", false);
         handleSaveOrder(data);
       } else if (type === "false" && consignmentID) {
-        localStorage.setItem('agreedToPolicy', false);
+        localStorage.setItem("agreedToPolicy", false);
         handleSaveConsignment(consignmentID);
       }
-      hasCalledApi.current = true; // Đánh dấu đã gọi API
-
+      hasCalledApi.current = true; // Mark API call as done
     }
+  }, [
+    status,
+    paymentCode,
+    type,
+    order,
+    data,
+    handleSaveOrder,
+    handleSaveConsignment,
+    consignmentIDFromStore,
+  ]);
 
-  }, [status, paymentCode, type, order, data, handleSaveOrder, handleSaveConsignment]);
-
-  if (isHandleSaveOrderError) {
+  if (isHandleSaveOrderError || isHandleSaveConsignmentError) {
     navigate("/payment-fail");
-  }
-  if (isHandleSaveOrderPending) {
-    return (
-      <div className="h-[600px] w-full flex  justify-center items-center">
-        <Spin indicator={<LoadingOutlined spin />} size="large" />
-      </div>
-    );
   }
   const description = "Chính sách ký gửi";
   const description1 = "Điền thông tin ký gửi";
   const description2 = "Trạng thái duyệt đơn ký gửi";
   const description3 = "Thanh toán";
   const description4 = "Hoàn tất";
+  // Check loading state
+  if (isHandleSaveConsignmentPending) {
+    return (
+      <>
+        <div className="w-full max-w-[950px] h-full relative mx-auto my-0 p-4">
+       
+            <Steps current={5} status="process">
+              <Steps.Step title="&nbsp;" description={description} />
+              <Steps.Step title="&nbsp;" description={description1} />
+              <Steps.Step title="&nbsp;" description={description2} />
+              <Steps.Step title="&nbsp;" description={description3} />
+              <Steps.Step title="&nbsp;" description={description4} />
+            </Steps>
+         
+        </div>
+        <div className=" w-full h-[70vh] flex justify-center items-center">
+          <LoadingModal isLoading={true} />
+          Đang xử lý thanh toán ký gửi
+        </div>
+      </>
+    );
+  }
+  if (isHandleSaveOrderPending) {
+    return (
+      <div className=" w-full h-[70vh] flex justify-center items-center">
+        <LoadingModal isLoading={true} />
+        Đang xử lý thanh toán đơn hàng
+      </div>
+    );
+  }
+
+  if (!isSuccess) {
+    // If not successful yet, you can return null or a placeholder
+    return null;
+  }
+
+
   return type === "true" ? (
-    <div className="flex flex-col items-center justify-center h-[600px] w-full">
+    // Content for type === "true"
+    <div className="flex flex-col items-center justify-center h-[70vh] w-full">
       <div className="text-center text-3xl font-bold mb-10">
         <h1>Cảm ơn bạn, thanh toán hoàn tất</h1>
       </div>
       <div className="flex justify-center items-center">
         <Link to="/koiList">
-          <Button style={{ backgroundColor: "#FA4444", color: "white" }} className="p-5">
+          <Button
+            style={{ backgroundColor: "#FA4444", color: "white" }}
+            className="p-5"
+          >
             Tiếp tục mua cá koi nào
           </Button>
         </Link>
@@ -154,26 +203,29 @@ const ThankPage = () => {
       </div>
     </div>
   ) : (
-    <>  <div class="w-full max-w-[950px]  relative mx-auto p-4">
-        {isHandleSaveConsignmentLoading && <LoadingModal isLoading={true} />}
-
-      <div class="w-full max-w-[950px] h-full relative mx-auto my-0 p-4">
+    // Content for type !== "true"
+    <div className="w-full max-w-[950px] relative mx-auto p-4">
+      {/* Steps Component */}
+      <div className="w-full max-w-[950px] h-full relative mx-auto my-0 p-4">
         <Steps current={5} status="process">
-          <Steps title="&nbsp;" description={description} />
-          <Steps title="&nbsp;" description={description1} />
-          <Steps title="&nbsp;" description={description2} />
-          <Steps title="&nbsp;" description={description3} />
-          <Steps title="&nbsp;" description={description4} />
+          <Steps.Step title="&nbsp;" description={description} />
+          <Steps.Step title="&nbsp;" description={description1} />
+          <Steps.Step title="&nbsp;" description={description2} />
+          <Steps.Step title="&nbsp;" description={description3} />
+          <Steps.Step title="&nbsp;" description={description4} />
         </Steps>
-
       </div>
-      <div className="flex flex-col items-center justify-center h-[600px] w-full">
+      {/* Main Content */}
+      <div className="flex flex-col items-center justify-center h-[50vh] w-full">
         <div className="text-center text-3xl font-bold mb-10">
           <h1>Cảm ơn bạn, Ký gửi hoàn tất</h1>
         </div>
         <div className="flex justify-center items-center">
           <Link to="/request-consignment">
-            <Button style={{ backgroundColor: "#FA4444", color: "white" }} className="p-5">
+            <Button
+              style={{ backgroundColor: "#FA4444", color: "white" }}
+              className="p-5"
+            >
               Tiếp tục ký gửi
             </Button>
           </Link>
@@ -182,7 +234,7 @@ const ThankPage = () => {
           </Link>
         </div>
       </div>
-    </div></>
+    </div>
   );
 };
 
