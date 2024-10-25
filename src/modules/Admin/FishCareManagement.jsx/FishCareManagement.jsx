@@ -20,6 +20,7 @@ import { EyeOutlined, PlusOutlined, EditOutlined } from "@ant-design/icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ConsignmentApi } from "../../../apis/Consignment.api";
 import { Controller, useForm } from "react-hook-form";
+import FishApi from "../../../apis/Fish.api";
 
 const validationSchema = yup.object().shape({
   healthStatus: yup
@@ -59,9 +60,9 @@ const FishCareManagement = () => {
   const fetchFishCare = async ({ queryKey }) => {
     const [_key, page, search] = queryKey;
     if (search) {
-      return await FishApi.searchFish(search, page);
+      return await FishApi.searchKoiByHeathCare(search, page, 7);
     } else {
-      return await FishApi.getListFish(page);
+      return await FishApi.getAllFishCare(page, 7);
     }
   };
 
@@ -70,10 +71,10 @@ const FishCareManagement = () => {
     isPending: isLoadingListFishCare,
     isError: isErrorListFishCare,
   } = useQuery({
-    queryKey: ["ListFishCare", currentPage],
-    queryFn: () => ConsignmentApi.getAllFishCare(currentPage, 7),
+    queryKey: ["ListFishCare", currentPage, debouncedQuery],
+    queryFn: fetchFishCare,
   });
-  console.log('ListFishCare: ', ListFishCare);
+  console.log("ListFishCare: ", ListFishCare);
 
   const { mutate: addHeathForKoi, isPending: isAddingHealth } = useMutation({
     mutationFn: (data) => ConsignmentApi.addHeathForKoi(data),
@@ -135,9 +136,9 @@ const FishCareManagement = () => {
       ...data,
     };
     if (isEditMode) {
-      updateHealthForKoi(payload); 
+      updateHealthForKoi(payload);
     } else {
-      addHeathForKoi(payload); 
+      addHeathForKoi(payload);
     }
   };
   const handleAddHealth = (record) => {
@@ -310,12 +311,10 @@ const FishCareManagement = () => {
       <div className="flex flex-col justify-center items-center">
         <div className="w-[450px]">
           <Input.Search
-            placeholder="Nhập tên hoặc email..."
+            placeholder="Nhập nguồn gốc, sức khỏe ..."
             style={{ width: 300 }}
             allowClear
-            onSearch={(value) => {
-              console.log("Search:", value);
-            }}
+            onChange={(e) => setQuery(e.target.value)}
           />
         </div>
         <div className="flex flex-col mt-2 w-full">
