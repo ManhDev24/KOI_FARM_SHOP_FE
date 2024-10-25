@@ -25,6 +25,7 @@ const ComparisonModal = ({ isOpen, onClose, selectedItems, setSelectedItems, rem
       addToCart({
         ...fish,
         quantity: 1,
+        isBatch: false,
       })
     );
   };
