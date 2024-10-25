@@ -7,6 +7,7 @@ import {
   message,
   Modal,
   Pagination,
+  Popconfirm,
   Row,
   Select,
   Space,
@@ -15,7 +16,7 @@ import {
   Upload,
 } from "antd";
 import Search from "antd/es/transfer/search";
-import React, { useState ,useEffect}  from "react";
+import React, { useState, useEffect } from "react";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import LoadingModal from "../../Modal/LoadingModal";
@@ -99,7 +100,7 @@ const CategoryManagement = () => {
     criteriaMode: "all",
     mode: "onBlur",
   });
-  useEffect (() => {
+  useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedQuery(query);
       setCurrentPage(1);
@@ -112,9 +113,9 @@ const CategoryManagement = () => {
   const fetchCategory = async ({ queryKey }) => {
     const [_key, page, search] = queryKey;
     if (search) {
-      return await CategoryApi.searchCategory(search , page);
+      return await CategoryApi.searchCategory(search, page);
     } else {
-      return await CategoryApi.getAllCategory(page , 4);
+      return await CategoryApi.getAllCategory(page, 4);
     }
   };
   const {
@@ -122,12 +123,12 @@ const CategoryManagement = () => {
     isLoading: isLoadingCategory,
     isError: isErrorCategory,
   } = useQuery({
-    queryKey: ["ListCategory", currentPage ,debouncedQuery],
+    queryKey: ["ListCategory", currentPage, debouncedQuery],
     queryFn: fetchCategory,
     keepPreviousData: true,
   });
-  
-  console.log('ListCategory: ', ListCategory);
+
+  console.log("ListCategory: ", ListCategory);
 
   const handleUploadChange = (info) => {
     if (info.file.status === "done") {
@@ -202,18 +203,27 @@ const CategoryManagement = () => {
       key: "action",
       render: (text, record) => (
         <Space size="middle">
-          <Button
-            style={{
-              backgroundColor: record.status ? "#ff4d4f" : "#52c41a",
-              color: "white",
+          <Popconfirm
+            title="Ẩn danh mục"
+            description="Bạn có chắc chắn muốn ẩn danh mục?"
+            onConfirm={() => {
+              handleUpdateStatusCategory(record.id);
+              setStatus(record?.status);
             }}
-            icon={<StopOutlined />}
-            onClick={() => {handleUpdateStatusCategory(record.id)
-              setStatus(record?.status)
-            }}
+            okText="Yes"
+            cancelText="No"
           >
-            {record.status ? "Ẩn" : "Hiển thị"}
-          </Button>
+            <Button
+              style={{
+                backgroundColor: record.status ? "#ff4d4f" : "#52c41a",
+                color: "white",
+              }}
+              icon={<StopOutlined />}
+            >
+              {record.status ? "Ẩn" : "Hiển thị"}
+            </Button>
+          </Popconfirm>
+
           <Button
             type="default"
             icon={<EditOutlined />}
@@ -300,23 +310,22 @@ const CategoryManagement = () => {
     }
 
     if (dataEdit) {
-      console.log('dataEdit: ', dataEdit);
-      if(!image){
-        const {cateName,description} = data;
+      console.log("dataEdit: ", dataEdit);
+      if (!image) {
+        const { cateName, description } = data;
         const transformData = {
           categoryName: cateName,
-          categoryDescription:description,
-          status : dataEdit?.status
-        }
+          categoryDescription: description,
+          status: dataEdit?.status,
+        };
         handleUpdateCategory(transformData);
-      } else{
+      } else {
         formData.append("categoryName", data?.cateName);
-        formData.append("categoryDescription", data?.description)
+        formData.append("categoryDescription", data?.description);
         formData.append("status", true);
-        formData.append("imgFile",file)
+        formData.append("imgFile", file);
         handleUpdateCategory(formData);
       }
-     
     } else {
       console.log("Tạo mới category với dữ liệu: ", data);
       handleCreateCategory(formData);
@@ -337,10 +346,12 @@ const CategoryManagement = () => {
     <div>
       <div className="flex flex-col justify-center items-center ">
         <div className="w-[450px]">
-          <Search placeholder="Nhập tên danh mục..." style={{ width: 300 }}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          allowClear
+          <Search
+            placeholder="Nhập tên danh mục..."
+            style={{ width: 300 }}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            allowClear
           />
         </div>
         <div className="flex flex-col mt-2 w-full">
@@ -431,8 +442,8 @@ const CategoryManagement = () => {
                               className="w-[60px] h-[80px] object-cover"
                               src={
                                 value && value instanceof File
-                                  ? URL.createObjectURL(value) 
-                                  : image || dataEdit?.cateImg 
+                                  ? URL.createObjectURL(value)
+                                  : image || dataEdit?.cateImg
                               }
                               alt="koiImage"
                             />

@@ -31,6 +31,7 @@ const Cart = () => {
   const dispatch = useDispatch();
 
   const onCart = getLocalStorage("cartItems");
+  console.log("onCart: ", onCart);
   const [dataSource, setDataSource] = useState(onCart);
 
   const totalPrice = onCart?.reduce(
@@ -166,12 +167,12 @@ const Cart = () => {
           textAlign: "center",
         },
       }),
-      render: (imgL,record) => (
-        <>
-          <img className="h-[100px] w-[100px]" src={imgL || record?.batchImg} alt="" />
-          {console.log(imgL)}
-        </>
-
+      render: (imgL, render) => (
+        <img
+          className="h-[100px] w-[100px]"
+          src={imgL || render?.batchImg}
+          alt=""
+        />
       ),
       width: "150px",
     },
@@ -385,9 +386,9 @@ const Cart = () => {
                       <span className="text-lg font-bold">
                         {totalPrice
                           ? totalPrice.toLocaleString("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          })
+                              style: "currency",
+                              currency: "VND",
+                            })
                           : ""}
                       </span>
                     </div>
@@ -422,9 +423,9 @@ const Cart = () => {
                         <span className="text-xl font-bold">
                           {finalPrice
                             ? finalPrice.toLocaleString("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            })
+                                style: "currency",
+                                currency: "VND",
+                              })
                             : ""}
                         </span>
                       </div>

@@ -30,7 +30,7 @@ const PaymentManagementDetail = () => {
     {
       title: "Hình Ảnh",
       dataIndex: "koiImg",
-      render: (image) => <img src={image} className="w-16 h-16" />,
+      render: (image, record) => <img src={image || record?.batchImg} className="w-16 h-16" />,
     },
     {
       title: "Chủng loại",

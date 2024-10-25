@@ -6,6 +6,7 @@ import {
   message,
   Modal,
   Pagination,
+  Popconfirm,
   Row,
   Select,
   Table,
@@ -130,16 +131,25 @@ const UserManagement = () => {
       title: "Hành động",
       key: "action",
       render: (text, record) => (
-        <Button
-          style={{
-            backgroundColor: "#ff4d4f",
-            color: "white",
+        <Popconfirm
+          title="Chặn người dùng này"
+          description="Bạn có chắc muốn chặn người dùng này"
+          onConfirm={() => {
+            onSubmitBanUser(record.id);
           }}
-          icon={<StopOutlined />}
-          onClick={() => onSubmitBanUser(record.id)}
+          okText="Yes"
+          cancelText="No"
         >
-          {record.status ? "Ban" : "Unban"}
-        </Button>
+          <Button
+            style={{
+              backgroundColor: "#ff4d4f",
+              color: "white",
+            }}
+            icon={<StopOutlined />}
+          >
+            {record.status ? "Ban" : "Unban"}
+          </Button>
+        </Popconfirm>
       ),
     },
   ];
@@ -178,7 +188,6 @@ const UserManagement = () => {
   } = useQuery({
     queryKey: ["ListUser", currentPage, debouncedQuery],
     queryFn: fetchUsers,
-    keepPreviousData: true,
   });
 
   const {

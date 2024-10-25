@@ -308,19 +308,17 @@ const BathManagement = () => {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
+      filters: [
+        { text: "Còn Hàng", value: 1 },
+        { text: "Đã Bán", value: 2 },
+      ],
+      onFilter: (value, record) => record.status === value,
       render: (status) => {
-        console.log("status: ", status);
         switch (status) {
           case 1:
             return <Tag color="lime">Còn Hàng</Tag>;
           case 2:
             return <Tag color="blue">Đã Bán</Tag>;
-          case 3:
-            return <Tag color="orange">Ký Gửi</Tag>;
-          case 4:
-            return <Tag color="purple">Chờ Duyệt Đơn Ký Gửi</Tag>;
-          case 5:
-            return <Tag color="red">Ký gửi chăm sóc</Tag>;
         }
       },
     },

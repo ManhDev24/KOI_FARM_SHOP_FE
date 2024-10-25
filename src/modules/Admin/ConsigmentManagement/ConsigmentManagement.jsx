@@ -15,6 +15,7 @@ const ConsigmentManagement = () => {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+
   const columns = [
     {
       title: "Id",
@@ -66,11 +67,26 @@ const ConsigmentManagement = () => {
       title: "Chi phí ký gửi",
       dataIndex: "serviceFee",
       key: "serviceFee",
+      render: (data) => {
+        const formattedFee = data.toLocaleString("vi-VN", {
+          style: "currency",
+          currency: "VND",
+        });
+        return <div>{formattedFee}</div>;
+      },
     },
     {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
+      filters: [
+        { text: "Đang chờ", value: 1 },
+        { text: "Đã duyệt", value: 2 },
+        { text: "Từ chối", value: 3 },
+        { text: "Chờ thanh toán", value: 4 },
+        { text: "Quá hạn", value: 5 },
+      ],
+      onFilter: (value, record) => record.status === value,
       render: (status) => {
         let text = "Không xác định";
         let color = "default";
@@ -118,22 +134,28 @@ const ConsigmentManagement = () => {
       title: "Thao tác",
       dataIndex: "action",
       key: "action",
-      render: (_, record) =>
-        record.status === 1 ? (
-          <Link
-            to={`/admin/consignment-management-detail/${record.consignmentID}`}
-          >
-            <Button type="primary">Duyệt đơn (xem chi tiết)</Button>
-          </Link>
-        ) : (
-          <Tooltip title="Đơn ký gửi đã được xử lý">
-            <Button type="default" disabled>
-              Đã xử lý
-            </Button>
-          </Tooltip>
-        ),
+      render: (_, record) => {
+        if (record.status === 3) {
+          return (
+            <Tooltip title="Đơn ký gửi đã bị hủy">
+              <Button type="default" disabled>
+                Đã hủy đơn
+              </Button>
+            </Tooltip>
+          );
+        } else {
+          return (
+            <Link
+              to={`/admin/consignment-management-detail/${record.consignmentID}`}
+            >
+              <Button type="primary">Duyệt đơn (xem chi tiết)</Button>
+            </Link>
+          );
+        }
+      },
     },
   ];
+
   const {
     data: listOfConsignment,
     isLoading: isLoadingListConsignment,
@@ -142,7 +164,7 @@ const ConsigmentManagement = () => {
     queryKey: ["listOfConsignment"],
     queryFn: () => ConsignmentApi.getAllConsignmentManagement(currentPage),
   });
-  console.log("listOfConsignment: ", listOfConsignment);
+  
   const total = listOfConsignment?.data?.totalElements;
 
   return (

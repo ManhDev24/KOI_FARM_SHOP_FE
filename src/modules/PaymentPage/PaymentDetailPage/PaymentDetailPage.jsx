@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Button, Pagination, Table } from "antd";
+import { Button, Image, Pagination, Table } from "antd";
 import React, { useEffect } from "react";
 import orderApi from "../../../apis/Order.api";
 import { useDispatch, useSelector } from "react-redux";
@@ -7,11 +7,7 @@ import LoadingModal from "../../Modal/LoadingModal";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
-
-
-
 const PaymentDetailPage = () => {
-
   const columns = [
     {
       title: "Tên Cá Koi",
@@ -25,7 +21,7 @@ const PaymentDetailPage = () => {
     {
       title: "Hình Ảnh",
       dataIndex: "koiImg",
-      render: (image) => <img src={image} className="w-16 h-16" />,
+      render: (image, record) => <img src={image || record?.batchImg} className="w-16 h-16" />,
     },
     {
       title: "Chủng loại",
@@ -62,9 +58,9 @@ const PaymentDetailPage = () => {
       render: (_, record) => {
         const formattedPrice = record?.price
           ? new Intl.NumberFormat("vi-VN", {
-            style: "currency",
-            currency: "VND",
-          }).format(record.price)
+              style: "currency",
+              currency: "VND",
+            }).format(record.price)
           : "0 ₫";
         return record?.type ? formattedPrice : "0 ₫";
       },
@@ -75,9 +71,9 @@ const PaymentDetailPage = () => {
       render: (_, record) => {
         const formattedPrice = record?.price
           ? new Intl.NumberFormat("vi-VN", {
-            style: "currency",
-            currency: "VND",
-          }).format(record.price)
+              style: "currency",
+              currency: "VND",
+            }).format(record.price)
           : "0 ₫";
         return record?.type ? "0 ₫" : formattedPrice;
       },
@@ -89,11 +85,15 @@ const PaymentDetailPage = () => {
     {
       title: "Đăng ký ký gửi",
       dataIndex: "action",
-      render: (_, record) => (
-        record.type === 1 ? <Button onClick={() => handleConsignment(record.koiFishId)}>Ký gửi</Button> : <></>
-
-      ),
-    }
+      render: (_, record) =>
+        record.type ? (
+          <Button onClick={() => handleConsignment(record.koiFishId)}>
+            Ký gửi
+          </Button>
+        ) : (
+          <></>
+        ),
+    },
   ];
   const navigate = useNavigate();
   // const { orderId } = useSelector((state) => state.order);
@@ -110,10 +110,9 @@ const PaymentDetailPage = () => {
     // } else {
 
     // }
-    localStorage.setItem('fishConsignmentID', id);
-    navigate('/Form-consignment')
-
-  }
+    localStorage.setItem("fishConsignmentID", id);
+    navigate("/Form-consignment");
+  };
   const { orderId } = useParams();
 
   console.log("orderId: ", orderId);

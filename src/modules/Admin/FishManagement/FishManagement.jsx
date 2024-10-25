@@ -29,6 +29,7 @@ import {
 import FishApi from "../../../apis/Fish.api";
 import LoadingModal from "../../Modal/LoadingModal";
 import { Link } from "react-router-dom";
+import _ from "lodash";
 
 const validationSchema = yup.object().shape({
   category: yup.string().required("Danh mục là bắt buộc"),
@@ -57,6 +58,7 @@ const validationSchema = yup.object().shape({
     .required("Thuần chủng là bắt buộc"),
 
   food: yup.string().required("Đồ ăn là bắt buộc"),
+  name: yup.string().required("Tên của chứng chỉ là bắt buộc"),
   water: yup.string().required("Nước là bắt buộc"),
   health: yup.string().required("Sức khỏe là bắt buộc"),
   temperature: yup.string().required("Nhiệt độ nước là bắt buộc"),
@@ -71,9 +73,12 @@ const FishManagement = () => {
   const [dataDetailFish, setDataDetailFish] = useState(null);
 
   const [dataEdit, setDataEdit] = useState(null);
+  console.log("dataEdit: ", dataEdit);
   const [dataView, setDataView] = useState(null);
   const [image, setImage] = useState(undefined);
   const [imageCertificate, setImageCertificate] = useState(undefined);
+  const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [status, setStatus] = useState(1);
 
   const queryClient = useQueryClient();
@@ -176,8 +181,15 @@ const FishManagement = () => {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
+      filters: [
+        { text: "Còn Hàng", value: 1 },
+        { text: "Đã Bán", value: 2 },
+        { text: "Ký Gửi", value: 3 },
+        { text: "Chờ Duyệt Đơn Ký Gửi", value: 4 },
+        { text: "Ký gửi chăm sóc", value: 5 },
+      ],
+      onFilter: (value, record) => record.status === value,
       render: (status) => {
-        console.log("status: ", status);
         switch (status) {
           case 1:
             return <Tag color="lime">Còn Hàng</Tag>;
@@ -189,6 +201,8 @@ const FishManagement = () => {
             return <Tag color="purple">Chờ Duyệt Đơn Ký Gửi</Tag>;
           case 5:
             return <Tag color="red">Ký gửi chăm sóc</Tag>;
+          default:
+            return <Tag color="default">Không xác định</Tag>;
         }
       },
     },
@@ -340,18 +354,38 @@ const FishManagement = () => {
     mode: "onBlur",
   });
 
-  const watchhinhAnh = watch("koiImage");
-  const watchCertificate = watch("certificate");
+  // const watchhinhAnh = watch("koiImage");
+  // const watchCertificate = watch("certificate");
 
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(query);
+      setCurrentPage(1);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [query]);
+
+  const fetchFish = async ({ queryKey }) => {
+    const [_key, page, search] = queryKey;
+    if (search) {
+      return await FishApi.searchFish(search, page);
+    } else {
+      return await FishApi.getListFish(page);
+    }
+  };
   const {
     data: ListKoi,
     isLoading: isLoadingListKoi,
     isError: isErrorListKoi,
   } = useQuery({
-    queryKey: ["ListKoi", currentPage],
-    queryFn: () => FishApi.getListFish(currentPage, 4),
+    queryKey: ["ListKoi", currentPage, debouncedQuery],
+    queryFn: fetchFish,
   });
 
+  console.log("ListKoi: ", ListKoi);
   const {
     mutate: handleAddFish,
     isLoading: isLoadingAddFish,
@@ -432,7 +466,12 @@ const FishManagement = () => {
       if (!image) {
         const { koiImage, ...rest } = data;
 
-        const dataToEdit = { status, ...rest, categoryId: data?.category , createdDate: new Date().toISOString() };
+        const dataToEdit = {
+          status,
+          ...rest,
+          categoryId: data?.category,
+          createdDate: new Date().toISOString(),
+        };
         console.log("dataToEdit2: ", dataToEdit);
 
         handleUpdateFish(dataToEdit);
@@ -542,13 +581,11 @@ const FishManagement = () => {
     <div className="flex flex-col justify-center items-center  ">
       <div className="w-[450px]">
         <Search
-          placeholder="Nhập tên hoặc email..."
+          placeholder="Nhập tên nguồn gốc , kích thước hoặc tuổi ..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
           style={{ width: 300 }}
           allowClear
-          onSearch={(value) => {
-            // Implement search functionality if needed
-            console.log("Search:", value);
-          }}
         />
       </div>
       <div className="flex flex-col mt-2 w-full">
@@ -567,7 +604,9 @@ const FishManagement = () => {
             <Table
               rowKey="id"
               columns={columns}
-              dataSource={ListKoi?.koiFishReponseList}
+              dataSource={
+                ListKoi?.koiFishReponseList || ListKoi?.data?.koiFishReponseList
+              }
               pagination={false}
               loading={isLoadingListKoi}
             />
@@ -695,14 +734,14 @@ const FishManagement = () => {
                     >
                       {(value && value instanceof File) ||
                       imageCertificate ||
-                      dataEdit?.image ? (
+                      dataEdit?.imageCertificate ? (
                         <>
                           <img
                             className="w-[60px] h-[80px] object-cover"
                             src={
                               value && value instanceof File
                                 ? URL.createObjectURL(value)
-                                : imageCertificate
+                                : imageCertificate || dataEdit?.imageCertificate
                             }
                             alt="imageCertificate"
                           />
@@ -711,7 +750,7 @@ const FishManagement = () => {
                               top: 30,
                               right: "140px",
                             }}
-                            className="absolute "
+                            className="absolute"
                           >
                             <DeleteOutlined
                               onClick={() => {
