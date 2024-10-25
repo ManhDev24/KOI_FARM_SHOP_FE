@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Col,
@@ -41,8 +41,30 @@ const FishCareManagement = () => {
   const [isModalAddHealthOpen, setIsModalAddHealthOpen] = useState(false);
   const [dataDetailFish, setDataDetailFish] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
 
   const queryClient = useQueryClient();
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(query);
+      setCurrentPage(1);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [query]);
+
+  const fetchFishCare = async ({ queryKey }) => {
+    const [_key, page, search] = queryKey;
+    if (search) {
+      return await FishApi.searchFish(search, page);
+    } else {
+      return await FishApi.getListFish(page);
+    }
+  };
+
   const {
     data: ListFishCare,
     isPending: isLoadingListFishCare,

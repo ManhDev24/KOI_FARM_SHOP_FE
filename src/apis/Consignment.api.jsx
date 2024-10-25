@@ -1,3 +1,4 @@
+import { update } from "lodash";
 import fetcher from "./Fetcher";
 
 export const ConsignmentApi = {
@@ -138,6 +139,27 @@ export const ConsignmentApi = {
     try {
       const response = await fetcher.put(
         `http://localhost:8080/koifarm/consignment/updateHealth`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
+  getAllConsignmentFee: async (currentPage, pageSize) => {
+    try {
+      const response = await fetcher.get(
+        `http://localhost:8080/koifarm/consignmentFee/getAll/${currentPage}/${pageSize}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
+  updateConsignmentFee: async (data) => {
+    try {
+      const response = await fetcher.put(
+        `http://localhost:8080/koifarm/consignmentFee/update`,
         data
       );
       return response.data;

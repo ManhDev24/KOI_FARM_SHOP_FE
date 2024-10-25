@@ -734,14 +734,14 @@ const FishManagement = () => {
                     >
                       {(value && value instanceof File) ||
                       imageCertificate ||
-                      dataEdit?.imageCertificate ? (
+                      dataEdit?.certificate?.image? (
                         <>
                           <img
                             className="w-[60px] h-[80px] object-cover"
                             src={
                               value && value instanceof File
                                 ? URL.createObjectURL(value)
-                                : imageCertificate || dataEdit?.imageCertificate
+                                : imageCertificate || dataEdit?.certificate?.image
                             }
                             alt="imageCertificate"
                           />

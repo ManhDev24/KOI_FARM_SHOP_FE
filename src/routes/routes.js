@@ -45,6 +45,7 @@ import CreateBlog from "../modules/Admin/ManageBlog/CreateBlog/CreateBlog";
 import ManageBlog from "../modules/Admin/ManageBlog/ManageBlog/ManageBlog";
 import ReviewBlog from "../modules/Admin/ManageBlog/ReviewBlog/ReviewBlog";
 import BlogEdit from "../modules/Admin/ManageBlog/BlogEdit/BlogEdit";
+import ConsigmentFeeManagement from "../modules/Admin/ConsigmentFeeManagment/ConsigmentFeeManagement";
 const fetchEmail = () => {
   const dataProfile = getLocalStorage("user");
   if (dataProfile && dataProfile.email) {
@@ -278,6 +279,11 @@ export const privateRoutes = [
       {
         path: "create-blog",
         component: CreateBlog,
+        layout: null,
+      },
+      {
+        path: "consignment-fee-management",
+        component: ConsigmentFeeManagement,
         layout: null,
       },
     ],
