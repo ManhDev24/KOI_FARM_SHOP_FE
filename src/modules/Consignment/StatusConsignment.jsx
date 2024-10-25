@@ -40,8 +40,8 @@ const StatusConsignment = () => {
   }, [consignmentID, dispatch]);
 
   // Fetch consignment status
-  
-//  const status = consignmentDetails.data.status === 4 ? 50000 : null;
+
+  //  const status = consignmentDetails.data.status === 4 ? 50000 : null;
   const { data: consignmentDetails, isLoading, error } = useQuery({
     queryKey: ['consignmentStatus', consignmentID],
     queryFn: () => ConsignmentApi.statusConsignment(consignmentID),
@@ -94,14 +94,14 @@ const StatusConsignment = () => {
       }
     },
     onError: (error) => {
-     
+
     },
   });
 
   // Handle cancel button click
   const handleCancelClick = () => {
     localStorage.setItem('fishConsignmentID', '');
-    localStorage.setItem('consignmentID','');
+    localStorage.setItem('consignmentID', '');
 
     cancelConsignment();
 
@@ -329,8 +329,28 @@ const StatusConsignment = () => {
                   Tạo mới
                 </button>
               </>
+            ) :
+              data.status === 2 ? (
+                <>
+                  {/* <button
+                    onClick={handleCurrentPages}
+                    className="px-6 py-3 bg-green-500 text-white rounded-md shadow hover:bg-green-600 hover:shadow-lg transition duration-200"
+                  >
+                    Tới bước Thanh toán
+                  </button> */}
+                  <button
+                    onClick={() => {
+                      handleCancelClick();
+                    }}
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-500 transition duration-300"
+                  >
+                    Tạo mới
+                  </button>
+                </>
 
-            ) : null}
+              )
+
+                : null}
           </div>
 
           {/* Thông tin chi tiết cá Koi, được điều khiển bởi state showDetails */}

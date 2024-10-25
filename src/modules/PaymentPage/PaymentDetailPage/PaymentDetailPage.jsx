@@ -90,7 +90,7 @@ const PaymentDetailPage = () => {
       title: "Đăng ký ký gửi",
       dataIndex: "action",
       render: (_, record) => (
-        record.type === 1 ? <Button onClick={() => handleConsignment(record.koiFishId)}>Ký gửi</Button> : <></>
+        record.type === true ? <Button onClick={() => handleConsignment(record.koiFishId)}>Ký gửi</Button> : <></>
 
       ),
     }
