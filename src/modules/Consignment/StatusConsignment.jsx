@@ -198,9 +198,8 @@ const StatusConsignment = () => {
             </p>
             {console.log(data.status)}
             <p
-              className={`text-lg font-semibold ${
-                data.status === 1 ? "text-blue-500" : "text-green-500"
-              }`}
+              className={`text-lg font-semibold ${data.status === 1 ? "text-blue-500" : "text-green-500"
+                }`}
             >
               Trạng thái: {data.status === 1 ? "Đang duyệt" : "Đã duyệt"}
             </p>
@@ -469,40 +468,41 @@ const StatusConsignment = () => {
                 </Row>
               </Card>
 
-              {koiFish.certificate && (
-                <Card title="Chứng nhận" bordered={false} className="mt-4">
-                  <Row gutter={[16, 16]}>
-                    <Col xs={24} sm={12}>
-                      <p>
-                        <strong>Tên chứng nhận:</strong>{" "}
-                        {koiFish.certificate.name}
-                      </p>
-                    </Col>
-                    <Col xs={24} sm={12}>
-                      <p>
-                        <strong>Ngày cấp:</strong>{" "}
-                        {moment(koiFish.certificate.createdDate).format(
-                          "DD/MM/YYYY"
-                        )}
-                      </p>
-                    </Col>
-                    <Col xs={24}>
-                      <Image
-                        width={300}
-                        src={koiFish.certificate.image}
-                        alt="Hình ảnh chứng nhận"
-                        className="rounded-lg shadow-lg"
-                      />
-                    </Col>
-                  </Row>
-                </Card>
-              )}
-            </div>
-          )}
+      {koiFish.certificate && (
+        <Card title="Chứng nhận" bordered={false} className="mt-4">
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={12}>
+              <p>
+                <strong>Tên chứng nhận:</strong>{" "}
+                {koiFish.certificate.name}
+              </p>
+            </Col>
+            <Col xs={24} sm={12}>
+              <p>
+                <strong>Ngày cấp:</strong>{" "}
+                {moment(koiFish.certificate.createdDate).format(
+                  "DD/MM/YYYY"
+                )}
+              </p>
+            </Col>
+            <Col xs={24}>
+              <Image
+                width={300}
+                src={koiFish.certificate.image}
+                alt="Hình ảnh chứng nhận"
+                className="rounded-lg shadow-lg"
+              />
+            </Col>
+          </Row>
         </Card>
+      )}
+    </div>
+  )
+}
+        </Card >
 
-        {/* return to create new */}
-      </div>
+  {/* return to create new */ }
+      </div >
     </>
   );
 };

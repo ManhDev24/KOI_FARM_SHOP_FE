@@ -58,9 +58,9 @@ const PaymentDetailPage = () => {
       render: (_, record) => {
         const formattedPrice = record?.price
           ? new Intl.NumberFormat("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            }).format(record.price)
+            style: "currency",
+            currency: "VND",
+          }).format(record.price)
           : "0 ₫";
         return record?.type ? formattedPrice : "0 ₫";
       },
@@ -71,9 +71,9 @@ const PaymentDetailPage = () => {
       render: (_, record) => {
         const formattedPrice = record?.price
           ? new Intl.NumberFormat("vi-VN", {
-              style: "currency",
-              currency: "VND",
-            }).format(record.price)
+            style: "currency",
+            currency: "VND",
+          }).format(record.price)
           : "0 ₫";
         return record?.type ? "0 ₫" : formattedPrice;
       },
