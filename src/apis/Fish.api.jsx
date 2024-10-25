@@ -83,6 +83,7 @@ export const FishApi = {
   },
   getFilteredKoiFish: async (
     categoryID,
+    status,
     gender,
     minSize,
     maxSize,
@@ -90,14 +91,13 @@ export const FishApi = {
     maxPrice,
     sortField1,
     sortDirection1,
-    sortField2,
-    sortDirection2,
     page,
     pageSize
   ) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/koifish/filter?categoryID=${categoryID}&gender=${gender}&minSize=${minSize}&maxSize=${maxSize}&minPrice=${minPrice}&maxPrice=${maxPrice}&sortField1=${sortField1}&sortDirection1=${sortDirection1}&sortField2=${sortField2}&sortDirection2=${sortDirection2}&page=${page}&pageSize=${pageSize}`
+        `http://localhost:8080/koifarm/koifish/filter?categoryID=${categoryID}&status=${status}&gender=${gender}&minSize=${minSize}&maxSize=${maxSize}
+        &minPrice=${minPrice}&maxPrice=${maxPrice}&sortField=${sortField1}&sortDirection=${sortDirection1}&page=${page}&pageSize=${pageSize}`
       );
       return response.data.data;
     } catch (error) {

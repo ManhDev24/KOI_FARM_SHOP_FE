@@ -15,7 +15,8 @@ const ListFish = () => {
   const [isFiltered, setIsFiltered] = useState(false);
   const [selectedGender, setSelectedGender] = useState("");
   const [selectDate, setSelectDate] = useState("");
-  const [selectAge, setSelectAge] = useState("");
+  const [selectStatus, setSelectStatus] = useState("");
+  console.log("selectStatus: ", selectStatus);
   const [selectPrice, setSelectPrice] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [currentSize, setCurrentSize] = useState(100);
@@ -57,24 +58,20 @@ const ListFish = () => {
       selectedCategory,
       selectedGender,
       selectDate,
-      selectAge,
+      selectStatus,
       selectPrice,
-      "age",
-      sortDirection,
-      "price",
       currentSize,
       currentPrice,
     ],
     queryFn: () =>
       FishApi.getFilteredKoiFish(
         selectedCategory,
+        selectStatus,
         selectedGender,
         0,
         currentSize,
         300000,
         currentPrice,
-        "age",
-        selectAge,
         "price",
         selectPrice,
         currentPage,
@@ -166,21 +163,26 @@ const ListFish = () => {
       value: "2",
     },
   ];
-  const ageCategoryItem = [
+  const statusCategoryItem = [
     {
-      key: "Tuổi",
-      label: "Tuổi",
+      key: "Trạng thái bán",
+      label: "Trạng thái bán",
       value: "",
     },
     {
-      key: "LowestAge",
-      label: "Tuổi từ Thấp đến Cao",
+      key: "Đang bán",
+      label: "Đang bán",
       value: "1",
     },
     {
-      key: "HighestAge",
-      label: "Tuổi từ Cao đến Thấp",
+      key: "Đã bán",
+      label: "Đã bán",
       value: "2",
+    },
+    {
+      key: "Ký gửi",
+      label: "Ký gửi",
+      value: "3",
     },
   ];
   const genderCategoryItem = [
@@ -213,8 +215,9 @@ const ListFish = () => {
     setSelectDate(item.value);
     setIsFiltered(true);
   };
-  const handleMenuClickAge = (item) => {
-    setSelectAge(item.value);
+  const handleMenuClickStatus = (item) => {
+    console.log("item: ", item);
+    setSelectStatus(item.value.trim());
     setIsFiltered(true);
   };
   const handleMenuClickPrice = (item) => {
@@ -468,11 +471,11 @@ const ListFish = () => {
                 <div className="dropdown_filter">
                   <Dropdown
                     menu={{
-                      items: ageCategoryItem.map((item) => ({
+                      items: statusCategoryItem.map((item) => ({
                         ...item,
                         key: item.key,
                         label: item.label,
-                        onClick: () => handleMenuClickAge(item),
+                        onClick: () => handleMenuClickStatus(item),
                       })),
                     }}
                     arrow
@@ -484,13 +487,16 @@ const ListFish = () => {
                       }}
                       className="h-[50px] w-[250px] text-xl flex justify-between"
                     >
-                      <div className="text-center text-xl font-bold flex justify-center items-center  m-0 ">
+                      <div className="text-center text-xl font-bold flex justify-center items-center m-0">
                         <p>
-                          {selectAge === "1"
-                            ? "Tuổi từ Thấp đến Cao"
-                            : selectAge === "2"
-                            ? "Tuổi từ Cao đến Thấp "
-                            : "Tuổi"}
+                          {selectStatus === "1"
+                            ? "Đang bán"
+                            : selectStatus === "2"
+                            ? "Đã bán"
+                            : selectStatus === "3"
+                            ? "Ký gửi"
+                            : "Trạng thái bán"}{" "}
+                          {/* Default label */}
                         </p>
                       </div>
                       <div>
@@ -510,6 +516,7 @@ const ListFish = () => {
                     </Button>
                   </Dropdown>
                 </div>
+
                 <div className="dropdown_filter">
                   <Dropdown
                     menu={{
