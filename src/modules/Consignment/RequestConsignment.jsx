@@ -98,6 +98,56 @@ const RequestConsignment = () => {
     const navigate = useNavigate();
     const [fileList, setFileList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [consignmentPackForSell, setConsignmentPackForSell] = useState([]);
+    const [consignmentPackForTakeCare, setConsignmentPackForTakeCare] = useState([]);
+    const [consignmentRates, setConsignmentRates] = useState({});
+
+
+
+    useEffect(() => {
+        const fetchConsignmentFees = async () => {
+            try {
+                const response = await ConsignmentApi.getAllServiceFee();
+                const packages = response.data.content; // Access nested data
+
+                // Filter packages and set dropdown options
+                setConsignmentPackForSell(
+                    packages
+                        .filter((item) => item.sale === true && item.status === true) // Include active status filter
+                        .map((item) => ({
+                            key: item.consignmentFeeId,
+                            value: item.duration,
+                            label: `Gói: ${item.duration} tháng - Phí: ${item.rate * 100}%`,
+                        }))
+                );
+
+                setConsignmentPackForTakeCare(
+                    packages
+                        .filter((item) => item.sale === false && item.status === true) // Include active status filter
+                        .map((item) => ({
+                            key: item.consignmentFeeId,
+                            value: item.duration,
+                            label: `Gói: ${item.duration} tháng - Phí: ${item.rate * 100}%`,
+                        }))
+                );
+
+                // Store rates in an accessible structure for calculations
+                const rates = {};
+                packages.forEach((item) => {
+                    if (item.status) { // Only include active items
+                        const type = item.sale ? '1' : '0';
+                        if (!rates[type]) rates[type] = {};
+                        rates[type][item.duration] = item.rate;
+                    }
+                });
+                setConsignmentRates(rates);
+            } catch (error) {
+                console.error("Failed to fetch consignment fees:", error.message);
+            }
+        };
+
+        fetchConsignmentFees();
+    }, []);
 
     const handleCurrentPage = (prevPage) => {
         localStorage.setItem('agreedToPolicy', false);
@@ -298,52 +348,7 @@ const RequestConsignment = () => {
 
     ];
 
-    const consignmentPackForSell = [
-        {
-            key: "17",
-            label: "--Lựa chọn--",
-            value: "",
-        },
-        {
-            key: "18",
-            label: "1 Tháng 10% giá trị ",
-            value: "1",
-        },
-        {
-            key: "19",
-            label: "3 Tháng 15% giá trị",
-            value: "3",
-        },
-        {
-            key: "20",
-            label: "6 Tháng 20% giá trị",
-            value: "6",
-        },
 
-    ];
-    const consignmentPackForTakeCare = [
-        {
-            key: "21",
-            label: "--Lựa chọn--",
-            value: "",
-        },
-        {
-            key: "22",
-            label: "1 Tháng 6% giá trị ",
-            value: "1",
-        },
-        {
-            key: "23",
-            label: "3 Tháng 12% giá trị",
-            value: "3",
-        },
-        {
-            key: "24",
-            label: "6 Tháng 18% giá trị",
-            value: "6",
-        },
-
-    ];
 
     const dispatch = useDispatch();
 
@@ -354,32 +359,32 @@ const RequestConsignment = () => {
 
     const { mutate: handleConsignmentSubmit } = useMutation({
         mutationFn: async (formData) => {
-          setIsLoading(true);  
-          return await ConsignmentApi.requestConsignment(formData);
+            setIsLoading(true);
+            return await ConsignmentApi.requestConsignment(formData);
         },
         onSuccess: async (response, formData) => {
-        
-        //   await new Promise((resolve) => setTimeout(resolve, 3000));
-    
-          const consignmentID = response.data;
-          dispatch(saveConsignmentID(consignmentID));
-    
-          handleCurrentPages(currentPage);
-          console.log('Success:', response.data);
-          message.success('Đăng ký ký gửi thành công');
-          setIsLoading(false); 
+
+            //   await new Promise((resolve) => setTimeout(resolve, 3000));
+
+            const consignmentID = response.data;
+            dispatch(saveConsignmentID(consignmentID));
+
+            handleCurrentPages(currentPage);
+            console.log('Success:', response.data);
+            message.success('Đăng ký ký gửi thành công');
+            setIsLoading(false);
         },
         onError: async (error) => {
-         
-        //   await new Promise((resolve) => setTimeout(resolve, 3000));
-    
-          const errorMessage =
-            error?.response?.data?.message || 'An error occurred, please try again!';
-          message.error(errorMessage);
-          setIsLoading(false); 
+
+            //   await new Promise((resolve) => setTimeout(resolve, 3000));
+
+            const errorMessage =
+                error?.response?.data?.message || 'An error occurred, please try again!';
+            message.error(errorMessage);
+            setIsLoading(false);
         },
-      });
-    
+    });
+
     console.log('ssssss' + selectedKoiImage)
     const onFinish = async (values) => {
         try {
@@ -520,34 +525,15 @@ const RequestConsignment = () => {
         setInputPrice(Number(value));
     };
     console.log(SelectedConsignmentType)
+
     const handleFee = (price, selectedPackages) => {
-        let fee = 0;
+        const typeRates = consignmentRates[SelectedConsignmentType];
+        const rate = typeRates ? typeRates[selectedPackages] : 0;
 
-        if (SelectedConsignmentType === '1') {
-            if (selectedPackages === '1') {
-                fee = price * 0.1;
-            } else if (selectedPackages === '3') {
-                fee = price * 0.15;
-            } else if (selectedPackages === '6') {
-                fee = price * 0.20;
-            } else {
-                return fee;
-            }
-        } else if (SelectedConsignmentType === '0') {
-            if (selectedPackages === '1') {
-                fee = price * 0.06;
-            } else if (selectedPackages === '3') {
-                fee = price * 0.12;
-            } else if (selectedPackages === '6') {
-                fee = price * 0.18;
-            } else {
-                return fee;
-            }
-        }
-
-        // Trả về kết quả làm tròn về số nguyên
-        return Math.round(fee);
+        // Calculate and round the fee
+        return Math.round(price * rate);
     };
+
 
 
 
@@ -1118,16 +1104,17 @@ const RequestConsignment = () => {
                                                 rules={[
                                                     { required: true, message: 'Vui lòng điền kích thước' },
                                                     {
-                                                        pattern: /^[0-9]+$/,
-                                                        message: 'Kích thước phải là số!',
+                                                        pattern: /^[0-9]+(\.[0-9]+)?$/,
+                                                        message: 'Kích thước phải là số và có thể chứa số thập phân!',
                                                     },
                                                     {
                                                         validator: (_, value) =>
-                                                            value && (value < 0 || value > 200)
+                                                            value && (value <= 0 || value > 200)
                                                                 ? Promise.reject('Kích thước phải trong khoảng từ 0 đến 200!')
                                                                 : Promise.resolve(),
                                                     },
                                                 ]}
+
                                             >
                                                 <Input placeholder="Nhập kích thước" />
                                             </Form.Item>
@@ -1281,10 +1268,10 @@ const RequestConsignment = () => {
                                     {/* Second Row: Package and Phone Number */}
                                     <Row gutter={16}>
                                         {/* Package */}
-                                        {SelectedConsignmentType === '1' ?
+                                        {SelectedConsignmentType === '1' ? (
                                             <>
+                                                {/* Consignment for Sale */}
                                                 <Col xs={24} sm={12}>
-
                                                     <Form.Item
                                                         labelCol={{ span: 24 }}
                                                         wrapperCol={{ span: 24 }}
@@ -1298,100 +1285,87 @@ const RequestConsignment = () => {
                                                             placeholder="Chọn gói ký gửi"
                                                             onChange={handleSelectPackage}
                                                             value={SelectedPackage}
-
                                                         >
-                                                            {
-                                                                consignmentPackForSell.map((item) => (
-                                                                    <Option key={item.key} value={item.value}>
-                                                                        {item.label}
-                                                                    </Option>
-                                                                ))
-
-                                                            }
+                                                            <Option value="" disabled>
+                                                                --Lựa chọn--
+                                                            </Option>
+                                                            {consignmentPackForSell.map((item) => (
+                                                                <Option key={item.key} value={item.value}>
+                                                                    {item.label}
+                                                                </Option>
+                                                            ))}
                                                         </Select>
                                                     </Form.Item>
-
-
-
                                                 </Col>
-                                                <Col xs={24} sm={12}> <Form.Item
-                                                    label="Số điện thoại"
-                                                    name="phoneNumber"
-                                                    labelCol={{ span: 24 }}
-                                                    wrapperCol={{ span: 24 }}
-                                                    rules={[
-                                                        { required: true, message: 'Vui lòng nhập số điện thoại' },
-                                                        {
-                                                            pattern: /^[0-9]+$/,
-                                                            message: 'Số điện thoại phải là số!',
-                                                        },
-                                                        {
-                                                            pattern: /^(0[3|5|7|8|9])+([0-9]{8})$/,
-                                                            message: 'Số điện thoại không đúng định dạng!',
-                                                        },
-                                                    ]}
-                                                >
-                                                    <Input placeholder="Nhập số điện thoại" />
-                                                </Form.Item>
 
-
-                                                </Col>
-                                            </>
-
-                                            : SelectedConsignmentType === '0' ?
-                                                <>
-                                                    <Col xs={24} sm={12}>
-                                                        <Form.Item
-                                                            labelCol={{ span: 24 }}
-                                                            wrapperCol={{ span: 24 }}
-                                                            label="Gói ký gửi"
-                                                            name="duration"
-                                                            rules={[
-                                                                { required: true, message: 'Vui lòng chọn gói ký gửi' },
-                                                            ]}
-                                                        >
-                                                            <Select
-                                                                placeholder="Chọn gói ký gửi"
-                                                                onChange={handleSelectPackage}
-                                                                value={SelectedPackage}
-                                                            >
-                                                                {consignmentPackForTakeCare.map((item) => (
-                                                                    <Option key={item.key} value={item.value}>
-                                                                        {item.label}
-                                                                    </Option>
-                                                                ))
-                                                                }
-                                                            </Select>
-                                                        </Form.Item>
-
-                                                    </Col>
-                                                    <Col xs={24} sm={12}> <Form.Item
+                                                <Col xs={24} sm={12}>
+                                                    <Form.Item
                                                         label="Số điện thoại"
                                                         name="phoneNumber"
                                                         labelCol={{ span: 24 }}
                                                         wrapperCol={{ span: 24 }}
                                                         rules={[
                                                             { required: true, message: 'Vui lòng nhập số điện thoại' },
-                                                            {
-                                                                pattern: /^[0-9]+$/,
-                                                                message: 'Số điện thoại phải là số!',
-                                                            },
+                                                            { pattern: /^[0-9]+$/, message: 'Số điện thoại phải là số!' },
                                                             {
                                                                 pattern: /^(0[3|5|7|8|9])+([0-9]{8})$/,
                                                                 message: 'Số điện thoại không đúng định dạng!',
                                                             },
                                                         ]}
                                                     >
-
                                                         <Input placeholder="Nhập số điện thoại" />
                                                     </Form.Item>
-
-
-                                                    </Col>
-
-
-                                                </> : <></>
-                                        }
+                                                </Col>
+                                            </>
+                                        ) : SelectedConsignmentType === '0' ? (
+                                            <>
+                                                {/* Consignment for Take Care */}
+                                                <Col xs={24} sm={12}>
+                                                    <Form.Item
+                                                        labelCol={{ span: 24 }}
+                                                        wrapperCol={{ span: 24 }}
+                                                        label="Gói ký gửi"
+                                                        name="duration"
+                                                        rules={[
+                                                            { required: true, message: 'Vui lòng chọn gói ký gửi' },
+                                                        ]}
+                                                    >
+                                                        <Select
+                                                            placeholder="Chọn gói ký gửi"
+                                                            onChange={handleSelectPackage}
+                                                            value={SelectedPackage}
+                                                        >
+                                                            <Option value="" disabled>
+                                                                --Lựa chọn--
+                                                            </Option>
+                                                            {consignmentPackForTakeCare.map((item) => (
+                                                                <Option key={item.key} value={item.value}>
+                                                                    {item.label}
+                                                                </Option>
+                                                            ))}
+                                                        </Select>
+                                                    </Form.Item>
+                                                </Col>
+                                                <Col xs={24} sm={12}>
+                                                    <Form.Item
+                                                        label="Số điện thoại"
+                                                        name="phoneNumber"
+                                                        labelCol={{ span: 24 }}
+                                                        wrapperCol={{ span: 24 }}
+                                                        rules={[
+                                                            { required: true, message: 'Vui lòng nhập số điện thoại' },
+                                                            { pattern: /^[0-9]+$/, message: 'Số điện thoại phải là số!' },
+                                                            {
+                                                                pattern: /^(0[3|5|7|8|9])+([0-9]{8})$/,
+                                                                message: 'Số điện thoại không đúng định dạng!',
+                                                            },
+                                                        ]}
+                                                    >
+                                                        <Input placeholder="Nhập số điện thoại" />
+                                                    </Form.Item>
+                                                </Col>
+                                            </>
+                                        ) : null}
 
 
 
