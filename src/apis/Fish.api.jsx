@@ -217,7 +217,7 @@ export const FishApi = {
       throw new Error(error.response.data.message);
     }
   },
-  getAllBatch: async (currentPage, pageSize = 9) => {
+  getAllBatch: async (currentPage, pageSize = 4) => {
     try {
       const response = await fetcher.get(
         `http://localhost:8080/koifarm/BatchKoi/getAllBatch?pageNo=${currentPage}&pageSize=${pageSize}`
@@ -273,6 +273,16 @@ export const FishApi = {
     try {
       const response = await fetcher.get(
         `http://localhost:8080/koifarm/manage/searchFish?keyword=${keyword}&pageNum=${currentPage}&pageSize=${pageSize}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
+  searchBatch: async (keyword, currentPage, pageSize = 4) => {
+    try {
+      const response = await fetcher.get(
+        `http://localhost:8080/koifarm/manage/searchBatch?keyword=${keyword}&pageNum=${currentPage}&pageSize=${pageSize}`
       );
       return response.data;
     } catch (error) {
