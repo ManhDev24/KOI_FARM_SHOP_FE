@@ -180,14 +180,7 @@ const ConsigmentManagement = () => {
       </div>
       <div className="flex flex-col mt-2 w-full">
         <div className="w-full">
-          <Button
-            onClick={showModal}
-            danger
-            className="flex justify-center items-center"
-          >
-            <span>+</span>
-            Thêm người dùng
-          </Button>
+      
         </div>
         <div className="mt-3">
           <Table

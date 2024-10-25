@@ -34,7 +34,14 @@ import { useNavigate } from "react-router-dom";
 const DashBoard = () => {
   const user = getLocalStorage("user");
   const [filter, setFilter] = useState("Year");
+  const [month, setMonth] = useState(new Date().getMonth() + 1);
   const navigate = useNavigate();
+  const handleFilterChange = (value) => {
+    setFilter(value);
+    if (value !== "Day") {
+      setMonth(null);
+    }
+  };
   useEffect(() => {
     if (user?.role !== "manager") {
       navigate("/admin/fish-management");
@@ -113,10 +120,10 @@ const DashBoard = () => {
   }
   const {
     data: revenueData,
-    isLoading,
-    isError,
+    isLoading: isLoadingRevenueData,
+    isError: isErrorRevenueData,
   } = useQuery({
-    queryKey: ["revenueData", filter],
+    queryKey: ["revenueData", filter, month],
     queryFn: () => {
       switch (filter) {
         case "Year":
@@ -126,24 +133,16 @@ const DashBoard = () => {
         case "Week":
           return DashBoardApi.revenueOfWeek();
         case "Day":
-          return DashBoardApi.revenueOfDay();
+          return DashBoardApi.revenueOfDay(month); 
         default:
           return DashBoardApi.revenueOfYear();
       }
     },
+    enabled: filter !== "Day" || !!month, 
   });
 
-  if (isLoading) {
-    return (
-      <div className="h-[800px] w-full flex items-center justify-center">
-        <Spin indicator={<LoadingOutlined spin />} size="large" />
-      </div>
-    );
-  }
 
-  if (isError) {
-    return <div>Error loading data</div>;
-  }
+ 
 
   const labels = revenueData?.data?.map((item) => item[0]);
   const dataPoints = revenueData?.data?.map((item) => item[1]);
@@ -374,7 +373,7 @@ const DashBoard = () => {
       </div>
       <div className="bottom h-[400px] w-full flex flex-col">
         <div className="top w-full h-[60px] flex justify-end p-4">
-          <Select value={filter} onChange={setFilter} style={{ width: 120 }}>
+          <Select value={filter} onChange={handleFilterChange} style={{ width: 120 }}>
             <Option value="Year">Year</Option>
             <Option value="Month">Month</Option>
             <Option value="Week">Week</Option>
