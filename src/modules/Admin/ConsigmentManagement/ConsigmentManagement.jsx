@@ -173,7 +173,7 @@ const ConsigmentManagement = () => {
         <Search
           placeholder="Nhập email để tìm kiếm..."
           value={[]}
-          onChange={(e) => setQuery(e.target.value)}
+         
           style={{ width: 300 }}
           allowClear
         />
