@@ -269,6 +269,16 @@ export const FishApi = {
       throw new Error(error.response.data.message);
     }
   },
+  searchFish: async (keyword, currentPage, pageSize = 4) => {
+    try {
+      const response = await fetcher.get(
+        `http://localhost:8080/koifarm/manage/searchFish?keyword=${keyword}&pageNum=${currentPage}&pageSize=${pageSize}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
 };
 
 export default FishApi;

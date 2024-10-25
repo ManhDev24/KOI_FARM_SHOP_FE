@@ -117,30 +117,21 @@ const AdminLayout = () => {
               icon: <VideoCameraOutlined />,
               label: "Quản lý cá koi",
             },
-            {
-              key: "/admin/fishCare-management",
-              icon: <PlusOutlined />,
-              label: "Quản tình trạng cá koi",
-            },
+
             {
               key: "/admin/batch-management",
               icon: <VideoCameraOutlined />,
               label: "Quản lý lô cá koi",
             },
             {
+              key: "/admin/fishCare-management",
+              icon: <PlusOutlined />,
+              label: "Quản tình trạng cá koi",
+            },
+            {
               key: "/admin/category-management",
               icon: <SafetyCertificateOutlined />,
               label: "Quản lý danh mục ",
-            },
-            {
-              key: "/admin/blog-management",
-              icon: <BlockOutlined />,
-              label: "Quản lý bài blog ",
-            },
-            {
-              key: "/admin/create-blog",
-              icon: <SafetyCertificateOutlined />,
-              label: "Tạo bài blog ",
             },
             {
               key: "/admin/consignment-management",
@@ -151,6 +142,16 @@ const AdminLayout = () => {
               key: "/admin/payment-management",
               icon: <PayCircleOutlined />,
               label: "Quản lý đơn hàng",
+            },
+            {
+              key: "/admin/blog-management",
+              icon: <BlockOutlined />,
+              label: "Quản lý bài blog ",
+            },
+            {
+              key: "/admin/create-blog",
+              icon: <SafetyCertificateOutlined />,
+              label: "Tạo bài blog ",
             },
 
             {

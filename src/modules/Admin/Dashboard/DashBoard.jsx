@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { AccountApi } from "../../../apis/Account.api";
 import orderApi from "../../../apis/Order.api";
 import FishApi from "../../../apis/Fish.api";
 import { LoadingOutlined } from "@ant-design/icons";
-import { Spin } from "antd";
+import { Select, Spin } from "antd";
 import DashBoardApi from "../../../apis/DashBoard.api";
 import {
   Chart as ChartJS,
@@ -33,12 +33,13 @@ import { getLocalStorage } from "../../../utils/LocalStorage";
 import { useNavigate } from "react-router-dom";
 const DashBoard = () => {
   const user = getLocalStorage("user");
+  const [filter, setFilter] = useState("Year");
   const navigate = useNavigate();
   useEffect(() => {
     if (user?.role !== "manager") {
       navigate("/admin/fish-management");
     }
-  });
+  }, [user, navigate]);
   const {
     data: totalAccount,
     isLoading: isLoadingTotalAccount,
@@ -110,37 +111,58 @@ const DashBoard = () => {
   ) {
     return <div>Error</div>;
   }
-  const years = revenueOfYear?.data?.map((item) => item[0]);
-  const revenuesOfYear = revenueOfYear?.data?.map((item) => item[1]);
-  const months = revenueOfMonth?.data?.map((item) => item[0]);
-  const revenuesOfMonth = revenueOfMonth?.data?.map((item) => item[1]);
-  const dataOfYear = {
-    labels: years,
+  const {
+    data: revenueData,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["revenueData", filter],
+    queryFn: () => {
+      switch (filter) {
+        case "Year":
+          return DashBoardApi.revenueOfYear();
+        case "Month":
+          return DashBoardApi.revenueOfMonth();
+        case "Week":
+          return DashBoardApi.revenueOfWeek();
+        case "Day":
+          return DashBoardApi.revenueOfDay();
+        default:
+          return DashBoardApi.revenueOfYear();
+      }
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div className="h-[800px] w-full flex items-center justify-center">
+        <Spin indicator={<LoadingOutlined spin />} size="large" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return <div>Error loading data</div>;
+  }
+
+  const labels = revenueData?.data?.map((item) => item[0]);
+  const dataPoints = revenueData?.data?.map((item) => item[1]);
+
+  const chartData = {
+    labels: labels,
     datasets: [
       {
         label: "Revenue (VND)",
-        data: revenuesOfYear,
-        backgroundColor: "rgba(54, 162, 235, 0.5)",
-        borderColor: "rgba(54, 162, 235, 1)",
-        borderWidth: 1,
-      },
-    ],
-  };
-  const dataOfMonth = {
-    labels: months,
-    datasets: [
-      {
-        label: "Revenue (VND)",
-        data: revenuesOfMonth,
+        data: dataPoints,
         backgroundColor: "rgba(54, 162, 235, 0.5)",
         borderColor: "rgba(54, 162, 235, 1)",
         borderWidth: 2,
-        fill: false, // Không đổ màu dưới đường
+        fill: filter === "Year" ? true : false, // Fill only for year view
       },
     ],
   };
 
-  const optionsOfYear = {
+  const chartOptions = {
     responsive: true,
     maintainAspectRatio: true,
     plugins: {
@@ -149,21 +171,7 @@ const DashBoard = () => {
       },
       title: {
         display: true,
-        text: "Annual Revenue",
-      },
-    },
-  };
-
-  const optionsOfMonth = {
-    responsive: true,
-    maintainAspectRatio: true,
-    plugins: {
-      legend: {
-        position: "top",
-      },
-      title: {
-        display: true,
-        text: "Annual Revenue",
+        text: `${filter}ly Revenue`,
       },
     },
     scales: {
@@ -315,7 +323,7 @@ const DashBoard = () => {
               </div>
             </div>
           </div>
-          <div className="col-span-2 row-span-3 col-start-5 row-start-4">
+          <div className="col-span-2 row-span-3 col-start-5 row-start-4 ">
             <div
               style={{
                 border: "1px solid #FFFFFF ",
@@ -364,22 +372,19 @@ const DashBoard = () => {
           </div>
         </div>
       </div>
-      <div className="bottom h-[400px] w-full flex">
-        <div className="flex-1 flex justify-center items-center">
-          <Bar
-            data={dataOfYear}
-            options={optionsOfYear}
-            width={500}
-            height={300}
-          />
+      <div className="bottom h-[400px] w-full flex flex-col">
+        <div className="top w-full h-[60px] flex justify-end p-4">
+          <Select value={filter} onChange={setFilter} style={{ width: 120 }}>
+            <Option value="Year">Year</Option>
+            <Option value="Month">Month</Option>
+            <Option value="Week">Week</Option>
+            <Option value="Day">Day</Option>
+          </Select>
         </div>
-        <div className="flex-1 flex justify-center items-center">
-          <Line
-            data={dataOfMonth}
-            options={optionsOfMonth}
-            width={500}
-            height={300}
-          />
+        <div className="flex-grow w-full flex justify-center items-center mb-5">
+          <div className="w-full h-[400px] max-w-7xl flex justify-center items-center">
+            <Bar data={chartData} options={chartOptions} />
+          </div>
         </div>
       </div>
     </div>
