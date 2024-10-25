@@ -40,11 +40,16 @@ const StatusConsignment = () => {
   }, [consignmentID, dispatch]);
 
   // Fetch consignment status
+  
+//  const status = consignmentDetails.data.status === 4 ? 50000 : null;
   const { data: consignmentDetails, isLoading, error } = useQuery({
     queryKey: ['consignmentStatus', consignmentID],
     queryFn: () => ConsignmentApi.statusConsignment(consignmentID),
     enabled: !!consignmentID,
-    refetchInterval:  consignmentDetails.data.status === 4 ? 50000 : null ,
+
+    // refetchInterval: status,
+
+
   });
 
   // Save service fee to store
@@ -78,7 +83,7 @@ const StatusConsignment = () => {
 
         navigate('/Form-consignment');
         message.success('Hủy ký gửi thành công');
-        
+
 
       } else {
         console.log(typeof response.data + 'string string string')
@@ -89,13 +94,17 @@ const StatusConsignment = () => {
       }
     },
     onError: (error) => {
-      message.error('Lỗi xảy ra khi hủy ký gửi');
+     
     },
   });
 
   // Handle cancel button click
   const handleCancelClick = () => {
+    localStorage.setItem('fishConsignmentID', '');
+    localStorage.setItem('consignmentID','');
+
     cancelConsignment();
+
   };
 
   const handleCurrentPage = (prevPage) => {
@@ -103,8 +112,8 @@ const StatusConsignment = () => {
     prevPage = 2
     if (prevPage <= 2) {
       setCurrentPage(prevPage => prevPage + 1);
-      localStorage.setItem('consignmentID','')
-      localStorage.setItem('fishConsignmentID','')
+      localStorage.setItem('consignmentID', '')
+      localStorage.setItem('fishConsignmentID', '')
       navigate('/Form-consignment');
     }
   };

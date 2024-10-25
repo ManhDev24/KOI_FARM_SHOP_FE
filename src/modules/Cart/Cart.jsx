@@ -166,8 +166,12 @@ const Cart = () => {
           textAlign: "center",
         },
       }),
-      render: (imgL) => (
-        <img className="h-[100px] w-[100px]" src={imgL} alt="" />
+      render: (imgL,record) => (
+        <>
+          <img className="h-[100px] w-[100px]" src={imgL || record?.batchImg} alt="" />
+          {console.log(imgL)}
+        </>
+
       ),
       width: "150px",
     },
@@ -381,9 +385,9 @@ const Cart = () => {
                       <span className="text-lg font-bold">
                         {totalPrice
                           ? totalPrice.toLocaleString("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            })
+                            style: "currency",
+                            currency: "VND",
+                          })
                           : ""}
                       </span>
                     </div>
@@ -418,9 +422,9 @@ const Cart = () => {
                         <span className="text-xl font-bold">
                           {finalPrice
                             ? finalPrice.toLocaleString("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              })
+                              style: "currency",
+                              currency: "VND",
+                            })
                             : ""}
                         </span>
                       </div>

@@ -43,7 +43,7 @@ const BatchFish = () => {
   } = useQuery({
     queryKey: ["KoiList", currentPage, pageSize],
     queryFn: () => FishApi.getListBatchFish(currentPage, pageSize),
-    
+
   });
 
   //koiListFilter
@@ -77,7 +77,7 @@ const BatchFish = () => {
         sortDirection
       ),
     enabled: isFiltered,
-    
+
   });
 
   filteredKoiBatchList;
@@ -86,7 +86,6 @@ const BatchFish = () => {
   const updateKoiList = koiResponseList?.map((item) => {
     return {
       ...item,
-      koiImage: "./img/showa2.jpg",
     };
   });
 
