@@ -54,12 +54,10 @@ const StatusConsignment = () => {
   }, [consignmentID, dispatch]);
 
   // Fetch consignment status
-  const {
-    data: consignmentDetails,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["consignmentStatus", consignmentID],
+
+  //  const status = consignmentDetails.data.status === 4 ? 50000 : null;
+  const { data: consignmentDetails, isLoading, error } = useQuery({
+    queryKey: ['consignmentStatus', consignmentID],
     queryFn: () => ConsignmentApi.statusConsignment(consignmentID),
     enabled: !!consignmentID,
   });
@@ -94,22 +92,28 @@ const StatusConsignment = () => {
           console.log(typeof response.data);
           dispatch(saveConsignmentID(response.data));
 
-          navigate("/Form-consignment");
-          message.success("Hủy ký gửi thành công");
-        } else {
-          console.log(typeof response.data + "string string string");
-          navigate("/Form-consignment");
-          localStorage.setItem("consignmentID", "");
-          message.success("Hủy ký gửi thành công");
-        }
-      },
-      onError: (error) => {
-        message.error("Lỗi xảy ra khi hủy ký gửi");
-      },
-    });
+        navigate('/Form-consignment');
+        message.success('Hủy ký gửi thành công');
+
+
+      } else {
+        console.log(typeof response.data + 'string string string')
+        navigate('/Form-consignment')
+        localStorage.setItem('consignmentID', '');
+        localStorage.setItem('fishConsignmentID');
+        message.success('Hủy ký gửi thành công');
+      }
+    },
+    onError: (error) => {
+
+    },
+  });
 
   // Handle cancel button click
   const handleCancelClick = () => {
+    localStorage.setItem('fishConsignmentID', '');
+    localStorage.setItem('consignmentID', '');
+
     cancelConsignment();
   };
 
@@ -351,7 +355,28 @@ const StatusConsignment = () => {
                   Thanh toán
                 </button>
               </>
-            ) : null}
+            ) :
+              data.status === 2 ? (
+                <>
+                  {/* <button
+                    onClick={handleCurrentPages}
+                    className="px-6 py-3 bg-green-500 text-white rounded-md shadow hover:bg-green-600 hover:shadow-lg transition duration-200"
+                  >
+                    Tới bước Thanh toán
+                  </button> */}
+                  <button
+                    onClick={() => {
+                      handleCancelClick();
+                    }}
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-500 transition duration-300"
+                  >
+                    Tạo mới
+                  </button>
+                </>
+
+              )
+
+                : null}
           </div>
 
           {/* Thông tin chi tiết cá Koi, được điều khiển bởi state showDetails */}

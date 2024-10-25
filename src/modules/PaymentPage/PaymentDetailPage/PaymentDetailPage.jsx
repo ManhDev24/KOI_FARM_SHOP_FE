@@ -85,15 +85,11 @@ const PaymentDetailPage = () => {
     {
       title: "Đăng ký ký gửi",
       dataIndex: "action",
-      render: (_, record) =>
-        record.type ? (
-          <Button onClick={() => handleConsignment(record.koiFishId)}>
-            Ký gửi
-          </Button>
-        ) : (
-          <></>
-        ),
-    },
+      render: (_, record) => (
+        record.type === true ? <Button onClick={() => handleConsignment(record.koiFishId)}>Ký gửi</Button> : <></>
+
+      ),
+    }
   ];
   const navigate = useNavigate();
   // const { orderId } = useSelector((state) => state.order);
