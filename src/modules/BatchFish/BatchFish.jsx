@@ -86,7 +86,6 @@ const BatchFish = () => {
   const updateKoiList = koiResponseList?.map((item) => {
     return {
       ...item,
-      koiImage: "./img/showa2.jpg",
     };
   });
 

@@ -31,6 +31,7 @@ const Cart = () => {
   const dispatch = useDispatch();
 
   const onCart = getLocalStorage("cartItems");
+  console.log("onCart: ", onCart);
   const [dataSource, setDataSource] = useState(onCart);
 
   const totalPrice = onCart?.reduce(
@@ -166,8 +167,12 @@ const Cart = () => {
           textAlign: "center",
         },
       }),
-      render: (imgL) => (
-        <img className="h-[100px] w-[100px]" src={imgL} alt="" />
+      render: (imgL, render) => (
+        <img
+          className="h-[100px] w-[100px]"
+          src={imgL || render?.batchImg}
+          alt=""
+        />
       ),
       width: "150px",
     },
