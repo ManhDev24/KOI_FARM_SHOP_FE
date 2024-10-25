@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -70,6 +70,8 @@ const BathManagement = () => {
   const [isModalDetailBatchOpen, setIsModalDetailBatchOpen] = useState(false);
   const [isModalViewOpen, setIsModalViewOpen] = useState(false);
   const [dataDetailBatch, setDataDetailBatch] = useState(null);
+  const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [status, setStatus] = useState(1);
 
   const queryClient = useQueryClient();
@@ -99,14 +101,33 @@ const BathManagement = () => {
     resolver: yupResolver(validationSchema),
     mode: "onBlur",
   });
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(query);
+      setCurrentPage(1);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [query]);
+
+  const fetchBatch = async ({ queryKey }) => {
+    const [_key, page, search] = queryKey;
+    if (search) {
+      return await FishApi.searchBatch(search, page);
+    } else {
+      return await FishApi.getAllBatch(page, 4);
+    }
+  };
 
   const {
     data: listOfBatch,
     isLoading: isLoadingListOfBatch,
     isError: isErrorListOfBatch,
   } = useQuery({
-    queryKey: ["listOfBatch", currentPage],
-    queryFn: () => FishApi.getAllBatch(currentPage, 4),
+    queryKey: ["listOfBatch", currentPage, debouncedQuery],
+    queryFn: fetchBatch,
   });
   console.log("listOfBatch: ", listOfBatch);
   const total = listOfBatch?.data?.totalElements;
@@ -308,19 +329,17 @@ const BathManagement = () => {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
+      filters: [
+        { text: "Còn Hàng", value: 1 },
+        { text: "Đã Bán", value: 2 },
+      ],
+      onFilter: (value, record) => record.status === value,
       render: (status) => {
-        console.log("status: ", status);
         switch (status) {
           case 1:
             return <Tag color="lime">Còn Hàng</Tag>;
           case 2:
             return <Tag color="blue">Đã Bán</Tag>;
-          case 3:
-            return <Tag color="orange">Ký Gửi</Tag>;
-          case 4:
-            return <Tag color="purple">Chờ Duyệt Đơn Ký Gửi</Tag>;
-          case 5:
-            return <Tag color="red">Ký gửi chăm sóc</Tag>;
         }
       },
     },
@@ -426,7 +445,8 @@ const BathManagement = () => {
       <div className="w-[450px]">
         <Search
           placeholder="Nhập email để tìm kiếm..."
-          value={[]}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
           style={{ width: 300 }}
           allowClear
         />
