@@ -45,6 +45,7 @@ const ThankPage = () => {
       removeLocalStorage("PromotionCode");
       // navigate("/thank-you"); // Remove navigation here
       setIsSuccess(true); // Set success state
+      window.location.reload();
     },
     onError: (error) => {
       const errorMessage =

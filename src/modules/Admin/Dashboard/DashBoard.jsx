@@ -31,6 +31,7 @@ ChartJS.register(
 import { Bar, Line } from "react-chartjs-2";
 import { getLocalStorage } from "../../../utils/LocalStorage";
 import { useNavigate } from "react-router-dom";
+const { Option } = Select;
 const DashBoard = () => {
   const user = getLocalStorage("user");
   const [filter, setFilter] = useState("Year");
@@ -40,6 +41,8 @@ const DashBoard = () => {
     setFilter(value);
     if (value !== "Day") {
       setMonth(null);
+    } else {
+      setMonth(new Date().getMonth() + 1);
     }
   };
   useEffect(() => {
@@ -140,10 +143,6 @@ const DashBoard = () => {
     },
     enabled: filter !== "Day" || !!month, 
   });
-
-
- 
-
   const labels = revenueData?.data?.map((item) => item[0]);
   const dataPoints = revenueData?.data?.map((item) => item[1]);
 
@@ -373,7 +372,11 @@ const DashBoard = () => {
       </div>
       <div className="bottom h-[400px] w-full flex flex-col">
         <div className="top w-full h-[60px] flex justify-end p-4">
-          <Select value={filter} onChange={handleFilterChange} style={{ width: 120 }}>
+          <Select
+            value={filter}
+            onChange={handleFilterChange}
+            style={{ width: 120 }}
+          >
             <Option value="Year">Year</Option>
             <Option value="Month">Month</Option>
             <Option value="Week">Week</Option>

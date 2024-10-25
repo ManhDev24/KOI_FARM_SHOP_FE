@@ -12,6 +12,7 @@ import {
   HomeOutlined,
   FundProjectionScreenOutlined,
   BlockOutlined,
+  MoneyCollectOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme } from "antd";
@@ -109,6 +110,11 @@ const AdminLayout = () => {
                     key: "/admin/user-management",
                     icon: <UserOutlined />,
                     label: "Quản lý tài khoản ",
+                  },
+                  {
+                    key: "/admin/consignment-fee-management",
+                    icon: <MoneyCollectOutlined />,
+                    label: "Quản lý phí kí gửi",
                   },
                 ]
               : []),
