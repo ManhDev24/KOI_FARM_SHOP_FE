@@ -255,7 +255,7 @@ const RequestConsignment = () => {
         {
             key: "10",
             label: "F1",
-            value: "2",
+            value: "0",
         },
 
     ];

@@ -43,7 +43,7 @@ const BatchFish = () => {
   } = useQuery({
     queryKey: ["KoiList", currentPage, pageSize],
     queryFn: () => FishApi.getListBatchFish(currentPage, pageSize),
-    
+
   });
 
   //koiListFilter
@@ -77,7 +77,7 @@ const BatchFish = () => {
         sortDirection
       ),
     enabled: isFiltered,
-    
+
   });
 
   filteredKoiBatchList;

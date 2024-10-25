@@ -98,7 +98,7 @@ const ThankPage = () => {
     promoCode,
   };
   const consignmentIDFromStore = useSelector(state => state.consignmentDetail.consignmentID);
- 
+
   useEffect(() => {
     const consignmentIDFromLocalStorage = localStorage.getItem("consignmentID");
     const consignmentID = type === "false" ? consignmentIDFromStore || consignmentIDFromLocalStorage : null;
@@ -155,7 +155,7 @@ const ThankPage = () => {
     </div>
   ) : (
     <>  <div class="w-full max-w-[950px]  relative mx-auto p-4">
-
+        {isHandleSaveConsignmentLoading && <LoadingModal isLoading={true} />}
 
       <div class="w-full max-w-[950px] h-full relative mx-auto my-0 p-4">
         <Steps current={5} status="process">
