@@ -54,14 +54,12 @@ const StatusConsignment = () => {
   }, [consignmentID, dispatch]);
 
   // Fetch consignment status
-
   const {
     data: consignmentDetails,
     isLoading,
     error,
   } = useQuery({
     queryKey: ["consignmentStatus", consignmentID],
-
     queryFn: () => ConsignmentApi.statusConsignment(consignmentID),
     enabled: !!consignmentID,
   });
@@ -82,43 +80,38 @@ const StatusConsignment = () => {
   const consignmentIDs = localStorage.getItem("fishConsignmentID");
 
   // Cancel consignment mutation
+  const { mutate: cancelConsignment, isPending: isCancelConsignment } =
+    useMutation({
+      mutationFn: async () => {
+        let consignmentid = consignmentID || consignmentIDs;
+        if (!consignmentid) {
+          throw new Error("Consignment ID is not available.");
+        }
+        return await ConsignmentApi.cancelConsignment(consignmentid);
+      },
+      onSuccess: (response) => {
+        if (typeof response.data === "number") {
+          console.log(typeof response.data);
+          dispatch(saveConsignmentID(response.data));
 
-  const { mutate: cancelConsignment, isPending: isCancelConsignment } = useMutation({
-    mutationFn: async () => {
-      let consignmentid = consignmentID || consignmentIDs;
-      if (!consignmentid) {
-        throw new Error('Consignment ID is not available.');
-      }
-      return await ConsignmentApi.cancelConsignment(consignmentid);
-    },
-    onSuccess: (response) => {
-      if (typeof response.data === 'number') {
-        console.log(typeof response.data)
-        dispatch(saveConsignmentID(response.data));
-
-        navigate('/Form-consignment');
-        message.success('Hủy ký gửi thành công');
-
-
-      } else {
-        console.log(typeof response.data + 'string string string')
-        navigate('/Form-consignment')
-        localStorage.setItem('consignmentID', '');
-        localStorage.setItem('fishConsignmentID');
-        message.success('Hủy ký gửi thành công');
-      }
-    },
-    onError: (error) => {
-
-    },
-  });
+          navigate("/Form-consignment");
+          message.success("Hủy ký gửi thành công");
+        } else {
+          console.log(typeof response.data + "string string string");
+          navigate("/Form-consignment");
+          localStorage.setItem("consignmentID", "");
+          message.success("Hủy ký gửi thành công");
+        }
+      },
+      onError: (error) => {
+        message.error("Lỗi xảy ra khi hủy ký gửi");
+      },
+    });
 
   // Handle cancel button click
   const handleCancelClick = () => {
-    localStorage.setItem('fishConsignmentID', '');
-    localStorage.setItem('consignmentID', '');
-
-
+    cancelConsignment();
+  };
 
   const handleCurrentPage = (prevPage) => {
     prevPage = 2;
@@ -358,30 +351,7 @@ const StatusConsignment = () => {
                   Thanh toán
                 </button>
               </>
-
-            ) :
-              data.status === 2 ? (
-                <>
-                  {/* <button
-                    onClick={handleCurrentPages}
-                    className="px-6 py-3 bg-green-500 text-white rounded-md shadow hover:bg-green-600 hover:shadow-lg transition duration-200"
-                  >
-                    Tới bước Thanh toán
-                  </button> */}
-                  <button
-                    onClick={() => {
-                      handleCancelClick();
-                    }}
-                    className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-500 transition duration-300"
-                  >
-                    Tạo mới
-                  </button>
-                </>
-
-              )
-
-                : null}
-
+            ) : null}
           </div>
 
           {/* Thông tin chi tiết cá Koi, được điều khiển bởi state showDetails */}
