@@ -209,6 +209,10 @@ const Navbar = () => {
       key: "9",
       label: <Link to="/consignment-history">Lịch sử ký gửi</Link>,
     },
+    {
+      key: "kois",
+      label: <Link to="/my-consignment-koi">Koi ký gửi của tôi</Link>,
+    },
   ];
 
   const handleSignOut = () => {

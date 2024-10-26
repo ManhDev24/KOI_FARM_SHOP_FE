@@ -152,7 +152,7 @@ const ThankPage = () => {
       <>
         <div className="w-full max-w-[950px] h-full relative mx-auto my-0 p-4">
        
-            <Steps current={5} status="process">
+            <Steps current={3} status="process">
               <Steps.Step title="&nbsp;" description={description} />
               <Steps.Step title="&nbsp;" description={description1} />
               <Steps.Step title="&nbsp;" description={description2} />
@@ -230,8 +230,8 @@ const ThankPage = () => {
               Tiếp tục ký gửi
             </Button>
           </Link>
-          <Link to="/" className="ms-3">
-            <Button className="p-5">Quay về trang chủ</Button>
+          <Link to="/consignment-history" className="ms-3">
+            <Button className="p-5">Lịch sử ký gửi</Button>
           </Link>
         </div>
       </div>
