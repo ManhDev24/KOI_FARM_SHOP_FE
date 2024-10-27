@@ -299,6 +299,16 @@ export const FishApi = {
       throw new Error(error.response.data.message);
     }
   },
+  getAllFishCare: async (currentPage, pageSize) => {
+    try {
+      const response = await fetcher.get(
+        `http://localhost:8080/koifarm/consignment/getAllFishCare?pageNo=${currentPage}&pageSize=${pageSize}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
 };
 
 export default FishApi;
