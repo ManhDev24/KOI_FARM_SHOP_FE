@@ -66,6 +66,18 @@ const ConsignmentFeeManagement = () => {
       message.error("Update failed");
     },
   });
+  const { mutate: createConsignmentFee, isLoading: isCreating, isError: isCreateError } = useMutation({
+    mutationFn: (data) => ConsignmentApi.createConsignmentFee(data),
+    onSuccess: () => {
+      message.success("Tạo phí kí gữi này");
+      setIsModalOpen(false);
+      refetch();
+    },
+    onError: () => {
+      message.error("Create failed");
+    },
+  });
+
 
   const columns = [
     {
@@ -125,13 +137,14 @@ const ConsignmentFeeManagement = () => {
   };
 
   const onSubmit = (data) => {
+    console.log("data: ", data);
     if (editingRecord) {
       updateConsignmentFee({
         ...data,
         consignmentFeeId: editingRecord.consignmentFeeId,
       });
     } else {
-      console.log("Create new feature not implemented");
+      createConsignmentFee(data);
     }
   };
 
