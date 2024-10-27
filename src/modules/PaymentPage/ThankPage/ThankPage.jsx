@@ -21,6 +21,8 @@ const ThankPage = () => {
   const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
+    const status = searchParams.get("paymentStatus");
+  const type = searchParams.get("type");
     if (status !== "1") {
       navigate("/");
     }
@@ -45,7 +47,7 @@ const ThankPage = () => {
       removeLocalStorage("PromotionCode");
       // navigate("/thank-you"); // Remove navigation here
       setIsSuccess(true); // Set success state
-      window.location.reload();
+      // window.location.reload();
     },
     onError: (error) => {
       const errorMessage =
@@ -152,7 +154,7 @@ const ThankPage = () => {
       <>
         <div className="w-full max-w-[950px] h-full relative mx-auto my-0 p-4">
        
-            <Steps current={5} status="process">
+            <Steps current={3} status="process">
               <Steps.Step title="&nbsp;" description={description} />
               <Steps.Step title="&nbsp;" description={description1} />
               <Steps.Step title="&nbsp;" description={description2} />
@@ -181,9 +183,9 @@ const ThankPage = () => {
     // If not successful yet, you can return null or a placeholder
     return null;
   }
+  console.log(type)
 
-
-  return type === "true" ? (
+  return type === 'true' ? (
     // Content for type === "true"
     <div className="flex flex-col items-center justify-center h-[70vh] w-full">
       <div className="text-center text-3xl font-bold mb-10">
@@ -230,8 +232,8 @@ const ThankPage = () => {
               Tiếp tục ký gửi
             </Button>
           </Link>
-          <Link to="/" className="ms-3">
-            <Button className="p-5">Quay về trang chủ</Button>
+          <Link to="/consignment-history" className="ms-3">
+            <Button className="p-5">Lịch sử ký gửi</Button>
           </Link>
         </div>
       </div>

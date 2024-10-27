@@ -629,7 +629,7 @@ const BatchFish = () => {
                         >
                           <div className="relative w-[250px]">
                             <div
-                              className="absolute w-[86px] 
+                              className="absolute w-[86px] border-2 border-[#FA4444]
                                                 bg-[#FFFFFF] rounded-ee-[10px] 
                                                 rounded-tl-[5px] text-center 
                                                 text-[#FA4444]"
@@ -650,7 +650,7 @@ const BatchFish = () => {
                             </div>
                           </div>
                           <div className="flex flex-col w-[250px] h-[320px] bg-[#FFFFFF] border border-t-0 border-x-2 border-b-2 border-[#FA4444] rounded-b-[10px]">
-                            <h1 className="my-0 mx-auto text-[#FA4444] font-bold text-[20px]">
+                            <h1 className="my-0 mx-auto text-[#FA4444] font-bold text-[20px] text-center">
                               {card.categoryName} số lượng {card.quantity} độ
                               tuổi {card.age}
                             </h1>

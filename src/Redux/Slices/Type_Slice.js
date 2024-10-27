@@ -1,22 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-// Khởi tạo state ban đầu
+// Initial state
 const initialState = {
-  typePayment: false, // Lưu trữ typePayment (boolean)
+  typePayment: false, // Default value is set to false
 };
 
 const typeSlice = createSlice({
-  name: "type",  // Đặt tên slice là 'type'
+  name: "type",
   initialState,
   reducers: {
-    // Hàm để lưu giá trị typePayment
     saveTypePayment: (state, action) => {
-      state.typePayment = action.payload; // Cập nhật typePayment trong state
+      state.typePayment = action.payload; // Update the typePayment state
     },
   },
 });
 
-// Export action để sử dụng trong component
+// Export the action and reducer
 export const { saveTypePayment } = typeSlice.actions;
-// Export reducer để thêm vào store
 export default typeSlice.reducer;

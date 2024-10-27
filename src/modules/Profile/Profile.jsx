@@ -1,6 +1,6 @@
-import { Breadcrumb, Button, message } from 'antd';
+import { Avatar, Breadcrumb, Button, Image, message } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Input, Form as AntForm } from 'antd';
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { useForm, Controller } from 'react-hook-form';
@@ -48,7 +48,7 @@ const schema = yup.object().shape({
 });
 
 const Profile = () => {
-
+  const navigate = useNavigate();
   const { control, trigger, formState: { errors }, getValues, setValue, setError, clearErrors, } = useForm({
     resolver: yupResolver(schema),
   });
@@ -104,6 +104,7 @@ const Profile = () => {
           setValue('avatar', profileData.avatar);
         } else {
           message.error('Không tìm thấy email người dùng. Vui lòng đăng nhập lại.');
+          navigate('/');
         }
       } catch (error) {
         message.error('Lỗi khi tải dữ liệu hồ sơ. Vui lòng thử lại sau.');
@@ -156,7 +157,8 @@ const Profile = () => {
         ...prevState,
         [field]: false,
       }));
-
+      const updatedUser = { ...dataProfile, ...completeUpdatedData };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
       message.success(`${field} đã được cập nhật thành công`);
     } catch (error) {
       message.error(`Lỗi khi cập nhật ${field}: ${error.message}`);
@@ -403,11 +405,15 @@ const Profile = () => {
             </div>
             <div className="w-full h-[315px] bg-white shadow flex justify-center items-center">
               <div className="flex flex-col">
-                <img
+                <Image
+                  style={{
+                    borderRadius: "200px",
+                    objectFit: "cover",
+                  }} shape="circle"
                   src={avatarPreview}
-                  alt="Avatar"
-                  className="inline-block h-[200px] w-[200px] rounded-full ring-2 ring-lime-100"
-                />
+                  width={200}
+                  height={200} />
+
                 <div className="file-input-wrapped flex justify-center items-center mt-4">
                   <input
                     type="file"
