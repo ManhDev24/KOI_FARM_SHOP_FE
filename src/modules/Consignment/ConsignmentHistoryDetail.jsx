@@ -1,7 +1,7 @@
 // ConsignmentHistoryDetail.jsx
 
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Breadcrumb, Button, message, Table, Modal } from 'antd';
+import { Breadcrumb, Button, message, Table, Modal, Tag } from 'antd';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ConsignmentApi } from '../../apis/Consignment.api';
@@ -13,7 +13,7 @@ import { saveConsignmentDetailID } from '../../Redux/Slices/consignmentDetail_Sl
 
 const ConsignmentHistoryDetail = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20); // Adjusted default page size
+  const [pageSize, setPageSize] = useState(5); // Adjusted default page size
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -108,12 +108,14 @@ const ConsignmentHistoryDetail = () => {
       title: <span className='flex justify-center'>Mã đơn ký gửi</span>,
       dataIndex: 'consignmentID',
       key: 'consignmentID',
+      align: 'center'
     },
     {
       title: <span className='flex justify-center'>Loại ký gửi</span>,
       dataIndex: 'consignmentType',
       key: 'consignmentType',
       render: (text) => (text ? 'Bán' : 'Chăm sóc'),
+      align: 'center'
     },
     {
       title: <span className='flex justify-center'>Giá bán</span>,
@@ -125,23 +127,38 @@ const ConsignmentHistoryDetail = () => {
           ? amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
           : 'N/A';
       },
+      align: 'center'
     },
     {
       title: <span className='flex justify-center'>Ngày tạo đơn</span>,
       dataIndex: 'consignmentDate',
       key: 'consignmentDate',
       render: (date) => moment(date).format('DD-MM-YYYY'),
+      align: 'center'
     },
     {
       title: <span className='flex justify-center'>Gói ký gửi</span>,
       dataIndex: 'duration',
       key: 'duration',
-      render: (duration) => (
-        <div className='border-2 border-[#FA4444] text-center p-2'>
-          {duration + ' tháng'}
-        </div>
-      ),
+      render: (duration) => {
+        let color = '';
+        if (duration <= 3) {
+          color = 'green';
+        } else if (duration <= 6) {
+          color = 'orange';
+        } else {
+          color = 'red';
+        }
+
+        return (
+          <div className=' text-center p-2'>
+            <Tag color={color}>{duration + ' tháng'}</Tag>
+          </div>
+        );
+      },
+      align: 'center'
     },
+
     {
       title: <span className='flex justify-center'>Phí dịch vụ</span>,
       dataIndex: 'serviceFee',
@@ -152,6 +169,7 @@ const ConsignmentHistoryDetail = () => {
           ? amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
           : 'N/A';
       },
+      align: 'center'
     },
     {
       title: <span className='flex justify-center'>Trạng thái</span>,
@@ -171,6 +189,7 @@ const ConsignmentHistoryDetail = () => {
             return <span className='text-[#A9A9A9] flex justify-center'>Hết hạn</span>;
         }
       },
+      align: 'center'
     },
     {
       title: '',
@@ -181,9 +200,8 @@ const ConsignmentHistoryDetail = () => {
           <button
             onClick={() => handleCancelClick(consignmentID)}
             disabled={isCancelConsignment}
-            className={`px-6 py-3 ${
-              isCancelConsignment ? 'bg-gray-400' : 'bg-[#FA4444]'
-            } text-white rounded-md shadow hover:shadow-lg transition duration-200 hover:bg-red-600`}
+            className={`px-6 py-3 ${isCancelConsignment ? 'bg-gray-400' : 'bg-[#FA4444]'
+              } text-white rounded-md shadow hover:shadow-lg transition duration-200 hover:bg-red-600`}
             aria-label='Hủy ký gửi'
           >
             {isCancelConsignment ? 'Đang xử lý...' : 'Hủy ký gửi'}
@@ -201,9 +219,8 @@ const ConsignmentHistoryDetail = () => {
                     handleOrder(record.serviceFee);
                   }}
                   disabled={isVnPayLoading}
-                  className={`px-6 py-3 ${
-                    isVnPayLoading ? 'bg-gray-400' : 'bg-green-500'
-                  } text-white rounded-md shadow hover:shadow-lg transition duration-200 hover:bg-green-600`}
+                  className={`px-6 py-3 ${isVnPayLoading ? 'bg-gray-400' : 'bg-green-500'
+                    } text-white rounded-md shadow hover:shadow-lg transition duration-200 hover:bg-green-600`}
                   aria-label='Thanh toán'
                 >
                   {isVnPayLoading ? 'Đang xử lý...' : 'Thanh toán'}
@@ -229,6 +246,7 @@ const ConsignmentHistoryDetail = () => {
             );
         }
       },
+      align: 'center'
     },
   ];
 
