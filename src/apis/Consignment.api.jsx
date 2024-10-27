@@ -189,10 +189,10 @@ createConsignmentFee: async (data) => {
     }
   },
 
-  getAllHealthCareConsignmentForCustomer: async (accountID) => {
+  getAllHealthCareConsignmentForCustomer: async (accountID,pageNo,pageSize) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/consignment/getAllFishCareForCustomer?pageNo=1&pageSize=9&accountId=${accountID}`
+        `http://localhost:8080/koifarm/consignment/getAllFishCareForCustomer?pageNo=${pageNo}&pageSize=${pageSize}&accountId=${accountID}`
       );
       return response.data;
     } catch (error) {
