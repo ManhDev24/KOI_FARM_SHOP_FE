@@ -12,7 +12,7 @@ const PaymentFailPage = () => {
       navigate("/");
     }
   });
-  const typePayment = useSelector((state) => state.type.typePayment);
+  const typePayment = localStorage.getItem("typePayment")
   const description = "Chính sách ký gửi";
   const description1 = "Điền thông tin ký gửi";
   const description2 = "Trạng thái duyệt đơn ký gửi";

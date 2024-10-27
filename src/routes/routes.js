@@ -46,6 +46,7 @@ import ManageBlog from "../modules/Admin/ManageBlog/ManageBlog/ManageBlog";
 import ReviewBlog from "../modules/Admin/ManageBlog/ReviewBlog/ReviewBlog";
 import BlogEdit from "../modules/Admin/ManageBlog/BlogEdit/BlogEdit";
 import ConsigmentFeeManagement from "../modules/Admin/ConsigmentFeeManagment/ConsigmentFeeManagement";
+import Kois from "../modules/Consignment/Kois";
 const fetchEmail = () => {
   const dataProfile = getLocalStorage("user");
   if (dataProfile && dataProfile.email) {
@@ -190,6 +191,12 @@ export const publicRoutes = [
   {
     path: "/consignment-history",
     component: ConsignmentHistoryDetail,
+
+    layout: DefaultLayout,
+  },
+  {
+    path: "/my-consignment-koi",
+    component: Kois,
 
     layout: DefaultLayout,
   },
