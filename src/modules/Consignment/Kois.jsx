@@ -1,4 +1,4 @@
-import { Breadcrumb, ConfigProvider, Image, Table, Tabs, message, Spin, DatePicker } from 'antd';
+import { Breadcrumb, ConfigProvider, Image, Table, Tabs, message, Spin, DatePicker, Tag } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import koi from '/img/tabicon.png';
@@ -6,12 +6,17 @@ import { ConsignmentApi } from '../../apis/Consignment.api';
 import { toast } from 'react-toastify';
 import { useMutation } from '@tanstack/react-query';
 import moment from 'moment';
+import { CaretDownOutlined, CaretUpOutlined } from '@ant-design/icons';
 
 const Kois = () => {
     const [selectedFishCare, setFishCare] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(20);
+
+    const [currentPages, setCurrentPages] = useState(1);
+    const [pageSizes, setPageSizes] = useState(20);
     const [fishDetails, setFishDetails] = useState({});
+    const [selectedFishSell, setFishSell] = useState([]);
 
     const onChange = (key) => {
         console.log(key);
@@ -22,15 +27,26 @@ const Kois = () => {
         const id = user?.id;
         const allFishCare = async () => {
             try {
-                const response = await ConsignmentApi.getAllHealthCareConsignmentForCustomer(id,currentPage,pageSize);
+                const response = await ConsignmentApi.getAllHealthCareConsignmentForCustomer(id, currentPage, pageSize);
                 console.log('Fetched fish care data:', response.data.koiFishReponseList);
                 setFishCare(response.data.koiFishReponseList || []);
             } catch (error) {
                 toast.error('Có lỗi xảy ra khi gọi API chăm sóc cá');
             }
         };
+        const allFishSell = async () => {
+            try {
+                const response = await ConsignmentApi.getAllSellConsignmentForCustomer(id, currentPage, pageSize);
+                console.log('Fetched fish care data:', response.data.koiFishReponseList);
+                setFishSell(response.data.koiFishReponseList || []);
+
+            } catch (error) {
+                toast.error('Có lỗi xảy ra khi gọi API chăm sóc cá');
+            }
+        };
 
         allFishCare();
+        allFishSell();
     }, []);
 
     const { mutate: handleFishDetail } = useMutation({
@@ -47,6 +63,21 @@ const Kois = () => {
         },
     });
 
+
+    console.log(fishDetails)
+    // console.log(selectedFishCare)
+    const dataSource2 = selectedFishCare.map((item) => item.healthcare);
+    console.log(dataSource2, 'd1')
+
+    // const mergedDataSource = dataSource1.map(item1 => {
+    //     const matchingItem = dataSource2.find(item2 => item2.id === item1.id);
+    //     return {
+    //         ...item1,
+    //         ...matchingItem
+    //     };
+    // });
+    // console.log(mergedDataSource + ' merger datasource');
+
     const items = [
         {
             key: '1',
@@ -58,14 +89,110 @@ const Kois = () => {
             ),
             children: (
                 <Table
-                    dataSource={[
-                        { key: '1', name: 'John', age: 30 },
-                        { key: '2', name: 'Jane', age: 28 },
-                    ]}
+                    locale={{
+                        triggerDesc: 'Sắp xếp giảm dần',
+                        triggerAsc: 'Sắp xếp tăng dần',
+                        cancelSort: 'Hủy sắp xếp'
+                    }}
+                    dataSource={selectedFishSell.map((fishSell) => ({
+                        key: fishSell.id,
+                        id: fishSell.id,
+                        category: fishSell.category,
+                        image: fishSell.koiImage,
+                        gender: fishSell.gender,
+                        status: fishSell.status,
+                        price: fishSell.price,
+                        dayRemain: fishSell.dayRemain
+                    }))}
                     columns={[
-                        { title: 'Name', dataIndex: 'name', key: 'name' },
-                        { title: 'Age', dataIndex: 'age', key: 'age' },
+                        {
+                            title: 'ID của cá',
+                            dataIndex: 'id',
+                            key: 'id',
+                            sorter: (a, b) => a.id - b.id,
+                            width: '120px',
+                            align: 'center'
+                        },
+                        {
+                            title: 'Danh mục',
+                            dataIndex: 'category',
+                            key: 'category',
+                            align: 'center'
+                        },
+                        {
+                            title: 'Ảnh',
+                            dataIndex: 'category',
+                            key: 'category',
+                            render: (text, record) => (
+
+                                <>
+
+                                    <div className=''>
+                                        <Image
+                                            src={record.image}
+                                            alt="Fish Image"
+                                            width={50}
+                                            height={80}
+                                            style={{ objectFit: 'cover' }}
+                                        />
+                                    </div>
+                                </>
+                            ),
+                            align: 'center'
+                        },
+                        {
+                            title: 'Trạng thái',
+                            key: 'status',
+                            dataIndex: 'status',
+                            render: (_, record) => (
+                                <>
+
+                                    {record.status === 3 ?
+                                        < Tag color={'green'} key={record.status}>
+                                            {'Đang bán'.toUpperCase()}
+                                        </Tag> : < Tag color={'volcano'} key={record.status}>
+                                            {'Đã bán'.toUpperCase()}
+                                        </Tag>}
+                                </>
+                            ),
+                            align: 'center',
+                        },
+                        {
+                            title: 'Giá bán',
+                            dataIndex: 'price',
+                            key: 'price',
+                            render: (price) => {
+                                return price ? `${price.toLocaleString()} đ` : 'N/A';
+                            },
+                            align: 'center',
+                            sorter: (a, b) => a.id - b.id,
+
+
+                        },
+                        {
+                            title: 'Danh mục',
+                            dataIndex: 'category',
+                            key: 'category',
+                            align: 'center'
+                        },
+                        {
+                            title: 'Ngày ký gửi còn lại',
+                            dataIndex: 'dayRemain',
+                            key: 'dayRemain',
+                            align: 'center',
+                        },
                     ]}
+                    pagination={{
+                        current: currentPages,
+                        pageSize: pageSizes,
+                        total: selectedFishSell.length,
+                        showSizeChanger: true,
+                        pageSizeOptions: [5, 10, 20, 50, 200],
+                        onChange: (page, size) => {
+                            setCurrentPages(page);
+                            setPageSizes(size);
+                        },
+                    }}
                 />
             ),
         },
@@ -79,6 +206,11 @@ const Kois = () => {
             ),
             children: (
                 <Table
+                    locale={{
+                        triggerDesc: 'Sắp xếp giảm dần',
+                        triggerAsc: 'Sắp xếp tăng dần',
+                        cancelSort: 'Hủy sắp xếp'
+                    }}
                     dataSource={selectedFishCare.map((fish) => ({
                         key: fish.id,
                         id: fish.id,
@@ -88,10 +220,18 @@ const Kois = () => {
                         healthStatus: fish.healthcare?.healthStatus || 'Đang cập nhật',
                         growthStatus: fish.healthcare?.growthStatus || 'Đang cập nhật',
                         dayRemain: fish.healthcare?.dayRemain || 'Đang cập nhật',
+                        grow: fish.healthcare?.growthStatus - fish.healthcare?.lastGrowth,
 
                     }))}
                     columns={[
-                        { title: 'ID của cá', dataIndex: 'id', key: 'id' },
+                        {
+                            title: 'ID của cá',
+                            dataIndex: 'id',
+                            key: 'id',
+                            sorter: (a, b) => a.id - b.id,
+                            width: '120px',
+                            align: 'center'
+                        },
                         {
                             title: 'Hình ảnh',
                             dataIndex: 'image',
@@ -107,14 +247,64 @@ const Kois = () => {
                                     />
                                 </div>
                             ),
+                            align: 'center',
                         },
-                        { title: 'Category', dataIndex: 'name', key: 'name' },
-                        { title: 'Trạng thái môi trường chăm sóc mới nhất ', dataIndex: 'careEnvironment', key: 'careEnvironment' },
-                        { title: 'Tình trạng sức khỏe mới nhất', dataIndex: 'healthStatus', key: 'healthStatus' },
-                        { title: 'Trạng thái kích thước mới nhất', dataIndex: 'growthStatus', key: 'growthStatus' },
-                        { title: 'Kích thước tăng trưởng', dataIndex: 'dayRemain', key: 'dayRemain' },
+                        {
+                            title: 'Danh mục',
+                            dataIndex: 'name',
+                            key: 'name',
+                            width: '120px',
+                            align: 'center',
+                        },
+                        {
+                            title: 'Trạng thái môi trường chăm sóc mới nhất ',
+                            dataIndex: 'careEnvironment',
+                            key: 'careEnvironment',
+                            align: 'center',
+                        },
+                        {
+                            title: 'Tình trạng sức khỏe mới nhất',
+                            dataIndex: 'healthStatus',
+                            key: 'healthStatus',
+                            align: 'center',
+                        },
+                        {
+                            title: 'Trạng thái kích thước mới nhất',
+                            dataIndex: 'growthStatus',
+                            key: 'growthStatus',
+                            align: 'center',
+                        },
+                        {
+                            title: 'Kích thước tăng trưởng',
+                            dataIndex: 'grow',
+                            key: 'grow',
+                            render: (_, record, index) => {
 
-                        { title: 'Ngày ký gửi còn lại', dataIndex: 'dayRemain', key: 'dayRemain' },
+
+
+                                return (
+                                    <>
+                                        {record.grow}
+                                        {record.grow > 0 ? (
+                                            <CaretUpOutlined style={{ fontSize: '16px', color: 'green' }} />
+                                        ) : record.grow === 0 ? (
+                                            <></>
+                                        ) : (
+                                            <CaretDownOutlined style={{ fontSize: '16px', color: 'red' }} />
+                                        )}
+                                    </>
+
+                                );
+                            },
+                            align: 'center',
+                        },
+
+                        {
+                            title: 'Ngày ký gửi còn lại',
+                            dataIndex: 'dayRemain',
+                            key: 'dayRemain',
+                            align: 'center'
+                        },
 
                     ]}
                     pagination={{
@@ -123,7 +313,7 @@ const Kois = () => {
                         total: selectedFishCare.length,
                         showSizeChanger: true,
                         pageSizeOptions: [5, 10, 20, 50, 200],
-                        onChange: (page, size) => {
+                        onChange: (page, size, sorter) => {
                             setCurrentPage(page);
                             setPageSize(size);
                         },
@@ -148,11 +338,64 @@ const Kois = () => {
                                 <div>
                                     <h3 className='text-center font-bold'>Chi tiết Lịch sử chăm sóc cho cá {record.name} ID: {record.id} </h3>
                                     <Table
+                                        locale={{
+                                            triggerDesc: 'Sắp xếp giảm dần',
+                                            triggerAsc: 'Sắp xếp tăng dần',
+                                            cancelSort: 'Hủy sắp xếp'
+                                        }}
                                         columns={[
-                                            { title: 'Tình trạng sức khỏe', dataIndex: 'healthStatus', key: 'healthStatus' },
-                                            { title: 'Trạng thái phát triển', dataIndex: 'growthStatus', key: 'growthStatus' },
-                                            { title: 'Môi trường chăm sóc', dataIndex: 'careEnvironment', key: 'careEnvironment' },
-                                            { title: 'Ghi chú', dataIndex: 'note', key: 'note' },
+                                            {
+                                                title: 'Tình trạng sức khỏe',
+                                                dataIndex: 'healthStatus',
+                                                key: 'healthStatus',
+                                                align: 'center'
+                                            },
+                                            {
+                                                title: 'Kích thước phát triển',
+                                                dataIndex: 'growthStatus',
+                                                key: 'growthStatus',
+                                                align: 'center'
+                                            },
+                                            {
+                                                title: 'Chênh lệch kích thước phát triển',
+                                                dataIndex: 'growthStatusDifference',
+                                                key: 'growthStatusDifference',
+                                                render: (_, record, index) => {
+                                                    if (index === healthcareData.length - 1) {
+                                                        return 0; // Last record, no next record to compare with
+                                                    }
+                                                    const nextGrowthStatus = healthcareData[index + 1].growthStatus;
+                                                    const currentGrowthStatus = record.growthStatus;
+                                                    const difference = currentGrowthStatus - nextGrowthStatus;
+
+                                                    return (
+                                                        <>
+                                                            {difference}{" "}
+                                                            {difference > 0 ? (
+                                                                <CaretUpOutlined style={{ fontSize: '16px', color: 'green' }} />
+                                                            ) : (
+                                                                <CaretDownOutlined style={{ fontSize: '16px', color: 'red' }} />
+                                                            )}
+                                                        </>
+                                                    );
+                                                },
+
+                                                align: 'center'
+                                            }
+                                            ,
+                                            {
+                                                title: 'Môi trường chăm sóc',
+                                                dataIndex: 'careEnvironment',
+                                                key: 'careEnvironment',
+                                                align: 'center'
+
+                                            },
+                                            {
+                                                title: 'Ghi chú',
+                                                dataIndex: 'note',
+                                                key: 'note',
+                                                align: 'center'
+                                            },
                                             {
                                                 title: 'Ngày',
                                                 dataIndex: 'date',
@@ -171,9 +414,18 @@ const Kois = () => {
                                                 render: (date) => {
                                                     return date ? date.format('HH:mm DD-MM-YYYY') : 'N/A';
                                                 },
+                                                align: 'center'
+
                                             },
-                                            { title: 'Ngày ký gửi còn lại', dataIndex: 'dayRemain', key: 'dayRemain' },
-                                         
+
+
+                                            {
+                                                title: 'Ngày ký gửi còn lại',
+                                                dataIndex: 'dayRemain',
+                                                key: 'dayRemain',
+                                                align: 'center'
+                                            },
+
                                         ]}
                                         dataSource={healthcareData.map((item, index) => {
                                             const dateObj = item.date ? moment(item.date, 'YYYY-MM-DD HH:mm:ss') : null;
@@ -184,8 +436,8 @@ const Kois = () => {
                                                 careEnvironment: item.careEnvironment || record.careEnvironment,
                                                 note: item.note || 'N/A',
                                                 date: dateObj,
-                                                dayRemain:  item.dayRemain , 
-                                                
+                                                dayRemain: item.dayRemain,
+
                                             };
                                         })}
                                         pagination={false}

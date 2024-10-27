@@ -177,7 +177,7 @@ export const ConsignmentApi = {
       throw new Error(error.response.data.message);
     }
   },
-createConsignmentFee: async (data) => {
+  createConsignmentFee: async (data) => {
     try {
       const response = await fetcher.post(
         `http://localhost:8080/koifarm/consignmentFee/create`,
@@ -189,7 +189,7 @@ createConsignmentFee: async (data) => {
     }
   },
 
-  getAllHealthCareConsignmentForCustomer: async (accountID,pageNo,pageSize) => {
+  getAllHealthCareConsignmentForCustomer: async (accountID, pageNo, pageSize) => {
     try {
       const response = await fetcher.get(
         `http://localhost:8080/koifarm/consignment/getAllFishCareForCustomer?pageNo=${pageNo}&pageSize=${pageSize}&accountId=${accountID}`
@@ -203,6 +203,15 @@ createConsignmentFee: async (data) => {
     try {
       const response = await fetcher.get(
         `http://localhost:8080/koifarm/consignment/getFishCareDetail?koiId=${fishId}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
+  getAllSellConsignmentForCustomer: async (accountID, pageNo, pageSize) => {
+    try {
+      const response = await fetcher.get(`http://localhost:8080/koifarm/consignment/getAllFishSellForCustomer?pageNo=${pageNo}&pageSize=${pageSize}&accountId=${accountID}`
       );
       return response.data;
     } catch (error) {
