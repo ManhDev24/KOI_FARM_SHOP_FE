@@ -10,7 +10,7 @@ import moment from 'moment';
 const Kois = () => {
     const [selectedFishCare, setFishCare] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(20);
+    const [pageSize, setPageSize] = useState(10);
     const [fishDetails, setFishDetails] = useState({});
 
     const onChange = (key) => {
@@ -22,7 +22,7 @@ const Kois = () => {
         const id = user?.id;
         const allFishCare = async () => {
             try {
-                const response = await ConsignmentApi.getAllHealthCareConsignmentForCustomer(id);
+                const response = await ConsignmentApi.getAllHealthCareConsignmentForCustomer(id,currentPage,pageSize);
                 console.log('Fetched fish care data:', response.data.koiFishReponseList);
                 setFishCare(response.data.koiFishReponseList || []);
             } catch (error) {
@@ -84,10 +84,11 @@ const Kois = () => {
                         id: fish.id,
                         image: fish.koiImage || 'defaultImage.png',
                         name: fish.category || 'Unknown',
-                        careEnvironment: fish.healthcare?.careEnvironment || 'N/A',
-                        healthStatus: fish.healthcare?.healthStatus || 'N/A',
-                        growthStatus: fish.healthcare?.growthStatus || 'N/A',
-                        lastChecked: fish.healthcare?.date || 'N/A',
+                        careEnvironment: fish.healthcare?.careEnvironment || 'Đang cập nhật',
+                        healthStatus: fish.healthcare?.healthStatus || 'Đang cập nhật',
+                        growthStatus: fish.healthcare?.growthStatus || 'Đang cập nhật',
+                        dayRemain: fish.healthcare?.dayRemain || 'Đang cập nhật',
+
                     }))}
                     columns={[
                         { title: 'ID của cá', dataIndex: 'id', key: 'id' },
@@ -108,10 +109,13 @@ const Kois = () => {
                             ),
                         },
                         { title: 'Category', dataIndex: 'name', key: 'name' },
-                        { title: 'Môi trường chăm sóc', dataIndex: 'careEnvironment', key: 'careEnvironment' },
-                        { title: 'Tình trạng sức khỏe', dataIndex: 'healthStatus', key: 'healthStatus' },
-                        { title: 'Trạng thái phát triển', dataIndex: 'growthStatus', key: 'growthStatus' },
-                        { title: 'Lần kiểm tra cuối', dataIndex: 'lastChecked', key: 'lastChecked' },
+                        { title: 'Trạng thái môi trường chăm sóc mới nhất ', dataIndex: 'careEnvironment', key: 'careEnvironment' },
+                        { title: 'Tình trạng sức khỏe mới nhất', dataIndex: 'healthStatus', key: 'healthStatus' },
+                        { title: 'Trạng thái kích thước mới nhất', dataIndex: 'growthStatus', key: 'growthStatus' },
+                        { title: 'Kích thước tăng trưởng', dataIndex: 'dayRemain', key: 'dayRemain' },
+
+                        { title: 'Ngày ký gửi còn lại', dataIndex: 'dayRemain', key: 'dayRemain' },
+
                     ]}
                     pagination={{
                         current: currentPage,
@@ -125,6 +129,7 @@ const Kois = () => {
                         },
                     }}
                     expandable={{
+                        expandIconColumnIndex: 10,
                         columnTitle: <span>Xem chi tiết lịch sử chăm sóc</span>,
                         columnWidth: 200,
                         expandedRowRender: (record) => {
@@ -167,23 +172,20 @@ const Kois = () => {
                                                     return date ? date.format('HH:mm DD-MM-YYYY') : 'N/A';
                                                 },
                                             },
-                                            {
-                                                title: 'Kiểm tra',
-                                                dataIndex: 'checked',
-                                                key: 'checked',
-                                                render: (checked) => (checked ? 'Đã kiểm tra' : 'chưa kiểm tra'),
-                                            },
+                                            { title: 'Ngày ký gửi còn lại', dataIndex: 'dayRemain', key: 'dayRemain' },
+                                         
                                         ]}
                                         dataSource={healthcareData.map((item, index) => {
                                             const dateObj = item.date ? moment(item.date, 'YYYY-MM-DD HH:mm:ss') : null;
                                             return {
                                                 key: index,
-                                                healthStatus: item.healthStatus || 'N/A',
-                                                growthStatus: item.growthStatus || 'N/A',
-                                                careEnvironment: item.careEnvironment || 'N/A',
+                                                healthStatus: item.healthStatus || record.healthStatus,
+                                                growthStatus: item.growthStatus || record.growthStatus,
+                                                careEnvironment: item.careEnvironment || record.careEnvironment,
                                                 note: item.note || 'N/A',
                                                 date: dateObj,
-                                                checked: item.checked || false,
+                                                dayRemain:  item.dayRemain , 
+                                                
                                             };
                                         })}
                                         pagination={false}
