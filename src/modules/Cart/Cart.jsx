@@ -31,7 +31,6 @@ const Cart = () => {
   const dispatch = useDispatch();
 
   const onCart = getLocalStorage("cartItems");
-  console.log("onCart: ", onCart);
   const [dataSource, setDataSource] = useState(onCart);
 
   const totalPrice = onCart?.reduce(
@@ -387,9 +386,9 @@ const Cart = () => {
                       <span className="text-lg font-bold">
                         {totalPrice
                           ? totalPrice.toLocaleString("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            })
+                            style: "currency",
+                            currency: "VND",
+                          })
                           : ""}
                       </span>
                     </div>
@@ -424,30 +423,38 @@ const Cart = () => {
                         <span className="text-xl font-bold">
                           {finalPrice
                             ? finalPrice.toLocaleString("vi-VN", {
-                                style: "currency",
-                                currency: "VND",
-                              })
+                              style: "currency",
+                              currency: "VND",
+                            })
                             : ""}
                         </span>
                       </div>
                     </div>
                   </div>
                   {user && onCart ? (
-                    <div className="flex justify-center items-center">
-                      <Button
-                        onClick={() => {
-                          handleOrder();
-                        }}
-                        style={{
-                          backgroundColor: "#EA4444",
-                          borderColor: "#EA4444",
-                          color: "white",
-                        }}
-                        className="w-1/2 h-[40px] hover:bg-[#EA4444] hover:border-[#EA4444] hover:text-white"
-                      >
-                        Thanh Toán
-                      </Button>
-                    </div>
+                    user.address && user.phone ? (
+                      <div className="flex justify-center items-center">
+                        <Button
+                          onClick={() => {
+                            handleOrder();
+                          }}
+                          style={{
+                            backgroundColor: "#EA4444",
+                            borderColor: "#EA4444",
+                            color: "white",
+                          }}
+                          className="w-1/2 h-[40px] hover:bg-[#EA4444] hover:border-[#EA4444] hover:text-white"
+                        >
+                          Thanh Toán
+                        </Button>
+                      </div>
+                    ) : (
+                      <div>
+                        <p className="text-[#EA4444]">
+                          Vui lòng cập nhật địa chỉ và số điện thoại để mua cá
+                        </p>
+                      </div>
+                    )
                   ) : (
                     <div>
                       <p className="text-[#EA4444]">
