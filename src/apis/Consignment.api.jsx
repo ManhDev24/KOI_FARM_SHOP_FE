@@ -167,6 +167,16 @@ export const ConsignmentApi = {
       throw new Error(error.response.data.message);
     }
   },
+  getAllServiceFee: async () => {
+    try {
+      const response = await fetcher.get(
+        `http://localhost:8080/koifarm/consignmentFee/getAll/1/20`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
   createConsignmentFee: async (data) => {
     try {
       const response = await fetcher.post(
@@ -178,14 +188,5 @@ export const ConsignmentApi = {
       throw new Error(error.response.data.message);
     }
   },
-  getAllServiceFee: async () => {
-    try {
-      const response = await fetcher.get(
-        `http://localhost:8080/koifarm/consignmentFee/getAll/1/20`
-      );
-      return response.data;
-    } catch (error) {
-      throw new Error(error.response.data.message);
-    }
-  },
+
 };
