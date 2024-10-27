@@ -20,9 +20,17 @@ const ThankPage = () => {
   // State to track if the operation was successful
   const [isSuccess, setIsSuccess] = useState(false);
 
+  // Read paymentSuccess flag from localStorage after reload
   useEffect(() => {
-    const status = searchParams.get("paymentStatus");
-  const type = searchParams.get("type");
+    const paymentSuccess = localStorage.getItem('paymentSuccess');
+    if (paymentSuccess === 'true') {
+      setIsSuccess(true);
+      // Remove the flag if it's no longer needed
+      localStorage.removeItem('paymentSuccess');
+    }
+  }, []);
+
+  useEffect(() => {
     if (status !== "1") {
       navigate("/");
     }
@@ -45,9 +53,8 @@ const ThankPage = () => {
       removeLocalStorage("cartItems");
       removeLocalStorage("discountRate");
       removeLocalStorage("PromotionCode");
-      // navigate("/thank-you"); // Remove navigation here
-      setIsSuccess(true); // Set success state
-      // window.location.reload();
+      localStorage.setItem('paymentSuccess', 'true');
+      window.location.reload();
     },
     onError: (error) => {
       const errorMessage =
@@ -69,8 +76,8 @@ const ThankPage = () => {
       removeLocalStorage("consignmentID");
       removeLocalStorage("fishConsignmentID");
       removeLocalStorage("agreedToPolicy");
-      // navigate("/thank-you"); // Remove navigation here
-      setIsSuccess(true); // Set success state
+      localStorage.setItem('paymentSuccess', 'true');
+      window.location.reload();
     },
     onError: (error) => {
       const errorMessage =
@@ -135,33 +142,31 @@ const ThankPage = () => {
     type,
     order,
     data,
-    handleSaveOrder,
-    handleSaveConsignment,
     consignmentIDFromStore,
   ]);
 
   if (isHandleSaveOrderError || isHandleSaveConsignmentError) {
     navigate("/payment-fail");
   }
+
   const description = "Chính sách ký gửi";
   const description1 = "Điền thông tin ký gửi";
   const description2 = "Trạng thái duyệt đơn ký gửi";
   const description3 = "Thanh toán";
   const description4 = "Hoàn tất";
+
   // Check loading state
   if (isHandleSaveConsignmentPending) {
     return (
       <>
         <div className="w-full max-w-[950px] h-full relative mx-auto my-0 p-4">
-       
-            <Steps current={3} status="process">
-              <Steps.Step title="&nbsp;" description={description} />
-              <Steps.Step title="&nbsp;" description={description1} />
-              <Steps.Step title="&nbsp;" description={description2} />
-              <Steps.Step title="&nbsp;" description={description3} />
-              <Steps.Step title="&nbsp;" description={description4} />
-            </Steps>
-         
+          <Steps current={3} status="process">
+            <Steps.Step title="&nbsp;" description={description} />
+            <Steps.Step title="&nbsp;" description={description1} />
+            <Steps.Step title="&nbsp;" description={description2} />
+            <Steps.Step title="&nbsp;" description={description3} />
+            <Steps.Step title="&nbsp;" description={description4} />
+          </Steps>
         </div>
         <div className=" w-full h-[70vh] flex justify-center items-center">
           <LoadingModal isLoading={true} />
@@ -183,7 +188,8 @@ const ThankPage = () => {
     // If not successful yet, you can return null or a placeholder
     return null;
   }
-  console.log(type)
+
+  console.log(type);
 
   return type === 'true' ? (
     // Content for type === "true"
@@ -240,6 +246,5 @@ const ThankPage = () => {
     </div>
   );
 };
-
 
 export default ThankPage;
