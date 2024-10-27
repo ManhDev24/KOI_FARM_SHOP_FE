@@ -182,7 +182,7 @@ const Navbar = () => {
   const handleCancel = () => {
     setIsModalVisible(false);
   };
-  
+
 
 
   const consignmentID = localStorage.getItem("consignmentID");
@@ -191,7 +191,7 @@ const Navbar = () => {
       key: "8",
       label: (
         <Link
-          to={(consignmentID && user) ? "/status-consignment" :"/request-consignment"}
+          to={(consignmentID) ? "/status-consignment" : "/request-consignment"}
           onClick={(e) => {
             if (!user) {
               e.preventDefault(); // Prevent navigation if not logged in
@@ -207,13 +207,38 @@ const Navbar = () => {
     },
     {
       key: "9",
-      label: <Link to="/consignment-history">Lịch sử ký gửi</Link>,
+      label: (
+        <Link
+          to="/consignment-history"
+          onClick={(e) => {
+            if (!user) {
+              e.preventDefault(); // Prevent navigation if not logged in
+              showModal(); // Show login prompt modal
+            }
+          }}
+        >
+          Lịch sử ký gửi
+        </Link>
+      ),
     },
     {
       key: "kois",
-      label: <Link to="/my-consignment-koi">Koi ký gửi của tôi</Link>,
+      label: (
+        <Link
+          to="/my-consignment-koi"
+          onClick={(e) => {
+            if (!user) {
+              e.preventDefault(); // Prevent navigation if not logged in
+              showModal(); // Show login prompt modal
+            }
+          }}
+        >
+          Koi ký gửi của tôi
+        </Link>
+      ),
     },
   ];
+
 
   const handleSignOut = () => {
     localStorage.removeItem("consignmentID");

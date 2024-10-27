@@ -65,6 +65,7 @@ const StatusConsignment = () => {
     queryKey: ['consignmentStatus', consignmentID],
     queryFn: () => ConsignmentApi.statusConsignment(consignmentID),
     enabled: !!consignmentID,
+    
   });
 
   // Save service fee to store
@@ -152,6 +153,7 @@ const StatusConsignment = () => {
     useMutation({
       mutationFn: (amount) => CheckoutApi.payByVnPay(amount, "NCB", false),
       onSuccess: (data) => {
+        localStorage.setItem('typePayment','false');
         window.location.assign(data.data.paymentUrl);
       },
       onError: (error) => {

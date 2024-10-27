@@ -108,6 +108,7 @@ const Cart = () => {
     mutationFn: (amount) => CheckoutApi.payByVnPay(amount, "NCB", true),
 
     onSuccess: (data) => {
+      localStorage.setItem("typePayment",'true')
       window.location.assign(data.data.paymentUrl);
     },
     onError: (error) => {

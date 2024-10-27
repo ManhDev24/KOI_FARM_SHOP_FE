@@ -177,4 +177,24 @@ export const ConsignmentApi = {
       throw new Error(error.response.data.message);
     }
   },
+  getAllHealthCareConsignmentForCustomer: async (accountID) => {
+    try {
+      const response = await fetcher.get(
+        `http://localhost:8080/koifarm/consignment/getAllFishCareForCustomer?pageNo=1&pageSize=9&accountId=${accountID}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
+  getAllHealthCareConsignmentForCustomerDetail: async (fishId) => {
+    try {
+      const response = await fetcher.get(
+        `http://localhost:8080/koifarm/consignment/getFishCareDetail?koiId=${fishId}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
 };

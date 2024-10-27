@@ -21,6 +21,8 @@ const ThankPage = () => {
   const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
+    const status = searchParams.get("paymentStatus");
+  const type = searchParams.get("type");
     if (status !== "1") {
       navigate("/");
     }
@@ -45,7 +47,7 @@ const ThankPage = () => {
       removeLocalStorage("PromotionCode");
       // navigate("/thank-you"); // Remove navigation here
       setIsSuccess(true); // Set success state
-      window.location.reload();
+      // window.location.reload();
     },
     onError: (error) => {
       const errorMessage =
@@ -181,9 +183,9 @@ const ThankPage = () => {
     // If not successful yet, you can return null or a placeholder
     return null;
   }
+  console.log(type)
 
-
-  return type === "true" ? (
+  return type === 'true' ? (
     // Content for type === "true"
     <div className="flex flex-col items-center justify-center h-[70vh] w-full">
       <div className="text-center text-3xl font-bold mb-10">
