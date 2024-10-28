@@ -347,7 +347,11 @@ const Kois = () => {
                                                 title: 'Kích thước phát triển',
                                                 dataIndex: 'growthStatus',
                                                 key: 'growthStatus',
-                                                align: 'center'
+                                                align: 'center',
+                                                render: (_, record) => {
+                                                    return record.growthStatus.toFixed(2) + ' cm';
+
+                                                }
                                             },
                                             {
                                                 title: 'Chênh lệch kích thước phát triển',
@@ -359,8 +363,8 @@ const Kois = () => {
                                                     }
                                                     const nextGrowthStatus = healthcareData[index + 1].growthStatus;
                                                     const currentGrowthStatus = record.growthStatus;
-                                                    const difference = currentGrowthStatus - nextGrowthStatus;
-
+                                                    const differences = currentGrowthStatus - nextGrowthStatus;
+                                                    const difference = parseFloat(differences.toFixed(2));
                                                     return (
                                                         <>
                                                             {difference}{" "}
