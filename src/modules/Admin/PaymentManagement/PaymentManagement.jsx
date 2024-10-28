@@ -181,7 +181,7 @@ const PaymentManagement = () => {
               <Pagination
                 defaultCurrent={currentPage}
                 total={total}
-                pageSize={7}
+                pageSize={8}
                 onChange={(page) => setCurrentPage(page)}
               />
             </div>

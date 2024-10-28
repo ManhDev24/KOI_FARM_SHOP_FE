@@ -615,7 +615,7 @@ const FishManagement = () => {
             <Pagination
               current={currentPage}
               total={totalElements}
-              pageSize={4}
+              pageSize={9}
               onChange={(page) => setCurrentPage(page)}
               showSizeChanger={false}
             />

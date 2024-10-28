@@ -81,19 +81,16 @@ const ListFish = () => {
     keepPreviousData: true,
   });
   koiListFilter;
-  console.log("koiListFilter: ", koiListFilter);
 
   const koiResponseList = KoiList?.koiFishReponseList;
 
   const koiToDisplay = isFiltered
     ? koiListFilter?.koiFishReponseList
     : koiResponseList;
-  console.log("koiToDisplay: ", koiToDisplay);
 
   const totalPage = isFiltered
     ? koiListFilter?.totalElements
     : KoiList?.totalElements;
-
   if (isLoadingKoiList) {
     return <LoadingModal />;
   }
@@ -319,12 +316,12 @@ const ListFish = () => {
                           {selectedCategory === "1"
                             ? "Koi showa"
                             : selectedCategory === "2"
-                            ? "Koi asagi"
-                            : selectedCategory === "3"
-                            ? "Koi karashi"
-                            : selectedCategory === "4"
-                            ? "Koi Benikoi"
-                            : "Danh mục"}
+                              ? "Koi asagi"
+                              : selectedCategory === "3"
+                                ? "Koi karashi"
+                                : selectedCategory === "4"
+                                  ? "Koi Benikoi"
+                                  : "Danh mục"}
                         </p>
                       </div>
                       <div>
@@ -402,8 +399,8 @@ const ListFish = () => {
                           {selectedGender === "0"
                             ? "Koi Cái"
                             : selectedGender === "1"
-                            ? "Koi Đực"
-                            : "Giới tính"}
+                              ? "Koi Đực"
+                              : "Giới tính"}
                         </p>
                       </div>
                       <div>
@@ -492,10 +489,10 @@ const ListFish = () => {
                           {selectStatus === "1"
                             ? "Đang bán"
                             : selectStatus === "2"
-                            ? "Đã bán"
-                            : selectStatus === "3"
-                            ? "Ký gửi"
-                            : "Trạng thái bán"}{" "}
+                              ? "Đã bán"
+                              : selectStatus === "3"
+                                ? "Ký gửi"
+                                : "Trạng thái bán"}{" "}
                           {/* Default label */}
                         </p>
                       </div>
@@ -541,8 +538,8 @@ const ListFish = () => {
                           {selectPrice === "1"
                             ? "Giá từ thâp đến cao"
                             : selectPrice === "2"
-                            ? "Giá từ cao đến thâp"
-                            : "Sắp xếp theo giá"}
+                              ? "Giá từ cao đến thâp"
+                              : "Sắp xếp theo giá"}
                         </p>
                       </div>
                       <div>
@@ -669,14 +666,14 @@ const ListFish = () => {
                               {card.status === 1
                                 ? "Đang bán"
                                 : card.status === 2
-                                ? "Đã bán"
-                                : card.status === 3
-                                ? "Ký gửi"
-                                : card.status === 4
-                                ? "Chờ duyệt đơn ký gửi"
-                                : card.status === 5
-                                ? "Ký gửi chăm sóc"
-                                : ""}
+                                  ? "Đã bán"
+                                  : card.status === 3
+                                    ? "Ký gửi"
+                                    : card.status === 4
+                                      ? "Chờ duyệt đơn ký gửi"
+                                      : card.status === 5
+                                        ? "Ký gửi chăm sóc"
+                                        : ""}
                             </div>
                             <div className="rounded-[10px]">
                               <img
@@ -783,6 +780,7 @@ const ListFish = () => {
               <Pagination
                 defaultCurrent={currentPage}
                 total={totalPage}
+                pageSize={pageSize}
                 onChange={(page) => {
                   setCurrentPage(page);
                 }}
@@ -801,9 +799,8 @@ const ListFish = () => {
 
       <Button
         onClick={handleCompare}
-        className={`bg-[#FA4444] text-white fixed z-40 left-[100px] top-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${
-          selectedItems.length === 0 ? "disabled" : ""
-        }`}
+        className={`bg-[#FA4444] text-white fixed z-40 left-[100px] top-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${selectedItems.length === 0 ? "disabled" : ""
+          }`}
         disabled={selectedItems.length === 0}
       >
         Xem So Sánh ({selectedItems.length}) Cá Koi
