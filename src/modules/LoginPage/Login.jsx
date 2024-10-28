@@ -13,7 +13,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import { setLocalStorage } from "../../utils/LocalStorage";
 import { useDispatch } from "react-redux";
-import { setUser } from "../../Redux/Slices/Auth_Slice";
+import { saveEmail, setUser } from "../../Redux/Slices/Auth_Slice";
 import { AuthApi } from "../../apis/Auth.api";
 import LoadingModal from "../Modal/LoadingModal";
 
@@ -58,7 +58,11 @@ const Login = () => {
     onError: (error) => {
       const errorMessage =
         error?.message || "Đã có lỗi xử lý vui lòng thử lại !!!";
-       message.error(errorMessage)
+      message.error(errorMessage)
+      if (errorMessage == "Tài khoản chưa xác thực" || error?.statusCode == 5006) {
+        navigate("/otp")
+        message.error("Vui lòng nhập lại otp")
+      }
     },
   });
 
@@ -73,7 +77,8 @@ const Login = () => {
     onError: (error) => {
       const errorMessage =
         error?.message || "Đã có lỗi xảy ra vui lòng thử lại !!!";
-       message.error(errorMessage)
+      message.error(errorMessage)
+
     },
   });
 
@@ -81,6 +86,7 @@ const Login = () => {
     loginWithGoogle(data);
   };
   const onSubmit = (data) => {
+    dispatch(saveEmail(data?.email));
     handleLogin(data);
   };
 

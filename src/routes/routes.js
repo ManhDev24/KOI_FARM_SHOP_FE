@@ -173,7 +173,6 @@ export const publicRoutes = [
   {
     path: "/blog",
     component: Blog,
-
     layout: DefaultLayout,
   },
   {

@@ -21,6 +21,7 @@ const validationSchema = yup.object().shape({
 });
 const Otp = () => {
   const emailRegister = useSelector((state) => state.auth.email);
+  console.log('emailRegister: ', emailRegister);
   const isResetPassword = useSelector((state) => state.auth.isResetPassword);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -56,11 +57,11 @@ const Otp = () => {
     onError: (error) => {
       const errorMessage =
         error?.message || "Đã có lỗi xử lý vui lòng thử lại !!!";
-       message.error(errorMessage)
+      message.error(errorMessage)
     },
   });
 
-  const { mutate: resendOtp, isPending } = useMutation({
+  const { mutate: resendOtp, isPending: isResending } = useMutation({
     mutationFn: () => AuthApi.resendOtp(emailRegister),
     onSuccess: (data) => {
       message.success("Gửi otp thành công");
@@ -68,13 +69,15 @@ const Otp = () => {
     onError: (error) => {
       const errorMessage =
         error?.message || "Đã có lỗi xử lý vui lòng thử lại !!!";
-       message.error(errorMessage)
+      message.error(errorMessage)
     },
   });
   const handleResendOtp = () => {
     resendOtp();
   };
-
+  if (isResending) {
+    return <LoadingModal isLoading={isResending} />
+  }
   return (
     <div
       style={{ backgroundColor: "#DDBCBC" }}
@@ -167,7 +170,7 @@ const Otp = () => {
                     </Link>
                   </p>
                 </Col>
-                {/* <Col span={24}>
+                <Col span={24}>
                   <p className="text-black font-normal text-base ms-2 text-center me-20">
                     Chưa nhận được mã
                     <span
@@ -178,7 +181,7 @@ const Otp = () => {
                       Gửi lại
                     </span>
                   </p>
-                </Col> */}
+                </Col>
               </Row>
             </Form>
           </div>
