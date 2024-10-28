@@ -261,7 +261,7 @@ const UserManagement = () => {
     return <div>Có lỗi xảy ra</div>;
   }
   if (isLoadingListUser || isLoadingCreateUser) {
-    return <LoadingModal />;
+    return <LoadingModal isLoading={isLoadingListUser || isLoadingCreateUser} />;
   }
 
   const onSubmitBanUser = (id) => {

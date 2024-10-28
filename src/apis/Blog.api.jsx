@@ -63,6 +63,16 @@ export const BlogApi = {
       throw new Error(error.response.data.message);
     }
   },
+  deleteBlog: async (id) => {
+    try {
+      const response = await fetcher.delete(
+        `http://localhost:8080/koifarm/blog/deleteBlog/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+    }
+  },
 };
 
 export default BlogApi;

@@ -53,6 +53,17 @@ const ManageBlog = () => {
       message.error(errorMessage);
     },
   });
+  const { mutate: handleDeleteBlog, isPending: isDeleteBlogPending, isLoading: isDeleteBlog } = useMutation({
+    mutationFn: (id) => BlogApi.deleteBlog(id),
+    onSuccess: () => {
+      message.success("Xóa bài viết thành công!");
+      queryClient.invalidateQueries(["ListBlog", currentPage]);
+    },
+    onError: (error) => {
+      const errorMessage = error?.message || "Đã có lỗi xảy ra!";
+      message.error(errorMessage);
+    },
+  })
 
   // Defining table columns
   const columns = [
@@ -140,6 +151,7 @@ const ManageBlog = () => {
                 backgroundColor: "#ff4d4f",
                 color: "white",
               }}
+              onClick={() => handleDeleteBlog(record?.blogId)}
               icon={<DeleteOutlined />}
               danger
             >

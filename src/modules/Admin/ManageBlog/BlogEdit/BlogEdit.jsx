@@ -14,43 +14,53 @@ const BlogEdit = () => {
   const { blogId } = useParams("blogId");
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const editorRef = useRef(null); 
+  const editorRef = useRef(null);
   const [imageUrl, setImageUrl] = useState("");
-  const [contentPreview, setContentPreview] = useState(""); // State for previewing content
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [contentPreview, setContentPreview] = useState("");
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
-  const [form] = Form.useForm(); // Ant Design form instance
+  const [form] = Form.useForm();
 
   // Fetch blog data by blogId
   const { data: blogData, isLoading: isFetchingBlog } = useQuery({
     queryKey: ["Blog", blogId],
     queryFn: () => BlogApi.getDetailBlog(blogId),
     onSuccess: (data) => {
-      // Set form fields with the fetched data
-      form.setFieldsValue({
-        title: data?.title,
-        subTitle: data?.subTitle,
-        status: data?.status ? "1" : "0",
-      });
+      if (data) {
+        form.setFieldsValue({
+          title: data.title,
+          subTitle: data.subTitle,
+          status: data.status ? "1" : "0",
+        });
 
-      // Set content in TinyMCE editor
-      if (editorRef.current) {
-        editorRef.current.setContent(data?.content || "");
+        if (editorRef.current) {
+          editorRef.current.setContent(data.content || "");
+        }
+
+        setImageUrl(data.blogImg);
       }
-
-      // Set image URL
-      setImageUrl(data?.blogImg);
     },
   });
 
-  // Ensure that TinyMCE content is updated correctly when editor is initialized
   useEffect(() => {
-    if (editorRef.current && blogData?.content) {
-      editorRef.current.setContent(blogData.content);
+    if (blogData) {
+      console.log('blogData: ', blogData);
+      form.setFieldsValue({
+        title: blogData?.data?.title,
+        subTitle: blogData?.data?.subTitle,
+        status: blogData?.data?.status ? "1" : "0",
+      });
+
+      if (editorRef.current) {
+        editorRef.current.setContent(blogData?.data?.content || "");
+      }
+
+      setImageUrl(blogData?.data?.blogImg || "");
     }
-  }, [blogData]);
+  }, [blogData, form]);
 
   const { mutate: updateBlog, isLoading: isUpdatingBlog } = useMutation({
-    mutationFn: (updatedBlog) => BlogApi.updateBlog(blogId, updatedBlog),
+    mutationFn: (updatedBlog) => BlogApi.updateBlog(updatedBlog, blogId),
     onSuccess: () => {
       message.success("Blog đã được cập nhật thành công!");
       queryClient.invalidateQueries(["Blog", blogId]);
@@ -62,35 +72,44 @@ const BlogEdit = () => {
     },
   });
 
-  // Handle form submission
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
     const content = editorRef.current.getContent();
     if (!content || content.trim() === "") {
       message.error("Vui lòng nhập nội dung trong editor!");
       return;
     }
 
-    const updatedBlog = {
-      ...values,
-      status: values.status === "1", // Convert string "1"/"0" to boolean
-      image: imageUrl, // Using the uploaded image URL
-      content,
-      postDate: moment().format(), // You can keep or modify this
-    };
-    updateBlog(updatedBlog);
+    const formData = new FormData();
+    formData.append("title", values?.title);
+    formData.append("subTitle", values?.subTitle);
+    formData.append("status", values.status);
+    formData.append("content", content);
+    formData.append("postDate", moment().format());
+    formData.append("accountId", blogData?.accountId);
+
+    if (selectedFile) {
+      formData.append("blogImg", selectedFile);
+    }
+
+    updateBlog(formData);
   };
 
-  // Handle image upload
   const handleUploadChange = (info) => {
-    if (info.file.status === "done") {
-      setImageUrl(info.file.response.url);
+    const file = info.file.originFileObj || info.file;
+    if (file) {
+      setSelectedFile(file);
+      setImageUrl(URL.createObjectURL(file));
     }
   };
 
-  // Handle preview button click
+  const handleRemoveImage = () => {
+    setSelectedFile(null);
+    setImageUrl("");
+  };
+
   const handlePreview = () => {
     const content = editorRef.current.getContent();
-    setContentPreview(content); // Set content for modal preview
+    setContentPreview(content);
     setIsPreviewVisible(true);
   };
 
@@ -104,15 +123,8 @@ const BlogEdit = () => {
         <h2 className="text-xl font-bold mb-4">Chỉnh sửa bài viết</h2>
         <Form
           layout="vertical"
-          form={form} // Use the form instance
+          form={form}
           onFinish={onFinish}
-          initialValues={{
-            title: blogData?.data?.title,
-            subTitle: blogData?.data?.subTitle,
-            status: blogData?.data?.status ? "1" : "0",
-            image: blogData?.data?.blogImg,
-            content: blogData?.data?.content,
-          }}
         >
           <Form.Item
             label="Tiêu đề"
@@ -134,26 +146,11 @@ const BlogEdit = () => {
             <Upload
               listType="picture-card"
               showUploadList={false}
+              beforeUpload={() => false}
               onChange={handleUploadChange}
-              action="/upload" // Replace with your API endpoint for uploading images
             >
               {imageUrl ? (
-                <>
-                  <img
-                    src={imageUrl}
-                    alt="Uploaded"
-                    className="w-full h-32 object-cover"
-                  />
-                  <DeleteOutlined
-                    onClick={() => setImageUrl("")}
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      right: 0,
-                      color: "red",
-                    }}
-                  />
-                </>
+                <img src={imageUrl} alt="Uploaded" style={{ width: "100%" }} />
               ) : (
                 <PlusOutlined />
               )}
@@ -175,15 +172,10 @@ const BlogEdit = () => {
             <Editor
               apiKey="d1hhsqhz397l5oqghrrrv35au6tvrqy79t6wyfri9h3czwnl"
               onInit={(_, editor) => (editorRef.current = editor)}
-              initialValue="" // Leave empty as we set content dynamically
               init={{
                 height: 500,
                 menubar: true,
-                plugins: [
-                  "advlist autolink lists link image charmap preview anchor",
-                  "searchreplace visualblocks code fullscreen",
-                  "insertdatetime media table paste code help wordcount",
-                ],
+                plugins: ["advlist autolink lists link image charmap preview anchor"],
                 toolbar:
                   "undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help",
               }}
@@ -194,10 +186,7 @@ const BlogEdit = () => {
             <Button type="primary" htmlType="submit">
               Lưu thay đổi
             </Button>
-            <Button
-              onClick={() => navigate("/admin/manage-blog")}
-              className="ml-2"
-            >
+            <Button onClick={() => navigate("/admin/manage-blog")} className="ml-2">
               Hủy
             </Button>
             <Button type="default" onClick={handlePreview} className="ml-2">

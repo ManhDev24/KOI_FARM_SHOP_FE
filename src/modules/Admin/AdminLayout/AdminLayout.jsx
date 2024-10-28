@@ -97,26 +97,26 @@ const AdminLayout = () => {
           onSelect={({ key }) => {
             navigate(key);
           }}
-          style={{}}
+
           items={[
             ...(role === "manager"
               ? [
-                  {
-                    key: "/admin/dashboard",
-                    icon: <DashboardOutlined />,
-                    label: "Biểu đồ",
-                  },
-                  {
-                    key: "/admin/user-management",
-                    icon: <UserOutlined />,
-                    label: "Quản lý tài khoản ",
-                  },
-                  {
-                    key: "/admin/consignment-fee-management",
-                    icon: <MoneyCollectOutlined />,
-                    label: "Quản lý phí kí gửi",
-                  },
-                ]
+                {
+                  key: "/admin/dashboard",
+                  icon: <DashboardOutlined />,
+                  label: "Biểu đồ",
+                },
+                {
+                  key: "/admin/user-management",
+                  icon: <UserOutlined />,
+                  label: "Quản lý tài khoản ",
+                },
+                {
+                  key: "/admin/consignment-fee-management",
+                  icon: <MoneyCollectOutlined />,
+                  label: "Quản lý phí kí gửi",
+                },
+              ]
               : []),
             {
               key: "/admin/fish-management",
