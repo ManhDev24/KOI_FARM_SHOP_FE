@@ -141,10 +141,8 @@ const ConsignmentManagementDetail = () => {
   }
 
   const data = consignmentDetail?.data;
-  console.log("data: ", data);
 
   const onSubmit = (data) => {
-    console.log("data: ", data);
     rejectConsignment(data?.rejectionReason);
   };
 

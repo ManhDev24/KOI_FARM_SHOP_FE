@@ -50,7 +50,6 @@ const Login = () => {
   const { mutate: handleLogin, isPending: loginLoad } = useMutation({
     mutationFn: (payload) => AuthApi.login(payload),
     onSuccess: (data) => {
-      console.log("data: ", data);
       setLocalStorage("user", data.data);
       dispatch(setUser(data));
       message.success("Đăng nhập thành công");
@@ -79,7 +78,6 @@ const Login = () => {
   });
 
   const handleLoginWithGoogle = (data) => {
-    console.log("data: ", data);
     loginWithGoogle(data);
   };
   const onSubmit = (data) => {
@@ -253,7 +251,6 @@ const Login = () => {
                       }}
                       onError={() => {
                         toast.error("Google login failed");
-                        console.log("Login Failed");
                       }}
                     />
                   </div>

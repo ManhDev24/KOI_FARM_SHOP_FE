@@ -189,7 +189,6 @@ const ThankPage = () => {
     return null;
   }
 
-  console.log(type);
 
   return type === 'true' ? (
     // Content for type === "true"

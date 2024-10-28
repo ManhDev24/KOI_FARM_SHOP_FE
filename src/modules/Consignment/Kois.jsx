@@ -19,7 +19,6 @@ const Kois = () => {
     const [selectedFishSell, setFishSell] = useState([]);
 
     const onChange = (key) => {
-        console.log(key);
     };
 
     useEffect(() => {
@@ -28,7 +27,6 @@ const Kois = () => {
         const allFishCare = async () => {
             try {
                 const response = await ConsignmentApi.getAllHealthCareConsignmentForCustomer(id, currentPage, pageSize);
-                console.log('Fetched fish care data:', response.data.koiFishReponseList);
                 setFishCare(response.data.koiFishReponseList || []);
             } catch (error) {
                 toast.error('Có lỗi xảy ra khi gọi API chăm sóc cá');
@@ -37,7 +35,6 @@ const Kois = () => {
         const allFishSell = async () => {
             try {
                 const response = await ConsignmentApi.getAllSellConsignmentForCustomer(id, currentPage, pageSize);
-                console.log('Fetched fish care data:', response.data.koiFishReponseList);
                 setFishSell(response.data.koiFishReponseList || []);
 
             } catch (error) {
@@ -52,7 +49,6 @@ const Kois = () => {
     const { mutate: handleFishDetail } = useMutation({
         mutationFn: (id) => ConsignmentApi.getAllHealthCareConsignmentForCustomerDetail(id),
         onSuccess: (data, variables) => {
-            console.log('Fetched fish detail:', data.data);
             setFishDetails((prevDetails) => ({
                 ...prevDetails,
                 [variables]: data.data.healthcare || [],
@@ -64,10 +60,8 @@ const Kois = () => {
     });
 
 
-    console.log(fishDetails)
     // console.log(selectedFishCare)
     const dataSource2 = selectedFishCare.map((item) => item.healthcare);
-    console.log(dataSource2, 'd1')
 
     // const mergedDataSource = dataSource1.map(item1 => {
     //     const matchingItem = dataSource2.find(item2 => item2.id === item1.id);
@@ -326,7 +320,6 @@ const Kois = () => {
                             const healthcareData = fishDetails[record.id];
 
                             if (!healthcareData) {
-                                console.log(healthcareData)
                                 return (
                                     <div className="flex justify-center items-center">
                                         <Spin tip="Loading..." />

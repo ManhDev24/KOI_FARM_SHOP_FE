@@ -20,7 +20,6 @@ const PaymentFailPage = () => {
   const description4 = "Hoàn tất";
   return (
     <>
-      {console.log(typePayment + 'ahsbdknjlkmasdsaoodnjhbgaksbjsakjn')}
       {typePayment === 'true'
 
         ?

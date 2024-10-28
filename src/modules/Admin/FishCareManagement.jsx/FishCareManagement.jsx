@@ -74,7 +74,6 @@ const FishCareManagement = () => {
     queryKey: ["ListFishCare", currentPage, debouncedQuery],
     queryFn: fetchFishCare,
   });
-  console.log("ListFishCare: ", ListFishCare);
 
   const { mutate: addHeathForKoi, isPending: isAddingHealth } = useMutation({
     mutationFn: (data) => ConsignmentApi.addHeathForKoi(data),

@@ -102,7 +102,6 @@ const ManageBlog = () => {
       render: (_, record) => {
         // Handling menu clicks for status change
         const handleMenuClick = (e) => {
-          console.log("e: ", +e.key);
           setStatus(+e.key);
           changeStatus(record.blogId);
         };

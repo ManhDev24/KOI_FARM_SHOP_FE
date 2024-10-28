@@ -269,7 +269,6 @@ const UserManagement = () => {
   };
 
   const onSubmit = (data) => {
-    console.log(data);
     const result = {
       ...data,
       roleId: data.role,

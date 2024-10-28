@@ -57,8 +57,7 @@ const Register = () => {
   const { mutate: handleRegister, isPending } = useMutation({
     mutationFn: (payload) => AuthApi.register(payload),
     onSuccess: (data) => {
-      console.log("data: ", data);
-      console.log("Email from response:", data.data.email);
+     
       dispatch(saveEmail(data.data.email));
       message.success("Đăng ký thành công");
       navigate("/otp");
@@ -84,7 +83,6 @@ const Register = () => {
     },
   });
   const handleLoginWithGoogle = (data) => {
-    console.log("data: ", data);
     loginWithGoogle(data);
   };
   const onSubmit = (data) => {
@@ -304,11 +302,9 @@ const Register = () => {
                           credentialResponse?.credential
                         );
                         handleLoginWithGoogle(decoded);
-                        console.log("decoded: ", decoded);
                       }}
                       onError={() => {
                         toast.error("Login Failed");
-                        console.log("Login Failed");
                       }}
                     />
                   </div>

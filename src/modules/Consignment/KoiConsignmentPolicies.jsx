@@ -15,7 +15,6 @@ const KoiConsignmentPolicies = () => {
     const navigate = useNavigate();
     // Hàm xử lý cập nhật currentPage
     const storedValue = JSON.parse(localStorage.getItem('agreedToPolicy'));
-    console.log(storedValue+ 'aaaaa');
     const handleCurrentPage = (prevPage) => {
         localStorage.setItem('agreedToPolicy', true);
         prevPage = 0

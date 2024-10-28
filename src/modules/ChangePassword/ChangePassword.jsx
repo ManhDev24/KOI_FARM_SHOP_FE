@@ -56,7 +56,6 @@ const ChangePassword = () => {
       password: data.password,
       repeatPassword: data.confirmPassword,
     };
-    console.log("transformedData: ", transformedData);
     changePassword(transformedData);
   };
   return (

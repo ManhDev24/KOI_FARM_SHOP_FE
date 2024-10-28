@@ -22,10 +22,8 @@ const validationSchema = yup.object().shape({
 const Otp = () => {
   const emailRegister = useSelector((state) => state.auth.email);
   const isResetPassword = useSelector((state) => state.auth.isResetPassword);
-  console.log("isResetPassword: ", isResetPassword);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  console.log("emailRegister: ", emailRegister);
   const {
     handleSubmit,
     control,
@@ -39,13 +37,11 @@ const Otp = () => {
 
   const onSubmit = (data) => {
     handleOtp(data.otp);
-    console.log("data: ", data);
   };
 
   const { mutate: handleOtp, isPending: isLoading } = useMutation({
     mutationFn: (otp) => AuthApi.otpVerify(otp, emailRegister),
     onSuccess: (data) => {
-      console.log("data OTP: ", data);
       if (isResetPassword) {
         message.success("Xác nhận opt thành công");
         dispatch(saveOtpToken(data.data));
@@ -77,7 +73,6 @@ const Otp = () => {
   });
   const handleResendOtp = () => {
     resendOtp();
-    console.log("emailRegister: ", emailRegister);
   };
 
   return (

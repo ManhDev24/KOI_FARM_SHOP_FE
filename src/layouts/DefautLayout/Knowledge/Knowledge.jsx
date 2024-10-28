@@ -28,10 +28,8 @@ const Knowledge = () => {
     const fetchKoiFishData = async () => {
       try {
         const data = await FishApi.getKnowledgeFishList();
-        console.log('Dữ liệu nhận được từ API:', data);
 
         const categoryResponses = data.categoryReponses;
-        console.log('categoryResponses:', categoryResponses);
         if (!Array.isArray(categoryResponses)) {
           throw new Error('categoryReponses không phải là mảng');
         }

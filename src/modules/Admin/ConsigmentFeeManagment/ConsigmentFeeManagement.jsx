@@ -37,7 +37,6 @@ const ConsignmentFeeManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState(null);
-  console.log("editingRecord: ", editingRecord);
   const pageSize = 7;
 
   const { control, handleSubmit, reset } = useForm({
@@ -137,7 +136,6 @@ const ConsignmentFeeManagement = () => {
   };
 
   const onSubmit = (data) => {
-    console.log("data: ", data);
     if (editingRecord) {
       updateConsignmentFee({
         ...data,

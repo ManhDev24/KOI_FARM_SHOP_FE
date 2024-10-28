@@ -26,10 +26,8 @@ const PaymentHistoryPage = () => {
     queryFn: () => orderApi.getOrderHistory(user?.id, currentPage, 9),
     keepPreviousData: true,
   });
-  console.log("orderData: ", orderData);
   const orderContent = orderData?.data?.content;
   const total = orderData?.data?.totalElements;
-  console.log("orderContent: ", orderContent);
   if (orderDataLoading) {
     return <LoadingModal />;
   }

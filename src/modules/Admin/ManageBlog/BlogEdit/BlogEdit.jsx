@@ -64,7 +64,6 @@ const BlogEdit = () => {
 
   // Handle form submission
   const onFinish = (values) => {
-    console.log('values: ', values);
     const content = editorRef.current.getContent();
     if (!content || content.trim() === "") {
       message.error("Vui lòng nhập nội dung trong editor!");

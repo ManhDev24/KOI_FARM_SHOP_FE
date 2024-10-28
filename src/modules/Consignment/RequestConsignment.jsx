@@ -77,7 +77,6 @@ const CustomSVGIcon = () => (
 );
 
 
-console.log(validationSchema);
 const RequestConsignment = () => {
     const [form] = Form.useForm();
     const [selectedCategory, setSelectedCategory] = useState('');
@@ -162,7 +161,6 @@ const RequestConsignment = () => {
         prevPage = 1;
         if (prevPage <= 1) {
             setCurrentPage(prevPage => prevPage + 1);
-            console.log();
             navigate(`/status-consignment/`);
         }
     };
@@ -171,13 +169,11 @@ const RequestConsignment = () => {
     useEffect(() => {
         const fishFromOrderDetail = localStorage.getItem('fishConsignmentID');
         const consignmentIDs = localStorage.getItem('consignmentID');
-        console.log('IDfish:', fishFromOrderDetail);
 
         if (fishFromOrderDetail || consignmentIDs) {
             const fetchKoiData = async () => {
                 try {
                     const koiData = await FishApi.getFishDetail(fishFromOrderDetail);
-                    console.log('Dữ liệu từ API:', koiData);
                     const certificate = await ConsignmentApi.getCertificateByID(fishFromOrderDetail);
 
                     const selectedCateId = koiData.categoryId?.toString() || '';
@@ -228,11 +224,9 @@ const RequestConsignment = () => {
     // Second useEffect to handle service fee calculation
     useEffect(() => {
         if (inputPrice && SelectedPackage) {
-            console.log(SelectedPackage + 'SelectedPackagessssaasassas')
-            console.log(inputPrice + 'inputPricesasssssssssssssssss')
+           
             const fee = handleFee(inputPrice, SelectedPackage);
 
-            console.log('Service Fee:eeee', fee);
             setServiceFee(fee);
             setServiceFee(fee);
 
@@ -241,7 +235,6 @@ const RequestConsignment = () => {
     }, [inputPrice, SelectedPackage, setSelectedConsignmentType]);
 
     useEffect(() => {
-        console.log("Gói đã chọn:", SelectedPackage);
     }, [SelectedPackage]);
 
     const CategoryItem = [
@@ -370,7 +363,6 @@ const RequestConsignment = () => {
             dispatch(saveConsignmentID(consignmentID));
 
             handleCurrentPages(currentPage);
-            console.log('Success:', response.data);
             message.success('Đăng ký ký gửi thành công');
             setIsLoading(false);
         },
@@ -385,7 +377,6 @@ const RequestConsignment = () => {
         },
     });
 
-    console.log('ssssss' + selectedKoiImage)
     const onFinish = async (values) => {
         try {
             const typ = 'false';
@@ -404,13 +395,10 @@ const RequestConsignment = () => {
 
             const dataProfile = JSON.parse(localStorage.getItem('user'));
             const accountId = dataProfile && dataProfile.id ? Number(dataProfile.id) : null;
-            console.log(accountId);
             if (!accountId) {
                 throw new Error('Account ID not found in localStorage');
             }
-            console.log('ssssss' + selectedKoiImage)
-            console.log(selectedKoiCertificate)
-            console.log("tess", serviceFee);
+           
             const x = serviceFee;
             formData.append('serviceFee', x);
             formData.append('accountId', accountId);
@@ -440,10 +428,8 @@ const RequestConsignment = () => {
         errorInfo.values.serviceFee = serviceFee;
         errorInfo.values.koiImg = imageSrc; errorInfo.values.certImg = imageSrcCer;
 
-        console.log('Failed:', errorInfo);
     };
     const onSubmit = (data) => {
-        console.log(data);
     };
     const handleUploadKoiImage = ({ file }) => {
         if (validateFile(file)) {
@@ -455,7 +441,6 @@ const RequestConsignment = () => {
 
     const handleUploadKoiCertificate = ({ file }) => {
         if (validateFile(file)) {
-            console.log(file)
             setSelectedKoiCertificate(file);
             const previewUrl = URL.createObjectURL(file);
             setImageSrcCer(previewUrl);
@@ -508,7 +493,6 @@ const RequestConsignment = () => {
 
             const data = await response.json();
             message.success('Upload ảnh Koi và chứng nhận thành công!');
-            console.log(data);
         } catch (error) {
             message.error(error.message || 'Đã xảy ra lỗi khi upload ảnh, vui lòng thử lại.');
         } finally {
@@ -524,7 +508,6 @@ const RequestConsignment = () => {
         const value = e.target.value.replace(/\D/g, '');
         setInputPrice(Number(value));
     };
-    console.log(SelectedConsignmentType)
 
     const handleFee = (price, selectedPackages) => {
         const typeRates = consignmentRates[SelectedConsignmentType];
@@ -554,14 +537,10 @@ const RequestConsignment = () => {
 
     const handleSelectCategory = (value) => {
         setSelectedCategory(value);
-        console.log("Selected category:", value);
     };
     const handleSelectPackage = (value) => {
         setSelectedPackage(value);
-        console.log(SelectedPackage + 'return fee;')
-        console.log(inputPrice + 'return fee;')
-        console.log(serviceFee + 'return fee;')
-        console.log("Selected category:", value);
+        
 
     };
 
@@ -569,11 +548,9 @@ const RequestConsignment = () => {
     const handleSelectGender = (value) => {
 
         setSelectedGender(value);
-        console.log("Selected gender:", value);
     };
     const handleSelectPureBred = (value) => {
         setSelectedPureBred(value);
-        console.log("Độ thuần chủng đã chọn:", value);
     };
 
     const handleSelectConsigmentType = (value) => {
@@ -596,9 +573,7 @@ const RequestConsignment = () => {
                 });
                 setServiceFee(0)
             }
-        console.log("Loại ký gửi", value);
-        console.log(fishFromOrderDetail, "Loại ký gửi")
-
+       
 
     };
     const handleDeleteImage = () => {
@@ -1445,12 +1420,9 @@ const RequestConsignment = () => {
                                         SelectedConsignmentType === '0' ?
 
                                             <>
-                                                {/* Third Row: Price and Displayed Price */}
 
 
 
-                                                {console.log(inputPrice + 'dat la gia ca tu order detail')}
-                                                {/* Display Entered Price */}
                                                 <Row >
                                                     {/* Price */}
                                                     <div className=" mb-4 w-full">

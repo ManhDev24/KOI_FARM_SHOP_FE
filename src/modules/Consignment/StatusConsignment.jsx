@@ -95,7 +95,6 @@ const StatusConsignment = () => {
       },
       onSuccess: (response) => {
         if (typeof response.data === "number") {
-          console.log(typeof response.data);
           dispatch(saveConsignmentID(response.data));
 
         navigate('/Form-consignment');
@@ -103,7 +102,6 @@ const StatusConsignment = () => {
 
 
       } else {
-        console.log(typeof response.data + 'string string string')
         navigate('/Form-consignment')
         localStorage.setItem('consignmentID', '');
         localStorage.setItem('fishConsignmentID');
@@ -205,7 +203,6 @@ const StatusConsignment = () => {
               Mã ký gửi:{" "}
               <span className="text-[#FA4444]">#{data.consignmentID}</span>
             </p>
-            {console.log(data.status)}
             <p
               className={`text-lg font-semibold ${data.status === 1 ? "text-blue-500" : "text-green-500"
                 }`}

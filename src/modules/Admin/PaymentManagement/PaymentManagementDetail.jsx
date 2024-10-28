@@ -16,7 +16,6 @@ const PaymentManagementDetail = () => {
     queryFn: () => orderApi.getOrderDetail(orderId),
     keepPreviousData: true,
   });
-  console.log("orderDetail: ", orderDetail);
   const columns = [
     {
       title: "Tên Cá Koi",

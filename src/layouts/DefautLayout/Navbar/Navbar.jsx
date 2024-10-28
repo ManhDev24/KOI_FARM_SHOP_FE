@@ -38,7 +38,6 @@ const Navbar = () => {
   const fetchKoiCategories = async () => {
     try {
       const categoriesArray = await FishApi.getCategories();
-      console.log(categoriesArray);
       if (Array.isArray(categoriesArray)) {
         const menuItems = categoriesArray.map((item) => ({
           key: item.id,
@@ -51,7 +50,6 @@ const Navbar = () => {
             </Link>
           ),
         }));
-        console.log(menuItems);
         setKoiMenuItems(menuItems);
       } else {
         setError("The received data is not an array as expected.");
@@ -65,7 +63,6 @@ const Navbar = () => {
   const fetchUserProfile = async () => {
     try {
       const categoriesArray = await FishApi.getCategories();
-      console.log(categoriesArray);
       if (Array.isArray(categoriesArray)) {
         const menuItems = categoriesArray.map((item) => ({
           key: item.id,
@@ -78,7 +75,6 @@ const Navbar = () => {
             </Link>
           ),
         }));
-        console.log(menuItems);
         setKoiMenuItems(menuItems);
       } else {
         setError("The received data is not an array as expected.");

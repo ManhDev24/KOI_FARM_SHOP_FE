@@ -39,7 +39,6 @@ const ForgotPassword = () => {
       mutationFn: (payload) => AuthApi.forgotEmail(payload),
 
       onSuccess: (result) => {
-        console.log("result: ", result);
         message.success("Gửi email thành công vui lòng nhập otp");
         dispatch(saveIsResetPassword(true));
         navigate("/otp");
