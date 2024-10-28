@@ -56,7 +56,8 @@ const Kois = () => {
             try {
 
                 const response = await ConsignmentApi.getAllSellConsignmentForCustomer(id, currentPageSell, pageSizeSell);
-                setFishSellList(response.data.koiFishReponseList || []);
+                console.log(response, 'rep')
+                setFishSellList(response.data.content || []);
                 setFishSellData(response.data);
             } catch (error) {
                 toast.error('Có lỗi xảy ra khi gọi API bán cá');
@@ -108,18 +109,28 @@ const Kois = () => {
                         cancelSort: 'Hủy sắp xếp'
                     }}
                     dataSource={fishSellList.map((fishSell) => ({
-                        key: fishSell.id,
-                        id: fishSell.id,
-                        category: fishSell.category,
-                        image: fishSell.koiImage,
+                        key: fishSell.consignmentID,
+                        consignmentID: fishSell.consignmentID,
+                        id: fishSell.koiFish.id,
+                        category: fishSell.koiFish.category,
+                        image: fishSell.koiFish.koiImage,
                         gender: fishSell.gender,
-                        status: fishSell.status,
-                        price: fishSell.price,
-                        dayRemain: fishSell.dayRemain
+                        status: fishSell.koiFish.status,
+                        price: fishSell.koiFish.price,
+                        serviceFee: fishSell.serviceFee,
+                        dayRemain: fishSell.remainingDays
                     }))}
                     columns={[
                         {
-                            title: 'ID của cá',
+                            title: 'Mã ký gửi',
+                            dataIndex: 'consignmentID',
+                            key: 'id',
+                            sorter: (a, b) => a.id - b.id,
+                            width: '120px',
+                            align: 'center'
+                        },
+                        {
+                            title: 'Mã Koi',
                             dataIndex: 'id',
                             key: 'id',
                             sorter: (a, b) => a.id - b.id,
@@ -183,10 +194,16 @@ const Kois = () => {
 
                         },
                         {
-                            title: 'Danh mục',
-                            dataIndex: 'category',
-                            key: 'category',
-                            align: 'center'
+                            title: 'Giá dịch vụ',
+                            dataIndex: 'serviceFee',
+                            key: 'serviceFee',
+                            render: (price) => {
+                                return price ? `${price.toLocaleString()} đ` : 'N/A';
+                            },
+                            align: 'center',
+                            sorter: (a, b) => a.id - b.id,
+
+
                         },
                         {
                             title: 'Ngày ký gửi còn lại',
@@ -297,13 +314,14 @@ const Kois = () => {
 
                                 return (
                                     <>
-                                        {record.grow}
+
                                         {record.grow > 0 ? (
-                                            <CaretUpOutlined style={{ fontSize: '16px', color: 'green' }} />
+                                            <> {record.grow}  <CaretUpOutlined style={{ fontSize: '16px', color: 'green' }} /></>
+
                                         ) : record.grow === 0 ? (
                                             <>Đang cập nhật</>
                                         ) : (
-                                            <CaretDownOutlined style={{ fontSize: '16px', color: 'red' }} />
+                                            <>{record.grow}  <CaretDownOutlined style={{ fontSize: '16px', color: 'red' }} /></>
                                         )}
                                     </>
 

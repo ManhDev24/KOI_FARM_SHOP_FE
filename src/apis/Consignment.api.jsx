@@ -211,7 +211,7 @@ export const ConsignmentApi = {
   },
   getAllSellConsignmentForCustomer: async (accountID, pageNo, pageSize) => {
     try {
-      const response = await fetcher.get(`http://localhost:8080/koifarm/consignment/getAllFishSellForCustomer?pageNo=${pageNo}&pageSize=${pageSize}&accountId=${accountID}`
+      const response = await fetcher.get(`http://localhost:8080/koifarm/consignment/consignments/for-sale?accountId=${accountID}&pageNo=${pageNo}&pageSize=${pageSize}`
       );
       return response.data;
     } catch (error) {
