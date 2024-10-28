@@ -4,9 +4,12 @@ import moment from "moment";
 import LoadingModal from "../../Modal/LoadingModal";
 import { useQuery } from "@tanstack/react-query";
 import BlogApi from "../../../apis/Blog.api";
+import { useNavigate } from "react-router-dom";
 
 const ListBlog = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
+
   const {
     data: ListBlog,
     isLoading: ListBlogLoading,
@@ -29,12 +32,15 @@ const ListBlog = () => {
     );
   }
 
-  // Access the fetched data
   const blogs = ListBlog?.data?.content || [];
 
-  // Function to strip HTML tags
   const stripHtmlTags = (html) => {
     return html.replace(/<\/?[^>]+(>|$)/g, "");
+  };
+
+  // Function to navigate to the blog detail page
+  const handleBlogClick = (blogId) => {
+    navigate(`/blog/${blogId}`);
   };
 
   return (
@@ -42,7 +48,10 @@ const ListBlog = () => {
       <div className="text-center text-2xl text-[#196b49]">Tin Hữu ích</div>
       <div className="grid grid-cols-5 grid-rows-8 gap-4 mt-10 mb-20 me-[200px]">
         {blogs.length > 0 && (
-          <div className="col-span-2 row-span-8 col-start-2">
+          <div
+            className="col-span-2 row-span-8 col-start-2 cursor-pointer"
+            onClick={() => handleBlogClick(blogs[0].blogId)}
+          >
             <img
               className="h-[630px] w-[95%]"
               src={blogs[0].blogImg}
@@ -57,8 +66,12 @@ const ListBlog = () => {
           </div>
         )}
 
-        {blogs.slice(1, 4).map((blog, index) => (
-          <div key={blog.blogId} className="col-span-2 row-span-2 col-start-4">
+        {blogs.slice(1, 4).map((blog) => (
+          <div
+            key={blog.blogId}
+            className="col-span-2 row-span-2 col-start-4 cursor-pointer"
+            onClick={() => handleBlogClick(blog.blogId)}
+          >
             <div className="flex">
               <div className="img">
                 <img

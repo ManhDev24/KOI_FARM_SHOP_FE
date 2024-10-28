@@ -171,7 +171,7 @@ export const publicRoutes = [
     layout: DefaultLayout,
   },
   {
-    path: "/blog",
+    path: "/blog/:id",
     component: Blog,
     layout: DefaultLayout,
   },
