@@ -11,40 +11,59 @@ import { CaretDownOutlined, CaretUpOutlined } from '@ant-design/icons';
 const Kois = () => {
     const [selectedFishCare, setFishCare] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(20);
-
+    const [pageSize, setPageSize] = useState(10);
+    const [selectedFishSize, setFishCares] = useState([]);
     const [currentPages, setCurrentPages] = useState(1);
-    const [pageSizes, setPageSizes] = useState(20);
+    const [pageSizes, setPageSizes] = useState(10);
     const [fishDetails, setFishDetails] = useState({});
     const [selectedFishSell, setFishSell] = useState([]);
+    // Koi Care
+    const [fishCareList, setFishCareList] = useState([]);
+    const [fishCareData, setFishCareData] = useState({});
+    const [currentPageCare, setCurrentPageCare] = useState(1);
+    const [pageSizeCare, setPageSizeCare] = useState(10);
+
+    // Koi Sell
+    const [fishSellList, setFishSellList] = useState([]);
+    const [fishSellData, setFishSellData] = useState({});
+    const [currentPageSell, setCurrentPageSell] = useState(1);
+    const [pageSizeSell, setPageSizeSell] = useState(10);
 
     const onChange = (key) => {
     };
-
+    // Fetch Koi Care Data
     useEffect(() => {
-        const user = JSON.parse(localStorage.getItem('user'));
-        const id = user?.id;
-        const allFishCare = async () => {
+        const fetchFishCareData = async () => {
+            const user = JSON.parse(localStorage.getItem('user'));
+            const id = user?.id;
+
             try {
-                const response = await ConsignmentApi.getAllHealthCareConsignmentForCustomer(id, currentPage, pageSize);
-                setFishCare(response.data.koiFishReponseList || []);
+                const response = await ConsignmentApi.getAllHealthCareConsignmentForCustomer(id, currentPageCare, pageSizeCare);
+                setFishCareList(response.data.koiFishReponseList || []);
+                setFishCareData(response.data);
             } catch (error) {
                 toast.error('Có lỗi xảy ra khi gọi API chăm sóc cá');
             }
         };
-        const allFishSell = async () => {
-            try {
-                const response = await ConsignmentApi.getAllSellConsignmentForCustomer(id, currentPage, pageSize);
-                setFishSell(response.data.koiFishReponseList || []);
+        fetchFishCareData();
+    }, [currentPageCare, pageSizeCare]);
 
+    // Fetch Koi Sell Data
+    useEffect(() => {
+        const fetchFishSellData = async () => {
+            const user = JSON.parse(localStorage.getItem('user'));
+            const id = user?.id;
+            try {
+
+                const response = await ConsignmentApi.getAllSellConsignmentForCustomer(id, currentPageSell, pageSizeSell);
+                setFishSellList(response.data.koiFishReponseList || []);
+                setFishSellData(response.data);
             } catch (error) {
-                toast.error('Có lỗi xảy ra khi gọi API chăm sóc cá');
+                toast.error('Có lỗi xảy ra khi gọi API bán cá');
             }
         };
-
-        allFishCare();
-        allFishSell();
-    }, []);
+        fetchFishSellData();
+    }, [currentPageSell, pageSizeSell]);
 
     const { mutate: handleFishDetail } = useMutation({
         mutationFn: (id) => ConsignmentApi.getAllHealthCareConsignmentForCustomerDetail(id),
@@ -88,7 +107,7 @@ const Kois = () => {
                         triggerAsc: 'Sắp xếp tăng dần',
                         cancelSort: 'Hủy sắp xếp'
                     }}
-                    dataSource={selectedFishSell.map((fishSell) => ({
+                    dataSource={fishSellList.map((fishSell) => ({
                         key: fishSell.id,
                         id: fishSell.id,
                         category: fishSell.category,
@@ -177,14 +196,14 @@ const Kois = () => {
                         },
                     ]}
                     pagination={{
-                        current: currentPages,
-                        pageSize: pageSizes,
-                        total: selectedFishSell.length,
+                        current: currentPageSell,
+                        pageSize: pageSizeSell,
+                        total: fishSellData?.totalElements,
                         showSizeChanger: true,
                         pageSizeOptions: [5, 10, 20, 50, 200],
                         onChange: (page, size) => {
-                            setCurrentPages(page);
-                            setPageSizes(size);
+                            setCurrentPageSell(page);
+                            setPageSizeSell(size);
                         },
                     }}
                 />
@@ -205,7 +224,7 @@ const Kois = () => {
                         triggerAsc: 'Sắp xếp tăng dần',
                         cancelSort: 'Hủy sắp xếp'
                     }}
-                    dataSource={selectedFishCare.map((fish) => ({
+                    dataSource={fishCareList.map((fish) => ({
                         key: fish.id,
                         id: fish.id,
                         image: fish.koiImage || 'defaultImage.png',
@@ -282,7 +301,7 @@ const Kois = () => {
                                         {record.grow > 0 ? (
                                             <CaretUpOutlined style={{ fontSize: '16px', color: 'green' }} />
                                         ) : record.grow === 0 ? (
-                                            <></>
+                                            <>Đang cập nhật</>
                                         ) : (
                                             <CaretDownOutlined style={{ fontSize: '16px', color: 'red' }} />
                                         )}
@@ -302,16 +321,17 @@ const Kois = () => {
 
                     ]}
                     pagination={{
-                        current: currentPage,
-                        pageSize: pageSize,
-                        total: selectedFishCare.length,
+                        current: currentPageCare,
+                        pageSize: pageSizeCare,
+                        total: fishCareData?.totalElements,
                         showSizeChanger: true,
                         pageSizeOptions: [5, 10, 20, 50, 200],
-                        onChange: (page, size, sorter) => {
-                            setCurrentPage(page);
-                            setPageSize(size);
+                        onChange: (page, size) => {
+                            setCurrentPageCare(page);
+                            setPageSizeCare(size);
                         },
                     }}
+
                     expandable={{
                         expandIconColumnIndex: 10,
                         columnTitle: <span>Xem chi tiết lịch sử chăm sóc</span>,
