@@ -1,66 +1,55 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Form, Input, Button, message, Select, Upload, Modal } from "antd";
+import { Button, message, Select, Upload, Modal } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useForm, Controller } from "react-hook-form";
 import BlogApi from "../../../../apis/Blog.api";
 import { Editor } from "@tinymce/tinymce-react";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
-import moment from "moment";
 import LoadingModal from "../../../Modal/LoadingModal";
+import moment from "moment";
 
 const { Option } = Select;
 
 const BlogEdit = () => {
-  const { blogId } = useParams("blogId");
+  const { blogId } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const editorRef = useRef(null);
+  console.log('editorRef: ', editorRef);
   const [imageUrl, setImageUrl] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [contentPreview, setContentPreview] = useState("");
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
-  const [form] = Form.useForm();
+  const [contentPreview, setContentPreview] = useState("");
+  const { handleSubmit, control, setValue, getValues } = useForm();
 
   // Fetch blog data by blogId
   const { data: blogData, isLoading: isFetchingBlog } = useQuery({
     queryKey: ["Blog", blogId],
     queryFn: () => BlogApi.getDetailBlog(blogId),
-    onSuccess: (data) => {
-      if (data) {
-        form.setFieldsValue({
-          title: data.title,
-          subTitle: data.subTitle,
-          status: data.status ? "1" : "0",
-        });
-
-        if (editorRef.current) {
-          editorRef.current.setContent(data.content || "");
-        }
-
-        setImageUrl(data.blogImg);
-      }
+    onError: (error) => {
+      console.error("Fetching failed, error: ", error);
     },
   });
 
+  // Use useEffect to set form values when blogData changes
   useEffect(() => {
     if (blogData) {
-      console.log('blogData: ', blogData);
-      form.setFieldsValue({
-        title: blogData?.data?.title,
-        subTitle: blogData?.data?.subTitle,
-        status: blogData?.data?.status ? "1" : "0",
-      });
-
-      if (editorRef.current) {
-        editorRef.current.setContent(blogData?.data?.content || "");
+      console.log('blogData: ', blogData); // Debugging: ensure blogData is being fetched correctly
+      setValue("title", blogData.data?.title || "");
+      setValue("subTitle", blogData.data?.subTitle || "");
+      setValue("status", blogData.data?.status ? "1" : "0");
+      setImageUrl(blogData.data?.blogImg || "");
+      
+      // Set TinyMCE content only if the editor is initialized
+      if (editorRef.current && editorRef.current.editor) {
+        editorRef.current.editor.setContent(blogData.data?.content || "");
       }
-
-      setImageUrl(blogData?.data?.blogImg || "");
     }
-  }, [blogData, form]);
+  }, [blogData, setValue]);
 
+  // Mutation for updating the blog
   const { mutate: updateBlog, isLoading: isUpdatingBlog } = useMutation({
-    mutationFn: (updatedBlog) => BlogApi.updateBlog(updatedBlog, blogId),
+    mutationFn: (updatedBlog) => BlogApi.updateBlog(blogId, updatedBlog),
     onSuccess: () => {
       message.success("Blog đã được cập nhật thành công!");
       queryClient.invalidateQueries(["Blog", blogId]);
@@ -72,43 +61,34 @@ const BlogEdit = () => {
     },
   });
 
-  const onFinish = async (values) => {
-    const content = editorRef.current.getContent();
+  // Handle form submission
+  const onSubmit = (values) => {
+    const content = editorRef.current?.editor?.getContent();
     if (!content || content.trim() === "") {
       message.error("Vui lòng nhập nội dung trong editor!");
       return;
     }
 
-    const formData = new FormData();
-    formData.append("title", values?.title);
-    formData.append("subTitle", values?.subTitle);
-    formData.append("status", values.status);
-    formData.append("content", content);
-    formData.append("postDate", moment().format());
-    formData.append("accountId", blogData?.accountId);
-
-    if (selectedFile) {
-      formData.append("blogImg", selectedFile);
-    }
-
-    updateBlog(formData);
+    const updatedBlog = {
+      ...values,
+      status: values.status === "1",
+      blogImg: imageUrl,
+      content,
+      postDate: moment().format(),
+    };
+    updateBlog(updatedBlog);
   };
 
-  const handleUploadChange = (info) => {
-    const file = info.file.originFileObj || info.file;
-    if (file) {
-      setSelectedFile(file);
-      setImageUrl(URL.createObjectURL(file));
+  // Handle image upload
+  const handleUploadChange = ({ file }) => {
+    if (file.status === "done" && file.response) {
+      setImageUrl(file.response.url);
     }
   };
 
-  const handleRemoveImage = () => {
-    setSelectedFile(null);
-    setImageUrl("");
-  };
-
+  // Handle preview button click
   const handlePreview = () => {
-    const content = editorRef.current.getContent();
+    const content = editorRef.current?.editor?.getContent() || "";
     setContentPreview(content);
     setIsPreviewVisible(true);
   };
@@ -121,79 +101,118 @@ const BlogEdit = () => {
     <div className="flex justify-center items-center">
       <div className="w-full max-w-3xl bg-white p-6 shadow-md rounded-md">
         <h2 className="text-xl font-bold mb-4">Chỉnh sửa bài viết</h2>
-        <Form
-          layout="vertical"
-          form={form}
-          onFinish={onFinish}
-        >
-          <Form.Item
-            label="Tiêu đề"
-            name="title"
-            rules={[{ required: true, message: "Vui lòng nhập tiêu đề!" }]}
-          >
-            <Input placeholder="Nhập tiêu đề bài viết" />
-          </Form.Item>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="mb-4">
+            <label className="block text-sm font-medium">Tiêu đề</label>
+            <Controller
+              name="title"
+              control={control}
+              defaultValue=""
+              rules={{ required: "Vui lòng nhập tiêu đề!" }}
+              render={({ field }) => (
+                <input
+                  {...field}
+                  className="w-full p-2 border border-gray-300 rounded"
+                  placeholder="Nhập tiêu đề bài viết"
+                />
+              )}
+            />
+          </div>
 
-          <Form.Item
-            label="Mô tả ngắn"
-            name="subTitle"
-            rules={[{ required: true, message: "Vui lòng nhập mô tả ngắn!" }]}
-          >
-            <Input placeholder="Nhập mô tả ngắn" />
-          </Form.Item>
+          <div className="mb-4">
+            <label className="block text-sm font-medium">Mô tả ngắn</label>
+            <Controller
+              name="subTitle"
+              control={control}
+              defaultValue=""
+              rules={{ required: "Vui lòng nhập mô tả ngắn!" }}
+              render={({ field }) => (
+                <input
+                  {...field}
+                  className="w-full p-2 border border-gray-300 rounded"
+                  placeholder="Nhập mô tả ngắn"
+                />
+              )}
+            />
+          </div>
 
-          <Form.Item label="Hình ảnh">
+          <div className="mb-4">
+            <label className="block text-sm font-medium">Hình ảnh</label>
             <Upload
               listType="picture-card"
               showUploadList={false}
-              beforeUpload={() => false}
               onChange={handleUploadChange}
+              action="/upload" // Replace with your actual API endpoint
             >
               {imageUrl ? (
-                <img src={imageUrl} alt="Uploaded" style={{ width: "100%" }} />
+                <div className="relative">
+                  <img
+                    src={imageUrl}
+                    alt="Uploaded"
+                    className="w-full h-32 object-cover"
+                  />
+                  <DeleteOutlined
+                    onClick={() => setImageUrl("")}
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      right: 0,
+                      color: "red",
+                      cursor: "pointer",
+                    }}
+                  />
+                </div>
               ) : (
                 <PlusOutlined />
               )}
             </Upload>
-          </Form.Item>
+          </div>
 
-          <Form.Item
-            label="Trạng thái"
-            name="status"
-            rules={[{ required: true, message: "Vui lòng chọn trạng thái!" }]}
-          >
-            <Select placeholder="Chọn trạng thái">
-              <Option value="1">Xuất bản</Option>
-              <Option value="0">Nháp</Option>
-            </Select>
-          </Form.Item>
+          <div className="mb-4">
+            <label className="block text-sm font-medium">Trạng thái</label>
+            <Controller
+              name="status"
+              control={control}
+              defaultValue=""
+              rules={{ required: "Vui lòng chọn trạng thái!" }}
+              render={({ field }) => (
+                <Select {...field} placeholder="Chọn trạng thái" className="w-full">
+                  <Option value="1">Xuất bản</Option>
+                  <Option value="0">Nháp</Option>
+                </Select>
+              )}
+            />
+          </div>
 
-          <Form.Item name="content" label="Nội dung">
+          <div className="mb-4">
+            <label className="block text-sm font-medium">Nội dung</label>
             <Editor
               apiKey="d1hhsqhz397l5oqghrrrv35au6tvrqy79t6wyfri9h3czwnl"
-              onInit={(_, editor) => (editorRef.current = editor)}
+              onInit={(evt, editor) => (editorRef.current = { editor })}
               init={{
                 height: 500,
                 menubar: true,
-                plugins: ["advlist autolink lists link image charmap preview anchor"],
+                plugins: [
+                  "advlist autolink lists link image charmap preview anchor",
+                  "searchreplace visualblocks code fullscreen",
+                  "insertdatetime media table paste code help wordcount",
+                ],
                 toolbar:
                   "undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help",
               }}
             />
-          </Form.Item>
+          </div>
 
-          <Form.Item>
+          <div className="flex space-x-2">
             <Button type="primary" htmlType="submit">
               Lưu thay đổi
             </Button>
-            <Button onClick={() => navigate("/admin/manage-blog")} className="ml-2">
-              Hủy
-            </Button>
-            <Button type="default" onClick={handlePreview} className="ml-2">
+            <Button onClick={() => navigate("/admin/manage-blog")}>Hủy</Button>
+            <Button type="default" onClick={handlePreview}>
               Xem trước
             </Button>
-          </Form.Item>
-        </Form>
+          </div>
+        </form>
 
         <Modal
           title="Xem trước Blog"
@@ -201,8 +220,8 @@ const BlogEdit = () => {
           onCancel={() => setIsPreviewVisible(false)}
           footer={null}
         >
-          <h2>{blogData?.title}</h2>
-          <p>{blogData?.subTitle}</p>
+          <h2>{getValues("title")}</h2>
+          <p>{getValues("subTitle")}</p>
           {imageUrl && <img src={imageUrl} alt="Blog Preview" />}
           <div dangerouslySetInnerHTML={{ __html: contentPreview }} />
         </Modal>
