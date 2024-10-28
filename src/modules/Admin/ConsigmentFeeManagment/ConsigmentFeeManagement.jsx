@@ -165,7 +165,7 @@ const ConsignmentFeeManagement = () => {
           dataSource={consignmentFees?.data?.content || []}
           pagination={false}
         />
-        <div className="flex justify-end  mt-2">
+        <div className="mt-3 w-full flex justify-end ">
           <Pagination
             current={currentPage}
             pageSize={pageSize}
