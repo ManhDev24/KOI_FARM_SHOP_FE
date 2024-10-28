@@ -187,15 +187,7 @@ const ManageBlog = () => {
       </div>
 
       <div className="flex flex-col w-full">
-        <div className="w-full mb-3">
-          <Button
-            onClick={() => alert("Thêm bài viết!")}
-            danger
-            className="flex justify-center items-center"
-          >
-            <span>+</span> Thêm bài viết
-          </Button>
-        </div>
+        
 
         <div className="mt-3">
           <Table
