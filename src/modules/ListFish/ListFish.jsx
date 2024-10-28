@@ -16,12 +16,10 @@ const ListFish = () => {
   const [selectedGender, setSelectedGender] = useState("");
   const [selectDate, setSelectDate] = useState("");
   const [selectStatus, setSelectStatus] = useState("");
-  console.log("selectStatus: ", selectStatus);
   const [selectPrice, setSelectPrice] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [currentSize, setCurrentSize] = useState(100);
   const [currentPrice, setCurrentPrice] = useState(200000000);
-  console.log("currentPrice: ", currentPrice);
   const [genderFilter, setGenderFilter] = useState(0);
   const [sortField, setSortField] = useState(0);
   const [sortDirection, setSortDirection] = useState(0);
@@ -213,7 +211,6 @@ const ListFish = () => {
     setIsFiltered(true);
   };
   const handleMenuClickStatus = (item) => {
-    console.log("item: ", item);
     setSelectStatus(item.value.trim());
     setIsFiltered(true);
   };

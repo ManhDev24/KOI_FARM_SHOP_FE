@@ -186,7 +186,6 @@ const Profile = () => {
 
 
       setSelectedFile(file);
-      console.log(file)
       setAvatarPreview(URL.createObjectURL(file));
 
 
@@ -224,7 +223,6 @@ const Profile = () => {
       const data = await response.json();
       message.success('Upload ảnh thành công!');
 
-      console.log(data);
 
     } catch (error) {
 

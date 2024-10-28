@@ -128,7 +128,6 @@ const CategoryManagement = () => {
     keepPreviousData: true,
   });
 
-  console.log("ListCategory: ", ListCategory);
 
   const handleUploadChange = (info) => {
     if (info.file.status === "done") {
@@ -296,7 +295,6 @@ const CategoryManagement = () => {
   }
 
   const onSubmit = (data) => {
-    console.log("data: ", data);
     const formData = new FormData();
     let file = data?.cateImg;
     if (!dataEdit) {
@@ -310,7 +308,6 @@ const CategoryManagement = () => {
     }
 
     if (dataEdit) {
-      console.log("dataEdit: ", dataEdit);
       if (!image) {
         const { cateName, description } = data;
         const transformData = {
@@ -327,13 +324,11 @@ const CategoryManagement = () => {
         handleUpdateCategory(formData);
       }
     } else {
-      console.log("Tạo mới category với dữ liệu: ", data);
       handleCreateCategory(formData);
     }
   };
 
   const onEditFish = (data) => {
-    console.log("data: ", data);
     showModal();
     setDataEdit(data);
     reset({

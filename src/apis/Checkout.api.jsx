@@ -51,7 +51,6 @@ export const CheckoutApi = {
       const response = await fetcher.get(
         `http://localhost:8080/koifarm/payment/get-payment-status`
       );
-      console.log("response: ", response);
       return response.data;
     } catch (error) {
       throw new Error(error.response.data.message);

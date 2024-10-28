@@ -111,7 +111,6 @@ const PaymentDetailPage = () => {
   };
   const { orderId } = useParams();
 
-  console.log("orderId: ", orderId);
   const {
     data: orderDetail,
     isLoading: orderDetailLoading,
@@ -122,7 +121,6 @@ const PaymentDetailPage = () => {
     keepPreviousData: true,
   });
   const orderDetailData = orderDetail?.data;
-  console.log("orderDetailData: ", orderDetailData);
   if (orderDetailLoading) {
     return <LoadingModal />;
   }

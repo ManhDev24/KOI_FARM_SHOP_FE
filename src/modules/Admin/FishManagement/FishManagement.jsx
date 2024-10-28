@@ -18,6 +18,8 @@ import {
   Upload,
   message,
   Image,
+  Typography,
+  Divider,
 } from "antd";
 import {
   StopOutlined,
@@ -28,6 +30,7 @@ import {
 } from "@ant-design/icons";
 import FishApi from "../../../apis/Fish.api";
 import LoadingModal from "../../Modal/LoadingModal";
+const { Title, Text } = Typography;
 import { Link } from "react-router-dom";
 import _ from "lodash";
 
@@ -73,7 +76,6 @@ const FishManagement = () => {
   const [dataDetailFish, setDataDetailFish] = useState(null);
 
   const [dataEdit, setDataEdit] = useState(null);
-  console.log("dataEdit: ", dataEdit);
   const [dataView, setDataView] = useState(null);
   const [image, setImage] = useState(undefined);
   const [imageCertificate, setImageCertificate] = useState(undefined);
@@ -271,8 +273,7 @@ const FishManagement = () => {
     setImage(undefined);
   };
   const onStatusChange = (id, status) => {
-    console.log("status: ", status);
-    console.log("id: ", id);
+   
     handleChangeStatusFish(id);
   };
 
@@ -385,7 +386,6 @@ const FishManagement = () => {
     queryFn: fetchFish,
   });
 
-  console.log("ListKoi: ", ListKoi);
   const {
     mutate: handleAddFish,
     isLoading: isLoadingAddFish,
@@ -435,7 +435,6 @@ const FishManagement = () => {
 
   const onSubmit = (payload) => {
     const data = { ...payload, pH: payload?.ph };
-    console.log("data: ", data);
 
     const formData = new FormData();
 
@@ -472,12 +471,10 @@ const FishManagement = () => {
           categoryId: data?.category,
           createdDate: new Date().toISOString(),
         };
-        console.log("dataToEdit2: ", dataToEdit);
 
         handleUpdateFish(dataToEdit);
       } else {
         const dataToEdit = { ...data, Status: 1, categoryId: data?.category };
-        console.log("dataToEdit1: ", dataToEdit);
 
         handleUpdateFish(dataToEdit);
       }
@@ -496,7 +493,6 @@ const FishManagement = () => {
   };
 
   const onEditFish = async (record) => {
-    console.log("record: ", record);
     showModal();
     setDataEdit(record);
     reset({
@@ -545,7 +541,6 @@ const FishManagement = () => {
     queryKey: ["ListCategory"],
     queryFn: () => FishApi.getCategories(),
   });
-  console.log("ListCategory: ", ListCategory);
   const handleChangeImage = (e) => {
     const file = e.target.files[0];
     e.stopPropagation();
@@ -652,7 +647,6 @@ const FishManagement = () => {
                     onChange={(info) => {
                       const file = info.file.originFileObj || info.file;
                       if (file) {
-                        console.log("Selected file:", file);
                         onChange(file);
                         setImage(URL.createObjectURL(file));
                       }
@@ -722,7 +716,6 @@ const FishManagement = () => {
                     onChange={(info) => {
                       const file = info.file.originFileObj || info.file;
                       if (file) {
-                        console.log("Selected file:", file);
                         onChange(file);
                         setImageCertificate(URL.createObjectURL(file));
                       }
@@ -734,14 +727,15 @@ const FishManagement = () => {
                     >
                       {(value && value instanceof File) ||
                       imageCertificate ||
-                      dataEdit?.certificate?.image? (
+                      dataEdit?.certificate?.image ? (
                         <>
                           <img
                             className="w-[60px] h-[80px] object-cover"
                             src={
                               value && value instanceof File
                                 ? URL.createObjectURL(value)
-                                : imageCertificate || dataEdit?.certificate?.image
+                                : imageCertificate ||
+                                  dataEdit?.certificate?.image
                             }
                             alt="imageCertificate"
                           />
@@ -1193,13 +1187,51 @@ const FishManagement = () => {
         visible={isModalDetailFishOpen}
         footer={null}
         onCancel={cancelModalDetailView}
+        style={{ borderRadius: "10px", overflow: "hidden" }}
+        bodyStyle={{
+          padding: "20px",
+          borderRadius: "10px",
+          background: "#f0f2f5",
+        }}
       >
-        <h1>Nhiệt độ của nước :{dataDetailFish?.temperature}</h1>
-        <h1>Độ cứng của nước: {dataDetailFish?.water}</h1>
-        <h1>Chế độ ăn của cá: {dataDetailFish?.food}</h1>
-        <h1>Sức khỏe của cá: {dataDetailFish?.health}</h1>
-        <h1>Tính cách của cá: {dataDetailFish?.personality}</h1>
-        <h1>Độ ph của nước: {dataDetailFish?.ph}</h1>
+        <Title level={3} style={{ textAlign: "center", color: "#1890ff" }}>
+          Thông Tin Chi Tiết Cá Koi
+        </Title>
+        <Divider />
+
+        <div style={{ padding: "10px 0" }}>
+          <Text strong>Nhiệt độ của nước:</Text>{" "}
+          <Text>{dataDetailFish?.temperature}°C</Text>
+        </div>
+        <Divider />
+
+        <div style={{ padding: "10px 0" }}>
+          <Text strong>Độ cứng của nước:</Text>{" "}
+          <Text>{dataDetailFish?.water}</Text>
+        </div>
+        <Divider />
+
+        <div style={{ padding: "10px 0" }}>
+          <Text strong>Chế độ ăn của cá:</Text>{" "}
+          <Text>{dataDetailFish?.food}</Text>
+        </div>
+        <Divider />
+
+        <div style={{ padding: "10px 0" }}>
+          <Text strong>Sức khỏe của cá:</Text>{" "}
+          <Text>{dataDetailFish?.health}</Text>
+        </div>
+        <Divider />
+
+        <div style={{ padding: "10px 0" }}>
+          <Text strong>Tính cách của cá:</Text>{" "}
+          <Text>{dataDetailFish?.personality}</Text>
+        </div>
+        <Divider />
+
+        <div style={{ padding: "10px 0" }}>
+          <Text strong>Độ ph của nước:</Text> <Text>{dataDetailFish?.ph}</Text>
+        </div>
       </Modal>
     </div>
   );

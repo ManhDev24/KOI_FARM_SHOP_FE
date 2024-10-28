@@ -23,7 +23,6 @@ export const FishApi = {
   },
   getListFish: async (currentPage, pageSize = 9) => {
     try {
-      console.log("pageSize: ", pageSize);
       const response = await fetcher.get(
         `http://localhost:8080/koifarm/koifish/allkoi?page=${currentPage}&pageSize=${pageSize}`
       );
@@ -70,7 +69,6 @@ export const FishApi = {
       const response = await fetcher.get(
         `http://localhost:8080/koifarm/homepage?pageNum=1&pageSize=4`
       );
-      console.log(response.data + "aaa");
 
       return response.data.data;
     } catch (error) {

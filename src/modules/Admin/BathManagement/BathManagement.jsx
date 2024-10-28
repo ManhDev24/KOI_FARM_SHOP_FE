@@ -64,7 +64,6 @@ const BathManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [dataEdit, setDataEdit] = useState(null);
-  console.log("dataEdit: ", dataEdit);
   const [dataView, setDataView] = useState(null);
   const [image, setImage] = useState(undefined);
   const [isModalDetailBatchOpen, setIsModalDetailBatchOpen] = useState(false);
@@ -129,7 +128,6 @@ const BathManagement = () => {
     queryKey: ["listOfBatch", currentPage, debouncedQuery],
     queryFn: fetchBatch,
   });
-  console.log("listOfBatch: ", listOfBatch);
   const total = listOfBatch?.data?.totalElements;
 
   const showModal = () => {
@@ -155,7 +153,6 @@ const BathManagement = () => {
     setImage(undefined);
   };
   const onStatusChange = (id, status) => {
-    console.log("id: ", id);
     handleChangeStatusBatch(id);
   };
   const {
@@ -174,11 +171,9 @@ const BathManagement = () => {
     },
   });
   const onSubmit = (payload) => {
-    console.log("payload: ", payload);
     const data = { ...payload };
     const formData = new FormData();
     const file = data?.batchImg;
-    console.log("file: ", file);
     formData.append("categoryId", data?.categoryID);
     formData.append("quantity", data?.quantity);
     formData.append("age", data?.age);
@@ -209,7 +204,6 @@ const BathManagement = () => {
   };
 
   const onEditBatch = (record) => {
-    console.log("record: ", record);
     showModal();
     setDataEdit(record);
     reset({
@@ -510,7 +504,6 @@ const BathManagement = () => {
                     onChange={(info) => {
                       const file = info.file.originFileObj || info.file;
                       if (file) {
-                        console.log("Selected file:", file);
                         onChange(file);
                         setImage(URL.createObjectURL(file));
                       }

@@ -37,7 +37,6 @@ export const AuthApi = {
   },
   forgotEmail: async (email) => {
     try {
-      console.log("email: ", email);
       const response = await fetcher.post(
         `http://localhost:8080/koifarm/login/forgotPassword/${email}`
       );
@@ -111,7 +110,6 @@ export const AuthApi = {
       );
 
       const data = response.data;
-      console.log('Cập nhật thành công:', data);
       return data; // Trả về dữ liệu sau khi cập nhật thành công
     } catch (error) {
       console.error('Lỗi khi cập nhật hồ sơ:', error.response?.data?.message || error.message);

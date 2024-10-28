@@ -30,7 +30,6 @@ const BatchFish = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleAddToCart = (fish) => {
-    console.log("fish: ", fish);
     dispatch(addToCartBatch([{ ...fish, quantity: 1, isBatch: true }]));
   };
 

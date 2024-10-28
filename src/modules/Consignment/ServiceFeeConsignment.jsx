@@ -6,7 +6,6 @@ import CheckoutApi from '../../apis/Checkout.api';
 
 const ServiceFeeConsignment = () => {
     const serviceFee = useSelector((state) => state.consignment.formData);
-    console.log(serviceFee);
     const {
         mutate: handleSaveOrder,
         isLoading: isOrdering,
@@ -32,7 +31,6 @@ const ServiceFeeConsignment = () => {
     } = useMutation({
         mutationFn: (amount) => CheckoutApi.payByVnPay(amount,'NCB',false),
         onSuccess: (data) => {
-            console.log("data: ", data);
 
             window.location.assign(data.data.paymentUrl);
         },
