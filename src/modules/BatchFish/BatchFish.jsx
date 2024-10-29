@@ -18,7 +18,7 @@ const BatchFish = () => {
   const [selectPrice, setSelectPrice] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [currentSize, setCurrentSize] = useState();
-  const [currentPrice, setCurrentPrice] = useState(1000000000);
+  const [currentPrice, setCurrentPrice] = useState(200000000);
   const [avgSize, setAvgSize] = useState("");
   const [sortField, setSortField] = useState("");
   const [sortDirection, setSortDirection] = useState("");
@@ -551,7 +551,7 @@ const BatchFish = () => {
                     <div className="text-xl font-bold">Giá bán</div>
                     <Slider
                       min={300000}
-                      max={1000000000}
+                      max={200000000}
                       defaultValue={300000}
                       step={10000}
                       trackStyle={{ backgroundColor: "#EA4444" }}

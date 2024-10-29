@@ -23,7 +23,6 @@ const ListBlog = () => {
     return <LoadingModal isLoading={ListBlogLoading} />;
   }
 
-  console.log("ListBlog: ", ListBlog);
   if (ListBlogError) {
     return (
       <div className="text-center text-red-500">
@@ -38,7 +37,6 @@ const ListBlog = () => {
     return html.replace(/<\/?[^>]+(>|$)/g, "");
   };
 
-  // Function to navigate to the blog detail page
   const handleBlogClick = (blogId) => {
     navigate(`/blog/${blogId}`);
   };
@@ -46,16 +44,16 @@ const ListBlog = () => {
   return (
     <div>
       <div className="text-center text-2xl text-[#196b49]">Tin Hữu ích</div>
-      <div className="grid grid-cols-5 grid-rows-8 gap-4 mt-10 mb-20 me-[200px]">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mt-10 mb-20 px-10 lg:px-0">
         {blogs.length > 0 && (
           <div
-            className="col-span-2 row-span-8 col-start-2 cursor-pointer"
+            className="lg:col-span-2 lg:row-span-8 cursor-pointer"
             onClick={() => handleBlogClick(blogs[0].blogId)}
           >
             <img
-              className="h-[630px] w-[95%]"
+              className="h-[630px] w-full object-cover"
               src={blogs[0].blogImg}
-              alt={blogs[0].title}
+              alt={blogs[0].title || "Blog image"}
             />
             <h1 className="mt-4 text-[#1A8358] text-xl font-bold">
               {blogs[0].title}
@@ -69,28 +67,46 @@ const ListBlog = () => {
         {blogs.slice(1, 4).map((blog) => (
           <div
             key={blog.blogId}
-            className="col-span-2 row-span-2 col-start-4 cursor-pointer"
+            className="lg:col-span-2 row-span-2 cursor-pointer"
             onClick={() => handleBlogClick(blog.blogId)}
           >
-            <div className="flex">
-              <div className="img">
+            <div className="flex mb-4">
+              <div className="img w-1/2">
                 <img
-                  className="object-fill h-[200px] w-[300px]"
+                  className="object-cover h-[200px] w-full"
                   src={blog.blogImg}
-                  alt={blog.title}
+                  alt={blog.title || "Blog image"}
                 />
               </div>
-              <div className="ms-2 w-[300px]">
+              <div className="ms-2 w-1/2">
                 <div className="title font-bold text-[#1A8358] text-lg ">
                   {blog.title}
                 </div>
                 <div className="content">
-                  <p>{stripHtmlTags(blog.content).substring(0, 193)}</p>
+                  <p>{stripHtmlTags(blog.content).substring(0, 193)}...</p>
                 </div>
               </div>
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Pagination Controls */}
+      <div className="flex justify-center mt-5">
+        <button
+          className="bg-[#1A8358] text-white py-2 px-4 rounded-md mx-2"
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+        <span className="text-lg mx-4">Page {currentPage}</span>
+        <button
+          className="bg-[#1A8358] text-white py-2 px-4 rounded-md mx-2"
+          onClick={() => setCurrentPage((prev) => prev + 1)}
+        >
+          Next
+        </button>
       </div>
     </div>
   );
