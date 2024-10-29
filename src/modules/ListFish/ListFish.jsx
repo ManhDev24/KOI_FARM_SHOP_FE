@@ -533,9 +533,9 @@ const ListFish = () => {
                       <div className="text-center text-xl font-bold flex justify-center items-center  m-0 ">
                         <p>
                           {selectPrice === "1"
-                            ? "Giá từ thâp đến cao"
+                            ? "Giá từ cao đến thâp"
                             : selectPrice === "2"
-                              ? "Giá từ cao đến thâp"
+                              ? "Giá từ thâp đến cao"
                               : "Sắp xếp theo giá"}
                         </p>
                       </div>
