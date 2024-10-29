@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "./ListBlog.css";
 import moment from "moment";
 import LoadingModal from "../../Modal/LoadingModal";
 import { useQuery } from "@tanstack/react-query";
@@ -16,7 +15,7 @@ const ListBlog = () => {
     isError: ListBlogError,
   } = useQuery({
     queryKey: ["ListBlog", currentPage],
-    queryFn: () => BlogApi.getAllBlog(currentPage, 4),
+    queryFn: () => BlogApi.getAllBlog(currentPage, 5),
   });
 
   if (ListBlogLoading) {
@@ -32,81 +31,112 @@ const ListBlog = () => {
   }
 
   const blogs = ListBlog?.data?.content || [];
+  const mainBlog = blogs[0];
 
-  const stripHtmlTags = (html) => {
-    return html.replace(/<\/?[^>]+(>|$)/g, "");
-  };
+  // Fake data for smaller blogs
+  const smallerBlogs = [
+    {
+      blogId: "2",
+      blogImg: "https://via.placeholder.com/400x200",
+      title: "Smaller Blog Post 1",
+      postDate: "2023-10-14",
+      content:
+        "This is a smaller blog post that provides some useful information related to the main topic.",
+    },
+    {
+      blogId: "3",
+      blogImg: "https://via.placeholder.com/400x200",
+      title: "Smaller Blog Post 2",
+      postDate: "2023-10-13",
+      content:
+        "This is another smaller blog post that provides additional insights on the subject.",
+    },
+    {
+      blogId: "4",
+      blogImg: "https://via.placeholder.com/400x200",
+      title: "Smaller Blog Post 3",
+      postDate: "2023-10-12",
+      content:
+        "This is yet another smaller blog post with valuable information to support the topic.",
+    },
+    {
+      blogId: "5",
+      blogImg: "https://via.placeholder.com/400x200",
+      title: "Smaller Blog Post 4",
+      postDate: "2023-10-11",
+      content:
+        "This is the last smaller blog post providing related content to the main topic discussed.",
+    },
+  ];
 
   const handleBlogClick = (blogId) => {
     navigate(`/blog/${blogId}`);
   };
 
   return (
-    <div>
-      <div className="text-center text-2xl text-[#196b49]">Tin Hữu ích</div>
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mt-10 mb-20 px-10 lg:px-0">
-        {blogs.length > 0 && (
+    <div className="max-w-7xl mx-auto my-10 px-4 lg:px-0">
+      <div className="text-center text-3xl font-bold text-[#196b49] mb-10">
+        Tin Hữu ích
+      </div>
+      <div className="grid gap-8 lg:grid-cols-2">
+        {/* Main Blog Post */}
+        {mainBlog && (
           <div
-            className="lg:col-span-2 lg:row-span-8 cursor-pointer"
-            onClick={() => handleBlogClick(blogs[0].blogId)}
+            className="cursor-pointer flex flex-col shadow-md rounded-lg overflow-hidden"
+            onClick={() => handleBlogClick(mainBlog.blogId)}
           >
             <img
-              className="h-[630px] w-full object-cover"
-              src={blogs[0].blogImg}
-              alt={blogs[0].title || "Blog image"}
+              className="w-full h-[500px] object-cover"
+              src={mainBlog.blogImg}
+              alt={mainBlog.title || "Blog image"}
             />
-            <h1 className="mt-4 text-[#1A8358] text-xl font-bold">
-              {blogs[0].title}
-            </h1>
-            <h1>
-              {moment(blogs[0].postDate).format("DD [tháng] M [năm], YYYY")}
-            </h1>
-          </div>
-        )}
-
-        {blogs.slice(1, 4).map((blog) => (
-          <div
-            key={blog.blogId}
-            className="lg:col-span-2 row-span-2 cursor-pointer"
-            onClick={() => handleBlogClick(blog.blogId)}
-          >
-            <div className="flex mb-4">
-              <div className="img w-1/2">
-                <img
-                  className="object-cover h-[200px] w-full"
-                  src={blog.blogImg}
-                  alt={blog.title || "Blog image"}
+            <div className="p-4 bg-white flex flex-col w-full h-[180px] flex-grow">
+              <h2 className="font-bold text-[#1A8358] text-2xl mb-2">
+                {mainBlog.title}
+              </h2>
+              <h3 className="text-gray-500 mb-2">
+                {moment(mainBlog.postDate).format("DD [tháng] M [năm], YYYY")}
+              </h3>
+              <div className="text-gray-700 overflow-hidden">
+                <p
+                  dangerouslySetInnerHTML={{
+                    __html: mainBlog.content
+                      ? mainBlog.content.substring(0, 210) + "..."
+                      : "",
+                  }}
                 />
-              </div>
-              <div className="ms-2 w-1/2">
-                <div className="title font-bold text-[#1A8358] text-lg ">
-                  {blog.title}
-                </div>
-                <div className="content">
-                  <p>{stripHtmlTags(blog.content).substring(0, 193)}...</p>
-                </div>
               </div>
             </div>
           </div>
-        ))}
-      </div>
+        )}
 
-      {/* Pagination Controls */}
-      <div className="flex justify-center mt-5">
-        <button
-          className="bg-[#1A8358] text-white py-2 px-4 rounded-md mx-2"
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-        >
-          Previous
-        </button>
-        <span className="text-lg mx-4">Page {currentPage}</span>
-        <button
-          className="bg-[#1A8358] text-white py-2 px-4 rounded-md mx-2"
-          onClick={() => setCurrentPage((prev) => prev + 1)}
-        >
-          Next
-        </button>
+        {/* Smaller Blog Posts - 2x2 Grid Layout */}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          {smallerBlogs.map((blog) => (
+            <div
+              key={blog.blogId}
+              className="cursor-pointer flex flex-col shadow-md rounded-lg overflow-hidden"
+              onClick={() => handleBlogClick(blog.blogId)}
+            >
+              <img
+                className="w-full h-40 object-cover"
+                src={blog.blogImg}
+                alt={blog.title || "Blog image"}
+              />
+              <div className="p-4 bg-white flex flex-col h-[180px]">
+                <h2 className="font-bold text-[#1A8358] text-xl mb-2">
+                  {blog.title}
+                </h2>
+                <h3 className="text-gray-500 mb-2">
+                  {moment(blog.postDate).format("DD [tháng] M [năm], YYYY")}
+                </h3>
+                <div className="text-gray-700 overflow-hidden">
+                  <p>{blog.content.substring(0, 100)}...</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
