@@ -48,16 +48,16 @@ const BatchComparisonModal = ({ isOpen, onClose, selectedBatches, setSelectedBat
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2  gap-4">
             {selectedBatches.map((batch) => (
-              <Link to={`/batch-detail/${batch.batchID}`} key={batch.batchID} className="relative bg-white border rounded-lg overflow-hidden shadow-md">
-                <div className="flex justify-center bg-gray-100">
+              <Link to={`/batch-detail/${batch.batchID}`} key={batch.batchID} className=" ">
+                <div className="flex justify-center ">
                   <img
                     src={batch.batchImg}
                     alt={batch.categoryName || "Không có tên"}
-                    className="w-full h-[300px] lg:w-[270px]  object-cover"
+                    className="w-full h-[300px] lg:w-[270px] rounded-t-lg  object-cover"
                   />
                 </div>
 
-                <div className="border-t-2 lg:w-[270px] flex-col justify-center relative left-[72px] border-red-500 p-4">
+                <div className="border-b-2 border-x-2 w-full lg:w-[272px]  flex-col  rounded-b-lg justify-center relative left-[72px] border-red-500 p-4">
                   <h3 className="text-lg font-semibold text-center text-red-500">
                     {batch.categoryName || "Không có tên"} - Số lượng: {batch.quantity}
                   </h3>

@@ -16,11 +16,12 @@ import {
 } from "antd";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { EyeOutlined, PlusOutlined, EditOutlined } from "@ant-design/icons";
+import { EyeOutlined, PlusOutlined, EditOutlined, CaretUpOutlined, CaretDownOutlined } from "@ant-design/icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ConsignmentApi } from "../../../apis/Consignment.api";
 import { Controller, useForm } from "react-hook-form";
 import FishApi from "../../../apis/Fish.api";
+import moment from "moment";
 
 const validationSchema = yup.object().shape({
   healthStatus: yup
@@ -44,7 +45,7 @@ const FishCareManagement = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
-
+  const [fishDetails, setFishDetails] = useState({});
   const queryClient = useQueryClient();
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -74,7 +75,18 @@ const FishCareManagement = () => {
     queryKey: ["ListFishCare", currentPage, debouncedQuery],
     queryFn: fetchFishCare,
   });
-
+  const { mutate: handleFishDetail } = useMutation({
+    mutationFn: (id) => ConsignmentApi.getAllHealthCareConsignmentForCustomerDetail(id),
+    onSuccess: (data, variables) => {
+      setFishDetails((prevDetails) => ({
+        ...prevDetails,
+        [variables]: data.data.healthcare || [],
+      }));
+    },
+    onError: (error) => {
+      message.error('Lỗi xảy ra khi lấy chi tiết chăm sóc cá');
+    },
+  });
   const { mutate: addHeathForKoi, isPending: isAddingHealth } = useMutation({
     mutationFn: (data) => ConsignmentApi.addHeathForKoi(data),
     onSuccess: () => {
@@ -318,14 +330,14 @@ const FishCareManagement = () => {
         </div>
         <div className="flex flex-col mt-2 w-full">
           <div className="w-full flex justify-start">
-            <Button
+            {/* <Button
               onClick={() => setIsModalOpen(true)}
               danger
               className="flex justify-center items-center"
               icon={<PlusOutlined />}
             >
               Thêm Cá
-            </Button>
+            </Button> */}
           </div>
           <div className="mt-3">
             <div className="overflow-x-auto scrollbar-custom">
@@ -335,6 +347,143 @@ const FishCareManagement = () => {
                 dataSource={ListFishCare?.data?.koiFishReponseList || []} // Use data from API
                 pagination={false}
                 loading={isLoadingListFishCare}
+                expandable={{
+                  expandIconColumnIndex: 10,
+                  columnTitle: <span>Xem chi tiết lịch sử chăm sóc</span>,
+                  columnWidth: 200,
+                  expandedRowRender: (record) => {
+                    const healthcareData = fishDetails[record.id];
+
+                    if (!healthcareData) {
+                      return (
+                        <div className="flex justify-center items-center">
+                          <Spin tip="Loading..." />
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div>
+                        <h3 className='text-center font-bold'>Chi tiết Lịch sử chăm sóc cho cá {record.name} ID: {record.id} </h3>
+                        <Table
+                          locale={{
+                            triggerDesc: 'Sắp xếp giảm dần',
+                            triggerAsc: 'Sắp xếp tăng dần',
+                            cancelSort: 'Hủy sắp xếp'
+                          }}
+                          columns={[
+                            {
+                              title: 'Tình trạng sức khỏe',
+                              dataIndex: 'healthStatus',
+                              key: 'healthStatus',
+                              align: 'center'
+                            },
+                            {
+                              title: 'Kích thước phát triển',
+                              dataIndex: 'growthStatus',
+                              key: 'growthStatus',
+                              align: 'center',
+                              render: (_, record) => {
+                                return record.growthStatus.toFixed(2) + ' cm';
+
+                              }
+                            },
+                            {
+                              title: 'Chênh lệch kích thước phát triển',
+                              dataIndex: 'growthStatusDifference',
+                              key: 'growthStatusDifference',
+                              render: (_, record, index) => {
+                                if (index === healthcareData.length - 1) {
+                                  return 0; // Last record, no next record to compare with
+                                }
+                                const nextGrowthStatus = healthcareData[index + 1].growthStatus;
+                                const currentGrowthStatus = record.growthStatus;
+                                const differences = currentGrowthStatus - nextGrowthStatus;
+                                const difference = parseFloat(differences.toFixed(2));
+                                return (
+                                  <>
+                                    {difference}{" "}
+                                    {difference > 0 ? (
+                                      <CaretUpOutlined style={{ fontSize: '16px', color: 'green' }} />
+                                    ) : (
+                                      <CaretDownOutlined style={{ fontSize: '16px', color: 'red' }} />
+                                    )}
+                                  </>
+                                );
+                              },
+
+                              align: 'center'
+                            }
+                            ,
+                            {
+                              title: 'Môi trường chăm sóc',
+                              dataIndex: 'careEnvironment',
+                              key: 'careEnvironment',
+                              align: 'center'
+
+                            },
+                            {
+                              title: 'Ghi chú',
+                              dataIndex: 'note',
+                              key: 'note',
+                              align: 'center'
+                            },
+                            {
+                              title: 'Ngày',
+                              dataIndex: 'date',
+                              key: 'date',
+                              sorter: (a, b) => {
+                                if (a.date && b.date) {
+                                  return a.date.valueOf() - b.date.valueOf();
+                                } else if (a.date) {
+                                  return -1;
+                                } else if (b.date) {
+                                  return 1;
+                                } else {
+                                  return 0;
+                                }
+                              },
+                              render: (date) => {
+                                return date ? date.format('HH:mm DD-MM-YYYY') : 'N/A';
+                              },
+                              align: 'center'
+
+                            },
+
+
+                            {
+                              title: 'Ngày ký gửi còn lại',
+                              dataIndex: 'dayRemain',
+                              key: 'dayRemain',
+                              align: 'center'
+                            },
+
+                          ]}
+                          dataSource={healthcareData.map((item, index) => {
+                            const dateObj = item.date ? moment(item.date, 'YYYY-MM-DD HH:mm:ss') : null;
+                            return {
+                              key: index,
+                              healthStatus: item.healthStatus || record.healthStatus,
+                              growthStatus: item.growthStatus || record.growthStatus,
+                              careEnvironment: item.careEnvironment || record.careEnvironment,
+                              note: item.note || 'N/A',
+                              date: dateObj,
+                              dayRemain: item.dayRemain,
+
+                            };
+                          })}
+                          pagination={false}
+                          rowKey={(record) => record.key}
+                        />
+                      </div>
+                    );
+                  },
+                  onExpand: (expanded, record) => {
+                    if (expanded && !fishDetails[record.id]) {
+                      handleFishDetail(record.id);
+                    }
+                  },
+                }}
               />
             </div>
             <div className="flex justify-end mt-2 mb-2">
