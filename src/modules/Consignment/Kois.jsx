@@ -39,7 +39,7 @@ const Kois = () => {
 
             try {
                 const response = await ConsignmentApi.getAllHealthCareConsignmentForCustomer(id, currentPageCare, pageSizeCare);
-                setFishCareList(response.data.koiFishReponseList || []);
+                setFishCareList(response.data.content || []);
                 setFishCareData(response.data);
             } catch (error) {
                 toast.error('Có lỗi xảy ra khi gọi API chăm sóc cá');
@@ -243,17 +243,26 @@ const Kois = () => {
                     }}
                     dataSource={fishCareList.map((fish) => ({
                         key: fish.id,
-                        id: fish.id,
-                        image: fish.koiImage || 'defaultImage.png',
-                        name: fish.category || 'Unknown',
-                        careEnvironment: fish.healthcare?.careEnvironment || 'Đang cập nhật',
-                        healthStatus: fish.healthcare?.healthStatus || 'Đang cập nhật',
-                        growthStatus: fish.healthcare?.growthStatus || 'Đang cập nhật',
-                        dayRemain: fish.healthcare?.dayRemain || 'Đang cập nhật',
-                        grow: fish.healthcare?.growthStatus - fish.healthcare?.lastGrowth,
+                        consignmentID: fish.consignmentID,
+                        id: fish.koiFish.id,
+                        image: fish.koiFish.koiImage || 'defaultImage.png',
+                        name: fish.koiFish.category || 'Unknown',
+                        careEnvironment: fish.koiFish.healthcare?.careEnvironment || 'Đang cập nhật',
+                        healthStatus: fish.koiFish.healthcare?.healthStatus || 'Đang cập nhật',
+                        growthStatus: fish.koiFish.healthcare?.growthStatus || 'Đang cập nhật',
+                        dayRemain: fish.koiFish.healthcare?.dayRemain || 'Đang cập nhật',
+                        grow: fish.koiFish.healthcare?.growthStatus - fish.koiFish.healthcare?.lastGrowth,
 
                     }))}
                     columns={[
+                        {
+                            title: 'Mã ký gửi',
+                            dataIndex: 'consignmentID',
+                            key: 'consignmentID',
+                            sorter: (a, b) => a.id - b.id,
+                            width: '120px',
+                            align: 'center'
+                        },
                         {
                             title: 'ID của cá',
                             dataIndex: 'id',
@@ -303,7 +312,16 @@ const Kois = () => {
                             dataIndex: 'growthStatus',
                             key: 'growthStatus',
                             align: 'center',
+                            render: (text, record) => {
+                                // Check if growthStatus is a valid number
+                                const growthStatus = parseFloat(record.growthStatus);
+                                return !isNaN(growthStatus) 
+                                    ? growthStatus.toFixed(2) + ' cm' 
+                                    : 'N/A'; // Display 'N/A' if growthStatus is not a valid number
+                            }
                         },
+                        
+                        
                         {
                             title: 'Kích thước tăng trưởng',
                             dataIndex: 'grow',

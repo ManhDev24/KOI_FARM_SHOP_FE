@@ -175,21 +175,24 @@ const FishDetail = () => {
                       <div className="text-center font-bold text-[24px] !mb-[5px] text-[#FA4444]">
                         {fishDetails.price != null && !isNaN(fishDetails.price)
                           ? fishDetails.price.toLocaleString("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            })
+                            style: "currency",
+                            currency: "VND",
+                          })
                           : "Chưa có giá"}
                       </div>
                     </div>
                     <div className="flex justify-center me-6">
-                      <Link>
-                        <Button
-                          onClick={() => handleAddToCart(fishDetails)}
-                          className="w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]"
-                        >
-                          Đặt Mua
-                        </Button>
-                      </Link>
+                      {fishDetails.status === 1 ?
+                        < Link >
+                          <Button
+                            onClick={() => handleAddToCart(fishDetails)}
+                            className="w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]"
+                          >
+                            Đặt Mua
+                          </Button>
+                        </Link>
+                        : <></>
+                      }
                     </div>
                   </div>
                 </div>
@@ -389,9 +392,8 @@ const FishDetail = () => {
 
                 <Button
                   onClick={handleCompare}
-                  className={`bg-[#FA4444] text-white fixed z-50 left-[100px] top-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${
-                    selectedItems.length === 0 ? "disabled" : ""
-                  }`}
+                  className={`bg-[#FA4444] text-white fixed z-50 left-[100px] top-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${selectedItems.length === 0 ? "disabled" : ""
+                    }`}
                   disabled={selectedItems.length === 0}
                 >
                   Xem So Sánh ({selectedItems.length}) Cá Koi
@@ -401,7 +403,7 @@ const FishDetail = () => {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

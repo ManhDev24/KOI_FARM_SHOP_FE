@@ -85,36 +85,36 @@ const ConsignmentFeeManagement = () => {
       key: "consignmentFeeId",
     },
     {
-      title: "Duration (months)",
+      title: "Gói (tháng)",
       dataIndex: "duration",
       key: "duration",
     },
     {
-      title: "Rate (%)",
+      title: "tỉ lệ (%)",
       dataIndex: "rate",
       key: "rate",
       render: (rate) => `${rate * 100}%`,
     },
     {
-      title: "Created Date",
+      title: "Ngày tạo",
       dataIndex: "createdDate",
       key: "createdDate",
       render: (date) => new Date(date).toLocaleDateString(),
     },
     {
-      title: "On Sale",
+      title: "Loại phí",
       dataIndex: "sale",
       key: "sale",
-      render: (sale) => (sale ? "Sale" : "Care"),
+      render: (sale) => (sale ? "Bán" : "Chăm sóc"),
     },
     {
-      title: "Status",
+      title: "Trạng thái",
       dataIndex: "status",
       key: "status",
-      render: (status) => (status ? "Active" : "Inactive"),
+      render: (status) => (status ? "Đang hoạt động" : "Ngưng hoạt động"),
     },
     {
-      title: "Actions",
+      title: "Hành động",
       key: "actions",
       render: (_, record) => (
         <Button onClick={() => handleEdit(record)}>Edit</Button>
@@ -150,9 +150,9 @@ const ConsignmentFeeManagement = () => {
     <div>
       <div className="flex flex-col justify-center items-center">
         <div className="w-full flex justify-between mb-4">
-          <Title level={3}>Consignment Fee Management</Title>
+          <Title level={3}>Quản lý chi phí ký gửi</Title>
           <Button onClick={() => setIsModalOpen(true)} type="primary">
-            + Add Consignment Fee
+            + Thêm phí ký gửi
           </Button>
         </div>
         <Table
@@ -174,7 +174,7 @@ const ConsignmentFeeManagement = () => {
       </div>
 
       <Modal
-        title={editingRecord ? "Edit Consignment Fee" : "Add Consignment Fee"}
+        title={editingRecord ? "Chính sửa phí ký gửi": "Thêm phí ký gửi"}
         open={isModalOpen}
         footer={null}
         onCancel={handleCancel}
@@ -184,14 +184,14 @@ const ConsignmentFeeManagement = () => {
         <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
           <Row gutter={[24, 15]}>
             <Col span={24}>
-              <Form.Item label="Duration (months)">
+              <Form.Item label="Gói (theo tháng)">
                 <Controller
                   name="duration"
                   control={control}
                   render={({ field }) => (
                     <InputNumber
                       {...field}
-                      placeholder="Enter duration"
+                      placeholder="Nhập gói"
                       style={{ width: "100%" }}
                     />
                   )}
@@ -199,14 +199,14 @@ const ConsignmentFeeManagement = () => {
               </Form.Item>
             </Col>
             <Col span={24}>
-              <Form.Item label="Rate (%)">
+              <Form.Item label="Tỉ lệ (%)">
                 <Controller
                   name="rate"
                   control={control}
                   render={({ field }) => (
                     <InputNumber
                       {...field}
-                      placeholder="Enter rate"
+                      placeholder="Nhập tỉ lệ"
                       min={0}
                       max={100}
                       style={{ width: "100%" }}
@@ -216,7 +216,7 @@ const ConsignmentFeeManagement = () => {
               </Form.Item>
             </Col>
             <Col span={24}>
-              <Form.Item label="On Sale">
+              <Form.Item label="Loại ký gửi">
                 <Controller
                   name="sale"
                   control={control}
@@ -224,8 +224,8 @@ const ConsignmentFeeManagement = () => {
                     <Switch
                       {...field}
                       checked={field.value}
-                      checkedChildren="Sale"
-                      unCheckedChildren="Care"
+                      checkedChildren="ký gửi bán "
+                      unCheckedChildren="Ký gửi chăm sóc"
                     />
                   )}
                 />

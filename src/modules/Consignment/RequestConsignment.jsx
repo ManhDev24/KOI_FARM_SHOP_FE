@@ -1,6 +1,6 @@
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Breadcrumb, Button, Form, Input, Row, Select, Upload, Image, Steps, message, Col } from 'antd'
+import { Breadcrumb, Button, Form, Input, Row, Select, Upload, Image, Steps, message, Col, Modal } from 'antd'
 import TextArea from 'antd/es/input/TextArea';
 import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
@@ -100,6 +100,7 @@ const RequestConsignment = () => {
     const [consignmentPackForSell, setConsignmentPackForSell] = useState([]);
     const [consignmentPackForTakeCare, setConsignmentPackForTakeCare] = useState([]);
     const [consignmentRates, setConsignmentRates] = useState({});
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
 
 
@@ -224,7 +225,7 @@ const RequestConsignment = () => {
     // Second useEffect to handle service fee calculation
     useEffect(() => {
         if (inputPrice && SelectedPackage) {
-           
+
             const fee = handleFee(inputPrice, SelectedPackage);
 
             setServiceFee(fee);
@@ -361,7 +362,7 @@ const RequestConsignment = () => {
 
             const consignmentID = response.data;
             dispatch(saveConsignmentID(consignmentID));
-
+            localStorage.removeItem('fishConsignmentID');
             handleCurrentPages(currentPage);
             message.success('Đăng ký ký gửi thành công');
             setIsLoading(false);
@@ -398,7 +399,15 @@ const RequestConsignment = () => {
             if (!accountId) {
                 throw new Error('Account ID not found in localStorage');
             }
+            const userAddress = dataProfile?.address;
            
+
+            if (!userAddress) {
+
+                setIsModalVisible(true);
+                return;
+            }
+
             const x = serviceFee;
             formData.append('serviceFee', x);
             formData.append('accountId', accountId);
@@ -422,7 +431,10 @@ const RequestConsignment = () => {
             toast.error('Error in form submission');
         }
     };
-
+    const handleModalOk = () => {
+        setIsModalVisible(false);
+        navigate('/profile');
+    };
 
     const onFinishFailed = (errorInfo) => {
         errorInfo.values.serviceFee = serviceFee;
@@ -540,7 +552,7 @@ const RequestConsignment = () => {
     };
     const handleSelectPackage = (value) => {
         setSelectedPackage(value);
-        
+
 
     };
 
@@ -573,7 +585,7 @@ const RequestConsignment = () => {
                 });
                 setServiceFee(0)
             }
-       
+
 
     };
     const handleDeleteImage = () => {
@@ -627,7 +639,16 @@ const RequestConsignment = () => {
                 </div>
 
                 <div className="w-[70%] border m-10 p-10 form-container">
-
+                    <Modal
+                        title="Địa chỉ chưa được cập nhật"
+                        visible={isModalVisible}
+                        onOk={handleModalOk}
+                        onCancel={() => setIsModalVisible(false)}
+                        okText="Cập nhật thông tin cá nhấn"
+                        cancelText="Hủy"
+                    >
+                        <p>Địa chỉ của bạn chưa được cập nhật. Vui lòng cập nhật thông tin cá nhân để tiệp tục trãi nghiệm tính năng ký gửi</p>
+                    </Modal>
                     <Form
                         form={form}
                         onFinish={onFinish}

@@ -54,48 +54,50 @@ const ComparisonModal = ({ isOpen, onClose, selectedItems, setSelectedItems, rem
               <Link to={`/fish-detail/${item.id} `} key={item.id}>
                 <div key={item.id} className="">
                   {/* Hiển thị ảnh cá Koi */}
-                  <div className="mb-4">
+                  <div className="">
                     <img
                       src={item.koiImage}
                       alt={item.category || "Không có tên"}
-                      className="w-[265px] h-[400px] object-cover rounded-lg"
+                      className="w-[265px] h-[400px] object-cover rounded-t-lg"
                     />
                   </div>
 
                   {/* Thông tin chi tiết cá Koi */}
-                  <h3 className="text-xl font-semibold ms-3 mb-2 text-[#FA4444]">
-                    {item.category || "Không có tên"}
-                  </h3>
-                  <p className="mb-2 ms-3">Giới tính: {(item.gender) ? 'Koi Cái' : 'Koi Đực' || "Không có thông tin"}</p>
-                  <p className="mb-2 ms-3">Tuổi: {item.age || "Không có thông tin"}</p>
-                  <p className="mb-2 ms-3">Kích thước: {item.size || "Không có thông tin"} cm</p>
-                  <p className="mb-2 ms-3">Nguồn gốc: {item.origin || "Không có thông tin"}</p>
-                  <p className="mb-2 ms-3">Giống: {item.category || "Không có thông tin"}</p>
-                  <p className="font-bold text-lg text-center">
-                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}
-                  </p>
+                  <div className='border-2 border-[#FA4444] border-t-0 rounded-b-lg'>
+                    <h3 className="text-xl text-center font-semibold ms-3 mb-2 text-[#FA4444]">
+                      {item.category || "Không có tên"}
+                    </h3>
+                    <p className="mb-2 ms-3">Giới tính: {(item.gender) ? 'Koi Cái' : 'Koi Đực' || "Không có thông tin"}</p>
+                    <p className="mb-2 ms-3">Tuổi: {item.age || "Không có thông tin"}</p>
+                    <p className="mb-2 ms-3">Kích thước: {item.size || "Không có thông tin"} cm</p>
+                    <p className="mb-2 ms-3">Nguồn gốc: {item.origin || "Không có thông tin"}</p>
+                    <p className="mb-2 ms-3">Giống: {item.category || "Không có thông tin"}</p>
+                    <p className="font-bold text-lg text-center">
+                      {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}
+                    </p>
 
-                  {/* Nút xóa item khỏi so sánh */}
-                  <Link>
-                    <button
-                      className="bg-red-500 relative  bottom-[665px] left-[198px] text-white font-bold py-1 px-4 rounded mt-4"
-                      onClick={() => {
-                        removeItem(item);
-                        // Cập nhật localStorage sau khi xóa item
-                        setSelectedItems(prevItems => prevItems.filter(i => i.id !== item.id));
-                      }}
-                    >
-                      Xóa
-                    </button>
-                  </Link>
-                  <Link>
-                    <Button
-                      onClick={() => handleAddToCart(item)}
-                      className="w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]"
-                    >
-                      Đặt Mua
-                    </Button>
-                  </Link>
+                    {/* Nút xóa item khỏi so sánh */}
+                    <Link>
+                      <button
+                        className="bg-red-500 relative  bottom-[665px] left-[198px] text-white font-bold py-1 px-4 rounded mt-[32px]"
+                        onClick={() => {
+                          removeItem(item);
+                          // Cập nhật localStorage sau khi xóa item
+                          setSelectedItems(prevItems => prevItems.filter(i => i.id !== item.id));
+                        }}
+                      >
+                        Xóa
+                      </button>
+                    </Link>
+                    <Link>
+                      <Button
+                        onClick={() => handleAddToCart(item)}
+                        className="w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]"
+                      >
+                        Đặt Mua
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               </Link>
             ))}
