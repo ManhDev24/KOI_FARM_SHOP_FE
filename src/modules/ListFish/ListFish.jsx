@@ -148,13 +148,13 @@ const ListFish = () => {
       value: "",
     },
     {
-      key: "HighestPrices",
-      label: "Giá từ thấp đến cao",
+      key: "LowestPrices",
+      label: "Giá từ cao đến thấp",
       value: "1",
     },
     {
-      key: "LowestPrices",
-      label: "Giá từ cao đến thấp",
+      key: "HighestPrices",
+      label: " Giá từ thấp đến cao",
       value: "2",
     },
   ];

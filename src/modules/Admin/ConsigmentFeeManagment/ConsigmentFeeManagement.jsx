@@ -85,12 +85,12 @@ const ConsignmentFeeManagement = () => {
       key: "consignmentFeeId",
     },
     {
-      title: "Gói (tháng)",
+      title: "Thời hạn (Tháng )",
       dataIndex: "duration",
       key: "duration",
     },
     {
-      title: "tỉ lệ (%)",
+      title: "Phần trăm  (%)",
       dataIndex: "rate",
       key: "rate",
       render: (rate) => `${rate * 100}%`,
@@ -102,22 +102,22 @@ const ConsignmentFeeManagement = () => {
       render: (date) => new Date(date).toLocaleDateString(),
     },
     {
-      title: "Loại phí",
+      title: "Công thức dùng để ",
       dataIndex: "sale",
       key: "sale",
-      render: (sale) => (sale ? "Bán" : "Chăm sóc"),
+      render: (sale) => (sale ? "Mua bán" : "Chăm sóc"),
     },
     {
-      title: "Trạng thái",
+      title: "Trang thái",
       dataIndex: "status",
       key: "status",
-      render: (status) => (status ? "Đang hoạt động" : "Ngưng hoạt động"),
+      render: (status) => (status ? "Kích hoạt" : "Ẩn"),
     },
     {
-      title: "Hành động",
+      title: "Chức năng",
       key: "actions",
       render: (_, record) => (
-        <Button onClick={() => handleEdit(record)}>Edit</Button>
+        <Button onClick={() => handleEdit(record)}>Chỉnh sửa</Button>
       ),
     },
   ];
@@ -150,9 +150,9 @@ const ConsignmentFeeManagement = () => {
     <div>
       <div className="flex flex-col justify-center items-center">
         <div className="w-full flex justify-between mb-4">
-          <Title level={3}>Quản lý chi phí ký gửi</Title>
+          <Title level={3}>Quản lý chi phí kí gửi </Title>
           <Button onClick={() => setIsModalOpen(true)} type="primary">
-            + Thêm phí ký gửi
+            + Thêm phí kí gửi
           </Button>
         </div>
         <Table
@@ -174,7 +174,7 @@ const ConsignmentFeeManagement = () => {
       </div>
 
       <Modal
-        title={editingRecord ? "Chính sửa phí ký gửi": "Thêm phí ký gửi"}
+        title={editingRecord ? "Chỉnh sửa phí kí gửi" : "Tạo mới phí kí gửi"}
         open={isModalOpen}
         footer={null}
         onCancel={handleCancel}
@@ -184,14 +184,14 @@ const ConsignmentFeeManagement = () => {
         <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
           <Row gutter={[24, 15]}>
             <Col span={24}>
-              <Form.Item label="Gói (theo tháng)">
+              <Form.Item label="Thời hạn (Tháng)">
                 <Controller
                   name="duration"
                   control={control}
                   render={({ field }) => (
                     <InputNumber
                       {...field}
-                      placeholder="Nhập gói"
+                      placeholder="Enter duration"
                       style={{ width: "100%" }}
                     />
                   )}
@@ -199,14 +199,14 @@ const ConsignmentFeeManagement = () => {
               </Form.Item>
             </Col>
             <Col span={24}>
-              <Form.Item label="Tỉ lệ (%)">
+              <Form.Item label="Rate (%)">
                 <Controller
                   name="rate"
                   control={control}
                   render={({ field }) => (
                     <InputNumber
                       {...field}
-                      placeholder="Nhập tỉ lệ"
+                      placeholder="Enter rate"
                       min={0}
                       max={100}
                       style={{ width: "100%" }}
@@ -216,7 +216,7 @@ const ConsignmentFeeManagement = () => {
               </Form.Item>
             </Col>
             <Col span={24}>
-              <Form.Item label="Loại ký gửi">
+              <Form.Item label="Dùng để">
                 <Controller
                   name="sale"
                   control={control}
@@ -224,15 +224,15 @@ const ConsignmentFeeManagement = () => {
                     <Switch
                       {...field}
                       checked={field.value}
-                      checkedChildren="ký gửi bán "
-                      unCheckedChildren="Ký gửi chăm sóc"
+                      checkedChildren="Bán"
+                      unCheckedChildren="Chăm sóc"
                     />
                   )}
                 />
               </Form.Item>
             </Col>
             <Col span={24}>
-              <Form.Item label="Status">
+              <Form.Item label="Trạng thái">
                 <Controller
                   name="status"
                   control={control}
@@ -240,8 +240,8 @@ const ConsignmentFeeManagement = () => {
                     <Switch
                       {...field}
                       checked={field.value}
-                      checkedChildren="Active"
-                      unCheckedChildren="Inactive"
+                      checkedChildren="Kích hoạt"
+                      unCheckedChildren="Ẩn"
                     />
                   )}
                 />
