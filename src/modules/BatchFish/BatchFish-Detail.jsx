@@ -122,7 +122,7 @@ const BatchFishDetail = () => {
                         <div className='text-center my-2 text-[#FA4444] font-bold'>
                           Lô {' '}
                           {fishDetails.categoryName} {" "}  <br />                      
-                          {fishDetails.age} tuổi {" "}Kích thước
+                          {fishDetails.age} tuổi {" "}Kích thước trung bình{" "}
                           {fishDetails.avgSize} 
                         </div>
                         <div className='ms-6'>
