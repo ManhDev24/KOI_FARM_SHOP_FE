@@ -31,16 +31,14 @@ const BlogEdit = () => {
     },
   });
 
-  // Use useEffect to set form values when blogData changes
   useEffect(() => {
     if (blogData) {
-      console.log('blogData: ', blogData); // Debugging: ensure blogData is being fetched correctly
+      console.log('blogData: ', blogData); 
       setValue("title", blogData.data?.title || "");
       setValue("subTitle", blogData.data?.subTitle || "");
       setValue("status", blogData.data?.status ? "1" : "0");
       setImageUrl(blogData.data?.blogImg || "");
       
-      // Set TinyMCE content only if the editor is initialized
       if (editorRef.current && editorRef.current.editor) {
         editorRef.current.editor.setContent(blogData.data?.content || "");
       }
