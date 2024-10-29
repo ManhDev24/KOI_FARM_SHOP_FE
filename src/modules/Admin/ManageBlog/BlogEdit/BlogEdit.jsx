@@ -16,42 +16,55 @@ const BlogEdit = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const editorRef = useRef(null);
-  console.log('editorRef: ', editorRef);
   const [imageUrl, setImageUrl] = useState("");
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
   const [contentPreview, setContentPreview] = useState("");
-  const { handleSubmit, control, setValue, getValues } = useForm();
+  const { handleSubmit, control, setValue, getValues, reset } = useForm();
+  const [isEditorReady, setIsEditorReady] = useState(false);
+
+  if (!blogId) {
+    console.error("blogId is undefined. Make sure it's initialized.");
+  }
 
   // Fetch blog data by blogId
-  const { data: blogData, isLoading: isFetchingBlog } = useQuery({
+  const { data: blogData, isLoading: isFetchingBlog, error } = useQuery({
     queryKey: ["Blog", blogId],
-    queryFn: () => BlogApi.getDetailBlog(blogId),
+    queryFn: () => {
+      console.log("Fetching blog data for blogId:", blogId);
+      return BlogApi.getDetailBlog(blogId);
+    },
+    enabled: !!blogId,
     onError: (error) => {
-      console.error("Fetching failed, error: ", error);
+      console.error("Fetching failed, error:", error);
     },
   });
 
+  // Populate form values when blogData and editor are ready
   useEffect(() => {
-    if (blogData) {
-      console.log('blogData: ', blogData); 
-      setValue("title", blogData.data?.title || "");
-      setValue("subTitle", blogData.data?.subTitle || "");
-      setValue("status", blogData.data?.status ? "1" : "0");
+    if (blogData && isEditorReady) {
+      console.log("Fetched blogData:", blogData);
+
+      // Reset all form fields at once
+      reset({
+        title: blogData.data?.title || "",
+        subTitle: blogData.data?.subTitle || "",
+        status: blogData.data?.status ? "1" : "0",
+      });
+
       setImageUrl(blogData.data?.blogImg || "");
-      
-      if (editorRef.current && editorRef.current.editor) {
-        editorRef.current.editor.setContent(blogData.data?.content || "");
-      }
+
+      // Set content in the editor
+      editorRef.current.setContent(blogData.data?.content || "");
     }
-  }, [blogData, setValue]);
+  }, [blogData, isEditorReady, reset]);
 
   // Mutation for updating the blog
   const { mutate: updateBlog, isLoading: isUpdatingBlog } = useMutation({
-    mutationFn: (updatedBlog) => BlogApi.updateBlog(blogId, updatedBlog),
+    mutationFn: async (updatedBlog) => BlogApi.updateBlog(updatedBlog, blogId),
     onSuccess: () => {
       message.success("Blog đã được cập nhật thành công!");
       queryClient.invalidateQueries(["Blog", blogId]);
-      navigate("/admin/manage-blog");
+      navigate("/admin/blog-management");
     },
     onError: (error) => {
       const errorMessage = error?.message || "Đã có lỗi xảy ra!";
@@ -61,32 +74,53 @@ const BlogEdit = () => {
 
   // Handle form submission
   const onSubmit = (values) => {
-    const content = editorRef.current?.editor?.getContent();
+    if (!editorRef.current) {
+      message.error("Trình soạn thảo chưa sẵn sàng, vui lòng thử lại!");
+      return;
+    }
+
+    const content = editorRef.current.getContent();
     if (!content || content.trim() === "") {
       message.error("Vui lòng nhập nội dung trong editor!");
       return;
     }
 
-    const updatedBlog = {
-      ...values,
-      status: values.status === "1",
-      blogImg: imageUrl,
-      content,
-      postDate: moment().format(),
-    };
-    updateBlog(updatedBlog);
+    if (!imageUrl) {
+      message.error("Vui lòng tải lên hình ảnh cho bài viết!");
+      return;
+    }
+
+    // Prepare the FormData
+    const formData = new FormData();
+    formData.append("title", values.title);
+    formData.append("subTitle", values.subTitle);
+    formData.append("status", values.status === "1");
+    formData.append("content", content);
+    formData.append("postDate", moment().format());
+
+    // If imageUrl is a File object, add it to FormData
+    if (typeof imageUrl === "object") {
+      formData.append("blogImg", imageUrl);
+    }
+
+    // Call the mutation to update the blog
+    updateBlog(formData);
   };
 
   // Handle image upload
   const handleUploadChange = ({ file }) => {
     if (file.status === "done" && file.response) {
       setImageUrl(file.response.url);
+    } else if (file.originFileObj) {
+      // If it's a new file being uploaded, set the file object
+      setImageUrl(file.originFileObj);
     }
   };
 
   // Handle preview button click
   const handlePreview = () => {
-    const content = editorRef.current?.editor?.getContent() || "";
+    if (!editorRef.current) return;
+    const content = editorRef.current.getContent() || "";
     setContentPreview(content);
     setIsPreviewVisible(true);
   };
@@ -100,6 +134,7 @@ const BlogEdit = () => {
       <div className="w-full max-w-3xl bg-white p-6 shadow-md rounded-md">
         <h2 className="text-xl font-bold mb-4">Chỉnh sửa bài viết</h2>
         <form onSubmit={handleSubmit(onSubmit)}>
+          {/* Title Field */}
           <div className="mb-4">
             <label className="block text-sm font-medium">Tiêu đề</label>
             <Controller
@@ -117,6 +152,7 @@ const BlogEdit = () => {
             />
           </div>
 
+          {/* Sub Title Field */}
           <div className="mb-4">
             <label className="block text-sm font-medium">Mô tả ngắn</label>
             <Controller
@@ -134,6 +170,7 @@ const BlogEdit = () => {
             />
           </div>
 
+          {/* Image Upload Field */}
           <div className="mb-4">
             <label className="block text-sm font-medium">Hình ảnh</label>
             <Upload
@@ -145,7 +182,7 @@ const BlogEdit = () => {
               {imageUrl ? (
                 <div className="relative">
                   <img
-                    src={imageUrl}
+                    src={typeof imageUrl === "string" ? imageUrl : URL.createObjectURL(imageUrl)}
                     alt="Uploaded"
                     className="w-full h-32 object-cover"
                   />
@@ -166,6 +203,7 @@ const BlogEdit = () => {
             </Upload>
           </div>
 
+          {/* Status Field */}
           <div className="mb-4">
             <label className="block text-sm font-medium">Trạng thái</label>
             <Controller
@@ -182,11 +220,20 @@ const BlogEdit = () => {
             />
           </div>
 
+          {/* Content Editor */}
           <div className="mb-4">
             <label className="block text-sm font-medium">Nội dung</label>
             <Editor
-              apiKey="d1hhsqhz397l5oqghrrrv35au6tvrqy79t6wyfri9h3czwnl"
-              onInit={(evt, editor) => (editorRef.current = { editor })}
+              apiKey="d1hhsqhz397l5oqghrrrv35au6tvrqy79t6wyfri9h3czwnly"
+              onInit={(evt, editor) => {
+                editorRef.current = editor;
+                setIsEditorReady(true);
+
+                // If blogData is already available, set the content
+                if (blogData) {
+                  editor.setContent(blogData.data?.content || "");
+                }
+              }}
               init={{
                 height: 500,
                 menubar: true,
@@ -201,17 +248,19 @@ const BlogEdit = () => {
             />
           </div>
 
+          {/* Form Buttons */}
           <div className="flex space-x-2">
             <Button type="primary" htmlType="submit">
               Lưu thay đổi
             </Button>
-            <Button onClick={() => navigate("/admin/manage-blog")}>Hủy</Button>
+            <Button onClick={() => navigate("/admin/blog-management")}>Hủy</Button>
             <Button type="default" onClick={handlePreview}>
               Xem trước
             </Button>
           </div>
         </form>
 
+        {/* Preview Modal */}
         <Modal
           title="Xem trước Blog"
           visible={isPreviewVisible}
@@ -220,7 +269,12 @@ const BlogEdit = () => {
         >
           <h2>{getValues("title")}</h2>
           <p>{getValues("subTitle")}</p>
-          {imageUrl && <img src={imageUrl} alt="Blog Preview" />}
+          {imageUrl && (
+            <img
+              src={typeof imageUrl === "string" ? imageUrl : URL.createObjectURL(imageUrl)}
+              alt="Blog Preview"
+            />
+          )}
           <div dangerouslySetInnerHTML={{ __html: contentPreview }} />
         </Modal>
       </div>

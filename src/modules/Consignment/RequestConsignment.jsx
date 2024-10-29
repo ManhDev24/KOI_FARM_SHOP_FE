@@ -983,14 +983,14 @@ const RequestConsignment = () => {
                                 </div>
                                 <div>
                                     <Form.Item
-                                        label={<span className="w-[200px]">Nội dung chứng chỉ</span>}
+                                        label={<span className="w-[200px]">Ghi chú</span>}
 
                                         labelCol={{ span: 24 }}
                                         wrapperCol={{ span: 24 }}
                                         name="notes"
                                         className='flex justify-center '
                                         rules={[{
-                                            required: true, message: <span className='w-[500px] relative '>Vui lòng điền nội dung của chứng chỉ</span>
+                                            required: true, message: <span className='w-[500px] relative '>Vui lòng điền ghi chú</span>
                                         },
 
                                         ]}

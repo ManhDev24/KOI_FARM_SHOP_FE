@@ -186,7 +186,7 @@ const Kois = () => {
                             dataIndex: 'price',
                             key: 'price',
                             render: (price) => {
-                                return price ? `${price.toLocaleString()} đ` : 'N/A';
+                                return price ? `${price.toLocaleString()} đ` : 'Đang cập nhật';
                             },
                             align: 'center',
                             sorter: (a, b) => a.id - b.id,
@@ -198,7 +198,7 @@ const Kois = () => {
                             dataIndex: 'serviceFee',
                             key: 'serviceFee',
                             render: (price) => {
-                                return price ? `${price.toLocaleString()} đ` : 'N/A';
+                                return price ? `${price.toLocaleString()} đ` : 'Đang cập nhật';
                             },
                             align: 'center',
                             sorter: (a, b) => a.id - b.id,
@@ -287,6 +287,7 @@ const Kois = () => {
                                 </div>
                             ),
                             align: 'center',
+                            width: '120px',
                         },
                         {
                             title: 'Danh mục',
@@ -300,12 +301,14 @@ const Kois = () => {
                             dataIndex: 'careEnvironment',
                             key: 'careEnvironment',
                             align: 'center',
+                            width: '120px',
                         },
                         {
                             title: 'Tình trạng sức khỏe mới nhất',
                             dataIndex: 'healthStatus',
                             key: 'healthStatus',
                             align: 'center',
+                            width: '120px',
                         },
                         {
                             title: 'Trạng thái kích thước mới nhất',
@@ -317,8 +320,9 @@ const Kois = () => {
                                 const growthStatus = parseFloat(record.growthStatus);
                                 return !isNaN(growthStatus) 
                                     ? growthStatus.toFixed(2) + ' cm' 
-                                    : 'N/A'; // Display 'N/A' if growthStatus is not a valid number
-                            }
+                                    : 'Đang cập nhật'; // Display 'Đang cập nhật' if growthStatus is not a valid number
+                            },
+                            width: '120px',
                         },
                         
                         
@@ -346,13 +350,15 @@ const Kois = () => {
                                 );
                             },
                             align: 'center',
+                            width: '120px',
                         },
 
                         {
                             title: 'Ngày ký gửi còn lại',
                             dataIndex: 'dayRemain',
                             key: 'dayRemain',
-                            align: 'center'
+                            align: 'center',
+                            width: '120px',
                         },
 
                     ]}
@@ -465,7 +471,7 @@ const Kois = () => {
                                                     }
                                                 },
                                                 render: (date) => {
-                                                    return date ? date.format('HH:mm DD-MM-YYYY') : 'N/A';
+                                                    return date ? date.format('HH:mm DD-MM-YYYY') : 'Đang cập nhật';
                                                 },
                                                 align: 'center'
 
@@ -487,7 +493,7 @@ const Kois = () => {
                                                 healthStatus: item.healthStatus || record.healthStatus,
                                                 growthStatus: item.growthStatus || record.growthStatus,
                                                 careEnvironment: item.careEnvironment || record.careEnvironment,
-                                                note: item.note || 'N/A',
+                                                note: item.note || 'Đang cập nhật',
                                                 date: dateObj,
                                                 dayRemain: item.dayRemain,
 
