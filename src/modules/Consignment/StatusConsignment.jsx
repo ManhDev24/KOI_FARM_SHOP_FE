@@ -42,17 +42,17 @@ const StatusConsignment = () => {
   const dispatch = useDispatch();
 
   // Centralized localStorage fetching logic
-   // Centralized localStorage fetching logic
-   // Centralized localStorage fetching logic
-   useEffect(() => {
+  // Centralized localStorage fetching logic
+  // Centralized localStorage fetching logic
+  useEffect(() => {
     const user = localStorage.getItem("user");
     if (!consignmentID) {
-     
+
       const storedID = localStorage.getItem("consignmentID");
       if (storedID && !isNaN(storedID)) {
         dispatch(saveConsignmentID(Number(storedID))); // Convert to number
       }
-    } else if(consignmentID && user) {
+    } else if (consignmentID && user) {
       localStorage.setItem("consignmentID", consignmentID);
     }
   }, [consignmentID, dispatch]);
@@ -65,7 +65,7 @@ const StatusConsignment = () => {
     queryKey: ['consignmentStatus', consignmentID],
     queryFn: () => ConsignmentApi.statusConsignment(consignmentID),
     enabled: !!consignmentID,
-    
+
   });
 
   // Save service fee to store
@@ -97,21 +97,21 @@ const StatusConsignment = () => {
         if (typeof response.data === "number") {
           dispatch(saveConsignmentID(response.data));
 
-        navigate('/Form-consignment');
-        message.success('Hủy ký gửi thành công');
+          navigate('/Form-consignment');
+          message.success('Hủy ký gửi thành công');
 
 
-      } else {
-        navigate('/Form-consignment')
-        localStorage.setItem('consignmentID', '');
-        localStorage.setItem('fishConsignmentID');
-        message.success('Hủy ký gửi thành công');
-      }
-    },
-    onError: (error) => {
+        } else {
+          navigate('/Form-consignment')
+          localStorage.setItem('consignmentID', '');
+          localStorage.setItem('fishConsignmentID');
+          message.success('Hủy ký gửi thành công');
+        }
+      },
+      onError: (error) => {
 
-    },
-  });
+      },
+    });
 
   // Handle cancel button click
   const handleCancelClick = () => {
@@ -151,7 +151,7 @@ const StatusConsignment = () => {
     useMutation({
       mutationFn: (amount) => CheckoutApi.payByVnPay(amount, "NCB", false),
       onSuccess: (data) => {
-        localStorage.setItem('typePayment','false');
+        localStorage.setItem('typePayment', 'false');
         window.location.assign(data.data.paymentUrl);
       },
       onError: (error) => {
@@ -173,8 +173,23 @@ const StatusConsignment = () => {
     return null;
   }
 
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case 1:
+        return { label: "Đang duyệt", color: "text-blue-500" };
+      case 2:
+        return { label: "Đã duyệt", color: "text-green-500" };
+      case 3:
+        return { label: "Từ chối", color: "text-red-500" };
+      case 4:
+        return { label: "Chờ duyệt", color: "text-yellow-500" };
+      default:
+        return { label: "Hết hạn", color: "text-gray-500" };
+    }
+  };
   const { data } = consignmentDetails;
   const { koiFish } = data;
+  const status = getStatusLabel(data.status);
   return (
     <>
       <div className="w-full max-w-[950px] h-[89px] relative mx-auto p-4">
@@ -198,16 +213,13 @@ const StatusConsignment = () => {
           </div>
 
           {/* Mã ký gửi và Trạng thái */}
+
           <div className="flex justify-between items-center mb-6">
             <p className="text-xl font-bold text-gray-700">
-              Mã ký gửi:{" "}
-              <span className="text-[#FA4444]">#{data.consignmentID}</span>
+              Mã ký gửi: <span className="text-[#FA4444]">#{data.consignmentID}</span>
             </p>
-            <p
-              className={`text-lg font-semibold ${data.status === 1 ? "text-blue-500" : "text-green-500"
-                }`}
-            >
-              Trạng thái: {data.status === 1 ? "Đang duyệt" : "Đã duyệt"}
+            <p className={`text-lg font-semibold ${status.color}`}>
+              Trạng thái: {status.label}
             </p>
           </div>
 
@@ -474,40 +486,40 @@ const StatusConsignment = () => {
                 </Row>
               </Card>
 
-      {koiFish.certificate && (
-        <Card title="Chứng nhận" bordered={false} className="mt-4">
-          <Row gutter={[16, 16]}>
-            <Col xs={24} sm={12}>
-              <p>
-                <strong>Tên chứng nhận:</strong>{" "}
-                {koiFish.certificate.name}
-              </p>
-            </Col>
-            <Col xs={24} sm={12}>
-              <p>
-                <strong>Ngày cấp:</strong>{" "}
-                {moment(koiFish.certificate.createdDate).format(
-                  "DD/MM/YYYY"
-                )}
-              </p>
-            </Col>
-            <Col xs={24}>
-              <Image
-                width={300}
-                src={koiFish.certificate.image}
-                alt="Hình ảnh chứng nhận"
-                className="rounded-lg shadow-lg"
-              />
-            </Col>
-          </Row>
-        </Card>
-      )}
-    </div>
-  )
-}
+              {koiFish.certificate && (
+                <Card title="Chứng nhận" bordered={false} className="mt-4">
+                  <Row gutter={[16, 16]}>
+                    <Col xs={24} sm={12}>
+                      <p>
+                        <strong>Tên chứng nhận:</strong>{" "}
+                        {koiFish.certificate.name}
+                      </p>
+                    </Col>
+                    <Col xs={24} sm={12}>
+                      <p>
+                        <strong>Ngày cấp:</strong>{" "}
+                        {moment(koiFish.certificate.createdDate).format(
+                          "DD/MM/YYYY"
+                        )}
+                      </p>
+                    </Col>
+                    <Col xs={24}>
+                      <Image
+                        width={300}
+                        src={koiFish.certificate.image}
+                        alt="Hình ảnh chứng nhận"
+                        className="rounded-lg shadow-lg"
+                      />
+                    </Col>
+                  </Row>
+                </Card>
+              )}
+            </div>
+          )
+          }
         </Card >
 
-  {/* return to create new */ }
+        {/* return to create new */}
       </div >
     </>
   );
