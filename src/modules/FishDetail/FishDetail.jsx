@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import FishApi from "../../apis/Fish.api";
-import { Breadcrumb, Button, Col } from "antd";
+import { Breadcrumb, Button, Col, Image } from "antd";
 import { addToCart } from "../../Redux/Slices/Cart_Slice";
 import { useDispatch } from "react-redux";
 import fish from "/img/SOWA.webp";
@@ -142,9 +142,13 @@ const FishDetail = () => {
             <div className="grid grid-cols-4">
               <div className="col-span-2">
                 <div className="flex justify-end me-10">
-                  <img
+                  <div className="relative h-[26px] w-[86px] bg-[#FFFFFF] rounded-ee-[10px] rounded-tl-[5px] left-[86px] border-[#FA4444] border-2 text-center text-[#FA4444]">
+                    {fishDetails.status === 2 ? 'Đã bán' : fishDetails.status === 1 ? 'Đang bán' : fishDetails.status === 3 ? 'ký gửi' : null}</div>
+                  <Image
                     src={selectedImage}
                     // {selectedImage}  // Use the selected image from the carousel
+                    width={250}
+                    height={350}
                     className="w-[250px] h-[350px] rounded-[10px]"
                     alt={fishDetails.category || "Koi Fish"}
                   />

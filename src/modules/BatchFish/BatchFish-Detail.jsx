@@ -105,6 +105,8 @@ const BatchFishDetail = () => {
               <div className="grid grid-cols-4">
                 <div className="col-span-2">
                   <div className="flex justify-end me-10">
+                    <div className="relative h-[26px] w-[86px] bg-[#FFFFFF] rounded-ee-[10px] rounded-tl-[5px] left-[86px] border-[#FA4444] border-2 text-center text-[#FA4444]">
+                      {fishDetails.status === 2 ? 'Đã bán' : fishDetails.status === 1 ? 'Đang bán' : fishDetails.status === 3 ? 'ký gửi' : null}</div>
                     <Image
                       src={selectedImage}
                       width={250}
@@ -121,9 +123,9 @@ const BatchFishDetail = () => {
                       <div className='w-[300px] h-[350px] rounded-[10px] border-2 border-[#FA4444]'>
                         <div className='text-center my-2 text-[#FA4444] font-bold'>
                           Lô {' '}
-                          {fishDetails.categoryName} {" "}  <br />                      
+                          {fishDetails.categoryName} {" "}  <br />
                           {fishDetails.age} tuổi {" "}Kích thước trung bình{" "}
-                          {fishDetails.avgSize} 
+                          {fishDetails.avgSize}
                         </div>
                         <div className='ms-6'>
                           <div className='mb-2 '>Độ thuần chủng: {fishDetails.purebred ? 'Thuần chủng' : 'F1'}</div>
