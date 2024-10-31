@@ -84,7 +84,7 @@ const CreateBlog = () => {
   return (
     <div>
       <div className="container mx-auto py-4">
-        <h1 className="text-center text-red-600 text-3xl mb-4">Create Blog</h1>
+        <h1 className="text-center text-red-600 text-3xl mb-4">Tạo Blog</h1>
         <form onSubmit={handleSubmit(handlePublish)}>
           {/* Title Input */}
           <div className="mb-4">
