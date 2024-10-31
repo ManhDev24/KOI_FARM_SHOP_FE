@@ -132,7 +132,7 @@ const Knowledge = () => {
                       <div className='relative w-[250px]'>
                         {/* Tag */}
                         <div className='absolute w-[86px] bg-[#FFFFFF] rounded-ee-[10px] rounded-tl-[5px] border-[#FA4444] border-2 text-center text-[#FA4444]'>
-                          {card.status ? 'Đang bán' : 'Đã bán'}
+                          {card.status === 1 ? 'Đang bán' : card.status === 3 ? 'ký gửi' : 'Đã bán'}
                         </div>
                         {/* Koi fish image */}
                         <div className='rounded-[10px]'>

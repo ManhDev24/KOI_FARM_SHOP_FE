@@ -222,7 +222,7 @@ const StatusConsignment = () => {
                   : data.status === 3
                     ? "Từ chối"
                     : data.status === 4
-                      ? "Chờ duyệt"
+                      ? "Chờ thanh toán"
                       : "Hết hạn"}
             </p>
           </div>
