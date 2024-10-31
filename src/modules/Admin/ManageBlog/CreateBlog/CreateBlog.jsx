@@ -88,16 +88,16 @@ const CreateBlog = () => {
         <form onSubmit={handleSubmit(handlePublish)}>
           {/* Title Input */}
           <div className="mb-4">
-            <label className="block text-gray-700">Title:</label>
+            <label className="block text-gray-700">Tiều đề:</label>
             <Controller
               name="title"
               control={control}
-              rules={{ required: "Title is required" }}
+              rules={{ required: "Tiều đề không được bỏ trống" }}
               render={({ field }) => (
                 <Input
                   {...field}
                   className="w-full px-3 py-2 border rounded"
-                  placeholder="Enter title"
+                  placeholder="Nhập tiêu đề"
                 />
               )}
             />
@@ -108,16 +108,16 @@ const CreateBlog = () => {
 
           {/* Subtitle Input */}
           <div className="mb-4">
-            <label className="block text-gray-700">Subtitle:</label>
+            <label className="block text-gray-700">Tiều đề phụ:</label>
             <Controller
               name="subtitle"
               control={control}
-              rules={{ required: "Subtitle is required" }}
+              rules={{ required: "Tiêu đề phụ không được bỏ trống" }}
               render={({ field }) => (
                 <Input
                   {...field}
                   className="w-full px-3 py-2 border rounded"
-                  placeholder="Enter subtitle"
+                  placeholder="Nhập tiêu đề phụ"
                 />
               )}
             />
@@ -128,7 +128,7 @@ const CreateBlog = () => {
 
           {/* Image Upload */}
           <div className="mb-4">
-            <label className="block text-gray-700">Image:</label>
+            <label className="block text-gray-700">Ảnh:</label>
             <Controller
               name="image"
               control={control}
@@ -171,7 +171,7 @@ const CreateBlog = () => {
 
           {/* Status Select */}
           <div className="mb-4">
-            <label className="block text-gray-700 mb-1">Status:</label>
+            <label className="block text-gray-700 mb-1">Trạng thái của bài viết:</label>
             <Controller
               name="status"
               control={control}
@@ -181,8 +181,8 @@ const CreateBlog = () => {
                   className="w-full border rounded-md focus:outline-none focus:ring focus:ring-green-300"
                   placeholder="Select status"
                 >
-                  <Select.Option value={false}>Draft</Select.Option>
-                  <Select.Option value={true}>Published</Select.Option>
+                  <Select.Option value={false}>Nháp</Select.Option>
+                  <Select.Option value={true}>Xuất bản</Select.Option>
                 </Select>
               )}
             />
@@ -190,7 +190,7 @@ const CreateBlog = () => {
 
           {/* Date Input */}
           <div className="mb-4">
-            <label className="block text-gray-700">Date:</label>
+            <label className="block text-gray-700">Ngày viết:</label>
             <Controller
               name="date"
               control={control}
@@ -207,7 +207,7 @@ const CreateBlog = () => {
 
           {/* Content Editor */}
           <div className="mb-4">
-            <label className="block text-gray-700">Content:</label>
+            <label className="block text-gray-700">Nội dung:</label>
             <Editor
               apiKey="d1hhsqhz397l5oqghrrrv35au6tvrqy79t6wyfri9h3czwnl"
               onInit={(_evt, editor) => (editorRef.current = editor)}
