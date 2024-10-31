@@ -142,7 +142,7 @@ const FishDetail = () => {
             <div className="grid grid-cols-4">
               <div className="col-span-2">
                 <div className="flex justify-end me-10">
-                  <div className="relative h-[26px] w-[86px] bg-[#FFFFFF] rounded-ee-[10px] rounded-tl-[5px] left-[86px] border-[#FA4444] border-2 text-center text-[#FA4444]">
+                  <div className="relative h-[26px] z-50 w-[86px] bg-[#FFFFFF] rounded-ee-[10px] rounded-tl-[5px] left-[86px] border-[#FA4444] border-2 text-center text-[#FA4444]">
                     {fishDetails.status === 2 ? 'Đã bán' : fishDetails.status === 1 ? 'Đang bán' : fishDetails.status === 3 ? 'ký gửi' : null}</div>
                   <Image
                     src={selectedImage}
