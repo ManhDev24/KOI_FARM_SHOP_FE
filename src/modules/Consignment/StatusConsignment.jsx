@@ -168,24 +168,11 @@ const StatusConsignment = () => {
     navigate("/Form-consignment");
     return null;
   }
-  const getStatusLabel = (status) => {
-    switch (status) {
-      case 1:
-        return { label: "Đang duyệt", color: "text-blue-500" };
-      case 2:
-        return { label: "Đã duyệt", color: "text-green-500" };
-      case 3:
-        return { label: "Từ chối", color: "text-red-500" };
-      case 4:
-        return { label: "Chờ duyệt", color: "text-yellow-500" };
-      default:
-        return { label: "Hết hạn", color: "text-gray-500" };
-    }
-  };
+
   if (!consignmentDetails) {
     return null;
   }
-  const status = getStatusLabel(data.status);
+
   const { data } = consignmentDetails;
   const { koiFish } = data;
   return (
@@ -214,17 +201,30 @@ const StatusConsignment = () => {
           <div className="flex justify-between items-center mb-6">
             <p className="text-xl font-bold text-gray-700">
               Mã ký gửi: <span className="text-[#FA4444]">#{data.consignmentID}</span>
-              Mã ký gửi:{" "}
-              <span className="text-[#FA4444]">#{data.consignmentID}</span>
             </p>
-            <p className={`text-lg font-semibold ${status.color}`} >
-              Trạng thái: {status.label} </p>
-              <p
-                className={`text-lg font-semibold ${data.status === 1 ? "text-blue-500" : "text-green-500"
-                  }`}
-              >
-                Trạng thái: {data.status === 1 ? "Đang duyệt" : "Đã duyệt"}
-              </p>
+            <p
+              className={`text-lg font-semibold ${data.status === 1
+                  ? "text-blue-500"
+                  : data.status === 2
+                    ? "text-green-500"
+                    : data.status === 3
+                      ? "text-red-500"
+                      : data.status === 4
+                        ? "text-yellow-500"
+                        : "text-gray-500"
+                }`}
+            >
+              Trạng thái:{" "}
+              {data.status === 1
+                ? "Đang duyệt"
+                : data.status === 2
+                  ? "Đã duyệt"
+                  : data.status === 3
+                    ? "Từ chối"
+                    : data.status === 4
+                      ? "Chờ duyệt"
+                      : "Hết hạn"}
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
