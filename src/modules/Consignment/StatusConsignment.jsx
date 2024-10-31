@@ -173,23 +173,8 @@ const StatusConsignment = () => {
     return null;
   }
 
-  const getStatusLabel = (status) => {
-    switch (status) {
-      case 1:
-        return { label: "Đang duyệt", color: "text-blue-500" };
-      case 2:
-        return { label: "Đã duyệt", color: "text-green-500" };
-      case 3:
-        return { label: "Từ chối", color: "text-red-500" };
-      case 4:
-        return { label: "Chờ duyệt", color: "text-yellow-500" };
-      default:
-        return { label: "Hết hạn", color: "text-gray-500" };
-    }
-  };
   const { data } = consignmentDetails;
   const { koiFish } = data;
-  const status = getStatusLabel(data.status);
   return (
     <>
       <div className="w-full max-w-[950px] h-[89px] relative mx-auto p-4">
@@ -213,13 +198,16 @@ const StatusConsignment = () => {
           </div>
 
           {/* Mã ký gửi và Trạng thái */}
-
           <div className="flex justify-between items-center mb-6">
             <p className="text-xl font-bold text-gray-700">
-              Mã ký gửi: <span className="text-[#FA4444]">#{data.consignmentID}</span>
+              Mã ký gửi:{" "}
+              <span className="text-[#FA4444]">#{data.consignmentID}</span>
             </p>
-            <p className={`text-lg font-semibold ${status.color}`}>
-              Trạng thái: {status.label}
+            <p
+              className={`text-lg font-semibold ${data.status === 1 ? "text-blue-500" : "text-green-500"
+                }`}
+            >
+              Trạng thái: {data.status === 1 ? "Đang duyệt" : "Đã duyệt"}
             </p>
           </div>
 
@@ -277,7 +265,7 @@ const StatusConsignment = () => {
                 </li>
                 <li>
                   <strong className="font-semibold text-gray-800">
-                    Trực tuyến:
+                    Hình thức ký gửi:
                   </strong>{" "}
                   {data.online ? "Trực tuyến" : "Trực tiếp"}
                 </li>
@@ -393,7 +381,40 @@ const StatusConsignment = () => {
 
               )
 
-                : null}
+                : data.status === 3 ? (
+                  <>
+                    {/* <button
+                      onClick={handleCurrentPages}
+                      className="px-6 py-3 bg-green-500 text-white rounded-md shadow hover:bg-green-600 hover:shadow-lg transition duration-200"
+                    >
+                      Tới bước Thanh toán
+                    </button> */}
+                    <button
+                      onClick={() => {
+                        handleCancelClick();
+                      }}
+                      className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-500 transition duration-300"
+                    >
+                      Tạo mới
+                    </button>
+                  </>
+
+                ) : <>
+                  {/* <button
+                  onClick={handleCurrentPages}
+                  className="px-6 py-3 bg-green-500 text-white rounded-md shadow hover:bg-green-600 hover:shadow-lg transition duration-200"
+                >
+                  Tới bước Thanh toán
+                </button> */}
+                  <button
+                    onClick={() => {
+                      handleCancelClick();
+                    }}
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-500 transition duration-300"
+                  >
+                    Tạo mới
+                  </button>
+                </>}
           </div>
 
           {/* Thông tin chi tiết cá Koi, được điều khiển bởi state showDetails */}
