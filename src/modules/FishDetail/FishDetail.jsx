@@ -182,7 +182,7 @@ const FishDetail = () => {
                       </div>
                     </div>
                     <div className="flex justify-center me-6">
-                      {fishDetails.status === 1 ?
+                      {fishDetails.status === 1 || fishDetails.status === 3 ?
                         < Link >
                           <Button
                             onClick={() => handleAddToCart(fishDetails)}

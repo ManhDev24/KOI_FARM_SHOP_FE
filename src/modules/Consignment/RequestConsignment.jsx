@@ -186,7 +186,7 @@ const RequestConsignment = () => {
                     const pureBredValue = koiData.purebred?.toString() || '';
                     setSelectedPureBred(pureBredValue);
                     setInputPrice(koiData.price);
-
+                
                     setImageSrc(koiData.koiImage);
                     setImageSrcCer(certificate.data.image);
                     setSelectedKoiImage(koiData.koiImage);
@@ -202,11 +202,13 @@ const RequestConsignment = () => {
                         size: koiData.size,
                         categoryId: selectedCateId,
                         pureBred: pureBredValue,
+                        food: koiData.food,
                         personality: koiData.personality,
                         health: koiData.health,
                         ph: koiData.ph,
                         temperature: koiData.temperature,
                         price: koiData.price,
+                        name:certificate.data.name,
                     });
                 } catch (error) {
                     console.error('Lỗi khi lấy dữ liệu cá Koi:', error);
