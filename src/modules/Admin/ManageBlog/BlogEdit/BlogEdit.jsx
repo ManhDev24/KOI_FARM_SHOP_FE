@@ -224,7 +224,7 @@ const BlogEdit = () => {
           <div className="mb-4">
             <label className="block text-sm font-medium">Nội dung</label>
             <Editor
-              apiKey="d1hhsqhz397l5oqghrrrv35au6tvrqy79t6wyfri9h3czwnly"
+              apiKey="uq6bo85jzhy5cjgxycq9auzgf4fbnkiddn5r2w3zaygnasra"
               onInit={(evt, editor) => {
                 editorRef.current = editor;
                 setIsEditorReady(true);

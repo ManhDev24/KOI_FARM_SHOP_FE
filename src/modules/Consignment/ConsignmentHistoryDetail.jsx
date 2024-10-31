@@ -280,7 +280,7 @@ const ConsignmentHistoryDetail = () => {
           <LoadingModal isLoading={isLoading} />
         ) : (
           <Table
-            className='flex justify-center h-[50vh]'
+            className='flex justify-center h-full'
             dataSource={data?.data?.content || []}
             columns={columns}
             locale={{ emptyText: isLoading ? '' : 'Không có dữ liệu ký gửi' }}
