@@ -56,8 +56,7 @@ const validationSchema = yup.object().shape({
   gender: yup.boolean().required("Gioi tinh là bắt buộc"),
   purebred: yup
     .number()
-    .typeError("Thuần chủng phải là số 0 hoặc 1")
-    .oneOf([0, 1], "Thuần chủng phải là 0 hoặc 1")
+    .typeError("Độ Thuần chủng phải là Thuần chủng hoặc F1")
     .required("Thuần chủng là bắt buộc"),
 
   food: yup.string().required("Đồ ăn là bắt buộc"),

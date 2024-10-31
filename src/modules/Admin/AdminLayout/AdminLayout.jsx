@@ -130,14 +130,14 @@ const AdminLayout = () => {
               label: "Quản lý lô cá koi",
             },
             {
-              key: "/admin/fishCare-management",
-              icon: <PlusOutlined />,
-              label: "Quản tình trạng cá koi",
-            },
-            {
               key: "/admin/category-management",
               icon: <SafetyCertificateOutlined />,
               label: "Quản lý danh mục ",
+            },
+            {
+              key: "/admin/payment-management",
+              icon: <PayCircleOutlined />,
+              label: "Quản lý đơn hàng",
             },
             {
               key: "/admin/consignment-management",
@@ -145,10 +145,11 @@ const AdminLayout = () => {
               label: "Quản lý ký gửi ",
             },
             {
-              key: "/admin/payment-management",
-              icon: <PayCircleOutlined />,
-              label: "Quản lý đơn hàng",
+              key: "/admin/fishCare-management",
+              icon: <PlusOutlined />,
+              label: "Quản tình trạng cá koi",
             },
+
             {
               key: "/admin/blog-management",
               icon: <BlockOutlined />,
