@@ -116,26 +116,12 @@ const Navbar = () => {
   ];
 
   const newsMenuItems = [
-    {
-      key: "1",
-      label: (
-        <a target="_self" rel="noopener noreferrer" href="/cakoi">
-          Kiến thức cá Koi
-        </a>
-      ),
-    },
+
     {
       key: "2",
       label: <Link to={"/list-blog"}>Tin tức cá Koi</Link>,
     },
-    {
-      key: "3",
-      label: (
-        <a target="_self" rel="noopener noreferrer" href="/cakoi">
-          Tin tức nội bộ
-        </a>
-      ),
-    },
+
   ];
 
   const profileMenuItems = [
@@ -285,7 +271,7 @@ const Navbar = () => {
           xl:grid xl:grid-cols-1 xl:ms-[50px] xl:col-span-5 
           2xl:col-span-4  sm:h-[200px]"
         >
-          <ul className="flex flex-col md:flex-row items-center justify-center md:h-[200px] lg:h-[150px]">
+          <ul className="flex flex-col md:flex-row items-center justify-start md:h-[200px] lg:h-[150px]">
             <li className="me-x">
               <Dropdown menu={{ items: dropdownFish }} trigger={["hover"]}>
                 <Button
@@ -381,13 +367,13 @@ const Navbar = () => {
             </li>
 
             <li className="me-x">
-              <Button
+              {/* <Button
                 type="primary"
                 danger
                 className="my-0 mx-auto cate-font ps-1  w-[192px] h-[42px] box-border flex justify-center align-top pe-1"
               >
-                <span className="w-[178px] h-[30px]">Hỗ trợ khách hàng</span>
-              </Button>
+                 <span className="w-[178px] h-[30px]">Hỗ trợ khách hàng</span> 
+              </Button> */}
             </li>
           </ul>
         </div>
@@ -397,7 +383,7 @@ const Navbar = () => {
           className="flex items-center justify-center md:col-span-12 lg:w-[80vw] md:w-[70vw] lg:col-span-12 
         xl:w-[400px] xl:col-span-1 2xl:col-span-1 max-w-full relative"
         >
-          <input
+          {/* <input
             type="search"
             className="block h-[42px] flex-auto w-full border rounded-[10px] border-solid 
             border-[#e24242] pl-[44px] py-[0.25rem] text-base leading-[1.6] outline-none
@@ -424,7 +410,7 @@ const Navbar = () => {
                 strokeLinejoin="round"
               />
             </svg>
-          </span>
+          </span> */}
         </div>
 
         {/* //button login,signup */}

@@ -188,7 +188,7 @@ const StatusConsignment = () => {
         </Steps>
       </div>
 
-      <div className="form-container w-[950px] mx-auto p-6 bg-white shadow-md rounded-lg mt-10">
+      <div className="form-container w-[950px] mx-auto p-6 bg-white shadow-md rounded-lg my-10">
         <Card className="max-w-5xl mx-auto p-6 bg-white shadow-lg rounded-lg">
           {/* Header */}
           <div className="mb-6 text-center">

@@ -37,21 +37,7 @@ const Blog = memo(() => {
         <h1 className="text-start mb-6 text-3xl font-bold text-[#196b49] w-full">
           {blog?.title}
         </h1>
-        {blog?.blogImg ? (
-          <img
-            className="mb-8  rounded-lg object-cover shadow-md"
-            src={blog.blogImg}
-            width={300}
-            height={500}
-            alt={blog.title}
-          />
-        ) : (
-          <img
-            className="mb-8 w-full rounded-lg object-cover shadow-md"
-            src="/placeholder.jpg"
-            alt="Placeholder Image"
-          />
-        )}
+       
         <div className="text-lg leading-relaxed text-gray-800 w-full">
           <div dangerouslySetInnerHTML={{ __html: blog?.content || "" }} />
         </div>

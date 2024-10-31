@@ -209,7 +209,7 @@ const CreateBlog = () => {
           <div className="mb-4">
             <label className="block text-gray-700">Nội dung:</label>
             <Editor
-              apiKey="d1hhsqhz397l5oqghrrrv35au6tvrqy79t6wyfri9h3czwnl"
+              apiKey="uq6bo85jzhy5cjgxycq9auzgf4fbnkiddn5r2w3zaygnasra"
               onInit={(_evt, editor) => (editorRef.current = editor)}
               initialValue="<p>This is the initial content of the editor.</p>"
               init={{
