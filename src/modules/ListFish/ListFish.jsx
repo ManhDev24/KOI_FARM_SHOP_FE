@@ -7,8 +7,8 @@ import FishApi from "../../apis/Fish.api";
 import LoadingModal from "../Modal/LoadingModal";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../Redux/Slices/Cart_Slice";
-import { toast } from "react-toastify";
 import ComparisonModal from "../Modal/ComparisonModal";
+import { motion } from 'framer-motion';
 
 const ListFish = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -639,133 +639,120 @@ const ListFish = () => {
             </div>
           )}
           <div className="my-[80px] flex justify-center items-start ">
-            <Flex className="justify-center ">
-              <Row
-                gutter={[16, 16]}
-                justify="center"
-                className="w-[950px] grid grid-cols-3"
-              >
+            <Flex className="justify-center">
+              <Row gutter={[16, 16]} justify="center" className="w-[950px] grid grid-cols-3">
                 {koiToDisplay?.map((card) => {
-                  if (card?.status != 4)
+                  if (card?.status !== 4)
                     return (
-                      <Link to={`/fish-detail/${card.id}`}>
-                        <Col
-                          key={card.id}
-                          className="w-[250px] h-[645px] mx-10 mb-10"
+                      <Link to={`/fish-detail/${card.id}`} key={card.id}>
+                        <motion.div
+                          initial={{ opacity: 0, y: 50 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          whileHover={{ scale: 1.05 }}
+                          transition={{ duration: 0.3 }}
                         >
-                          <div className="relative w-[250px]">
-                            <div
-                              className="absolute border-[1px] border-[#FA4444] w-[86px] 
-                                                bg-[#FFFFFF] rounded-ee-[10px] 
-                                                rounded-tl-[5px] text-center 
-                                                text-[#FA4444]"
-                            >
-                              {card.status === 1
-                                ? "Đang bán"
-                                : card.status === 2
-                                  ? "Đã bán"
-                                  : card.status === 3
-                                    ? "Ký gửi"
-                                    : card.status === 4
-                                      ? "Chờ duyệt đơn ký gửi"
-                                      : card.status === 5
-                                        ? "Ký gửi chăm sóc"
-                                        : ""}
-                            </div>
-                            <div className="rounded-[10px]">
-                              <img
-                                src={card.koiImage}
-                                className="w-[250px] h-[354px] rounded-t-[8px] box-border"
-                                alt={card.category}
-                                style={{ width: "250px" }}
-                              />
-                            </div>
-                          </div>
-                          <div className="flex flex-col w-[250px] h-[300px] bg-[#FFFFFF] border border-t-0 border-x-2 border-b-2 border-[#FA4444] rounded-b-[10px]">
-                            <h1 className="my-0 mx-auto text-[#FA4444] font-bold text-[20px]">
-                              {card.categoryName}
-                            </h1>
-                            <div className="my-[10px] mx-[10px]  ">
-                              <div className="flex flex-col ">
-                                <div className="h-7 text-lg font-bold flex justify-center text-[#FA4444] ">
-                                  {card.category} {card.size} cm {card.age} tuổi
-                                </div>
-                                <div className="h-7">
-                                  Người bán: {card.origin}
-                                </div>
-                                <div className="h-6">
-                                  Giới tính:{" "}
-                                  {card.gender ? "Koi Đực" : "Koi Cái"}
-                                </div>
-                                <div className="h-6">Tuổi: {card.age}</div>
-                                <div className="h-6">
-                                  Kích thước: {card.size} cm
-                                </div>
-                                <div className="h-6">
-                                  Nguồn gốc: {card.origin}
-                                </div>
-                                <div className="h-6">
-                                  Giống: {card.category}
-                                </div>
+                          <Col className="w-[250px] h-[645px] mx-10 mb-10">
+                            <div className="relative w-[250px]">
+                              <div
+                                className="absolute border-[1px] border-[#FA4444] w-[86px] 
+                                bg-[#FFFFFF] rounded-ee-[10px] 
+                                rounded-tl-[5px] text-center 
+                                text-[#FA4444]"
+                              >
+                                {card.status === 1
+                                  ? "Đang bán"
+                                  : card.status === 2
+                                    ? "Đã bán"
+                                    : card.status === 3
+                                      ? "Ký gửi"
+                                      : card.status === 4
+                                        ? "Chờ duyệt đơn ký gửi"
+                                        : card.status === 5
+                                          ? "Ký gửi chăm sóc"
+                                          : ""}
                               </div>
-                              <div className="text-center">
-                                <div className="my-[10px] text-[20px] font-bold">
-                                  {new Intl.NumberFormat("vi-VN", {
-                                    style: "currency",
-                                    currency: "VND",
-                                  }).format(card.price)}
+                              <div className="rounded-[10px]">
+                                <img
+                                  src={card.koiImage}
+                                  className="w-[250px] h-[354px] rounded-t-[8px] box-border"
+                                  alt={card.category}
+                                  style={{ width: "250px" }}
+                                />
+                              </div>
+                            </div>
+                            <div className="flex flex-col w-[250px] h-[300px] bg-[#FFFFFF] border border-t-0 border-x-2 border-b-2 border-[#FA4444] rounded-b-[10px]">
+                              <h1 className="my-0 mx-auto text-[#FA4444] font-bold text-[20px]">
+                                {card.categoryName}
+                              </h1>
+                              <div className="my-[10px] mx-[10px]">
+                                <div className="flex flex-col">
+                                  <div className="h-7 text-lg font-bold flex justify-center text-[#FA4444] ">
+                                    {card.category} {card.size} cm {card.age} tuổi
+                                  </div>
+                                  <div className="h-7">Người bán: {card.origin}</div>
+                                  <div className="h-6">Giới tính: {card.gender ? "Koi Đực" : "Koi Cái"}</div>
+                                  <div className="h-6">Tuổi: {card.age}</div>
+                                  <div className="h-6">Kích thước: {card.size} cm</div>
+                                  <div className="h-6">Nguồn gốc: {card.origin}</div>
+                                  <div className="h-6">Giống: {card.category}</div>
                                 </div>
-                                {card.status !== 2 ? (
-                                  <Link>
-                                    <Button
-                                      onClick={() => {
-                                        handleAddToCart(card);
-                                      }}
-                                      className="w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]"
-                                    >
-                                      Đặt Mua
-                                    </Button>
+                                <div className="text-center">
+                                  <div className="my-[10px] text-[20px] font-bold">
+                                    {new Intl.NumberFormat("vi-VN", {
+                                      style: "currency",
+                                      currency: "VND",
+                                    }).format(card.price)}
+                                  </div>
+                                  {card.status !== 2 ? (
                                     <Link>
-                                      <div
-                                        className="absolute  top-[3px] right-[-5px] z-50" // Adjusted position: top right of the card
-                                        onClick={(e) => {
-                                          handleAddToCompare(card);
+                                      <Button
+                                        onClick={() => {
+                                          handleAddToCart(card);
                                         }}
+                                        className="w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]"
                                       >
-                                        <Button
+                                        Đặt Mua
+                                      </Button>
+                                      <Link>
+                                        <div
+                                          className="absolute top-[3px] right-[-5px] z-50"
                                           onClick={(e) => {
                                             handleAddToCompare(card);
                                           }}
-                                          className="!p-0 !py-1 w-[100px] !border-0 h-fit hover:!border-[#FA4444] hover:!text-[#FA4444] flex justify-around"
                                         >
-                                          <div className="flex justify-center items-center">
-                                            <svg
-                                              xmlns="http://www.w3.org/2000/svg"
-                                              width="1em"
-                                              height="1em"
-                                              className="flex"
-                                              viewBox="0 0 24 24"
-                                            >
-                                              <g fill="none" fillRule="evenodd">
-                                                <path
-                                                  d="M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4h4a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-4v4a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-4H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h4z"
-                                                  fill="currentColor"
-                                                />
-                                              </g>
-                                            </svg>
-                                            <h5 className="mx-1 my-0 !text-center">
-                                              So sánh
-                                            </h5>
-                                          </div>
-                                        </Button>
-                                      </div>
+                                          <Button
+                                            onClick={(e) => {
+                                              handleAddToCompare(card);
+                                            }}
+                                            className="!p-0 !py-1 w-[100px] !border-0 h-fit hover:!border-[#FA4444] hover:!text-[#FA4444] flex justify-around"
+                                          >
+                                            <div className="flex justify-center items-center">
+                                              <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                width="1em"
+                                                height="1em"
+                                                className="flex"
+                                                viewBox="0 0 24 24"
+                                              >
+                                                <g fill="none" fillRule="evenodd">
+                                                  <path
+                                                    d="M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4h4a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-4v4a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-4H5a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h4z"
+                                                    fill="currentColor"
+                                                  />
+                                                </g>
+                                              </svg>
+                                              <h5 className="mx-1 my-0 !text-center">So sánh</h5>
+                                            </div>
+                                          </Button>
+                                        </div>
+                                      </Link>
                                     </Link>
-                                  </Link>
-                                ) : null}
+                                  ) : null}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </Col>
+                          </Col>
+                        </motion.div>
                       </Link>
                     );
                 })}

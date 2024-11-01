@@ -4,6 +4,7 @@ import LoadingModal from "../../Modal/LoadingModal";
 import { useQuery } from "@tanstack/react-query";
 import BlogApi from "../../../apis/Blog.api";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const ListBlog = () => {
   const [currentPage] = useState(1);
@@ -38,15 +39,30 @@ const ListBlog = () => {
     navigate(`/blog/${blogId}`);
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { staggerChildren: 0.2 } },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+  };
+
   return (
-    <div className="max-w-7xl mx-auto my-10 px-4 lg:px-0">
+    <motion.div
+      className="max-w-7xl mx-auto my-10 px-4 lg:px-0"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       <div className="text-center text-3xl font-bold text-primary mb-10">
         Tin Hữu ích
       </div>
       <div className="grid gap-8 lg:grid-cols-2">
         {/* Main Blog Post */}
         {mainBlog && (
-          <div
+          <motion.div
             role="button"
             tabIndex={0}
             className="cursor-pointer flex flex-col shadow-md rounded-lg overflow-hidden"
@@ -54,6 +70,7 @@ const ListBlog = () => {
             onKeyPress={(e) => {
               if (e.key === "Enter") handleBlogClick(mainBlog.blogId);
             }}
+            variants={itemVariants}
           >
             <img
               className="w-full h-[500px] object-cover"
@@ -77,13 +94,16 @@ const ListBlog = () => {
                 />
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* Smaller Blog Posts */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <motion.div
+          className="grid grid-cols-1 gap-6 sm:grid-cols-2"
+          variants={containerVariants}
+        >
           {smallerBlogs.map((blog) => (
-            <div
+            <motion.div
               key={blog.blogId}
               role="button"
               tabIndex={0}
@@ -92,6 +112,7 @@ const ListBlog = () => {
               onKeyPress={(e) => {
                 if (e.key === "Enter") handleBlogClick(blog.blogId);
               }}
+              variants={itemVariants}
             >
               <img
                 className="w-full sm:h-48 md:h-56 lg:h-64 object-cover"
@@ -115,11 +136,11 @@ const ListBlog = () => {
                   />
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
