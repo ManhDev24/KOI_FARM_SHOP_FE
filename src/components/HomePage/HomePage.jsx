@@ -10,7 +10,8 @@ const HomePage = () => {
  
   return (
     <>
-      <div>
+      <div 
+      >
         <Banner />
         <Introduction />
         <Categories />
