@@ -25,8 +25,8 @@ const Footer = () => {
         <div>
           <h3 className="text-lg font-semibold mb-3">Dịch Vụ</h3>
           <ul className="space-y-2">
-            <li className="hover:text-gray-300 cursor-pointer">Tư vấn cá koi</li>
-            <li className="hover:text-gray-300 cursor-pointer">Kiểm tra  cá koi</li>
+            <li className="hover:text-gray-300 cursor-pointer">Tư vấn cá Koi</li>
+            <li className="hover:text-gray-300 cursor-pointer">Kiểm tra  cá Koi</li>
             <li className="hover:text-gray-300 cursor-pointer">ký gửi</li>
             <li className="hover:text-gray-300 cursor-pointer">mua bán</li>
           </ul>
@@ -47,9 +47,7 @@ const Footer = () => {
               title="Google Map"
             ></iframe>
           </div>
-          <button className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg w-full">
-            Xem bản đồ lớn
-          </button>
+        
         </div>
       </div>
 

@@ -199,6 +199,12 @@ export const publicRoutes = [
 
     layout: DefaultLayout,
   },
+  // {
+  //   path: "/secrete",
+  //   component: Secret,
+
+  //   layout: DefaultLayout,
+  // },
 ];
 
 export const privateRoutes = [
