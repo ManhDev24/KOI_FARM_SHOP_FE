@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addToCart, addToCartBatch } from "../../Redux/Slices/Cart_Slice";
 import { toast } from "react-toastify";
 import BatchComparisonModal from "../Modal/BatchComparisonModal ";
+import { motion } from 'framer-motion';
 
 const BatchFish = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -606,38 +607,23 @@ const BatchFish = () => {
           )}
 
           <div className="my-[80px] flex justify-center items-start ">
-            <Flex className="justify-center ">
-              <Row
-                gutter={[16, 16]}
-                justify="center"
-                className="w-[950px] grid grid-cols-3"
-              >
-                {(isLoadingKoiList || isLoadingFilteredKoiBatchList) && (
-                  <LoadingModal isLoading={true} />
-                )}
+            <Flex className="justify-center">
+              <Row gutter={[16, 16]} justify="center" className="w-[950px] grid grid-cols-3">
+                {(isLoadingKoiList || isLoadingFilteredKoiBatchList) && <LoadingModal isLoading={true} />}
                 {koiToDisplay?.map((card) => {
                   return (
-                    <>
-
-
+                    <motion.div
+                      key={card.id}
+                      initial={{ opacity: 0, y: 50 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      whileHover={{ scale: 1.05 }}
+                      transition={{ duration: 0.3 }}
+                    >
                       <Link to={`/batch-detail/${card.batchID}`}>
-
-                        <Col
-                          key={card.id}
-                          className="w-[250px] h-[645px] mx-10 mb-10"
-                        >
+                        <Col className="w-[250px] h-[645px] mx-10 mb-10">
                           <div className="relative w-[250px]">
-                            <div
-                              className="absolute w-[86px] border-2 border-[#FA4444]
-                                                bg-[#FFFFFF] rounded-ee-[10px] 
-                                                rounded-tl-[5px] text-center 
-                                                text-[#FA4444]"
-                            >
-                              {card.status === 1
-                                ? "Đang bán"
-                                : card.status === 2
-                                  ? "Đã bán"
-                                  : null}
+                            <div className="absolute w-[86px] border-2 border-[#FA4444] bg-[#FFFFFF] rounded-ee-[10px] rounded-tl-[5px] text-center text-[#FA4444]">
+                              {card.status === 1 ? "Đang bán" : card.status === 2 ? "Đã bán" : null}
                             </div>
                             <div className="rounded-[10px]">
                               <img
@@ -650,34 +636,20 @@ const BatchFish = () => {
                           </div>
                           <div className="flex flex-col w-[250px] h-[320px] bg-[#FFFFFF] border border-t-0 border-x-2 border-b-2 border-[#FA4444] rounded-b-[10px]">
                             <h1 className="my-0 mx-auto text-[#FA4444] font-bold text-[20px] text-center">
-                              {card.categoryName} số lượng {card.quantity} độ
-                              tuổi {card.age}
+                              {card.categoryName} số lượng {card.quantity} độ tuổi {card.age}
                             </h1>
-                            <div className="my-[10px] mx-[10px]  ">
-                              <div className="flex flex-col ">
-                                <div className="h-7">
-                                  Người bán: {card.origin}
-                                </div>
-                                <div className="h-6">
-                                  Số lượng: {card.quantity}
-                                </div>
+                            <div className="my-[10px] mx-[10px]">
+                              <div className="flex flex-col">
+                                <div className="h-7">Người bán: {card.origin}</div>
+                                <div className="h-6">Số lượng: {card.quantity}</div>
                                 <div className="h-6">Tuổi: {card.age}</div>
-                                <div className="h-6">
-                                  Kích thước: {card.avgSize}cm
-                                </div>
-                                <div className="h-6">
-                                  Nguồn gốc: {card.origin}
-                                </div>
-                                <div className="h-6">
-                                  Giống: {card.categoryName}
-                                </div>
+                                <div className="h-6">Kích thước: {card.avgSize}cm</div>
+                                <div className="h-6">Nguồn gốc: {card.origin}</div>
+                                <div className="h-6">Giống: {card.categoryName}</div>
                               </div>
                               <div className="text-center">
                                 <div className="my-[10px] text-[20px] font-bold">
-                                  {new Intl.NumberFormat("vi-VN", {
-                                    style: "currency",
-                                    currency: "VND",
-                                  }).format(card.price)}
+                                  {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(card.price)}
                                 </div>
                                 {card.status !== 2 ? (
                                   <>
@@ -714,28 +686,17 @@ const BatchFish = () => {
                                   </>
                                 ) : null}
                               </div>
-                              {/* <>
-                                <Button
-                                  onClick={() => {
-                                    handleAddToCart(card);
-                                  }}
-                                  className="w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]"
-                                >
-                                  Đặt Mua
-                                </Button>
-                              </> */}
                             </div>
                           </div>
                         </Col>
-                        <Link></Link>
                       </Link>
-                    </>
+                    </motion.div>
                   );
                 })}
-              </Row >
+              </Row>
             </Flex>
-          </div>
 
+          </div>
           {koiToDisplay?.length > 0 && (
             <div className="pagination flex justify-end mb-3 me-3">
               <Pagination

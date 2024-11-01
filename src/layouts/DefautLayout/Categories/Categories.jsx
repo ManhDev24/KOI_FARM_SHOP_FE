@@ -16,7 +16,7 @@ const Categories = () => {
                     </Col>
                     <Col className=''>
                         <img src="/img/SHUSUI.png" alt="" className='w-[240px] h-[580px]' />
-                    </Col>
+                </Col>
                     <Col className=' ' >
                         <img src="/img/asagi.jpg" alt="" className='w-[240px] h-[580px]' />
                     </Col>

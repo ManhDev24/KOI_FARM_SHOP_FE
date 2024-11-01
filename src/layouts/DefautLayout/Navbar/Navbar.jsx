@@ -13,6 +13,7 @@ import { AuthApi } from "../../../apis/Auth.api";
 import { setSelectedCategory } from "../../../Redux/Slices/FishList_Slice";
 import { data } from "autoprefixer";
 import LoadingModal from "../../../modules/Modal/LoadingModal";
+import { motion } from "framer-motion";
 const Navbar = () => {
   const dispatch = useDispatch();
   const user = getLocalStorage("user");

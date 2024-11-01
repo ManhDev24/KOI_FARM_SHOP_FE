@@ -4,7 +4,7 @@ import { Button, Flex, Col, Row } from "antd";
 import { Link } from "react-router-dom";
 const Introduction = () => {
   return (
-    <>
+    <div id="introduction">
       <Flex justify="center">
         <div className="w-[950px] h-[50px] bg-white text-[36px] text-[#FA4444] text-center border border-3 border-[#FA4444] mt-[80px] ">
           <span style={{ fontFamily: "Merriweather, serif" }}>GIỚI THIỆU</span>
@@ -57,7 +57,7 @@ const Introduction = () => {
         </div>
         <div></div>
       </div>
-    </>
+    </div>
   );
 };
 
