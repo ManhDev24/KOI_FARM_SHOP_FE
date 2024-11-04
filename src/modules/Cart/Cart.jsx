@@ -323,7 +323,6 @@ const Cart = () => {
           <div className="col-span-8">
             <Table
               rowKey="id"
-              rowSelection={rowSelection}
               columns={columns}
               dataSource={onCart}
               pagination={false}
