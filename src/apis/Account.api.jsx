@@ -1,11 +1,11 @@
 import create from "@ant-design/icons/lib/components/IconFont";
 import fetcher from "./Fetcher";
-
+import url from "../constant/constant";
 export const AccountApi = {
   getProfile: async (email) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/account/profile/${email}`
+        `${url}/account/profile/${email}`
       );
       return response.data;
     } catch (error) {
@@ -15,7 +15,7 @@ export const AccountApi = {
   getAllAccount: async (currentPage, pageSize = 9) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/manage/allAcount?page=${currentPage}&pageSize=${pageSize}`
+        `${url}/manage/allAcount?page=${currentPage}&pageSize=${pageSize}`
       );
       return response.data;
     } catch (error) {
@@ -25,7 +25,7 @@ export const AccountApi = {
   banUser: async (id) => {
     try {
       const response = await fetcher.put(
-        `http://localhost:8080/koifarm/manage/updateStatus/${id}`
+        `${url}/manage/updateStatus/${id}`
       );
       return response.data;
     } catch (error) {
@@ -35,7 +35,7 @@ export const AccountApi = {
   createAccount: async (data) => {
     try {
       const response = await fetcher.post(
-        "http://localhost:8080/koifarm/manage/createAccount",
+        "${url}/manage/createAccount",
         data
       );
       return response.data;
@@ -46,7 +46,7 @@ export const AccountApi = {
   searchAccountByEmail: async (email, currentPage, pageSize = 9) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/manage/searchEmail?email=${email}&page=${currentPage}&pageSize=${pageSize}`
+        `${url}/manage/searchEmail?email=${email}&page=${currentPage}&pageSize=${pageSize}`
       );
       return response.data;
     } catch (error) {
@@ -56,7 +56,7 @@ export const AccountApi = {
   totalAccount: async () => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/dashboard/total-accounts`
+        `${url}/dashboard/total-accounts`
       );
       return response.data;
     } catch (error) {

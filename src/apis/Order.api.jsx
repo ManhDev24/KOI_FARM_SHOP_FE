@@ -1,10 +1,10 @@
 import fetcher from "./Fetcher";
-
+import url from "../constant/constant";
 const orderApi = {
   getOrderHistory: async (accountID, currentPage, pageSize = 9) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/order/getOrderHistory?accountID=${accountID}&pageNo=${currentPage}&pageSize=${pageSize}
+        `${url}/order/getOrderHistory?accountID=${accountID}&pageNo=${currentPage}&pageSize=${pageSize}
 `
       );
       return response.data;
@@ -15,17 +15,17 @@ const orderApi = {
   getOrderDetail: async (orderID) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/order/getOrderDetail?orderID=${orderID}`
+        `${url}/order/getOrderDetail?orderID=${orderID}`
       );
       return response.data;
     } catch (error) {
       throw new Error(error.response.data.message);
     }
   },
-  getAllOrder: async (currentPage, pageSize = 9) => {
+  getAllOrder: async (currentPage, pageSize = 7) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/manage/getAllOrders?pageNo=${currentPage}&pageSize=${pageSize}`
+        `${url}/manage/getAllOrders?pageNo=${currentPage}&pageSize=${pageSize}`
       );
       return response.data;
     } catch (error) {
@@ -35,7 +35,7 @@ const orderApi = {
   totalOrder: async () => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/dashboard/total-orders`
+        `${url}/dashboard/total-orders`
       );
       return response.data;
     } catch (error) {
@@ -45,7 +45,7 @@ const orderApi = {
   searchOrder: async (id, currentPage, pageSize = 9) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/manage/searchOrder?transactionCode=${id}&pageNum=${currentPage}&pageSize=${pageSize}`
+        `${url}/manage/searchOrder?transactionCode=${id}&pageNum=${currentPage}&pageSize=${pageSize}`
       );
       return response.data;
     } catch (error) {

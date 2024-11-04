@@ -686,7 +686,7 @@ const ListFish = () => {
                               </h1>
                               <div className="my-[10px] mx-[10px]">
                                 <div className="flex flex-col">
-                                  <div className="h-7 text-lg font-bold flex justify-center text-[#FA4444] ">
+                                  <div className="h-7 text-lg font-bold flex justify-center text-[#FA4444] mb-5 ">
                                     {card.category} {card.size} cm {card.age} tuổi
                                   </div>
                                   <div className="h-7">Người bán: {card.origin}</div>

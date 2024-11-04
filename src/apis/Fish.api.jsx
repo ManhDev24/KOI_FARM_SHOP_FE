@@ -1,10 +1,11 @@
 import fetcher from "./Fetcher";
 
+import url from "../constant/constant";
 export const FishApi = {
   getBatchFishDetail: async (id) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/BatchKoi/${id}`
+        `${url}/BatchKoi/${id}`
       );
       return response.data.data;
     } catch (error) {
@@ -14,7 +15,7 @@ export const FishApi = {
   getFishDetail: async (id) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/koifish/${id}`
+        `${url}/koifish/${id}`
       );
       return response.data.data;
     } catch (error) {
@@ -24,7 +25,7 @@ export const FishApi = {
   getListFish: async (currentPage, pageSize = 9) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/koifish/allkoi?page=${currentPage}&pageSize=${pageSize}`
+        `${url}/koifish/allkoi?page=${currentPage}&pageSize=${pageSize}`
       );
       return response.data.data;
     } catch (error) {
@@ -36,7 +37,7 @@ export const FishApi = {
       // if (categoryID) {
       // Call the filter API if categoryID is provided
       response = await fetcher.get(
-        `http://localhost:8080/koifarm/koifish/filter?categoryID=${categoryID}&page=${currentPage}&pageSize=${pageSize}`
+        `${url}/filter?categoryID=${categoryID}&page=${currentPage}&pageSize=${pageSize}`
       );
       // } else {
       //   // Call the all koi fish API if no categoryID is provided
@@ -53,7 +54,7 @@ export const FishApi = {
   getCategories: async () => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/getListCategory`
+        `${url}/getListCategory`
       );
       return response.data.data;
     } catch (error) {
@@ -67,7 +68,7 @@ export const FishApi = {
   getKnowledgeFishList: async () => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/homepage?pageNum=1&pageSize=4`
+        `${url}/homepage?pageNum=1&pageSize=4`
       );
 
       return response.data.data;
@@ -94,7 +95,7 @@ export const FishApi = {
   ) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/koifish/filter?categoryID=${categoryID}&status=${status}&gender=${gender}&minSize=${minSize}&maxSize=${maxSize}
+        `${url}/koifish/filter?categoryID=${categoryID}&status=${status}&gender=${gender}&minSize=${minSize}&maxSize=${maxSize}
         &minPrice=${minPrice}&maxPrice=${maxPrice}&sortField=${sortField1}&sortDirection=${sortDirection1}&page=${page}&pageSize=${pageSize}`
       );
       return response.data.data;
@@ -105,7 +106,7 @@ export const FishApi = {
   getListBatchFish: async (currentPage, pageSize = 9) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/BatchKoi/getAllBatch?pageNo=${currentPage}&pageSize=${pageSize}`
+        `${url}/BatchKoi/getAllBatch?pageNo=${currentPage}&pageSize=${pageSize}`
       );
       return response.data.data;
     } catch (error) {
@@ -125,7 +126,7 @@ export const FishApi = {
   ) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/BatchKoi?pageNo=${pageNo}&pageSize=${pageSize}&categoryID=${categoryID}&avgSize=${avgSize}&age=${age}&minPrice=${minPrice}&maxPrice=${maxPrice}&sortField=${sortField}&sortDirection=${sortDirection}`
+        `${url}/BatchKoi?pageNo=${pageNo}&pageSize=${pageSize}&categoryID=${categoryID}&avgSize=${avgSize}&age=${age}&minPrice=${minPrice}&maxPrice=${maxPrice}&sortField=${sortField}&sortDirection=${sortDirection}`
       );
       return response.data.data;
     } catch (error) {
@@ -141,7 +142,7 @@ export const FishApi = {
       // if (categoryID) {
       // Call the filter API if categoryID is provided
       response = await fetcher.get(
-        `http://localhost:8080/koifarm/BatchKoi/${categoryID}/${currentPage}/${pageSize}`
+        `${url}/BatchKoi/${categoryID}/${currentPage}/${pageSize}`
       );
       // } else {
       //   // Call the all koi fish API if no categoryID is provided
@@ -157,7 +158,7 @@ export const FishApi = {
   addFish: async (formdata) => {
     try {
       const response = await fetcher.post(
-        `http://localhost:8080/koifarm/koifish/add`,
+        `${url}/koifish/add`,
         formdata,
         {
           headers: {
@@ -173,7 +174,7 @@ export const FishApi = {
   updateFish: async (formdata, id) => {
     try {
       const response = await fetcher.put(
-        `http://localhost:8080/koifarm/koifish/update/${id}`,
+        `${url}/koifish/update/${id}`,
         formdata,
         {
           headers: {
@@ -189,7 +190,7 @@ export const FishApi = {
   changeStatus: async (id, status = 1) => {
     try {
       const response = await fetcher.post(
-        `http://localhost:8080/koifarm/koifish/changeStatus/${id}/${status}`
+        `${url}/koifish/changeStatus/${id}/${status}`
       );
     } catch (error) {
       throw new Error(error.response.data.message);
@@ -198,7 +199,7 @@ export const FishApi = {
   totalKoiFish: async () => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/dashboard/total-koi`
+        `${url}/dashboard/total-koi`
       );
       return response.data;
     } catch (error) {
@@ -208,7 +209,7 @@ export const FishApi = {
   totalBatchFish: async () => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/dashboard/total-batch`
+        `${url}/dashboard/total-batch`
       );
       return response.data;
     } catch (error) {
@@ -218,7 +219,7 @@ export const FishApi = {
   getAllBatch: async (currentPage, pageSize = 4) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/BatchKoi/getAllBatch?pageNo=${currentPage}&pageSize=${pageSize}`
+        `${url}/BatchKoi/getAllBatch?pageNo=${currentPage}&pageSize=${pageSize}`
       );
       return response.data;
     } catch (error) {
@@ -228,7 +229,7 @@ export const FishApi = {
   createBatch: async (formdata) => {
     try {
       const response = await fetcher.post(
-        `http://localhost:8080/koifarm/BatchKoi/createBatch`,
+        `${url}/BatchKoi/createBatch`,
         formdata,
         {
           headers: {
@@ -244,7 +245,7 @@ export const FishApi = {
   updateBatch: async (formdata, id) => {
     try {
       const response = await fetcher.put(
-        `http://localhost:8080/koifarm/BatchKoi/updateBatch/${id}`,
+        `${url}/BatchKoi/updateBatch/${id}`,
         formdata,
         {
           headers: {
@@ -260,7 +261,7 @@ export const FishApi = {
   changeStatusBatch: async (id, status = 1) => {
     try {
       const response = await fetcher.put(
-        `http://localhost:8080/koifarm/BatchKoi/changeStatus/${id}/${status}`
+        `${url}/BatchKoi/changeStatus/${id}/${status}`
       );
       return response.data;
     } catch (error) {
@@ -270,7 +271,7 @@ export const FishApi = {
   searchFish: async (keyword, currentPage, pageSize = 4) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/manage/searchFish?keyword=${keyword}&pageNum=${currentPage}&pageSize=${pageSize}`
+        `${url}/manage/searchFish?keyword=${keyword}&pageNum=${currentPage}&pageSize=${pageSize}`
       );
       return response.data;
     } catch (error) {
@@ -280,7 +281,7 @@ export const FishApi = {
   searchBatch: async (keyword, currentPage, pageSize = 4) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/manage/searchBatch?keyword=${keyword}&pageNum=${currentPage}&pageSize=${pageSize}`
+        `${url}/manage/searchBatch?keyword=${keyword}&pageNum=${currentPage}&pageSize=${pageSize}`
       );
       return response.data;
     } catch (error) {
@@ -290,7 +291,7 @@ export const FishApi = {
   searchKoiByHeathCare: async (keyword, currentPage, pageSize = 4) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/manage/searchKoiByHealthCare?keyword=${keyword}&pageNum=${currentPage}&pageSize=${pageSize}`
+        `${url}/manage/searchKoiByHealthCare?keyword=${keyword}&pageNum=${currentPage}&pageSize=${pageSize}`
       );
       return response.data;
     } catch (error) {
@@ -300,7 +301,7 @@ export const FishApi = {
   getAllFishCare: async (currentPage, pageSize) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/consignment/getAllFishCare?pageNo=${currentPage}&pageSize=${pageSize}`
+        `${url}/consignment/getAllFishCare?pageNo=${currentPage}&pageSize=${pageSize}`
       );
       return response.data;
     } catch (error) {

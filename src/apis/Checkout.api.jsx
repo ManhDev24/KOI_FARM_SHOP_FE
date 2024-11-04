@@ -1,10 +1,10 @@
 import fetcher from "./Fetcher";
-
+import url from "../constant/constant";
 export const CheckoutApi = {
   saveOrder: async (data, transactionCode) => {
     try {
       const response = await fetcher.post(
-        `http://localhost:8080/koifarm/order/saveOrder?transactionCode=${transactionCode}`,
+        `${url}/order/saveOrder?transactionCode=${transactionCode}`,
         data
       );
       return response.data;
@@ -16,7 +16,7 @@ export const CheckoutApi = {
   saveConsignment: async (transactionCode,consignmentID) => {
     try {
       const response = await fetcher.post(
-        `http://localhost:8080/koifarm/consignment/processPayment?consignmentId=${consignmentID}&transactionCode=${transactionCode}`
+        `${url}/consignment/processPayment?consignmentId=${consignmentID}&transactionCode=${transactionCode}`
       );
       return response.data;
     } catch (error) {
@@ -27,7 +27,7 @@ export const CheckoutApi = {
   payByVnPay: async (amount, bankCode = "ncb", type) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/payment/vn-pay?amount=${amount}&bankCode=${bankCode}&type=${type}`
+        `${url}/payment/vn-pay?amount=${amount}&bankCode=${bankCode}&type=${type}`
 
       );
       return response.data;
@@ -38,7 +38,7 @@ export const CheckoutApi = {
   vnPayCallback: async (params) => {
     try {
       const response = await fetcher.get(
-        "http://localhost:8080/koifarm/payment/vn-pay-callback",
+        "${url}/payment/vn-pay-callback",
         { params }
       );
       return response.data;
@@ -49,7 +49,7 @@ export const CheckoutApi = {
   getPaymentStatus: async () => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/payment/get-payment-status`
+        `${url}/payment/get-payment-status`
       );
       return response.data;
     } catch (error) {

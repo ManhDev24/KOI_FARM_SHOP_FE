@@ -1,10 +1,10 @@
 import fetcher from "./Fetcher";
-
+import url from "../constant/constant";
 export const CategoryApi = {
   getAllCategory: async (curretPage, pageSize) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/manage/getAllCategory?pageNum=${curretPage}&pageSize=${pageSize}`
+        `${url}/manage/getAllCategory?pageNum=${curretPage}&pageSize=${pageSize}`
       );
       return response.data;
     } catch (error) {
@@ -14,7 +14,7 @@ export const CategoryApi = {
   addCategory: async (payload) => {
     try {
       const response = await fetcher.post(
-        "http://localhost:8080/koifarm/manage/addCategory",
+        `${url}/manage/addCategory`,
         payload,
         {
           headers: {
@@ -29,7 +29,7 @@ export const CategoryApi = {
   deleteCategory: async (id) => {
     try {
       const response = await fetcher.put(
-        `http://localhost:8080/koifarm/manage/changeStatus/${id}`
+        `${url}/manage/changeStatus/${id}`
       );
       return response.data;
     } catch (error) {
@@ -39,7 +39,7 @@ export const CategoryApi = {
   updateCategory: async (data, id) => {
     try {
       const response = await fetcher.put(
-        `http://localhost:8080/koifarm/manage/updateCategory/${id}`,
+        `${url}/manage/updateCategory/${id}`,
         data,
         {
           headers: {
@@ -55,7 +55,7 @@ export const CategoryApi = {
   searchCategory: async (name, currentPage, pageSize = 4) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/manage/searchCategory?name=${name}&pageNum=${currentPage}&pageSize=${pageSize}`
+        `${url}/manage/searchCategory?name=${name}&pageNum=${currentPage}&pageSize=${pageSize}`
       );
       return response.data;
     } catch (error) {
