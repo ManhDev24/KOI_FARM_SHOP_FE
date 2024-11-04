@@ -235,15 +235,15 @@ const Navbar = () => {
     <>
       {/* navbar */}
       <div
-        className="Navbar md:h-[400px] lg:h-[400px] xl:grid-cols-10  grid lg:grid-cols-10  2xl:grid-cols-8   
-      w-full h-[150px]  lg:w-full xl:h-[150px]   sm:h-[300px] sm:col-span-1"
+        className="Navbar md:h-[450px] h-[450px] sm:h-[450px] md:py-10   lg:h-[200px] xl:grid-cols-10  grid lg:grid-cols-10  2xl:grid-cols-10   
+      w-full   lg:w-full xl:h-[200px]  2xl:h-[200px]   sm:col-span-12"
       >
         {/* logo */}
         <div
-          className="w-full h-full md:col-span-12 lg:col-span-12 xl:col-span-1 flex flex-col justify-center
-         col-span-1  sm:col-span-12 items-center"
+          className="w-full  col-span-12  h-full md:col-span-12 lg:col-span-1 lg:h-[150px] xl:col-span-1 flex flex-col justify-center
+          sm:col-span-12 items-center "
         >
-          <div className="logo w-[90px]  h-[90px] container ms-[50px]">
+          <div className="logo w-[90px]  h-[90px] container ">
             <Link to="/">
               <img src={logo} alt="Logo" className="ms-[4px]" />
             </Link>
@@ -267,20 +267,55 @@ const Navbar = () => {
         {/* //cate */}
 
         <div
-          className="categories md:col-span-12 md:w-full md:h-[200px]
-          lg:col-span-12  lg:flex lg:items-center lg:justify-center lg:h-[150px] lg:w-full 
-          xl:grid xl:grid-cols-1 xl:ms-[50px] xl:col-span-5 
-          2xl:col-span-4  sm:h-[200px]"
+          className="categories h-[50px] col-span-12 sm:col-span-12 sm:w-full sm:h-[100px] 
+         lg:col-span-3 lg:flex lg:items-center lg:justify-start lg:h-[150px]
+         xl:grid xl:grid-cols-1 xl:ms-[50px] xl:col-span-3  
+         2xl:col-span-3"
+
         >
-          <ul className="flex flex-col md:flex-row items-center justify-start md:h-[200px] lg:h-[150px]">
-            <li className="me-x">
+          <ul className="flex flex-col sm:flex-row items-center justify-start sm:justify-center sm:h-[150px] lg:h-[150px]">
+
+
+            {/* Combined "Danh mục" dropdown for xs and lg screens */}
+            <li className="me-x xs:block lg:block sm:hidden md:hidden xl:hidden 2xl:hidden">
+              <Dropdown
+                menu={{
+                  items: [
+                    { key: 'koi', label: 'Cá Koi Nhật', children: dropdownFish },
+                    { key: 'news', label: 'Tin tức', children: newsMenuItems },
+                    { key: 'consignment', label: 'Ký gửi', children: consignmentMenuitems },
+                  ],
+                }}
+                trigger={["hover"]}
+              >
+                <Button
+                  type="primary"
+                  danger
+                  className="cate-font ps-1 w-auto h-[42px] box-border"
+                >
+                  <span className="h-[30px] ps-[3px]">Danh mục</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                  >
+                    <path d="M10.0002 12.5L5.8335 8.33331H14.1668L10.0002 12.5Z" fill="#EA4444" />
+                  </svg>
+                </Button>
+              </Dropdown>
+            </li>
+
+            {/* Separate dropdowns for sm, md, xl, and 2xl screens */}
+            <li className="me-x hidden xs:hidden lg:hidden sm:block md:block xl:block 2xl:block">
               <Dropdown menu={{ items: dropdownFish }} trigger={["hover"]}>
                 <Button
                   type="primary"
                   danger
                   className="cate-font ps-1 w-auto h-[42px] box-border"
                 >
-                  <span className="h-[30px] ps-[3px]">Cá Koi Nhật</span>
+                  <span className="h-full ps-[3px] pt-1">Cá Koi Nhật</span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="20"
@@ -288,23 +323,20 @@ const Navbar = () => {
                     viewBox="0 0 20 20"
                     fill="none"
                   >
-                    <path
-                      d="M10.0002 12.5L5.8335 8.33331H14.1668L10.0002 12.5Z"
-                      fill="#EA4444"
-                    />
+                    <path d="M10.0002 12.5L5.8335 8.33331H14.1668L10.0002 12.5Z" fill="#EA4444" />
                   </svg>
                 </Button>
               </Dropdown>
             </li>
 
-            <li className="me-x">
+            <li className="me-x hidden xs:hidden lg:hidden sm:block md:block xl:block 2xl:block">
               <Dropdown menu={{ items: newsMenuItems }} trigger={["hover"]}>
                 <Button
                   type="primary"
                   danger
                   className="cate-font ps-1 w-auto h-[42px] box-border"
                 >
-                  <span className="h-[30px] ps-[3px]">Tin tức</span>
+                  <span className="h-[42px] ps-[3px] pt-1">Tin tức</span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="20"
@@ -312,26 +344,20 @@ const Navbar = () => {
                     viewBox="0 0 20 20"
                     fill="none"
                   >
-                    <path
-                      d="M10.0002 12.5L5.8335 8.33331H14.1668L10.0002 12.5Z"
-                      fill="#EA4444"
-                    />
+                    <path d="M10.0002 12.5L5.8335 8.33331H14.1668L10.0002 12.5Z" fill="#EA4444" />
                   </svg>
                 </Button>
               </Dropdown>
             </li>
 
-            <li className="me-x">
-              <Dropdown
-                menu={{ items: consignmentMenuitems }}
-                trigger={["hover"]}
-              >
+            <li className="me-x hidden xs:hidden lg:hidden sm:block md:block xl:block 2xl:block">
+              <Dropdown menu={{ items: consignmentMenuitems }} trigger={["hover"]}>
                 <Button
                   type="primary"
                   danger
                   className="cate-font ps-1 h-[42px] box-border"
                 >
-                  <span className="h-[30px] ps-[3px]">Ký gửi</span>
+                  <span className="h-[42px] ps-[3px] pt-1">Ký gửi</span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="20"
@@ -339,14 +365,10 @@ const Navbar = () => {
                     viewBox="0 0 20 20"
                     fill="none"
                   >
-                    <path
-                      d="M10.0002 12.5L5.8335 8.33331H14.1668L10.0002 12.5Z"
-                      fill="#EA4444"
-                    />
+                    <path d="M10.0002 12.5L5.8335 8.33331H14.1668L10.0002 12.5Z" fill="#EA4444" />
                   </svg>
                 </Button>
               </Dropdown>
-
 
               {/* Login Modal */}
               <Modal
@@ -363,37 +385,40 @@ const Navbar = () => {
                   </Button>,
                 ]}
               >
-                <p>Vui lòng đăng nhập mới để được trãi nghiệm tính năng</p>
+                <p>Vui lòng đăng nhập mới để được trải nghiệm tính năng</p>
               </Modal>
             </li>
 
             <li className="me-x">
+              {/* Uncomment if needed */}
               {/* <Button
-                type="primary"
-                danger
-                className="my-0 mx-auto cate-font ps-1  w-[192px] h-[42px] box-border flex justify-center align-top pe-1"
-              >
-                 <span className="w-[178px] h-[30px]">Hỗ trợ khách hàng</span> 
-              </Button> */}
+        type="primary"
+        danger
+        className="my-0 mx-auto cate-font ps-1 w-[192px] h-[42px] box-border flex justify-center align-top pe-1"
+      >
+        <span className="w-[178px] h-[30px]">Hỗ trợ khách hàng</span>
+      </Button> */}
             </li>
           </ul>
         </div>
 
+
+
+
         {/* //search */}
         <div
-          className="flex items-center justify-center md:col-span-12 lg:w-[80vw] md:w-[70vw] lg:col-span-12 
-        xl:w-[400px] xl:col-span-1 2xl:col-span-1 max-w-full relative"
+          className="md:mx-10 lg:mx-0  col-span-12 flex items-center xl:mx-20  justify-center md:justify-center sm:col-span-12 md:col-span-12 lg:w-[200px] md:flex  lg:h-[150px] lg:col-span-3 
+    xl:w-[250px] xl:col-span-3 2xl:col-span-3 2xl:w-[300px]  relative"
         >
           <input
             type="search"
-            className="block h-[42px] flex-auto w-full border rounded-[10px] border-solid 
-            border-[#e24242] pl-[44px] py-[0.25rem] text-base leading-[1.6] outline-none
-             placeholder:text-neutral-500 focus:shadow-inset focus:border-red-500 dark:placeholder:text-[#FA4444]"
+            className="h-[42px] sm:h-10 md:h-10 w-[300px] sm:w-[400px]  md:w-[400px] lg:w-[300px]  border rounded-[10px] border-solid border-[#e24242] pl-[44px] py-1 text-base 
+      leading-[1.6] outline-none placeholder:text-neutral-500 focus:shadow-inset focus:border-red-500 dark:placeholder:text-[#FA4444]"
             placeholder="Tìm Kiếm"
             aria-label="Search"
           />
           <span
-            className="absolute left-[10px] top-1/2 transform -translate-y-1/2 text-neutral-500 dark:text-[#FA4444]"
+            className="lg:m-0 md:relative md:mb-10 md:right-[390px] mb-10 relative top-8 sm:relative sm:right-[390px] right-[290px] lg:absolute lg:right-[190px] lg:top-[75px] xl:absolute xl:right-[215px]  2xl:absolute 2xl:right-[265px]    transform -translate-y-1/2 text-neutral-500 dark:text-[#FA4444]"
             id="search-icon"
           >
             <svg
@@ -402,6 +427,8 @@ const Navbar = () => {
               height="24"
               viewBox="0 0 32 32"
               fill="none"
+              aria-hidden="true"
+              className="flex justify-center items-center"
             >
               <path
                 d="M18.9695 18.9695L22.7132 22.7132M22.6128 25.7455C22.3964 25.5423 22.223 25.2976 22.1029 25.0261C21.9829 24.7545 21.9186 24.4616 21.9139 24.1647C21.9092 23.8679 21.9643 23.5731 22.0757 23.2979C22.1872 23.0227 22.3528 22.7727 22.5628 22.5628C22.7727 22.3528 23.0227 22.1872 23.2979 22.0757C23.5731 21.9643 23.8679 21.9092 24.1648 21.9139C24.4616 21.9186 24.7545 21.9829 25.0261 22.1029C25.2976 22.223 25.5423 22.3964 25.7455 22.6128L30.3008 27.1681C30.5172 27.3714 30.6907 27.616 30.8107 27.8876C30.9308 28.1591 30.9951 28.452 30.9997 28.7489C31.0044 29.0458 30.9494 29.3406 30.8379 29.6157C30.7265 29.8909 30.5608 30.1409 30.3509 30.3509C30.1409 30.5608 29.8909 30.7264 29.6157 30.8379C29.3406 30.9494 29.0458 31.0044 28.7489 30.9997C28.452 30.9951 28.1591 30.9308 27.8876 30.8107C27.616 30.6907 27.3714 30.5172 27.1681 30.3008L22.6128 25.7455ZM21.9644 11.4822C21.9644 8.70216 20.8601 6.03597 18.8943 4.07017C16.9285 2.10437 14.2623 1 11.4822 1C8.70216 1 6.03597 2.10437 4.07017 4.07017C2.10437 6.03597 1 8.70216 1 11.4822C1 14.2623 2.10437 16.9285 4.07017 18.8943C6.03597 20.8601 8.70216 21.9644 11.4822 21.9644C14.2623 21.9644 16.9285 20.8601 18.8943 18.8943C20.8601 16.9285 21.9644 14.2623 21.9644 11.4822Z"
@@ -414,10 +441,12 @@ const Navbar = () => {
           </span>
         </div>
 
+
+
         {/* //button login,signup */}
-        <div className="w-full h-full flex justify-end items-center col-span-5 xl:col-span-3 2xl:col-span-2">
+        <div className="w-full  h-full flex justify-end items-center sm:justify-center md:justify-center  col-span-5 lg:h-[150px] sm:col-span-12 md:col-span-12 lg:col-span-2 xl:col-span-3 2xl:col-span-3">
           <Link to="/cart" className="me-10">
-            <button className="relative  flex justify-end items-center mt-[21x]">
+            <button className="relative  flex justify-end items-center ">
               {" "}
               <div
                 style={{

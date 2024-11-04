@@ -148,7 +148,11 @@ const RequestConsignment = () => {
 
         fetchConsignmentFees();
     }, []);
-
+    const handleDelForm = () => {
+        localStorage.removeItem('fishConsignmentID');
+        localStorage.removeItem('consignmentID');
+        window.location.reload()
+    }
     const handleCurrentPage = (prevPage) => {
         localStorage.setItem('agreedToPolicy', false);
         prevPage = 1
@@ -186,7 +190,7 @@ const RequestConsignment = () => {
                     const pureBredValue = koiData.purebred?.toString() || '';
                     setSelectedPureBred(pureBredValue);
                     setInputPrice(koiData.price);
-                
+
                     setImageSrc(koiData.koiImage);
                     setImageSrcCer(certificate.data.image);
                     setSelectedKoiImage(koiData.koiImage);
@@ -208,7 +212,7 @@ const RequestConsignment = () => {
                         ph: koiData.ph,
                         temperature: koiData.temperature,
                         price: koiData.price,
-                        name:certificate.data.name,
+                        name: certificate.data.name,
                     });
                 } catch (error) {
                     console.error('Lỗi khi lấy dữ liệu cá Koi:', error);
@@ -222,7 +226,7 @@ const RequestConsignment = () => {
             // toast.error('Không tồn tại đơn yêu cầu ký gửi nào, vui lòng tạo mới');
         }
 
-    }, [inputPrice, SelectedPackage]);
+    }, [SelectedPackage]);
 
     // Second useEffect to handle service fee calculation
     useEffect(() => {
@@ -402,7 +406,7 @@ const RequestConsignment = () => {
                 throw new Error('Account ID not found in localStorage');
             }
             const userAddress = dataProfile?.address;
-           
+
 
             if (!userAddress) {
 
@@ -680,7 +684,7 @@ const RequestConsignment = () => {
                                     rules={[
                                         {
                                             required: true,
-                                            message: <span className='w-[500px] relative '>Ảnh Koi là bắt buộc</span>
+                                            message: <span className='w-[500px] relative left-10'>Ảnh Koi là bắt buộc</span>
                                         }
                                     ]}
                                 >
@@ -826,7 +830,7 @@ const RequestConsignment = () => {
                                     rules={[
                                         {
                                             required: true,
-                                            message: <span className='w-[500px] relative '>Chứng chỉ của Koi là bắt buộc</span>
+                                            message: <span className='w-[500px] relative left-10 '>Chứng chỉ của Koi là bắt buộc</span>
                                         }
                                     ]}
                                 >
@@ -961,22 +965,22 @@ const RequestConsignment = () => {
                                     </Upload>
                                 </Form.Item>
 
-                                <div >
+                                <div className='flex justify-center' >
                                     <Form.Item
                                         label={<span className="w-[200px]">Tên chứng chỉ</span>}
 
                                         labelCol={{ span: 24 }}
                                         wrapperCol={{ span: 24 }}
                                         name="name"
-                                        className='flex justify-center '
+                                        className='flex justify-center w-[350px]'
                                         rules={[{
-                                            required: true, message: <span className='w-[500px] relative '>Vui lòng điền tên chứng chỉ</span>
+                                            required: true, message: <span className=' relative '>Vui lòng điền tên chứng chỉ</span>
                                         },
 
                                         ]}
                                     >
 
-                                        <TextArea className=' ' placeholder='Vui lòng điền tên chứng chỉ' cols={12} rows={2}
+                                        <TextArea className=' ' placeholder='Vui lòng điền tên chứng chỉ' cols={10} rows={2}
                                             autoSize={{ minRows: 2, maxRows: 4 }} />
 
 
@@ -997,7 +1001,7 @@ const RequestConsignment = () => {
 
                                         ]}
                                     >
-                                        <TextArea className='' placeholder='Vui lòng điền nội dung' cols={12} rows={2}
+                                        <TextArea className='' placeholder='Vui lòng điền nội dung' cols={10} rows={2}
                                             autoSize={{ minRows: 2, maxRows: 4 }} />
 
                                     </Form.Item>
@@ -1494,9 +1498,19 @@ const RequestConsignment = () => {
                             </Row>
                             <Row justify="center" className="mt-6">
                                 <Col>
+                                    <Button
+                                        onClick={() => handleDelForm()}
+                                        className="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-500 transition duration-300"
+                                    >
+                                        Xóa thông tin 
+                                    </Button>
+                                </Col>
+                            </Row>
+                            <Row justify="center" className="mt-6">
+                                <Col>
                                     <Form.Item>
                                         <Button
-                                            className=" text-white px-6 bg-[#FA4444] py-3 rounded-lg font-semibold hover:bg-blue-500 transition duration-300"
+                                            className=" text-white px-6 bg-green-600 py-3 rounded-lg font-semibold hover:bg-blue-500 transition duration-300"
                                             type="primary" htmlType="submit">
                                             Nộp đơn
                                         </Button>
