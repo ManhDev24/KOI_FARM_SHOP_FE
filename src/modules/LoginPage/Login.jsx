@@ -83,6 +83,7 @@ const Login = () => {
   });
 
   const handleLoginWithGoogle = (data) => {
+    console.log('data: ', data);
     loginWithGoogle(data);
   };
   const onSubmit = (data) => {

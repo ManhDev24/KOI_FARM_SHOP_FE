@@ -1,10 +1,10 @@
 import fetcher from "./Fetcher";
-
+import url from "../constant/constant";
 export const BlogApi = {
   getAllBlog: async (currentPage, pageSize) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/blog/getAllBlog/${currentPage}/${pageSize}`
+        `${url}/blog/getAllBlog/${currentPage}/${pageSize}`
       );
       return response.data;
     } catch (error) {
@@ -14,7 +14,7 @@ export const BlogApi = {
   createBlog: async (payload) => {
     try {
       const response = await fetcher.post(
-        `http://localhost:8080/koifarm/blog/createBlog`,
+        `${url}/blog/createBlog`,
         payload,
         {
           headers: {
@@ -30,7 +30,7 @@ export const BlogApi = {
   getDetailBlog: async (id) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/blog/getBlogDetail/${id}`
+        `${url}/blog/getBlogDetail/${id}`
       );
       return response.data;
     } catch (error) {
@@ -40,7 +40,7 @@ export const BlogApi = {
   changeStatus: async (id, status) => {
     try {
       const response = await fetcher.put(
-        `http://localhost:8080/koifarm/blog/changeStatus/${id}?status=${status}`
+        `${url}/blog/changeStatus/${id}?status=${status}`
       );
       return response.data;
     } catch (error) {
@@ -50,7 +50,7 @@ export const BlogApi = {
   updateBlog: async (payload, blogId) => {
     try {
       const response = await fetcher.put(
-        `http://localhost:8080/koifarm/blog/updateBlog/${blogId}`,
+        `${url}/blog/updateBlog/${blogId}`,
         payload,
         {
           headers: {
@@ -66,7 +66,7 @@ export const BlogApi = {
   deleteBlog: async (id) => {
     try {
       const response = await fetcher.delete(
-        `http://localhost:8080/koifarm/blog/deleteBlog/${id}`
+        `${url}/blog/deleteBlog/${id}`
       );
       return response.data;
     } catch (error) {

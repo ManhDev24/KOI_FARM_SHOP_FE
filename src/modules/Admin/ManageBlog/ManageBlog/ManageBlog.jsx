@@ -10,6 +10,7 @@ import {
   Dropdown,
   Menu,
   message,
+  Popconfirm,
 } from "antd";
 import { EditOutlined, EyeOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -146,17 +147,27 @@ const ManageBlog = () => {
             >
               Sửa
             </Button>
-            <Button
-              style={{
-                backgroundColor: "#ff4d4f",
-                color: "white",
+            <Popconfirm
+              title="Xóa bài blog này"
+              description="Bạn có chắc muốn xóa bài viết này"
+              onConfirm={() => {
+                handleDeleteBlog(record?.blogId)
               }}
-              onClick={() => handleDeleteBlog(record?.blogId)}
-              icon={<DeleteOutlined />}
-              danger
+              okText='Yes'
+              cancelText='No'
             >
-              Xóa
-            </Button>
+              <Button
+                style={{
+                  backgroundColor: "#ff4d4f",
+                  color: "white",
+                }}
+                icon={<DeleteOutlined />}
+                danger
+              >
+                Xóa
+              </Button>
+            </Popconfirm>
+
           </Space>
         );
       },
@@ -187,7 +198,7 @@ const ManageBlog = () => {
       </div>
 
       <div className="flex flex-col w-full">
-        
+
 
         <div className="mt-3">
           <Table

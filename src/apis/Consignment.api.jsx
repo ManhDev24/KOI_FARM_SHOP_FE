@@ -1,11 +1,11 @@
 import { update } from "lodash";
 import fetcher from "./Fetcher";
-
+import url from "../constant/constant";
 export const ConsignmentApi = {
   requestConsignment: async (data) => {
     try {
       const response = await fetcher.post(
-        "http://localhost:8080/koifarm/consignment/createConsignment",
+        `${url}/consignment/createConsignment`,
         data, // data is the FormData object
         {
           headers: {
@@ -23,7 +23,7 @@ export const ConsignmentApi = {
   statusConsignment: async (id) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/consignment/consignmentDetail/${id}`
+        `${url}/consignment/consignmentDetail/${id}`
       );
       return response.data;
     } catch (error) {
@@ -35,7 +35,7 @@ export const ConsignmentApi = {
   getCertificateByID: async (id) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/certificate/getCertificate?koiId=${id}`
+        `${url}/certificate/getCertificate?koiId=${id}`
       );
       return response.data;
     } catch (error) {
@@ -47,7 +47,7 @@ export const ConsignmentApi = {
   getAllConsignment: async (currentPage, pageSize = 9, accountId) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/consignment/getAllConsignment?pageNo=${currentPage}&pageSize=${pageSize}&accountId=${accountId}`
+        `${url}/consignment/getAllConsignment?pageNo=${currentPage}&pageSize=${pageSize}&accountId=${accountId}`
       );
       return response.data;
     } catch (error) {
@@ -57,7 +57,7 @@ export const ConsignmentApi = {
   getAllConsignmentManagement: async (currentPage, pageSize = 9) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/consignment/getAllConsignmentManagement?pageNo=${currentPage}&pageSize=${pageSize}`
+        `${url}/consignment/getAllConsignmentManagement?pageNo=${currentPage}&pageSize=${pageSize}`
       );
       return response.data;
     } catch (error) {
@@ -67,7 +67,7 @@ export const ConsignmentApi = {
   getConsignmentDetail: async (id) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/consignment/consignmentDetail/${id}`
+        `${url}/consignment/consignmentDetail/${id}`
       );
       return response.data;
     } catch (error) {
@@ -77,7 +77,7 @@ export const ConsignmentApi = {
   approvalConsignment: async (id) => {
     try {
       const response = await fetcher.put(
-        `http://localhost:8080/koifarm/consignment/approve/${id}`
+        `${url}/consignment/approve/${id}`
       );
       return response.data;
     } catch (error) {
@@ -87,7 +87,7 @@ export const ConsignmentApi = {
   rejectConsignment: async (id, rejectionReason) => {
     try {
       const response = await fetcher.put(
-        `http://localhost:8080/koifarm/consignment/reject/${id}?rejectionReason=${rejectionReason}`
+        `${url}/consignment/reject/${id}?rejectionReason=${rejectionReason}`
       );
       return response.data;
     } catch (error) {
@@ -97,7 +97,7 @@ export const ConsignmentApi = {
   cancelConsignment: async (id) => {
     try {
       const response = await fetcher.delete(
-        `http://localhost:8080/koifarm/consignment/deleteConsignment?consignmentId=${id}`
+        `${url}/consignment/deleteConsignment?consignmentId=${id}`
       );
       return response.data;
     } catch (error) {
@@ -107,7 +107,7 @@ export const ConsignmentApi = {
   sendEmailConsignment: async (id) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/consignment/sendMail/${id}`
+        `${url}/consignment/sendMail/${id}`
       );
       return response.data;
     } catch (error) {
@@ -117,7 +117,7 @@ export const ConsignmentApi = {
   getAllFishCare: async (currentPage, pageSize) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/consignment/getAllFishCare?pageNo=${currentPage}&pageSize=${pageSize}`
+        `${url}/consignment/getAllFishCare?pageNo=${currentPage}&pageSize=${pageSize}`
       );
       return response.data;
     } catch (error) {
@@ -127,7 +127,7 @@ export const ConsignmentApi = {
   addHeathForKoi: async (data) => {
     try {
       const response = await fetcher.post(
-        `http://localhost:8080/koifarm/consignment/addHealth`,
+        `${url}/consignment/addHealth`,
         data
       );
       return response.data;
@@ -138,7 +138,7 @@ export const ConsignmentApi = {
   editHeathForKoi: async (data) => {
     try {
       const response = await fetcher.put(
-        `http://localhost:8080/koifarm/consignment/updateHealth`,
+        `${url}/consignment/updateHealth`,
         data
       );
       return response.data;
@@ -149,7 +149,7 @@ export const ConsignmentApi = {
   getAllConsignmentFee: async (currentPage, pageSize) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/consignmentFee/getAll/${currentPage}/${pageSize}`
+        `${url}/consignmentFee/getAll/${currentPage}/${pageSize}`
       );
       return response.data;
     } catch (error) {
@@ -159,7 +159,7 @@ export const ConsignmentApi = {
   updateConsignmentFee: async (data) => {
     try {
       const response = await fetcher.put(
-        `http://localhost:8080/koifarm/consignmentFee/update`,
+        `${url}/consignmentFee/update`,
         data
       );
       return response.data;
@@ -170,7 +170,7 @@ export const ConsignmentApi = {
   getAllServiceFee: async () => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/consignmentFee/getAll/1/20`
+        `${url}/consignmentFee/getAll/1/20`
       );
       return response.data;
     } catch (error) {
@@ -180,7 +180,7 @@ export const ConsignmentApi = {
   createConsignmentFee: async (data) => {
     try {
       const response = await fetcher.post(
-        `http://localhost:8080/koifarm/consignmentFee/create`,
+        `${url}/consignmentFee/create`,
         data
       );
       return response.data;
@@ -192,7 +192,7 @@ export const ConsignmentApi = {
   getAllHealthCareConsignmentForCustomer: async (accountID, pageNo, pageSize) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/consignment/getAllFishCareForCustomer?pageNo=${pageNo}&pageSize=${pageSize}&accountId=${accountID}`
+        `${url}/consignment/getAllFishCareForCustomer?pageNo=${pageNo}&pageSize=${pageSize}&accountId=${accountID}`
       );
       return response.data;
     } catch (error) {
@@ -202,7 +202,7 @@ export const ConsignmentApi = {
   getAllHealthCareConsignmentForCustomerDetail: async (fishId) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/consignment/getFishCareDetail?koiId=${fishId}`
+        `${url}/consignment/getFishCareDetail?koiId=${fishId}`
       );
       return response.data;
     } catch (error) {
@@ -211,7 +211,7 @@ export const ConsignmentApi = {
   },
   getAllSellConsignmentForCustomer: async (accountID, pageNo, pageSize) => {
     try {
-      const response = await fetcher.get(`http://localhost:8080/koifarm/consignment/consignments/for-sale?accountId=${accountID}&pageNo=${pageNo}&pageSize=${pageSize}`
+      const response = await fetcher.get(`${url}/consignment/consignments/for-sale?accountId=${accountID}&pageNo=${pageNo}&pageSize=${pageSize}`
       );
       return response.data;
     } catch (error) {

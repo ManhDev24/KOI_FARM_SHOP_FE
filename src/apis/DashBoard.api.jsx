@@ -1,10 +1,10 @@
 import fetcher from "./Fetcher";
-
+import url from "../constant/constant";
 export const DashBoardApi = {
   revenueOfYear: async () => {
     try {
       const response = await fetcher.get(
-        "http://localhost:8080/koifarm/dashboard/revenue/years"
+        `${url}/dashboard/revenue/years`
       );
       return response.data;
     } catch (error) {
@@ -15,7 +15,7 @@ export const DashBoardApi = {
   revenueOfMonth: async () => {
     try {
       const response = await fetcher.get(
-        "http://localhost:8080/koifarm/dashboard/revenue/months"
+        `${url}/dashboard/revenue/months`
       );
       return response.data;
     } catch (error) {
@@ -26,9 +26,9 @@ export const DashBoardApi = {
   revenueOfWeek: async () => {
     try {
       const response = await fetcher.get(
-        "http://localhost:8080/koifarm/dashboard/revenue/weeks"
+        `${url}/dashboard/revenue/weeks`
       );
-    return response.data;
+      return response.data;
     } catch (error) {
       throw new Error(error.response.data.message);
     }
@@ -37,7 +37,7 @@ export const DashBoardApi = {
   revenueOfDay: async (months) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/dashboard/revenue/days/?month=${months}`
+        `${url}/dashboard/revenue/days/?month=${months}`
       );
       return response.data;
     } catch (error) {

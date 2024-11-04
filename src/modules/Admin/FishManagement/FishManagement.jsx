@@ -36,29 +36,13 @@ import _ from "lodash";
 
 const validationSchema = yup.object().shape({
   category: yup.string().required("Danh mục là bắt buộc"),
-  age: yup
-    .number()
-    .typeError("Tuổi phải là số")
-    .required("Tuổi là bắt buộc")
-    .min(0, "Tuổi không thể âm"),
-  size: yup
-    .number()
-    .typeError("Kích thước phải là số")
-    .required("Kích thước là bắt buộc")
-    .min(0, "Kích thước không thể âm"),
+  age: yup.number().typeError("Tuổi phải là số").required("Tuổi là bắt buộc").min(0, "Tuổi không thể âm"),
+  size: yup.number().typeError("Kích thước phải là số").required("Kích thước là bắt buộc").min(0, "Kích thước không thể âm"),
   personality: yup.string().required("Tính cách là bắt buộc"),
   origin: yup.string().required("Nguồn gốc là bắt buộc"),
-  price: yup
-    .number()
-    .typeError("Giá phải là số")
-    .required("Giá là bắt buộc")
-    .min(0, "Giá không thể âm"),
-  gender: yup.boolean().required("Gioi tinh là bắt buộc"),
-  purebred: yup
-    .number()
-    .typeError("Độ Thuần chủng phải là Thuần chủng hoặc F1")
-    .required("Thuần chủng là bắt buộc"),
-
+  price: yup.number().typeError("Giá phải là số").required("Giá là bắt buộc").min(0, "Giá không thể âm"),
+  gender: yup.boolean().required("Giới tính là bắt buộc"),
+  purebred: yup.number().typeError("Độ Thuần chủng phải là Thuần chủng hoặc F1").required("Thuần chủng là bắt buộc"),
   food: yup.string().required("Đồ ăn là bắt buộc"),
   name: yup.string().required("Tên của chứng chỉ là bắt buộc"),
   water: yup.string().required("Nước là bắt buộc"),
@@ -272,7 +256,7 @@ const FishManagement = () => {
     setImage(undefined);
   };
   const onStatusChange = (id, status) => {
-   
+
     handleChangeStatusFish(id);
   };
 
@@ -492,6 +476,7 @@ const FishManagement = () => {
   };
 
   const onEditFish = async (record) => {
+    console.log('record: ', record);
     showModal();
     setDataEdit(record);
     reset({
@@ -506,6 +491,7 @@ const FishManagement = () => {
       purebred: record.purebred,
       health: record.health,
       food: record.food,
+      name: record?.certificate?.name,
       water: record.water,
       temperature: record.temperature,
       ph: record.ph,
@@ -656,8 +642,8 @@ const FishManagement = () => {
                       type="button"
                     >
                       {(value && value instanceof File) ||
-                      image ||
-                      dataEdit?.koiImage ? (
+                        image ||
+                        dataEdit?.koiImage ? (
                         <>
                           <img
                             className="w-[60px] h-[80px] object-cover"
@@ -725,8 +711,8 @@ const FishManagement = () => {
                       type="button"
                     >
                       {(value && value instanceof File) ||
-                      imageCertificate ||
-                      dataEdit?.certificate?.image ? (
+                        imageCertificate ||
+                        dataEdit?.certificate?.image ? (
                         <>
                           <img
                             className="w-[60px] h-[80px] object-cover"
@@ -734,7 +720,7 @@ const FishManagement = () => {
                               value && value instanceof File
                                 ? URL.createObjectURL(value)
                                 : imageCertificate ||
-                                  dataEdit?.certificate?.image
+                                dataEdit?.certificate?.image
                             }
                             alt="imageCertificate"
                           />
@@ -1095,8 +1081,8 @@ const FishManagement = () => {
               {dataView?.status === 1
                 ? "Đang bán"
                 : dataView?.status === 2
-                ? "Đã bán"
-                : null}
+                  ? "Đã bán"
+                  : null}
             </div>
             <div className="rounded-[10px]">
               <img
@@ -1113,7 +1099,7 @@ const FishManagement = () => {
             </h1>
             <div className="my-[10px] mx-[10px]  ">
               <div className="flex flex-col ">
-                <div className="h-7 text-lg font-bold flex justify-center text-[#FA4444] ">
+                <div className="h-8 text-lg font-bold flex justify-center text-[#FA4444] mb-4 ">
                   {dataView?.category} {dataView?.size} cm {dataView?.age} tuổi
                 </div>
                 <div className="h-7">Người bán: {dataView?.origin}</div>
@@ -1145,9 +1131,9 @@ const FishManagement = () => {
                     <Link>
                       <div
                         className="absolute  top-[3px] right-[-5px] z-50" // Adjusted position: top right of the card
-                        // onClick={(e) => {
-                        //   handleAddToCompare(card);
-                        // }}
+                      // onClick={(e) => {
+                      //   handleAddToCompare(card);
+                      // }}
                       >
                         <Button
                           onClick={(e) => {

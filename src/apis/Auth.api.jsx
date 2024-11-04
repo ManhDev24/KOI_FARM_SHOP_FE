@@ -1,12 +1,12 @@
 import { useSelector } from "react-redux";
 import fetcher from "./Fetcher";
 import { getLocalStorage } from "../utils/LocalStorage";
-
+import url from "../constant/constant";
 export const AuthApi = {
   login: async (data) => {
     try {
       const response = await fetcher.post(
-        "http://localhost:8080/koifarm/login/signin",
+        `${url}/login/signin`,
         data
       );
       return response.data;
@@ -17,7 +17,7 @@ export const AuthApi = {
   register: async (data) => {
     try {
       const response = await fetcher.post(
-        "http://localhost:8080/koifarm/account/register",
+        `${url}/account/register`,
         data
       );
       return response.data;
@@ -28,7 +28,7 @@ export const AuthApi = {
   otpVerify: async (otp, email) => {
     try {
       const response = await fetcher.post(
-        `http://localhost:8080/koifarm/verify-otp?email=${email}&otp=${otp}`
+        `${url}/verify-otp?email=${email}&otp=${otp}`
       );
       return response.data;
     } catch (error) {
@@ -38,7 +38,7 @@ export const AuthApi = {
   forgotEmail: async (email) => {
     try {
       const response = await fetcher.post(
-        `http://localhost:8080/koifarm/login/forgotPassword/${email}`
+        `${url}/login/forgotPassword/${email}`
       );
       return response.data;
     } catch (error) {
@@ -48,7 +48,7 @@ export const AuthApi = {
   loginWithGoogle: async (data) => {
     try {
       const response = await fetcher.post(
-        "http://localhost:8080/koifarm/login/signingoogle",
+        `${url}/login/signingoogle`,
         data
       );
       return response.data;
@@ -60,7 +60,7 @@ export const AuthApi = {
     try {
       const token = getLocalStorage("otpToken"); // Retrieve the token
       const response = await fetcher.post(
-        `http://localhost:8080/koifarm/login/changePassword/${email}`,
+        `${url}/login/changePassword/${email}`,
 
         data,
         {
@@ -77,7 +77,7 @@ export const AuthApi = {
   resendOtp: async (email) => {
     try {
       const response = await fetcher.post(
-        `http://localhost:8080/koifarm/resend-otp?email=${email}`
+        `${url}/resend-otp?email=${email}`
       );
       return response.data;
     } catch (error) {
@@ -87,7 +87,7 @@ export const AuthApi = {
   userProfile: async (email) => {
     try {
       const response = await fetcher.get(
-        `http://localhost:8080/koifarm/account/profile/${email}`
+        `${url}/account/profile/${email}`
       );
 
       return response.data;
@@ -99,7 +99,7 @@ export const AuthApi = {
   userProfileEdit: async (id, accessToken, updatedData) => {
     try {
       const response = await fetcher.put(
-        `http://localhost:8080/koifarm/account/update/updateProfile/${id}`, // URL API không cần accessToken ở đây
+        `${url}/account/update/updateProfile/${id}`, // URL API không cần accessToken ở đây
         updatedData, // Truyền dữ liệu cần cập nhật (name, address, phone)
         {
           headers: {
@@ -121,7 +121,7 @@ export const AuthApi = {
   checkPassword: async (id, password) => {
     try {
       const response = await fetcher.post(
-        `http://localhost:8080/koifarm/account/checkPassword/${id}`,
+        `${url}/account/checkPassword/${id}`,
         { password } // Gửi mật khẩu trong body của yêu cầu
       );
       return response.data; // Trả về dữ liệu phản hồi từ API
@@ -132,7 +132,7 @@ export const AuthApi = {
   updatePassword: async (id, accessToken, password) => {
     try {
       const response = await fetcher.put(
-        `http://localhost:8080/koifarm/account/updatePassword/${id}`,
+        `${url}/account/updatePassword/${id}`,
         { password }, // Gửi mật khẩu trong body của yêu cầu
         {
           headers: {
@@ -154,8 +154,8 @@ export const AuthApi = {
     const formData = new FormData();
     formData.append('file', file);
 
-    try {   
- const response = await fetch(`http://localhost:8080/koifarm/account/profile/updateAvatar/${id}`, {
+    try {
+      const response = await fetch(`${url}/account/profile/updateAvatar/${id}`, {
         method: 'POST',
 
         body: formData, // Gửi formData trực tiếp
