@@ -25,10 +25,10 @@ const Footer = () => {
         <div>
           <h3 className="text-lg font-semibold mb-3">Dịch Vụ</h3>
           <ul className="space-y-2">
-            <li className="hover:text-gray-300 cursor-pointer">Tư vấn cá Koi</li>
-            <li className="hover:text-gray-300 cursor-pointer">Kiểm tra  cá Koi</li>
-            <li className="hover:text-gray-300 cursor-pointer">ký gửi</li>
-            <li className="hover:text-gray-300 cursor-pointer">mua bán</li>
+            <li className="hover:text-gray-300 cursor-pointer">Tư Vấn Cá Koi</li>
+            <li className="hover:text-gray-300 cursor-pointer">Kiểm Tra  Cá Koi</li>
+            <li className="hover:text-gray-300 cursor-pointer">Ký Gửi</li>
+            <li className="hover:text-gray-300 cursor-pointer">Mua Bán</li>
           </ul>
         </div>
 
