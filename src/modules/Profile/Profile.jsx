@@ -42,8 +42,9 @@ const schema = yup.object().shape({
   phone: yup.string()
     .required('Vui lòng nhập số điện thoại')
     .matches(/^[0-9]+$/, 'Số điện thoại chỉ chứa số')
+    .matches(/^(0[3|5|7|8|9])[0-9]{8}$/, 'Số điện thoại không đúng định dạng!') // Ensures correct format
     .min(10, 'Số điện thoại phải có ít nhất 10 chữ số')
-    .max(15, 'Số điện thoại không được vượt quá 15 chữ số'),
+    .max(10, 'Số điện thoại phải có đúng 10 chữ số'),
 
 });
 
@@ -159,9 +160,26 @@ const Profile = () => {
       }));
       const updatedUser = { ...dataProfile, ...completeUpdatedData };
       localStorage.setItem('user', JSON.stringify(updatedUser));
-      message.success(`${field} đã được cập nhật thành công`);
+      let fieldName = '';
+      switch (field) {
+        case 'fullName':
+          fieldName = 'Họ và tên';
+          break;
+        case 'address':
+          fieldName = 'Địa chỉ';
+          break;
+        case 'phone':
+          fieldName = 'Số điện thoại';
+          break;
+
+
+        default:
+          fieldName = field;
+      }
+      message.success(`${fieldName} đã được cập nhật thành công`);
+
     } catch (error) {
-      message.error(`Lỗi khi cập nhật ${field}: ${error.message}`);
+      message.error(`Lỗi khi cập nhật ${fieldName}: ${error.message}`);
     }
   };
 

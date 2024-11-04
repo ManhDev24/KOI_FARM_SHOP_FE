@@ -79,7 +79,7 @@ const ComparisonModal = ({ isOpen, onClose, selectedItems, setSelectedItems, rem
                     {/* Nút xóa item khỏi so sánh */}
                     <Link>
                       <button
-                        className="bg-red-500 relative  bottom-[665px] left-[198px] text-white font-bold py-1 px-4 rounded mt-[32px]"
+                        className="bg-red-500 relative  bottom-[652px] left-[198px] text-white font-bold py-1 px-4 rounded mt-[32px]"
                         onClick={() => {
                           removeItem(item);
                           // Cập nhật localStorage sau khi xóa item

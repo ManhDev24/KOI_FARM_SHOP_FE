@@ -34,10 +34,10 @@ const KoiConsignmentPolicies = () => {
         if (!accountId) {
 
             navigate('/login');
-        }else if(storedValue){
+        } else if (storedValue) {
             navigate('/Form-consignment');
         }
-        
+
     }, [navigate]);
 
     return (
@@ -76,7 +76,7 @@ const KoiConsignmentPolicies = () => {
                     </Steps>
                 </div>
             </div>
-            <div class="form-container w-[950px] mx-auto p-6 bg-white shadow-md rounded-lg mt-10">
+            <div class="form-container w-[950px] mx-auto p-6 bg-white shadow-md rounded-lg my-10">
                 <h1 class="text-4xl font-bold text-center text-blue-600 mb-8">Chính Sách Ký Gửi Cá Koi</h1>
 
                 {/* Section 1: Điều Kiện Ký Gửi Cá Koi  */}
@@ -97,22 +97,25 @@ const KoiConsignmentPolicies = () => {
                 </div>
 
                 {/* Section 2: Chi Phí Ký Gửi Cá Koi Khi Bán  */}
-                <h3 class="text-2xl font-semibold text-blue-600 mb-4">2. Chi Phí Ký Gửi Cá Koi Khi Chọn Bán Cá</h3>
-                <p class="mb-4">Nếu khách hàng chọn bán cá Koi trong thời gian ký gửi, chúng tôi cung cấp các gói dịch vụ với mức phí dựa trên giá trị cá bán:</p>
+              
+                <p class="mb-4">Dịch vụ ký gửi cá Koi của chúng tôi cung cấp hai gói chính: một gói cho việc ký gửi để bán và một gói chỉ dành cho việc chăm sóc cá. Các chi phí được tính dựa trên giá trị của cá tại thời điểm ký gửi.</p>
+
+                {/* <!-- Section 2: Chi Phí Ký Gửi Cá Koi Khi Bán --> */}
+                <h3 class="text-2xl font-semibold text-blue-600 mb-4">2. Chi Phí Ký Gửi Cá Koi Để Bán</h3>
+                <p class="mb-4">Nếu khách hàng chọn bán cá Koi trong thời gian ký gửi, chúng tôi áp dụng mức phí dịch vụ dựa trên giá trị cá bán. Phí này được tính theo % giá trị bán ra của cá.</p>
                 <ul class="list-disc ml-6 mb-4">
-                    <li><strong>Gói 1 tháng:</strong> Phí dịch vụ là 5% giá trị cá bán khi bán thành công.</li>
-                    <li><strong>Gói 3 tháng:</strong> Phí dịch vụ là 10% giá trị cá bán khi bán thành công.</li>
-                    <li><strong>Gói 6 tháng:</strong> Phí dịch vụ là 15% giá trị cá bán khi bán thành công.</li>
+                    <li><strong>Gói tháng:</strong> Phí dịch vụ được tính theo tỷ lệ % giá trị bán của cá tại thời điểm đăng ký ký gửi.</li>
                 </ul>
+
+                {/* <!-- Section 3: Chi Phí Chăm Sóc Cá Koi (Không Bán Cá) --> */}
                 <div class="mb-10">
                     <h3 class="text-2xl font-semibold text-blue-600 mb-4">3. Chi Phí Chăm Sóc Cá Koi (Không Bán Cá)</h3>
-                    <p class="mb-4">Nếu khách hàng không bán cá trong quá trình ký gửi và chỉ sử dụng dịch vụ chăm sóc, chúng tôi cung cấp các gói chăm sóc với mức phí dựa trên giá trị cá:</p>
+                    <p class="mb-4">Nếu khách hàng không bán cá trong quá trình ký gửi và chỉ sử dụng dịch vụ chăm sóc, phí dịch vụ sẽ được tính dựa trên giá trị của cá tại thời điểm ký gửi.</p>
                     <ul class="list-disc ml-6 mb-4">
-                        <li><strong>Gói 1 tháng:</strong> Phí dịch vụ là 3% giá trị cá Koi.</li>
-                        <li><strong>Gói 6 tháng:</strong> Phí dịch vụ là 9% giá trị cá Koi.</li>
-                        <li><strong>Gói 12 tháng:</strong> Phí dịch vụ là 15% giá trị cá Koi.</li>
+                        <li><strong>Gói tháng:</strong> Phí dịch vụ được tính theo % giá trị của cá tại thời điểm ký gửi, không phụ thuộc vào việc bán cá.</li>
                     </ul>
                 </div>
+
                 <div class="mb-10">
                     <h3 class="text-2xl font-semibold text-blue-600 mb-4">4. Quy Định Về Thanh Toán và Giá Trị Cá</h3>
                     <p class="mb-4"><strong>4.1 Thanh Toán Trước:</strong> Toàn bộ chi phí ký gửi và chăm sóc phải được thanh toán trước khi bắt đầu ký gửi. Quý khách có thể thanh toán qua tiền mặt hoặc chuyển khoản.</p>

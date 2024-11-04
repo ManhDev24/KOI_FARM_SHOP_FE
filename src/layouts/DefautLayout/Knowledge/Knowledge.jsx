@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import { addToCart } from '../../../Redux/Slices/Cart_Slice';
 import LoadingModal from '../../../modules/Modal/LoadingModal';
 import { motion } from 'framer-motion'
+import { toast } from 'react-toastify';
 const Knowledge = () => {
   const [categoryResponses, setCategoryResponses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -48,14 +49,14 @@ const Knowledge = () => {
 
   const handleAddToCompare = (item) => {
     if (selectedItems.length < 2 && !selectedItems.some((i) => i.id === item.id)) {
-      setSelectedItems([...selectedItems, item]); // Add item to the comparison list
+      setSelectedItems([...selectedItems, item]); // Thêm mục vào danh sách so sánh
     } else if (selectedItems.some((i) => i.id === item.id)) {
-      alert('This item has already been added to the comparison.');
+      toast('Mục này đã được thêm vào danh sách so sánh.');
     } else {
-      alert('You can only compare a maximum of 2 items.');
+      toast('Bạn chỉ có thể so sánh tối đa 2 mục.');
     }
   };
-
+  
 
   const handleAddToCart = (fish) => {
     dispatch(
@@ -173,9 +174,7 @@ const Knowledge = () => {
                               <Link>
                                 <div
                                   className="absolute top-[10px] right-[10px] z-50"
-                                  onClick={() => {
-                                    handleAddToCompare(card);
-                                  }}
+                                  
                                 >
                                   <Button
                                     onClick={() => {
@@ -221,6 +220,7 @@ const Knowledge = () => {
 
       {/* Comparison Modal */}
       <ComparisonModal
+       
         isOpen={isModalOpen}
         onClose={handleModalClose}
         selectedItems={selectedItems}
@@ -230,7 +230,7 @@ const Knowledge = () => {
 
       <Button
         onClick={handleCompare}
-        className={`bg-[#FA4444] text-white fixed z-40 left-[100px] top-[100px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${selectedItems.length === 0 ? 'disabled' : ''}`}
+        className={`bg-[#FA4444] text-white fixed z-50 left-[100px] top-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${selectedItems.length === 0 ? 'disabled' : ''}`}
         disabled={selectedItems.length === 0}
       >
         Xem So Sánh ({selectedItems.length}) Cá Koi
