@@ -444,7 +444,7 @@ const Navbar = () => {
 
 
         {/* //button login,signup */}
-        <div className="w-full  h-full flex justify-end items-center sm:justify-center md:justify-center  col-span-5 lg:h-[150px] sm:col-span-12 md:col-span-12 lg:col-span-2 xl:col-span-3 2xl:col-span-3">
+        <div className="w-full  h-full flex justify-end lg:flex lg:justify-end items-center sm:justify-center md:justify-center  col-span-5 lg:h-[150px] sm:col-span-12 md:col-span-12 lg:col-span-2 xl:col-span-3 2xl:col-span-3">
           <Link to="/cart" className="me-10">
             <button className="relative  flex justify-end items-center ">
               {" "}
