@@ -24,12 +24,13 @@ const schema = yup.object().shape({
   password: yup.string()
     .required('Vui lòng nhập mật khẩu cũ'),
 
-  newPassword: yup.string()
-    .required('Vui lòng nhập mật khẩu mới')
-    .min(8, 'Mật khẩu phải có ít nhất 8 ký tự')
-    .matches(/[0-9]/, 'Mật khẩu phải chứa ít nhất một chữ số')
-    .matches(/[!@#$%^&*(),.?":{}|<>]/, 'Mật khẩu phải chứa ít nhất một ký tự đặc biệt')
-    .notOneOf([yup.ref('password')], 'Mật khẩu mới không được giống mật khẩu cũ'),
+  newPassword: yup.string()    
+    .required("Mật khẩu là bắt buộc")
+    .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
+    .matches(
+      /[!@#$%^&*(),.?":{}|<>]/,
+      "Mật khẩu phải chứa ít nhất một ký tự đặc biệt"
+    ),
 
   confirmPassword: yup.string()
     .required('Vui lòng xác nhận mật khẩu')
@@ -235,16 +236,16 @@ const Profile = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Có lỗi xảy ra khi upload ảnh.');
+        throw new Error('Có lỗi xảy ra khi cập nhật ảnh.');
       }
 
       const data = await response.json();
-      message.success('Upload ảnh thành công!');
+      message.success('Cập nhật ảnh thành công!');
 
 
     } catch (error) {
 
-      message.error(error.message || 'Đã xảy ra lỗi khi upload ảnh, vui lòng thử lại.');
+      message.error(error.message || 'Đã xảy ra lỗi khi cập nhật ảnh, vui lòng thử lại.');
     }
   };
 
@@ -336,7 +337,7 @@ const Profile = () => {
     if (fieldName === 'email') {
       return (
         <AntForm.Item label={label} className='flex'>
-          <div className="text-black flex flex-col text-xl font-['Arial'] w-full">{initialData[fieldName]}</div>
+          <div className=" w-64 text-black flex flex-col text-xl font-['Arial']">{initialData[fieldName]}</div>
         </AntForm.Item>
       );
     }
@@ -364,7 +365,7 @@ const Profile = () => {
                     iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                   />
                 ) : (
-                  <Input {...field} />
+                  <Input {...field} className='w-72 flex'/>
                 )
               )}
             />
@@ -374,7 +375,7 @@ const Profile = () => {
             >
               Lưu thay đổi
             </Button>
-            <Button onClick={() => handleCancel(fieldName)}>Hủy</Button>
+            <Button className='ms-1' onClick={() => handleCancel(fieldName)}>Hủy</Button>
           </>
         ) : (
           <>
@@ -451,7 +452,7 @@ const Profile = () => {
           </div>
 
           {/* Thông tin cá nhân */}
-          <div className="w-[699px] h-[570px] ms-10 mt-[30px] relative flex-col flex shadow">
+          <div className="w-[600px] h-[570px] ms-10 mt-[30px] relative flex-col flex shadow">
             <div className="w-[654px]">
               <div className="text-black text-2xl h-[50px] flex items-center w-full ms-2 font-['Arial']">
                 Thông tin cá nhân
@@ -465,7 +466,7 @@ const Profile = () => {
               {renderFormItem('Email', 'email', 'Nhập email')}
 
               {/* Mật khẩu */}
-              <AntForm.Item label="Mật khẩu" validateStatus={errors.password ? 'error' : ''} help={((errors.password?.message) === 'Nhập lại pass word') ? "Sai mật khẩu vui lòng thử lại!" : ' '}>
+              <AntForm.Item label="Mật khẩu" className='w-[600px]' validateStatus={errors.password ? 'error' : ''} help={((errors.password?.message) === 'Nhập lại pass word') ? "Sai mật khẩu vui lòng thử lại!" : ' '}>
 
                 {initialData.password === '' ? (
                   <div className="text-black text-xl font-['Arial']">
@@ -483,10 +484,12 @@ const Profile = () => {
                           <>
                             <Controller
                               name="password"
+
                               control={control}
                               render={({ field }) => (
                                 <Input.Password
                                   {...field}
+                                  className='w-64 flex'
                                   placeholder="Nhập mật khẩu cũ"
                                   iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                                 />
@@ -508,10 +511,10 @@ const Profile = () => {
                               Xác nhận mật khẩu cũ
                             </Button>
 
-                            <Button onClick={() => handleCancel('password')}>Hủy</Button>
+                            <Button className='ms-1' onClick={() => handleCancel('password')}>Hủy</Button>
                           </>
                         ) : (
-                          <Button type="link" onClick={() => setPasswordChanged(false)}>
+                          <Button  type="link" onClick={() => setPasswordChanged(false)}>
                             Đổi mật khẩu
                           </Button>
                         )}
@@ -521,7 +524,10 @@ const Profile = () => {
                         <AntForm.Item
                           label="Mật khẩu mới"
                           validateStatus={errors.newPassword ? 'error' : ''}
-                          help={errors.newPassword?.message}
+                          help={<span className='absolute top-16 right-20 w-full'>{errors.newPassword?.message}</span>}
+                          className='h-16'
+                          labelCol={{ span: 4 }} // Adjusts label width
+                          wrapperCol={{ span: 16 }} // Adjusts input width
                         >
                           <Controller
                             name="newPassword"
@@ -530,6 +536,7 @@ const Profile = () => {
                               <Input.Password
                                 {...field}
                                 placeholder="Nhập mật khẩu mới"
+                                className=' w-64 relative top-8 right-20 '
                                 iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                               />
                             )}
@@ -539,7 +546,8 @@ const Profile = () => {
                         <AntForm.Item
                           label="Xác nhận mật khẩu mới"
                           validateStatus={errors.confirmPassword ? 'error' : ''}
-                          help={errors.confirmPassword?.message}
+                          help={<span className='absolute top-16 right-[154px] w-full'>{errors.confirmPassword?.message}</span>}
+                          className='h-16'
                         >
                           <Controller
                             name="confirmPassword"
@@ -548,18 +556,19 @@ const Profile = () => {
                               <Input.Password
                                 {...field}
                                 placeholder="Xác nhận mật khẩu mới"
+                                className='w-64 relative top-8 right-[154px]'
                                 iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                               />
                             )}
                           />
                         </AntForm.Item>
 
-                        <Button type="primary" onClick={() => {
+                        <Button className='ms-2' type="primary" onClick={() => {
 
                           handleSavePassword();
                         }}>Lưu thay đổi</Button>
 
-                        <Button onClick={() => handleCancel('password')}>Hủy</Button>
+                        <Button className='ms-1'  onClick={() => handleCancel('password')}>Hủy</Button>
                       </>
                     )}
                   </>
