@@ -1,6 +1,7 @@
 import React from "react";
 import Navbar from "./Navbar/Navbar";
 import Footer from "./Footer/Footer";
+import MessengerAndTopButton from "./MessengerVsMoveToTop/MessengerAndTopButton";
 
 const DefaultLayout = ({ children }) => {
   return (
@@ -9,6 +10,7 @@ const DefaultLayout = ({ children }) => {
         <Navbar />
       </div>
       {children}
+      <MessengerAndTopButton />
       <Footer />
     </div>
   );
