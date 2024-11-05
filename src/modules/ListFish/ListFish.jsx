@@ -568,6 +568,7 @@ const ListFish = () => {
                         80: "80 cm",
                         100: "100 cm",
                       }}
+                      defaultValue={100}
                       trackStyle={{ backgroundColor: "#EA4444" }}
                       handleStyle={{ borderColor: "#EA4444" }}
                       dotStyle={{ borderColor: "#EA4444" }}
@@ -586,7 +587,7 @@ const ListFish = () => {
                     <Slider
                       min={300000}
                       max={200000000}
-                      defaultValue={300000}
+                      defaultValue={200000000}
                       step={10000}
                       trackStyle={{ backgroundColor: "#EA4444" }}
                       handleStyle={{ borderColor: "#EA4444" }}
