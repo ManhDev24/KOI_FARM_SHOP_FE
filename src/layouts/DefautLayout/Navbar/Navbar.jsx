@@ -235,8 +235,8 @@ const Navbar = () => {
     <>
       {/* navbar */}
       <div
-        className="Navbar md:h-[450px] h-[450px] sm:h-[450px] md:py-10   lg:h-[200px] xl:grid-cols-10  grid lg:grid-cols-10  2xl:grid-cols-10   
-      w-full   lg:w-full xl:h-[200px]  2xl:h-[200px]   sm:col-span-12"
+        className="Navbar md:h-[450px] h-[450px] sm:h-[450px]    lg:h-[150px] xl:grid-cols-10  grid lg:grid-cols-10  2xl:grid-cols-10   
+      w-full   lg:w-full xl:h-[150px]  2xl:h-[150px]   sm:col-span-12"
       >
         {/* logo */}
         <div
@@ -268,7 +268,7 @@ const Navbar = () => {
 
         <div
           className="categories h-[50px] col-span-12 sm:col-span-12 sm:w-full sm:h-[100px] 
-         lg:col-span-3 lg:flex lg:items-center lg:justify-start lg:h-[150px]
+         lg:col-span-3 lg:ms-10 lg:flex lg:items-center lg:justify-start lg:h-[150px]
          xl:grid xl:grid-cols-1 xl:ms-[50px] xl:col-span-3  
          2xl:col-span-3"
 
@@ -277,7 +277,7 @@ const Navbar = () => {
 
 
             {/* Combined "Danh mục" dropdown for xs and lg screens */}
-            <li className="me-x xs:block lg:block sm:hidden md:hidden xl:hidden 2xl:hidden">
+            <li className="me-x  xs:block lg:block sm:hidden md:hidden xl:hidden 2xl:hidden">
               <Dropdown
                 menu={{
                   items: [
@@ -291,7 +291,7 @@ const Navbar = () => {
                 <Button
                   type="primary"
                   danger
-                  className="cate-font ps-1 w-auto h-[42px] box-border"
+                  className="cate-font mt-10 lg:mt-0 ps-1 w-auto h-[42px] box-border"
                 >
                   <span className="h-[30px] ps-[3px]">Danh mục</span>
                   <svg
