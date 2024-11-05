@@ -26,7 +26,7 @@ createRoot(document.getElementById("root")).render(
             <App />
             <ToastContainer />
           </GoogleOAuthProvider>
-          <ReactQueryDevtools initialIsOpen={true} />
+          {/* <ReactQueryDevtools initialIsOpen={false} /> */}
         </QueryClientProvider>
       </Router>
   </Provider>
