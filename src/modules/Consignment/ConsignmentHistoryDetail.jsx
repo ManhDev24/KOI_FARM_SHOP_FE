@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Breadcrumb, Button, message, Table, Modal, Tag } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ConsignmentApi } from '../../apis/Consignment.api';
 import moment from 'moment';
@@ -19,17 +19,14 @@ const ConsignmentHistoryDetail = () => {
 
   // Safely parse the user object from localStorage
   let accountId = null;
-  try {
+  
+  useEffect(() => {
     const user = localStorage.getItem('user');
-    const acc = JSON.parse(user);
-    accountId = acc?.id;
-  } catch (e) {
-    console.error('Error parsing user data:', e);
-    message.error('Lỗi xảy ra khi lấy thông tin người dùng');
-    // Optionally, redirect to login
-    // navigate('/login');
-  }
-
+    if (!user) {
+      message.warning('Người dùng đang không đăng nhập. Vui lòng đăng nhập.');
+      navigate('/'); // Redirect to home page
+    } 
+  }, [navigate]);
   // Use `useQuery` to fetch the consignments
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['consignments', currentPage, pageSize, accountId],

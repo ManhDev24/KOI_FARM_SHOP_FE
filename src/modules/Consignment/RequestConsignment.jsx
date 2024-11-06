@@ -102,7 +102,13 @@ const RequestConsignment = () => {
     const [consignmentRates, setConsignmentRates] = useState({});
     const [isModalVisible, setIsModalVisible] = useState(false);
 
-
+    useEffect(() => {
+        const user = localStorage.getItem('user');
+        if (!user) {
+            message.warning('Người dùng đang không đăng nhập. Vui lòng đăng nhập.');
+            navigate('/'); // Redirect to home page
+        }
+    }, [navigate]);
 
     useEffect(() => {
         const fetchConsignmentFees = async () => {
@@ -1502,7 +1508,7 @@ const RequestConsignment = () => {
                                         onClick={() => handleDelForm()}
                                         className="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-500 transition duration-300"
                                     >
-                                        Xóa thông tin 
+                                        Xóa thông tin
                                     </Button>
                                 </Col>
                             </Row>

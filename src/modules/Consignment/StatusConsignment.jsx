@@ -45,6 +45,14 @@ const StatusConsignment = () => {
   // Centralized localStorage fetching logic
   // Centralized localStorage fetching logic
   useEffect(() => {
+    const user = localStorage.getItem('user');
+    if (!user) {
+      message.warning('Người dùng đang không đăng nhập. Vui lòng đăng nhập.');
+      navigate('/'); // Redirect to home page
+    }
+  }, [navigate]);
+  
+  useEffect(() => {
     const user = localStorage.getItem("user");
     if (!consignmentID) {
 
@@ -204,14 +212,14 @@ const StatusConsignment = () => {
             </p>
             <p
               className={`text-lg font-semibold ${data.status === 1
-                  ? "text-blue-500"
-                  : data.status === 2
-                    ? "text-green-500"
-                    : data.status === 3
-                      ? "text-red-500"
-                      : data.status === 4
-                        ? "text-yellow-500"
-                        : "text-gray-500"
+                ? "text-blue-500"
+                : data.status === 2
+                  ? "text-green-500"
+                  : data.status === 3
+                    ? "text-red-500"
+                    : data.status === 4
+                      ? "text-yellow-500"
+                      : "text-gray-500"
                 }`}
             >
               Trạng thái:{" "}

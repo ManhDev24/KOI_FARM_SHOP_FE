@@ -1,5 +1,5 @@
 
-import { Breadcrumb, Steps } from 'antd'
+import { Breadcrumb, message, Steps } from 'antd'
 
 import React, { useEffect } from 'react'
 import { useState } from 'react';
@@ -27,13 +27,22 @@ const KoiConsignmentPolicies = () => {
 
     };
     const [statePage, setStatePage] = useState();
+
+    useEffect(() => {
+        const user = localStorage.getItem('user');
+        if (!user) {
+          message.warning('Người dùng đang không đăng nhập. Vui lòng đăng nhập.');
+          navigate('/'); // Redirect to home page
+        }
+      }, [navigate]);
+      
     useEffect(() => {
         const dataProfile = JSON.parse(localStorage.getItem('user'));
         const accountId = dataProfile && dataProfile.id ? Number(dataProfile.id) : null;
 
         if (!accountId) {
 
-            navigate('/login');
+           
         } else if (storedValue) {
             navigate('/Form-consignment');
         }
