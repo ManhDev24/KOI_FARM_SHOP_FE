@@ -35,7 +35,7 @@ export const AccountApi = {
   createAccount: async (data) => {
     try {
       const response = await fetcher.post(
-        "${url}/manage/createAccount",
+        `${url}/manage/createAccount`,
         data
       );
       return response.data;

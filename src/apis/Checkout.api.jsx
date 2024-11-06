@@ -38,7 +38,7 @@ export const CheckoutApi = {
   vnPayCallback: async (params) => {
     try {
       const response = await fetcher.get(
-        "${url}/payment/vn-pay-callback",
+        `${url}/payment/vn-pay-callback`,
         { params }
       );
       return response.data;
