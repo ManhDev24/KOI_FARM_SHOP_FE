@@ -14,6 +14,7 @@ import url from '../../constant/constant';
 const schema = yup.object().shape({
   fullName: yup.string()
     .required('Vui lòng nhập họ và tên')
+    .transform(value => value.trim())
     .min(3, 'Tên quá ngắn!')
     .matches(/^[A-Za-zÀ-ỹ\s]+$/, 'Họ và tên không được chứa số hoặc ký tự đặc biệt'),
 
@@ -24,7 +25,7 @@ const schema = yup.object().shape({
   password: yup.string()
     .required('Vui lòng nhập mật khẩu cũ'),
 
-  newPassword: yup.string()    
+  newPassword: yup.string()
     .required("Mật khẩu là bắt buộc")
     .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
     .matches(
@@ -38,7 +39,10 @@ const schema = yup.object().shape({
 
   address: yup.string()
     .required('Vui lòng nhập địa chỉ')
-    .min(10, 'Địa chỉ phải có ít nhất 10 ký tự'),
+    .transform(value => value.trim())
+    .min(10, 'Địa chỉ phải có ít nhất 10 ký tự')
+    .matches(/^[A-Za-z0-9À-ỹ\s]+$/, 'Địa chỉ không được chứa ký tự đặc biệt'),
+
 
   phone: yup.string()
     .required('Vui lòng nhập số điện thoại')
@@ -105,7 +109,7 @@ const Profile = () => {
           setValue('phone', profileData.phone);
           setValue('avatar', profileData.avatar);
         } else {
-          message.error('Không tìm thấy email người dùng. Vui lòng đăng nhập lại.');
+          message.error('Bạn đang không đăng nhập. Vui lòng đăng nhập lại.');
           navigate('/');
         }
       } catch (error) {
@@ -323,12 +327,14 @@ const Profile = () => {
     if (field === 'password') {
       setOldPasswordCorrect(false);
     }
-    setValue('', initialData[field]);
+    setValue(field, initialData[field]);
+    clearErrors(field);
     setIsEditing((prevState) => ({
       ...prevState,
       [field]: false,
     }));
   };
+
 
 
 
@@ -365,7 +371,7 @@ const Profile = () => {
                     iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                   />
                 ) : (
-                  <Input {...field} className='w-72 flex'/>
+                  <Input {...field} className='w-72 flex' />
                 )
               )}
             />
@@ -379,13 +385,20 @@ const Profile = () => {
           </>
         ) : (
           <>
-            <div className="text-black  text-xl inline font-['Arial']"></div>
-            <Button type="link" onClick={() => setIsEditing((prevState) => ({
-              ...prevState,
-              [fieldName]: true
-            }))}>
-              Chỉnh sửa
-            </Button>
+            <>
+              <div className="text-black text-xl inline font-['Arial']"></div>
+              <Button
+                type="link"
+                onClick={() => setIsEditing((prevState) => ({
+                  ...prevState,
+                  [fieldName]: true
+                }))}
+              >
+                {/* Kiểm tra nếu trường không có giá trị hoặc là chuỗi rỗng, hiển thị "Cập nhật" thay vì "Chỉnh sửa" */}
+                {!initialData[fieldName] || initialData[fieldName].trim() === '' ? 'Cập nhật' : 'Chỉnh sửa'}
+              </Button>
+            </>
+
           </>
         )}
       </AntForm.Item>
@@ -452,7 +465,7 @@ const Profile = () => {
           </div>
 
           {/* Thông tin cá nhân */}
-          <div className="w-[600px] h-[570px] ms-10 mt-[30px] relative flex-col flex shadow">
+          <div className="w-[600px] h-[366px] ms-14 bottom-[95px] mt-4 relative flex-col flex shadow">
             <div className="w-[654px]">
               <div className="text-black text-2xl h-[50px] flex items-center w-full ms-2 font-['Arial']">
                 Thông tin cá nhân
@@ -514,7 +527,7 @@ const Profile = () => {
                             <Button className='ms-1' onClick={() => handleCancel('password')}>Hủy</Button>
                           </>
                         ) : (
-                          <Button  type="link" onClick={() => setPasswordChanged(false)}>
+                          <Button type="link" onClick={() => setPasswordChanged(false)}>
                             Đổi mật khẩu
                           </Button>
                         )}
@@ -568,7 +581,7 @@ const Profile = () => {
                           handleSavePassword();
                         }}>Lưu thay đổi</Button>
 
-                        <Button className='ms-1'  onClick={() => handleCancel('password')}>Hủy</Button>
+                        <Button className='ms-1' onClick={() => handleCancel('password')}>Hủy</Button>
                       </>
                     )}
                   </>

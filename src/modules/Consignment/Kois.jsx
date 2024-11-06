@@ -1,6 +1,6 @@
 import { Breadcrumb, ConfigProvider, Image, Table, Tabs, message, Spin, DatePicker, Tag } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import koi from '/img/tabicon.png';
 import { ConsignmentApi } from '../../apis/Consignment.api';
 import { toast } from 'react-toastify';
@@ -28,7 +28,14 @@ const Kois = () => {
     const [fishSellData, setFishSellData] = useState({});
     const [currentPageSell, setCurrentPageSell] = useState(1);
     const [pageSizeSell, setPageSizeSell] = useState(10);
-
+    const navigate = useNavigate();
+    useEffect(() => {
+        const user = localStorage.getItem('user');
+        if (!user) {
+          message.warning('Người dùng đang không đăng nhập. Vui lòng đăng nhập.');
+          navigate('/'); // Redirect to home page
+        } 
+      }, [navigate]);
     const onChange = (key) => {
     };
     // Fetch Koi Care Data
@@ -42,7 +49,7 @@ const Kois = () => {
                 setFishCareList(response.data.content || []);
                 setFishCareData(response.data);
             } catch (error) {
-                toast.error('Có lỗi xảy ra khi gọi API chăm sóc cá');
+                
             }
         };
         fetchFishCareData();
@@ -60,7 +67,7 @@ const Kois = () => {
                 setFishSellList(response.data.content || []);
                 setFishSellData(response.data);
             } catch (error) {
-                toast.error('Có lỗi xảy ra khi gọi API bán cá');
+               
             }
         };
         fetchFishSellData();
@@ -318,14 +325,14 @@ const Kois = () => {
                             render: (text, record) => {
                                 // Check if growthStatus is a valid number
                                 const growthStatus = parseFloat(record.growthStatus);
-                                return !isNaN(growthStatus) 
-                                    ? growthStatus.toFixed(2) + ' cm' 
+                                return !isNaN(growthStatus)
+                                    ? growthStatus.toFixed(2) + ' cm'
                                     : 'Đang cập nhật'; // Display 'Đang cập nhật' if growthStatus is not a valid number
                             },
                             width: '120px',
                         },
-                        
-                        
+
+
                         {
                             title: 'Kích thước tăng trưởng',
                             dataIndex: 'grow',
