@@ -161,7 +161,7 @@ const ConsigmentManagement = () => {
     isLoading: isLoadingListConsignment,
     isError: isErrorListConsignment,
   } = useQuery({
-    queryKey: ["listOfConsignment"],
+    queryKey: ["listOfConsignment",currentPage],
     queryFn: () => ConsignmentApi.getAllConsignmentManagement(currentPage),
   });
   
