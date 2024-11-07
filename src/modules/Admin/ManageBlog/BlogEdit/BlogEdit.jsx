@@ -8,7 +8,7 @@ import { Editor } from "@tinymce/tinymce-react";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import LoadingModal from "../../../Modal/LoadingModal";
 import moment from "moment";
-
+import { apikey } from '/src/constant/constant.jsx';
 const { Option } = Select;
 
 const BlogEdit = () => {
@@ -224,27 +224,49 @@ const BlogEdit = () => {
           <div className="mb-4">
             <label className="block text-sm font-medium">Nội dung</label>
             <Editor
-              apiKey="uq6bo85jzhy5cjgxycq9auzgf4fbnkiddn5r2w3zaygnasra"
-              onInit={(evt, editor) => {
-                editorRef.current = editor;
-                setIsEditorReady(true);
+              apiKey={apikey}
+            onInit={(evt, editor) => {
+              editorRef.current = editor;
+              setIsEditorReady(true);
 
-                // If blogData is already available, set the content
-                if (blogData) {
-                  editor.setContent(blogData.data?.content || "");
-                }
-              }}
-              init={{
-                height: 500,
-                menubar: true,
-                plugins: [
-                  "advlist autolink lists link image charmap preview anchor",
-                  "searchreplace visualblocks code fullscreen",
-                  "insertdatetime media table paste code help wordcount",
-                ],
-                toolbar:
-                  "undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help",
-              }}
+              // If blogData is already available, set the content
+              if (blogData) {
+                editor.setContent(blogData.data?.content || "");
+              }
+            }}
+            init={{
+              height: 500,
+              menubar: true,
+              plugins: [
+                "advlist",
+                "autolink",
+                "lists",
+                "link",
+                "image",
+                "charmap",
+                "preview",
+                "anchor",
+                "searchreplace",
+                "visualblocks",
+                "code",
+                "fullscreen",
+                "insertdatetime",
+                "media",
+                "table",
+                "code",
+                "help",
+                "wordcount",
+                "autosave",
+                "spellchecker",
+                "emoticons",
+                "codesample",
+              ],
+              toolbar:
+                "undo redo | fontselect fontsizeselect styleselect | bold italic forecolor | " +
+                "alignleft aligncenter alignright alignjustify | " +
+                "bullist numlist outdent indent | removeformat | help | " +
+                "image media codesample | spellchecker emoticons",
+            }}
             />
           </div>
 
