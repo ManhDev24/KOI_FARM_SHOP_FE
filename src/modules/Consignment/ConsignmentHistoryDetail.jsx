@@ -16,18 +16,22 @@ const ConsignmentHistoryDetail = () => {
   const [pageSize, setPageSize] = useState(5); // Adjusted default page size
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  // Safely parse the user object from localStorage
-  let accountId = null;
+  const [accountId, setAccountId] = useState(null);
   
+
+
   useEffect(() => {
-    const user = localStorage.getItem('user');
+    const user = JSON.parse(localStorage.getItem('user'));
     if (!user) {
       message.warning('Người dùng đang không đăng nhập. Vui lòng đăng nhập.');
-      navigate('/'); // Redirect to home page
-    } 
+      navigate('/'); 
+    } else {
+     
+      console.log('User retrieved:', user); 
+      setAccountId(user.id);
+    }
   }, [navigate]);
-  // Use `useQuery` to fetch the consignments
+  
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['consignments', currentPage, pageSize, accountId],
     queryFn: () => ConsignmentApi.getAllConsignment(currentPage, pageSize, accountId),
