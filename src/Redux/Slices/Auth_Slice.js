@@ -21,6 +21,7 @@ const authSlice = createSlice({
     signOut: (state, action) => {
       state.currentUser = null;
       removeLocalStorage("user");
+      
     },
     saveEmail: (state, action) => {
       state.email = action.payload;

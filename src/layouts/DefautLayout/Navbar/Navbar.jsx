@@ -28,8 +28,17 @@ const Navbar = () => {
       return null;
     }
   };
-  const token = user?.accessToken
-  const decoded = jwtDecode(token);
+  const token = user?.accessToken;
+
+  let decoded = null;
+  if (token) {
+    try {
+      decoded = jwtDecode(token);
+      console.log("Decoded token:", decoded);
+    } catch (error) {
+      console.error("Invalid token", error);
+    }
+  }
 
 
   const [profileData, setProfileData] = useState(null);
@@ -236,7 +245,7 @@ const Navbar = () => {
     window.location.reload();
   };
 
-  const userlogged = getLocalStorage
+  const userlogged = getLocalStorage('user')
 
   return (
     <>
@@ -377,7 +386,6 @@ const Navbar = () => {
                 </Button>
               </Dropdown>
 
-              {/* Login Modal */}
               <Modal
                 title="Thông báo"
                 visible={isModalVisible}

@@ -29,7 +29,7 @@ import { toast } from "react-toastify";
 import { Controller, useForm } from "react-hook-form";
 import { getLocalStorage } from "../../../utils/LocalStorage";
 import { useNavigate } from "react-router-dom";
-
+import { jwtDecode } from "jwt-decode";
 const validationSchema = yup.object().shape({
   fullName: yup.string().required("Họ và tên là bắt buộc"),
   email: yup
@@ -54,12 +54,26 @@ const UserManagement = () => {
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const user = getLocalStorage("user");
+  const token = user?.accessToken;
+  let role = null;
+
+  if (token) {
+    try {
+      const decoded = jwtDecode(token);
+      console.log('decoded: ', decoded);
+      role = decoded?.scope || null;
+      console.log("User role:", role); // Log role for verification
+    } catch (error) {
+      console.error("Error decoding JWT token:", error);
+    }
+  }
+
   const navigate = useNavigate();
   useEffect(() => {
-    if (user?.role !== "manager") {
+    if (role !== "manager") {
       navigate("/admin/fish-management");
     }
-  });
+  },[role]);
   const columns = [
     {
       title: "ID",
