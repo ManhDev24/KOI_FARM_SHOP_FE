@@ -28,6 +28,8 @@ import Search from "antd/es/transfer/search";
 import { Controller, useForm } from "react-hook-form";
 import FishApi from "../../../apis/Fish.api";
 import { Link } from "react-router-dom";
+import { AccountApi } from "../../../apis/Account.api";
+import { getLocalStorage } from "../../../utils/LocalStorage";
 
 const validationSchema = yup.object().shape({
   categoryID: yup.string().required("Danh mục là bắt buộc"),
@@ -74,7 +76,14 @@ const BathManagement = () => {
   const [status, setStatus] = useState(1);
 
   const queryClient = useQueryClient();
-
+  const user = getLocalStorage('user');
+  const {email} = user
+  const { data: getRole, isLoading: isGetRoleLoading, isError: isErrorGetRole } = useQuery({
+    queryKey: ['getRole'],
+    queryFn: () => AccountApi.getProfile(email)
+  })
+  
+  console.log('getRole: ', getRole);
   const {
     handleSubmit,
     control,
@@ -514,8 +523,8 @@ const BathManagement = () => {
                       type="button"
                     >
                       {(value && value instanceof File) ||
-                      image ||
-                      dataEdit?.batchImg ? (
+                        image ||
+                        dataEdit?.batchImg ? (
                         <>
                           <img
                             className="w-[60px] h-[80px] object-cover"
@@ -839,8 +848,8 @@ const BathManagement = () => {
               {dataView?.status === 1
                 ? "Đang bán"
                 : dataView?.status === 2
-                ? "Đã bán"
-                : null}
+                  ? "Đã bán"
+                  : null}
             </div>
             <div className="rounded-[10px]">
               <img
@@ -889,9 +898,9 @@ const BathManagement = () => {
                     <Link>
                       <div
                         className="absolute  top-[3px] right-[-5px] z-50" // Adjusted position: top right of the card
-                        // onClick={(e) => {
-                        //   handleAddToCompare(card);
-                        // }}
+                      // onClick={(e) => {
+                      //   handleAddToCompare(card);
+                      // }}
                       >
                         <Button
                           onClick={(e) => {

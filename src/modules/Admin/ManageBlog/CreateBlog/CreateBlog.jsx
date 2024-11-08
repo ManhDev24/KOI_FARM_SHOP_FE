@@ -69,7 +69,6 @@ const CreateBlog = () => {
     }
   };
 
-  // Function to handle Preview
   const handlePreview = () => {
     if (editorRef.current) {
       const content = editorRef.current.getContent();
@@ -169,7 +168,6 @@ const CreateBlog = () => {
             />
           </div>
 
-          {/* Status Select */}
           <div className="mb-4">
             <label className="block text-gray-700 mb-1">Trạng thái của bài viết:</label>
             <Controller
@@ -188,7 +186,6 @@ const CreateBlog = () => {
             />
           </div>
 
-          {/* Date Input */}
           <div className="mb-4">
             <label className="block text-gray-700">Ngày viết:</label>
             <Controller
@@ -205,7 +202,6 @@ const CreateBlog = () => {
             />
           </div>
 
-          {/* Content Editor */}
           <div className="mb-4">
             <label className="block text-gray-700">Nội dung:</label>
             <Editor
