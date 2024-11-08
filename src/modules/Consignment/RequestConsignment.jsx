@@ -101,6 +101,7 @@ const RequestConsignment = () => {
     const [consignmentPackForTakeCare, setConsignmentPackForTakeCare] = useState([]);
     const [consignmentRates, setConsignmentRates] = useState({});
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [selectedPackages, setPackage] = useState();
 
     useEffect(() => {
         const user = localStorage.getItem('user');
@@ -240,8 +241,9 @@ const RequestConsignment = () => {
         if (inputPrice && SelectedPackage) {
             // Extracts the leading number from the string if it starts with digits
             const matchedNumber = SelectedPackage.match(/^\d+/);
+            setPackage(matchedNumber)
             const extractedNumber = matchedNumber ? parseInt(matchedNumber[0], 10) : null;
-    
+
             if (extractedNumber !== null) {
                 // Proceed with the extracted number as a parameter
                 const fee = handleFee(inputPrice, extractedNumber);
@@ -249,7 +251,7 @@ const RequestConsignment = () => {
             }
         }
     }, [inputPrice, SelectedPackage, setSelectedConsignmentType]);
-    
+
 
     useEffect(() => {
     }, [SelectedPackage]);
@@ -401,7 +403,7 @@ const RequestConsignment = () => {
             const formData = new FormData();
             formData.append('koiImg', selectedKoiImage);
             formData.append('certImg', selectedKoiCertificate);
-
+          
 
             Object.keys(values).forEach((key) => {
                 if (key !== 'koiImg' && key !== 'certImg' && key !== 'accountId') {
@@ -428,15 +430,24 @@ const RequestConsignment = () => {
             formData.append('serviceFee', x);
             formData.append('accountId', accountId);
             formData.append('water', 'lanh');
+            formData.delete('duration');
+            formData.append('duration', selectedPackages);
             if (selectedKoiImage instanceof File) {
+
                 formData.append('koiImgURL', '');
             } else if (typeof selectedKoiImage === 'string') {
+
+                formData.delete('koiImg')
+                formData.append('koiImg', ' ');
                 formData.append('koiImgURL', selectedKoiImage);
             }
 
             if (selectedKoiCertificate instanceof File) {
+
                 formData.append('certImgURL', '');
             } else if (typeof selectedKoiCertificate === 'string') {
+                formData.delete('certImg')
+                formData.append('certImg', ' ');
                 formData.append('certImgURL', selectedKoiCertificate);
             }
 
@@ -1351,7 +1362,7 @@ const RequestConsignment = () => {
                                                                 --Lựa chọn--
                                                             </Option>
                                                             {consignmentPackForTakeCare.map((item) => (
-                                                                <Option key={item.key} value={item.value+'b'}>
+                                                                <Option key={item.key} value={item.value + 'b'}>
                                                                     {item.label}
                                                                 </Option>
                                                             ))}
