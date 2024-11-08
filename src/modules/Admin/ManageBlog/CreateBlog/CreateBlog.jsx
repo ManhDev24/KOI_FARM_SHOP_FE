@@ -43,9 +43,7 @@ const CreateBlog = () => {
       },
     });
 
-  if (isLoadingCreateBlog) {
-    return <LoadingModal />;
-  }
+
 
   // Function to handle publishing the blog
   const handlePublish = (data) => {
@@ -80,6 +78,9 @@ const CreateBlog = () => {
     }
   };
 
+  if (isLoadingCreateBlog) {
+    return <LoadingModal isLoading={isLoadingCreateBlog} />
+  }
   return (
     <div>
       <div className="container mx-auto py-4">
