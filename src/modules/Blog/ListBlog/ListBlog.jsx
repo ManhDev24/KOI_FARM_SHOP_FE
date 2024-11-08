@@ -31,8 +31,9 @@ const ListBlog = () => {
     );
   }
 
-  const blogs = ListBlog?.data?.content.filter(blog => blog.status = true) || [];
-  const mainBlog = blogs[0].fil;
+  const blogs = ListBlog?.data?.content.filter(blog => blog.status === true) || [];
+  
+  const mainBlog = blogs[0];
   const smallerBlogs = blogs.slice(1);
 
   const handleBlogClick = (blogId) => {
