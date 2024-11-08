@@ -109,7 +109,8 @@ const RequestConsignment = () => {
             navigate('/'); // Redirect to home page
         }
     }, [navigate]);
-
+    console.log(consignmentPackForTakeCare)
+    console.log(consignmentPackForSell)
     useEffect(() => {
         const fetchConsignmentFees = async () => {
             try {
@@ -237,15 +238,18 @@ const RequestConsignment = () => {
     // Second useEffect to handle service fee calculation
     useEffect(() => {
         if (inputPrice && SelectedPackage) {
-
-            const fee = handleFee(inputPrice, SelectedPackage);
-
-            setServiceFee(fee);
-            setServiceFee(fee);
-
-
+            // Extracts the leading number from the string if it starts with digits
+            const matchedNumber = SelectedPackage.match(/^\d+/);
+            const extractedNumber = matchedNumber ? parseInt(matchedNumber[0], 10) : null;
+    
+            if (extractedNumber !== null) {
+                // Proceed with the extracted number as a parameter
+                const fee = handleFee(inputPrice, extractedNumber);
+                setServiceFee(fee);
+            }
         }
     }, [inputPrice, SelectedPackage, setSelectedConsignmentType]);
+    
 
     useEffect(() => {
     }, [SelectedPackage]);
@@ -1298,7 +1302,7 @@ const RequestConsignment = () => {
                                                                 --Lựa chọn--
                                                             </Option>
                                                             {consignmentPackForSell.map((item) => (
-                                                                <Option key={item.key} value={item.value}>
+                                                                <Option key={item.key} value={item.value + 'a'}>
                                                                     {item.label}
                                                                 </Option>
                                                             ))}
@@ -1347,7 +1351,7 @@ const RequestConsignment = () => {
                                                                 --Lựa chọn--
                                                             </Option>
                                                             {consignmentPackForTakeCare.map((item) => (
-                                                                <Option key={item.key} value={item.value}>
+                                                                <Option key={item.key} value={item.value+'b'}>
                                                                     {item.label}
                                                                 </Option>
                                                             ))}
