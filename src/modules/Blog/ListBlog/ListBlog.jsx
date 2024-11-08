@@ -31,7 +31,8 @@ const ListBlog = () => {
     );
   }
 
-  const blogs = ListBlog?.data?.content || [];
+  const blogs = ListBlog?.data?.content.filter(blog => blog.status === true) || [];
+  
   const mainBlog = blogs[0];
   const smallerBlogs = blogs.slice(1);
 
@@ -102,42 +103,43 @@ const ListBlog = () => {
           className="grid grid-cols-1 gap-6 sm:grid-cols-2"
           variants={containerVariants}
         >
-          {smallerBlogs.map((blog) => (
-            <motion.div
-              key={blog.blogId}
-              role="button"
-              tabIndex={0}
-              className="cursor-pointer flex flex-col shadow-md rounded-lg overflow-hidden min-h-[350px]"
-              onClick={() => handleBlogClick(blog.blogId)}
-              onKeyPress={(e) => {
-                if (e.key === "Enter") handleBlogClick(blog.blogId);
-              }}
-              variants={itemVariants}
-            >
-              <img
-                className="w-full sm:h-48 md:h-56 lg:h-64 object-cover"
-                src={blog.blogImg}
-                alt={blog.title || "Blog image"}
-              />
-              <div className="p-4 bg-white flex flex-col h-full">
-                <h2 className="font-bold text-secondary text-xl mb-2">
-                  {blog.title}
-                </h2>
-                <h3 className="text-gray-500 mb-2">
-                  {moment(blog.postDate).format("DD [tháng] M [năm], YYYY")}
-                </h3>
-                <div className="text-gray-700 overflow-hidden">
-                  <p
-                    dangerouslySetInnerHTML={{
-                      __html: blog.content
-                        ? blog.content.substring(0, 210) + "..."
-                        : "",
-                    }}
-                  />
+          {smallerBlogs
+            .map((blog) => (
+              <motion.div
+                key={blog.blogId}
+                role="button"
+                tabIndex={0}
+                className="cursor-pointer flex flex-col shadow-md rounded-lg overflow-hidden min-h-[350px]"
+                onClick={() => handleBlogClick(blog.blogId)}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") handleBlogClick(blog.blogId);
+                }}
+                variants={itemVariants}
+              >
+                <img
+                  className="w-full sm:h-48 md:h-56 lg:h-64 object-cover"
+                  src={blog.blogImg}
+                  alt={blog.title || "Blog image"}
+                />
+                <div className="p-4 bg-white flex flex-col h-full">
+                  <h2 className="font-bold text-secondary text-xl mb-2">
+                    {blog.title}
+                  </h2>
+                  <h3 className="text-gray-500 mb-2">
+                    {moment(blog.postDate).format("DD [tháng] M [năm], YYYY")}
+                  </h3>
+                  <div className="text-gray-700 overflow-hidden">
+                    <p
+                      dangerouslySetInnerHTML={{
+                        __html: blog.content
+                          ? blog.content.substring(0, 210) + "..."
+                          : "",
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            ))}
         </motion.div>
       </div>
     </motion.div>
