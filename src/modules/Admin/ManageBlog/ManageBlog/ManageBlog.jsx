@@ -119,8 +119,8 @@ const ManageBlog = () => {
         };
 
         const menuItems = [
-          { label: "Public", key: "1" },
-          { label: "Draft", key: "0" },
+          { label: "Xuất bản", key: "1" },
+          { label: "Nháp", key: "0" },
         ];
 
         return (
@@ -135,7 +135,6 @@ const ManageBlog = () => {
               Xem
             </Button>
 
-            {/* Dropdown for changing status */}
             <Dropdown menu={{ items: menuItems, onClick: handleMenuClick }}>
               <Button icon={<EditOutlined />}>Chuyển trạng thái</Button>
             </Dropdown>

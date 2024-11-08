@@ -57,20 +57,23 @@ const Register = () => {
   const { mutate: handleRegister, isPending } = useMutation({
     mutationFn: (payload) => AuthApi.register(payload),
     onSuccess: (data) => {
-     
+
       dispatch(saveEmail(data.data.email));
       message.success("Đăng ký thành công");
       navigate("/otp");
     },
     onError: (error) => {
       const errorMessage = error?.message || "Đã có lỗi xử lý vui lòng thử lại";
-       message.error(errorMessage)
+      message.error(errorMessage)
     },
   });
 
   const { mutate: loginWithGoogle, isPending: googleLoad } = useMutation({
     mutationFn: (payload) => AuthApi.loginWithGoogle(payload),
     onSuccess: (data) => {
+      if (data.data?.role) {
+        delete data.data.role;
+      }
       setLocalStorage("user", data.data);
       dispatch(setUser(data));
       message.success("Đăng nhập thành công");
@@ -79,7 +82,7 @@ const Register = () => {
     onError: (error) => {
       const errorMessage =
         error?.message || "Đã có lỗi xảy ra vui lòng thử lại !!!";
-       message.error(errorMessage)
+      message.error(errorMessage)
     },
   });
   const handleLoginWithGoogle = (data) => {

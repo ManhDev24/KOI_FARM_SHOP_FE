@@ -1,22 +1,34 @@
-// src/App.js
 import "./App.css";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { privateRoutes, publicRoutes } from "./routes/routes";
 import React from "react";
 import { getLocalStorage } from "./utils/LocalStorage";
 import { useSelector } from "react-redux";
+import { jwtDecode } from "jwt-decode"; // Correct import for jwt-decode
 
 function App() {
-  const isAuth = () => {
-    return !!getLocalStorage("user");
-  };
+  console.log("App component rendering...");
+
+  const isAuth = () => !!getLocalStorage("user");
+
+  const user = getLocalStorage("user");
+  const token = user?.accessToken;
+
+  let decoded;
+  try {
+    decoded = token ? jwtDecode(token) : null;
+    console.log("Decoded token:", decoded);
+  } catch (error) {
+    console.error("Invalid token", error);
+    decoded = null;
+  }
+
+  const getRoleUser = decoded?.scope;
+  console.log('getRoleUser: ', getRoleUser);
 
   const isAllowedToAccessForgotPassword = useSelector(
     (state) => state.auth.isAllowedToAccessForgotPassword
   );
-
-  const user = getLocalStorage("user");
-  const getRoleUser = user?.role;
 
   return (
     <div className="">
