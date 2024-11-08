@@ -11,6 +11,7 @@ function App() {
 
   const isAuth = () => !!getLocalStorage("user");
 
+
   const user = getLocalStorage("user");
   const token = user?.accessToken;
 
@@ -36,6 +37,7 @@ function App() {
         {publicRoutes.map((route, index) => {
           const Layout = route.layout || React.Fragment;
           const Component = route.component;
+
 
           if (
             isAuth() &&

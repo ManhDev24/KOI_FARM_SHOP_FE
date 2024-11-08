@@ -31,6 +31,7 @@ ChartJS.register(
 import { Bar, Line } from "react-chartjs-2";
 import { getLocalStorage } from "../../../utils/LocalStorage";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 const { Option } = Select;
 const DashBoard = () => {
   const user = getLocalStorage("user");
@@ -45,11 +46,30 @@ const DashBoard = () => {
       setMonth(new Date().getMonth() + 1);
     }
   };
+  const token = user?.accessToken;
+  let role = null;
+
+  if (token) {
+    try {
+      const decoded = jwtDecode(token);
+      console.log('decoded: ', decoded);
+      role = decoded?.scope || null;
+      console.log("User role:", role); // Log role for verification
+    } catch (error) {
+      console.error("Error decoding JWT token:", error);
+    }
+  }
+
   useEffect(() => {
-    if (user?.role !== "manager") {
+    if (role !== "manager") {
       navigate("/admin/fish-management");
     }
-  }, [user, navigate]);
+  },[role]);
+  // useEffect(() => {
+  //   if (user?.role !== "manager") {
+  //     navigate("/admin/fish-management");
+  //   }
+  // }, [user, navigate]);
   const {
     data: totalAccount,
     isLoading: isLoadingTotalAccount,
