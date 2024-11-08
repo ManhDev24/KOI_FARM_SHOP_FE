@@ -23,6 +23,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AccountApi } from "../../../apis/Account.api";
 import { Footer } from "antd/es/layout/layout";
 import LoadingModal from "../../Modal/LoadingModal";
+import { jwtDecode } from "jwt-decode"; // Ensure correct import without destructuring
 
 const { Header, Sider, Content } = Layout;
 
@@ -31,7 +32,21 @@ const AdminLayout = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const user = getLocalStorage("user");
-  const role = user?.role;
+  console.log('user: ', user);
+
+  const token = user?.accessToken;
+
+  let role = null;
+  if (token) {
+    try {
+      const decoded = jwtDecode(token);
+      role = decoded?.scope || null;
+      console.log('role: ', role);
+    } catch (error) {
+      console.error("Error decoding JWT token:", error);
+    }
+  }
+
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -50,12 +65,15 @@ const AdminLayout = () => {
       navigate("/admin/dashboard");
     }
   }, [pathname, navigate]);
+  console.log('Current pathname:', pathname);
+  console.log('User role:', role);
   const selectedKey =
     publicRoutes.find((route) => pathname.startsWith(route.path))?.path ||
     "/admin";
   if (isError) {
     return <div>Có lỗi xảy ra</div>;
   }
+
   if (isLoading) {
     return <LoadingModal />;
   }
@@ -97,7 +115,6 @@ const AdminLayout = () => {
           onSelect={({ key }) => {
             navigate(key);
           }}
-
           items={[
             ...(role === "manager"
               ? [
@@ -123,7 +140,6 @@ const AdminLayout = () => {
               icon: <VideoCameraOutlined />,
               label: "Quản lý cá koi",
             },
-
             {
               key: "/admin/batch-management",
               icon: <VideoCameraOutlined />,
@@ -149,7 +165,6 @@ const AdminLayout = () => {
               icon: <PlusOutlined />,
               label: "Quản tình trạng cá koi",
             },
-
             {
               key: "/admin/blog-management",
               icon: <BlockOutlined />,
@@ -160,7 +175,6 @@ const AdminLayout = () => {
               icon: <SafetyCertificateOutlined />,
               label: "Tạo bài blog ",
             },
-
             {
               key: "/",
               icon: <HomeOutlined />,

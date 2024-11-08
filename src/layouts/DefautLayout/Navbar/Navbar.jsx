@@ -14,6 +14,8 @@ import { setSelectedCategory } from "../../../Redux/Slices/FishList_Slice";
 import { data } from "autoprefixer";
 import LoadingModal from "../../../modules/Modal/LoadingModal";
 import { motion } from "framer-motion";
+import { jwtDecode } from "jwt-decode";
+
 const Navbar = () => {
   const dispatch = useDispatch();
   const user = getLocalStorage("user");
@@ -26,6 +28,10 @@ const Navbar = () => {
       return null;
     }
   };
+  const token = user?.accessToken
+  const decoded = jwtDecode(token);
+
+
   const [profileData, setProfileData] = useState(null);
 
   const { items } = useSelector((state) => state.cart);
@@ -138,7 +144,8 @@ const Navbar = () => {
       key: "6",
       label: <Link to="/payment-history">Lịch sử mua hàng</Link>,
     },
-    ...(user?.role === "manager" || user?.role === "staff"
+    ...(decoded?.scope
+      === "manager" || decoded?.scope === "staff"
       ? [
         {
           key: "8",
@@ -229,7 +236,7 @@ const Navbar = () => {
     window.location.reload();
   };
 
-  const userlogged = getLocalStorage("user");
+  const userlogged = getLocalStorage
 
   return (
     <>
