@@ -263,7 +263,7 @@ const FishManagement = () => {
   const showModal = () => {
     setIsModalOpen(true);
     reset({
-      category: "--Danh mục--",
+      category: "",
       age: "",
       size: "",
       personality: "",
@@ -763,15 +763,18 @@ const FishManagement = () => {
               <Controller
                 name="category"
                 control={control}
+                defaultValue="" 
                 render={({ field }) => (
                   <Select
                     {...field}
+                    value={field.value === "" ? undefined : field.value} 
                     style={{ width: "100%", marginTop: "8px" }}
-                    placeholder="Chọn danh mục"
+                    placeholder="--Danh mục--"
                     options={ListCategory?.map((item) => ({
-                      value: item.id,             // ID dùng làm giá trị
-                      label: item.categoryName,    // categoryName hiển thị
+                      value: item.id,
+                      label: item.categoryName, 
                     }))}
+                    allowClear 
                   />
                 )}
               />
@@ -781,6 +784,7 @@ const FishManagement = () => {
                 </p>
               )}
             </Col>
+
             <Col span={24}>
               <label style={{ fontSize: "16px" }}>Giới tính</label>
               <Controller
