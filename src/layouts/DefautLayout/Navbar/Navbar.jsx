@@ -159,8 +159,8 @@ const Navbar = () => {
       key: "6",
       label: <Link to="/payment-history">Lịch sử mua hàng</Link>,
     },
-    ...(decoded?.scope
-      === "manager" || decoded?.scope === "staff"
+    ...(checkRoleUser?.data
+      === "manager" || checkRoleUser?.data === "staff"
       ? [
         {
           key: "8",

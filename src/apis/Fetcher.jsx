@@ -8,7 +8,6 @@ const accessToken = user ? user.accessToken : '';
 const fetcher = axios.create({
   headers: {
     "Content-Type": "application/json",
-    Authorization: `${accessToken}`,
   },
 });
 
