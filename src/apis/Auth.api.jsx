@@ -2,6 +2,9 @@ import { useSelector } from "react-redux";
 import fetcher from "./Fetcher";
 import { getLocalStorage } from "../utils/LocalStorage";
 import url from "../constant/constant";
+
+const user = getLocalStorage('user')
+const accessToken = user?.accessToken
 export const AuthApi = {
   login: async (data) => {
     try {
@@ -136,7 +139,7 @@ export const AuthApi = {
         { password }, // Gửi mật khẩu trong body của yêu cầu
         {
           headers: {
-            Authorization: `Bearer ${accessToken}`, // Truyền accessToken trong headers
+            'Authorization': `Bearer ${accessToken}`, // Truyền accessToken trong headers
           },
         }
       );
@@ -168,10 +171,20 @@ export const AuthApi = {
       throw new Error(error.response?.data?.message || 'Lỗi cập nhật ảnh');
     }
   },
+  checkRoleOfUser: async () => {
+    try {
+      const response = await fetcher.get(`${url}/account/profile/checkRole/`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
 
+        }
+      })
+      return response.data
+    } catch (error) {
+      throw new Error(error.response.data.message);
 
-
-
+    }
+  }
 
 
 

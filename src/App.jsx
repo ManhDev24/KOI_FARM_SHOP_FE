@@ -5,6 +5,8 @@ import React from "react";
 import { getLocalStorage } from "./utils/LocalStorage";
 import { useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode"; // Correct import for jwt-decode
+import { useQuery } from "@tanstack/react-query";
+import { AuthApi } from "./apis/Auth.api";
 
 function App() {
   console.log("App component rendering...");
@@ -15,16 +17,13 @@ function App() {
   const user = getLocalStorage("user");
   const token = user?.accessToken;
 
-  let decoded;
-  try {
-    decoded = token ? jwtDecode(token) : null;
-    console.log("Decoded token:", decoded);
-  } catch (error) {
-    console.error("Invalid token", error);
-    decoded = null;
-  }
+  
+  const { data: checkRoleUser, isLoading: isCheckRoleLoading, isError: isErrorCheckRole } = useQuery({
+    queryKey: ['checkRole'],
+    queryFn: () => AuthApi.checkRoleOfUser()
+  })
 
-  const getRoleUser = decoded?.scope;
+  const getRoleUser = checkRoleUser?.data;
   console.log('getRoleUser: ', getRoleUser);
 
   const isAllowedToAccessForgotPassword = useSelector(

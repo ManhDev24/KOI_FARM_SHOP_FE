@@ -15,6 +15,7 @@ import { data } from "autoprefixer";
 import LoadingModal from "../../../modules/Modal/LoadingModal";
 import { motion } from "framer-motion";
 import { jwtDecode } from "jwt-decode";
+import { useQuery } from "@tanstack/react-query";
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -28,6 +29,11 @@ const Navbar = () => {
       return null;
     }
   };
+  const { data: checkRoleUser, isLoading: isCheckRoleLoading, isError: isErrorCheckRole } = useQuery({
+    queryKey: ['checkRole'],
+    queryFn: () => AuthApi.checkRoleOfUser()
+  })
+  console.log('checkRoleUser: ', checkRoleUser);
   const token = user?.accessToken;
 
   let decoded = null;
@@ -153,8 +159,8 @@ const Navbar = () => {
       key: "6",
       label: <Link to="/payment-history">Lịch sử mua hàng</Link>,
     },
-    ...(decoded?.scope
-      === "manager" || decoded?.scope === "staff"
+    ...(checkRoleUser?.data
+      === "manager" || checkRoleUser?.data === "staff"
       ? [
         {
           key: "8",

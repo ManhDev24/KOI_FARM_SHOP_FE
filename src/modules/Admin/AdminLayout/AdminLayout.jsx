@@ -23,6 +23,7 @@ import { AccountApi } from "../../../apis/Account.api";
 import { Footer } from "antd/es/layout/layout";
 import LoadingModal from "../../Modal/LoadingModal";
 import { jwtDecode } from "jwt-decode"; // Correct import without destructuring
+import { AuthApi } from "../../../apis/Auth.api";
 
 const { Header, Sider, Content } = Layout;
 
@@ -34,19 +35,13 @@ const AdminLayout = () => {
   console.log('User from localStorage:', user);
 
   const token = user?.accessToken;
-  let role = null;
-
+  const { data: checkRoleUser, isLoading: isCheckRoleLoading, isError: isErrorCheckRole } = useQuery({
+    queryKey: ['checkRole'],
+    queryFn: () => AuthApi.checkRoleOfUser()
+  })
   // Decoding the token to extract the role
-  if (token) {
-    try {
-      const decoded = jwtDecode(token);
-      console.log("Decoded Token:", decoded); // Log decoded token for debugging
-      role = decoded?.scope || null;
-      console.log("User role:", role); // Log role for verification
-    } catch (error) {
-      console.error("Error decoding JWT token:", error);
-    }
-  }
+  
+  let role = checkRoleUser?.data;
 
   const {
     token: { colorBgContainer, borderRadiusLG },
