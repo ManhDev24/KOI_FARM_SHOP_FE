@@ -316,7 +316,7 @@ const FishManagement = () => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      category: 1,
+      categoryId: "",
       age: "",
       size: "",
       personality: "",
@@ -526,6 +526,8 @@ const FishManagement = () => {
     queryKey: ["ListCategory"],
     queryFn: () => FishApi.getCategories(),
   });
+  console.log('ListCategory: ', ListCategory);
+
   const handleChangeImage = (e) => {
     const file = e.target.files[0];
     e.stopPropagation();
@@ -767,8 +769,8 @@ const FishManagement = () => {
                     style={{ width: "100%", marginTop: "8px" }}
                     placeholder="Chọn danh mục"
                     options={ListCategory?.map((item) => ({
-                      value: item.id,
-                      label: `${item.categoryName}`,
+                      value: item.id,             // ID dùng làm giá trị
+                      label: item.categoryName,    // categoryName hiển thị
                     }))}
                   />
                 )}

@@ -14,7 +14,7 @@ import {
 import Search from "antd/es/transfer/search";
 import LoadingModal from "../../Modal/LoadingModal";
 import orderApi from "../../../apis/Order.api";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import moment from "moment";
 import { Link } from "react-router-dom";
 
@@ -22,7 +22,8 @@ const PaymentManagement = () => {
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [status, setStatus] = useState()
+  const queryClient = useQueryClient();
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedQuery(query);
@@ -43,6 +44,7 @@ const PaymentManagement = () => {
     }
   };
 
+
   const {
     data: ListOfOrder,
     isLoading: isLoadingListOfOrder,
@@ -52,6 +54,20 @@ const PaymentManagement = () => {
     queryFn: fetchOrder,
     keepPreviousData: true,
   });
+  const { mutate: handleOrderStatusChange, isLoading: isLoadingChangeStatus, isError: isErrorChangeStatus } = useMutation({
+    mutationFn: (id) => orderApi.changeStatusOrder(id, status),
+    onSuccess: () => {
+      message.success("Chỉnh sửa trạng thái thành công");
+      queryClient.invalidateQueries(["ListOfOrder"]);
+    },
+    onError: (error) => {
+      const errorMessage = error?.message || "Lỗi rồi!";
+      message.error(errorMessage);
+    },
+  })
+  const onStatusChange = (id) => {
+    handleOrderStatusChange(id)
+  }
   const columns = [
     {
       title: "Mã thanh toán",
@@ -142,9 +158,31 @@ const PaymentManagement = () => {
         </div>
       ),
     },
+    {
+      title: "Trạng thái thanh toán",
+      key: "status",
+      render: (text, record) => {
+        console.log('record: ', record);
+
+        return <Select
+          defaultValue={record.status}
+          onChange={(value) => {
+            onStatusChange(record.orderId);
+            setStatus(value);
+          }}
+          style={{ width: 150 }}
+          options={[
+            { value: 1, label: "Đã thanh toán" },
+            { value: 2, label: "Đang giao" },
+            { value: 3, label: "Hoàn tất đơn hàng" },
+
+          ]}
+        />
+      },
+    },
   ];
   const total = ListOfOrder?.data.totalElements;
- 
+
   return (
     <div>
       <div className="flex flex-col justify-center items-center ">

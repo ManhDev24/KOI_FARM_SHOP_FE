@@ -66,7 +66,7 @@ const PaymentDetailPage = () => {
       },
     },
     {
-      title: "Giá Batch",
+      title: "Giá Lô cá",
       dataIndex: "batchPrice",
       render: (_, record) => {
         const formattedPrice = record?.price

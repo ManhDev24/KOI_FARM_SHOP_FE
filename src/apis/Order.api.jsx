@@ -52,5 +52,14 @@ const orderApi = {
       throw new Error(error.response.data.message);
     }
   },
+  changeStatusOrder: async (id, status) => {
+    try {
+      const response = await fetcher.post(`${url}/manage/changeStatus?orderID=${id}&status=${status}`)
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response.data.message);
+
+    }
+  }
 };
 export default orderApi;
