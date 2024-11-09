@@ -168,10 +168,15 @@ export const AuthApi = {
       throw new Error(error.response?.data?.message || 'Lỗi cập nhật ảnh');
     }
   },
+  checkRoleOfUser: async () => {
+    try {
+      const response = await fetcher.get(`${url}/account/profile/checkRole`)
+      return response.data
+    } catch (error) {
+      throw new Error(error.response.data.message);
 
-
-
-
+    }
+  }
 
 
 
