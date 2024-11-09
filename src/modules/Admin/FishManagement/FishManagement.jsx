@@ -263,7 +263,7 @@ const FishManagement = () => {
   const showModal = () => {
     setIsModalOpen(true);
     reset({
-      category: 1,
+      category: "--Danh mục--",
       age: "",
       size: "",
       personality: "",
