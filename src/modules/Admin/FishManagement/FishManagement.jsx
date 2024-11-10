@@ -36,8 +36,8 @@ import _ from "lodash";
 
 const validationSchema = yup.object().shape({
   category: yup.string().required("Danh mục là bắt buộc"),
-  age: yup.number().typeError("Tuổi phải là số").required("Tuổi là bắt buộc").min(0, "Tuổi không thể âm"),
-  size: yup.number().typeError("Kích thước phải là số").required("Kích thước là bắt buộc").min(0, "Kích thước không thể âm"),
+  age: yup.number().typeError("Tuổi phải là số").required("Tuổi là bắt buộc").min(0, "Tuổi không thể âm").max(200,"Tuổi tối đa là 200 tuổi"),
+  size: yup.number().typeError("Kích thước phải là số").required("Kích thước là bắt buộc").min(0, "Kích thước không thể âm").max(200,"Kích thước tối đa là 200 cm"),
   personality: yup.string().required("Tính cách là bắt buộc"),
   origin: yup.string().required("Nguồn gốc là bắt buộc"),
   price: yup.number().typeError("Giá phải là số").required("Giá là bắt buộc").min(0, "Giá không thể âm"),
