@@ -30,7 +30,6 @@ const BlogEdit = () => {
   const { data: blogData, isLoading: isFetchingBlog, error } = useQuery({
     queryKey: ["Blog", blogId],
     queryFn: () => {
-      console.log("Fetching blog data for blogId:", blogId);
       return BlogApi.getDetailBlog(blogId);
     },
     enabled: !!blogId,
@@ -42,7 +41,6 @@ const BlogEdit = () => {
   // Populate form values when blogData and editor are ready
   useEffect(() => {
     if (blogData && isEditorReady) {
-      console.log("Fetched blogData:", blogData);
 
       // Reset all form fields at once
       reset({

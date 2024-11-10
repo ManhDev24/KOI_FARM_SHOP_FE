@@ -83,7 +83,6 @@ const BathManagement = () => {
     queryFn: () => AccountApi.getProfile(email)
   })
   
-  console.log('getRole: ', getRole);
   const {
     handleSubmit,
     control,

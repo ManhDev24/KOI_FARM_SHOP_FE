@@ -63,7 +63,6 @@ const Kois = () => {
             try {
 
                 const response = await ConsignmentApi.getAllSellConsignmentForCustomer(id, currentPageSell, pageSizeSell);
-                console.log(response, 'rep')
                 setFishSellList(response.data.content || []);
                 setFishSellData(response.data);
             } catch (error) {

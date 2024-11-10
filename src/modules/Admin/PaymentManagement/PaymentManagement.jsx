@@ -162,7 +162,6 @@ const PaymentManagement = () => {
       title: "Trạng thái thanh toán",
       key: "status",
       render: (text, record) => {
-        console.log('record: ', record);
 
         return <Select
           defaultValue={record.status}

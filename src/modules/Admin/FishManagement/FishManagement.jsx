@@ -476,7 +476,6 @@ const FishManagement = () => {
   };
 
   const onEditFish = async (record) => {
-    console.log('record: ', record);
     showModal();
     setDataEdit(record);
     reset({
@@ -526,7 +525,6 @@ const FishManagement = () => {
     queryKey: ["ListCategory"],
     queryFn: () => FishApi.getCategories(),
   });
-  console.log('ListCategory: ', ListCategory);
 
   const handleChangeImage = (e) => {
     const file = e.target.files[0];

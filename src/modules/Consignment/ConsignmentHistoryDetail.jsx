@@ -27,7 +27,6 @@ const ConsignmentHistoryDetail = () => {
       navigate('/'); 
     } else {
      
-      console.log('User retrieved:', user); 
       setAccountId(user.id);
     }
   }, [navigate]);

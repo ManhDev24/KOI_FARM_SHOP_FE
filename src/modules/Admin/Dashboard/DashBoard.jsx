@@ -47,18 +47,13 @@ const DashBoard = () => {
     }
   };
   const token = user?.accessToken;
-  let role = null;
 
-  if (token) {
-    try {
-      const decoded = jwtDecode(token);
-      console.log('decoded: ', decoded);
-      role = decoded?.scope || null;
-      console.log("User role:", role); // Log role for verification
-    } catch (error) {
-      console.error("Error decoding JWT token:", error);
-    }
-  }
+ 
+  const { data: checkRoleUser, isLoading: isCheckRoleLoading, isError: isErrorCheckRole } = useQuery({
+    queryKey: ['checkRole'],
+    queryFn: () => AuthApi.checkRoleOfUser()
+  })
+  let role = checkRoleUser?.data;
 
   useEffect(() => {
     if (role !== "manager") {
