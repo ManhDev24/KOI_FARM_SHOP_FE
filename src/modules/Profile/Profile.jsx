@@ -13,14 +13,14 @@ import url from '../../constant/constant';
 
 const Profile = () => {
   const [oldPass, setOldPass] = useState()
-  
-// Yup schema để xác thực dữ liệu
+
+  // Yup schema để xác thực dữ liệu
   const schema = yup.object().shape({
     fullName: yup.string()
-    .required('Vui lòng nhập họ và tên')
-    .transform(value => value?.trim()) // Ensure value is trimmed and handles undefined/null gracefully
-    .min(3, 'Tên quá ngắn!')
-    .matches(/^[A-Za-zÀ-ỹ\s]+$/, 'Họ và tên không được chứa số hoặc ký tự đặc biệt'),
+      .required('Vui lòng nhập họ và tên')
+      .transform(value => value?.trim()) // Ensure value is trimmed and handles undefined/null gracefully
+      .min(3, 'Tên quá ngắn!')
+      .matches(/^[A-Za-zÀ-ỹ\s]+$/, 'Họ và tên không được chứa số hoặc ký tự đặc biệt'),
 
     email: yup.string()
       .required('Vui lòng nhập email')
@@ -30,7 +30,7 @@ const Profile = () => {
       .required('Vui lòng nhập mật khẩu cũ'),
 
 
-      newPassword: yup
+    newPassword: yup
       .string()
       .required('Mật khẩu là bắt buộc')
       .min(6, 'Mật khẩu phải có ít nhất 6 ký tự')
@@ -53,7 +53,7 @@ const Profile = () => {
       }),
 
 
-      address: yup.string()
+    address: yup.string()
       .required('Vui lòng nhập địa chỉ')
       .transform(value => value?.trim()) // Ensure value is trimmed and handles undefined/null gracefully
       .min(10, 'Địa chỉ phải có ít nhất 10 ký tự')
@@ -327,10 +327,11 @@ const Profile = () => {
           ...prevState,
           password: false,
         }));
-
+        setValue('password', '');
         message.success('Mật khẩu đã được cập nhật thành công');
       } catch (error) {
-        message.error('Lỗi khi cập nhật mật khẩu: ' + error.message);
+      
+        
       }
     }
   };
