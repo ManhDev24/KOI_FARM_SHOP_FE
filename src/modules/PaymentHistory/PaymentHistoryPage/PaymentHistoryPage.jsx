@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { Pagination, Table, Tag } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import moment from "moment";
 import "moment/locale/vi";
 import orderApi from "../../../apis/Order.api";
 import { getLocalStorage } from "../../../utils/LocalStorage";
 import LoadingModal from "../../Modal/LoadingModal";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { saveOrderId } from "../../../Redux/Slices/Order_Slice";
 
@@ -16,6 +16,13 @@ const PaymentHistoryPage = () => {
   const user = getLocalStorage("user");
   const [currentPage, setCurrentPage] = useState(1);
   const dispatch = useDispatch();
+  const navigate = useNavigate()
+  useEffect(() => {
+    const isLogin = getLocalStorage('user')
+    if (!isLogin) {
+      navigate('/')
+    }
+  }, [])
 
   const {
     data: orderData,
