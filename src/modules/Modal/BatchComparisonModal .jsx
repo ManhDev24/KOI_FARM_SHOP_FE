@@ -24,7 +24,6 @@ const BatchComparisonModal = ({ isOpen, onClose, selectedBatches, setSelectedBat
 
 
   const handleAddToCart = (fish) => {
-    console.log("fish: ", fish);
     dispatch(addToCartBatch([{ ...fish, quantity: 1, isBatch: true }]));
   };
   return (

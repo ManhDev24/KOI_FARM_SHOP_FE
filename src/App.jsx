@@ -4,12 +4,11 @@ import { privateRoutes, publicRoutes } from "./routes/routes";
 import React from "react";
 import { getLocalStorage } from "./utils/LocalStorage";
 import { useSelector } from "react-redux";
-import { jwtDecode } from "jwt-decode"; // Correct import for jwt-decode
+import { jwtDecode } from "jwt-decode";
 import { useQuery } from "@tanstack/react-query";
 import { AuthApi } from "./apis/Auth.api";
 
 function App() {
-  console.log("App component rendering...");
 
   const isAuth = () => !!getLocalStorage("user");
 
@@ -17,14 +16,13 @@ function App() {
   const user = getLocalStorage("user");
   const token = user?.accessToken;
 
-  
+
   const { data: checkRoleUser, isLoading: isCheckRoleLoading, isError: isErrorCheckRole } = useQuery({
     queryKey: ['checkRole'],
     queryFn: () => AuthApi.checkRoleOfUser()
   })
 
   const getRoleUser = checkRoleUser?.data;
-  console.log('getRoleUser: ', getRoleUser);
 
   const isAllowedToAccessForgotPassword = useSelector(
     (state) => state.auth.isAllowedToAccessForgotPassword

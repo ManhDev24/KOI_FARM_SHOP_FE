@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Button,
   Col,
+  Image,
   Input,
   message,
   Modal,
@@ -30,6 +31,7 @@ import { Controller, useForm } from "react-hook-form";
 import { getLocalStorage } from "../../../utils/LocalStorage";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import { AuthApi } from "../../../apis/Auth.api";
 const validationSchema = yup.object().shape({
   fullName: yup.string().required("Họ và tên là bắt buộc"),
   email: yup
@@ -55,25 +57,27 @@ const UserManagement = () => {
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const user = getLocalStorage("user");
   const token = user?.accessToken;
-  let role = null;
-
+  
   if (token) {
     try {
       const decoded = jwtDecode(token);
-      console.log('decoded: ', decoded);
       role = decoded?.scope || null;
-      console.log("User role:", role); // Log role for verification
     } catch (error) {
       console.error("Error decoding JWT token:", error);
     }
   }
-
+  
+  const { data: checkRoleUser, isLoading: isCheckRoleLoading, isError: isErrorCheckRole } = useQuery({
+    queryKey: ['checkRole'],
+    queryFn: () => AuthApi.checkRoleOfUser()
+  })
+  let role = checkRoleUser?.data
   const navigate = useNavigate();
   useEffect(() => {
     if (role !== "manager") {
       navigate("/admin/fish-management");
     }
-  },[role]);
+  }, [role]);
   const columns = [
     {
       title: "ID",
@@ -91,7 +95,7 @@ const UserManagement = () => {
       key: "avatar",
       render: (avatar) => {
         return avatar ? (
-          <img src={avatar} alt="avatar" style={{ width: 50 }} />
+          <Image src={avatar} alt="avatar" style={{ width: 50 }} />
         ) : (
           "No Avatar"
         );

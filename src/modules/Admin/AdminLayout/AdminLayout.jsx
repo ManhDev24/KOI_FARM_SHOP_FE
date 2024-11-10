@@ -32,7 +32,6 @@ const AdminLayout = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const user = getLocalStorage("user");
-  console.log('User from localStorage:', user);
 
   const token = user?.accessToken;
   const { data: checkRoleUser, isLoading: isCheckRoleLoading, isError: isErrorCheckRole } = useQuery({
@@ -40,7 +39,7 @@ const AdminLayout = () => {
     queryFn: () => AuthApi.checkRoleOfUser()
   })
   // Decoding the token to extract the role
-  
+
   let role = checkRoleUser?.data;
 
   const {
@@ -73,7 +72,6 @@ const AdminLayout = () => {
     return <LoadingModal />;
   }
 
-  // Rendering the layout with side navigation menu
   return (
     <Layout className="h-screen bg-green-600">
       <Sider theme="white" trigger={null} collapsible collapsed={collapsed}>
