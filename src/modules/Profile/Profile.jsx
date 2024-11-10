@@ -10,45 +10,63 @@ import { AuthApi } from '../../apis/Auth.api';
 import url from '../../constant/constant';
 
 
+
+const Profile = () => {
+  const [oldPass, setOldPass] = useState()
+  
 // Yup schema để xác thực dữ liệu
-const schema = yup.object().shape({
-  fullName: yup.string()
+  const schema = yup.object().shape({
+    fullName: yup.string()
     .required('Vui lòng nhập họ và tên')
     .transform(value => value?.trim()) // Ensure value is trimmed and handles undefined/null gracefully
     .min(3, 'Tên quá ngắn!')
     .matches(/^[A-Za-zÀ-ỹ\s]+$/, 'Họ và tên không được chứa số hoặc ký tự đặc biệt'),
 
-  email: yup.string()
-    .required('Vui lòng nhập email')
-    .email('Email không hợp lệ'),
+    email: yup.string()
+      .required('Vui lòng nhập email')
+      .email('Email không hợp lệ'),
 
-  password: yup.string()
-    .required('Vui lòng nhập mật khẩu cũ'),
+    password: yup.string()
+      .required('Vui lòng nhập mật khẩu cũ'),
 
-  newPassword: yup.string()
-    .required('Mật khẩu là bắt buộc')
-    .min(6, 'Mật khẩu phải có ít nhất 6 ký tự')
-    .matches(/[!@#$%^&*(),.?":{}|<>]/, 'Mật khẩu phải chứa ít nhất một ký tự đặc biệt'),
 
-  confirmPassword: yup.string()
-    .required('Vui lòng xác nhận mật khẩu')
-    .oneOf([yup.ref('newPassword')], 'Xác nhận mật khẩu không khớp'),
+      newPassword: yup
+      .string()
+      .required('Mật khẩu là bắt buộc')
+      .min(6, 'Mật khẩu phải có ít nhất 6 ký tự')
+      .matches(
+        /[!@#$%^&*(),.?":{}\/+\-|<>]/,
+        'Mật khẩu phải chứa ít nhất một ký tự đặc biệt'
+      )
+      .notOneOf(
+        [yup.ref('password')],
+        'Mật khẩu mới phải khác mật khẩu cũ'
+      ),
 
-  address: yup.string()
-    .required('Vui lòng nhập địa chỉ')
-    .transform(value => value?.trim()) // Ensure value is trimmed and handles undefined/null gracefully
-    .min(10, 'Địa chỉ phải có ít nhất 10 ký tự')
-    .matches(/^[A-Za-z0-9À-ỹ\s]+$/, 'Địa chỉ không được chứa ký tự đặc biệt'),
+    confirmPassword: yup.string()
+      .required('Vui lòng xác nhận mật khẩu')
+      .oneOf([yup.ref('newPassword')], 'Xác nhận mật khẩu không khớp')
+      .when('password', (password, schema) => {
+        return password
+          ? schema.notOneOf([yup.ref('password')], 'Mật khẩu mới phải khác mật khẩu cũ')
+          : schema;
+      }),
 
-  phone: yup.string()
-    .required('Vui lòng nhập số điện thoại')
-    .matches(/^[0-9]+$/, 'Số điện thoại chỉ chứa số')
-    .matches(/^(0[3|5|7|8|9])[0-9]{8}$/, 'Số điện thoại không đúng định dạng!')
-    .min(10, 'Số điện thoại phải có ít nhất 10 chữ số')
-    .max(10, 'Số điện thoại phải có đúng 10 chữ số')
-});
 
-const Profile = () => {
+      address: yup.string()
+      .required('Vui lòng nhập địa chỉ')
+      .transform(value => value?.trim()) // Ensure value is trimmed and handles undefined/null gracefully
+      .min(10, 'Địa chỉ phải có ít nhất 10 ký tự')
+      .matches(/^[A-Za-z0-9À-ỹ\s]+$/, 'Địa chỉ không được chứa ký tự đặc biệt'),
+
+    phone: yup.string()
+      .required('Vui lòng nhập số điện thoại')
+      .matches(/^[0-9]+$/, 'Số điện thoại chỉ chứa số')
+      .matches(/^(0[3|5|7|8|9])[0-9]{8}$/, 'Số điện thoại không đúng định dạng!') // Ensures correct format
+      .min(10, 'Số điện thoại phải có ít nhất 10 chữ số')
+      .max(10, 'Số điện thoại phải có đúng 10 chữ số'),
+
+  });
   const navigate = useNavigate();
   const { control, trigger, formState: { errors }, getValues, setValue, setError, clearErrors, } = useForm({
     resolver: yupResolver(schema),
@@ -91,7 +109,7 @@ const Profile = () => {
           setInitialData({
             fullName: profileData.fullName || '',
             email: profileData.email || '',
-            password: profileData.password || '',
+
             address: profileData.address || '',
             phone: profileData.phone || '',
             avatar: profileData.avatar || './img/avatar.svg',
@@ -103,8 +121,9 @@ const Profile = () => {
           setValue('address', profileData.address);
           setValue('phone', profileData.phone);
           setValue('avatar', profileData.avatar);
+
         } else {
-          message.error('Bạn đang không đăng nhập. Vui lòng đăng nhập lại.');
+          message.error('Không tìm thấy email người dùng. Vui lòng đăng nhập lại.');
           navigate('/');
         }
       } catch (error) {
@@ -322,8 +341,7 @@ const Profile = () => {
     if (field === 'password') {
       setOldPasswordCorrect(false);
     }
-    setValue(field, initialData[field]);
-    clearErrors(field);
+    setValue('', initialData[field]);
     setIsEditing((prevState) => ({
       ...prevState,
       [field]: false,
@@ -332,73 +350,68 @@ const Profile = () => {
 
 
 
-
-  const renderFormItem = (label, fieldName, placeholder, isPassword = false) => {
-
+  const renderFormItem = (label, fieldName, placeholder) => {
     if (fieldName === 'email') {
       return (
-        <AntForm.Item label={label} className='flex'>
-          <div className=" w-64 text-black flex flex-col text-xl font-['Arial']">{initialData[fieldName]}</div>
+        <AntForm.Item label={label}>
+          <div className="text-black text-xl font-['Arial']">
+            {initialData[fieldName]}
+          </div>
         </AntForm.Item>
       );
     }
 
-
-
     return (
-      <AntForm.Item className='flex'
+      <AntForm.Item
         label={label}
         validateStatus={errors[fieldName] ? 'error' : ''}
         help={errors[fieldName]?.message}
       >
-        {initialData[fieldName]}
         {isEditing[fieldName] ? (
           <>
-
             <Controller
               name={fieldName}
               control={control}
               render={({ field }) => (
-                isPassword ? (
-                  <Input.Password
-                    {...field}
-
-                    iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-                  />
-                ) : (
-                  <Input {...field} className='w-72 flex' />
-                )
+                <Input {...field} placeholder={placeholder} className='w-64' />
               )}
             />
-            <Button
-              type="primary"
-              onClick={() => handleSaveField(fieldName)}
-            >
-              Lưu thay đổi
-            </Button>
-            <Button className='ms-1' onClick={() => handleCancel(fieldName)}>Hủy</Button>
+            <div className="flex mt-2">
+              <Button type="primary" onClick={() => handleSaveField(fieldName)}>
+                Lưu thay đổi
+              </Button>
+              <Button className="ml-2" onClick={() => { handleCancel(fieldName); clearErrors(fieldName); }
+              }>
+                Hủy
+              </Button>
+            </div>
           </>
         ) : (
-          <>
-            <>
-              <div className="text-black text-xl inline font-['Arial']"></div>
-              <Button
-                type="link"
-                onClick={() => setIsEditing((prevState) => ({
+          <div className="flex items-center">
+            <div className="text-black text-xl font-['Arial'] mr-2">
+              {initialData[fieldName]}
+            </div>
+            <Button
+              type="link"
+              onClick={() =>
+                setIsEditing((prevState) => ({
                   ...prevState,
-                  [fieldName]: true
-                }))}
-              >
-                {/* Kiểm tra nếu trường không có giá trị hoặc là chuỗi rỗng, hiển thị "Cập nhật" thay vì "Chỉnh sửa" */}
-                {!initialData[fieldName] || initialData[fieldName].trim() === '' ? 'Cập nhật' : 'Chỉnh sửa'}
-              </Button>
-            </>
-
-          </>
-        )}
-      </AntForm.Item>
+                  [fieldName]: true,
+                }))
+              }
+            >
+              {(!initialData[fieldName] ||
+                initialData[fieldName].trim() === ''
+                ? 'Cập nhật'
+                : 'Chỉnh sửa')}
+            </Button>
+          </div>
+        )
+        }
+      </AntForm.Item >
     );
   };
+
 
 
   return (
@@ -421,7 +434,7 @@ const Profile = () => {
       </div>
 
       <div className="w-full flex justify-center">
-        <div className="w-[1250px] h-[712px] pl-[37px] pr-14 py-[71px] shadow flex justify-center items-center col-span-2">
+        <div className="w-full max-w-5xl px-4 py-8 shadow flex flex-col md:flex-row justify-center items-start">
           <div className="w-full h-full flex flex-col items-end pt-[15px] rounded-[10px]">
             <div className="w-full h-[50px]">
               <div className="text-black text-2xl h-[50px] flex items-center font-['Arial'] ps-2 shadow">
@@ -460,9 +473,9 @@ const Profile = () => {
           </div>
 
           {/* Thông tin cá nhân */}
-          <div className="w-[600px] h-[366px] ms-14 bottom-[95px] mt-4 relative flex-col flex shadow">
+          <div className="w-full flex flex-col items-center md:items-end pt-[15px] rounded-md">
             <div className="w-[654px]">
-              <div className="text-black text-2xl h-[50px] flex items-center w-full ms-2 font-['Arial']">
+              <div className="text-black w-[600px] text-2xl h-[50px] flex items-center font-['Arial'] mb-4 ps-2 shadow">
                 Thông tin cá nhân
               </div>
             </div>
@@ -512,14 +525,19 @@ const Profile = () => {
                               type="primary"
                               onClick={() => {
                                 handleOldPasswordSubmit();
-                                setValue('password', '');
+
                                 setValue('newPassword', null);   // Reset trường newPassword
                                 setValue('confirmPassword', null);  // Reset trường confirmPassword
                               }}>
                               Xác nhận mật khẩu cũ
                             </Button>
 
-                            <Button className='ms-1' onClick={() => handleCancel('password')}>Hủy</Button>
+                            <Button className='ms-1' onClick={() => {
+                              setValue('password', '')
+                              clearErrors('password');
+                              handleCancel('password')
+
+                            }}>Hủy</Button>
                           </>
                         ) : (
                           <Button type="link" onClick={() => setPasswordChanged(false)}>
@@ -572,11 +590,16 @@ const Profile = () => {
                         </AntForm.Item>
 
                         <Button className='ms-2' type="primary" onClick={() => {
-
                           handleSavePassword();
+                          
                         }}>Lưu thay đổi</Button>
 
-                        <Button className='ms-1' onClick={() => handleCancel('password')}>Hủy</Button>
+                        <Button className='ms-1' onClick={() => {
+                          handleCancel('password');
+                          clearErrors('newPassword')
+                          clearErrors('confirmPassword')
+                          setValue('password', '');
+                        }}>Hủy</Button>
                       </>
                     )}
                   </>
