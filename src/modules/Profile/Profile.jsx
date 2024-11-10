@@ -14,7 +14,7 @@ import url from '../../constant/constant';
 const schema = yup.object().shape({
   fullName: yup.string()
     .required('Vui lòng nhập họ và tên')
-    .transform(value => value.trim())
+    .transform(value => value?.trim()) // Ensure value is trimmed and handles undefined/null gracefully
     .min(3, 'Tên quá ngắn!')
     .matches(/^[A-Za-zÀ-ỹ\s]+$/, 'Họ và tên không được chứa số hoặc ký tự đặc biệt'),
 
@@ -26,12 +26,9 @@ const schema = yup.object().shape({
     .required('Vui lòng nhập mật khẩu cũ'),
 
   newPassword: yup.string()
-    .required("Mật khẩu là bắt buộc")
-    .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
-    .matches(
-      /[!@#$%^&*(),.?":{}|<>]/,
-      "Mật khẩu phải chứa ít nhất một ký tự đặc biệt"
-    ),
+    .required('Mật khẩu là bắt buộc')
+    .min(6, 'Mật khẩu phải có ít nhất 6 ký tự')
+    .matches(/[!@#$%^&*(),.?":{}|<>]/, 'Mật khẩu phải chứa ít nhất một ký tự đặc biệt'),
 
   confirmPassword: yup.string()
     .required('Vui lòng xác nhận mật khẩu')
@@ -39,18 +36,16 @@ const schema = yup.object().shape({
 
   address: yup.string()
     .required('Vui lòng nhập địa chỉ')
-    .transform(value => value.trim())
+    .transform(value => value?.trim()) // Ensure value is trimmed and handles undefined/null gracefully
     .min(10, 'Địa chỉ phải có ít nhất 10 ký tự')
     .matches(/^[A-Za-z0-9À-ỹ\s]+$/, 'Địa chỉ không được chứa ký tự đặc biệt'),
-
 
   phone: yup.string()
     .required('Vui lòng nhập số điện thoại')
     .matches(/^[0-9]+$/, 'Số điện thoại chỉ chứa số')
-    .matches(/^(0[3|5|7|8|9])[0-9]{8}$/, 'Số điện thoại không đúng định dạng!') // Ensures correct format
+    .matches(/^(0[3|5|7|8|9])[0-9]{8}$/, 'Số điện thoại không đúng định dạng!')
     .min(10, 'Số điện thoại phải có ít nhất 10 chữ số')
-    .max(10, 'Số điện thoại phải có đúng 10 chữ số'),
-
+    .max(10, 'Số điện thoại phải có đúng 10 chữ số')
 });
 
 const Profile = () => {
