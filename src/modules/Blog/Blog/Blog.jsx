@@ -34,10 +34,6 @@ const Blog = memo(() => {
   return (
     <div className="max-w-5xl mx-auto my-10 px-4 lg:px-0">
       <div className="flex flex-col justify-center items-center">
-        <h1 className="text-start mb-6 text-3xl font-bold text-[#196b49] w-full">
-          {blog?.title}
-        </h1>
-       
         <div className="text-lg leading-relaxed text-gray-800 w-full">
           <div dangerouslySetInnerHTML={{ __html: blog?.content || "" }} />
         </div>
