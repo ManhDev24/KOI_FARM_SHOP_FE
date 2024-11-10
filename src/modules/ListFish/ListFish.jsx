@@ -203,7 +203,7 @@ const ListFish = () => {
     setIsFiltered(true);
   };
   const handleMenuClickGender = (item) => {
-    setSelectedGender(+item.value);
+    setSelectedGender(item.value);
     setIsFiltered(true);
   };
   const handleMenuClickDate = (item) => {
@@ -223,14 +223,13 @@ const ListFish = () => {
       selectedItems.length < 2 &&
       !selectedItems.some((i) => i.id === item.id)
     ) {
-      setSelectedItems([...selectedItems, item]); // Add item to the comparison list
+      setSelectedItems([...selectedItems, item]);
     } else if (selectedItems.some((i) => i.id === item.id)) {
       alert("Koi này đã được thêm vào để so sánh");
     } else {
       alert("Bạn chi có thể thêm tối đa 2 Koi.");
     }
   };
-  // Remove Koi fish from the comparison list
   const removeItemFromCompare = (itemToRemove) => {
     const updatedItems = selectedItems.filter(
       (item) => item.id !== itemToRemove.id
@@ -247,7 +246,6 @@ const ListFish = () => {
     }
   };
 
-  // Close comparison modal
   const handleModalClose = () => {
     setIsModalOpen(false);
   };
