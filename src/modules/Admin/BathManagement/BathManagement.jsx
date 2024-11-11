@@ -77,12 +77,12 @@ const BathManagement = () => {
 
   const queryClient = useQueryClient();
   const user = getLocalStorage('user');
-  const {email} = user
+  const { email } = user
   const { data: getRole, isLoading: isGetRoleLoading, isError: isErrorGetRole } = useQuery({
     queryKey: ['getRole'],
     queryFn: () => AccountApi.getProfile(email)
   })
-  
+
   const {
     handleSubmit,
     control,
@@ -267,6 +267,11 @@ const BathManagement = () => {
       title: "Tuổi",
       dataIndex: "age",
       key: "age",
+    },
+    {
+      title: "Số lượng cá trong lô(con)",
+      dataIndex: "quantity",
+      key: "quantity",
     },
     {
       title: "Kích thước (cm)",
