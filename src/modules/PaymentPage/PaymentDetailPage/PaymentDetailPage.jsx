@@ -31,7 +31,7 @@ const PaymentDetailPage = () => {
     {
       title: "Tuổi Cá Koi",
       dataIndex: "koiAge",
-      render: (koiAge) => (koiAge ? `${koiAge} tuội` : "Tuổi theo lô"),
+      render: (koiAge) => (koiAge ? `${koiAge} Tuổi` : "Tuổi theo lô"),
     },
     {
       title: "Giới Tính",
