@@ -294,8 +294,7 @@ const ConsignmentHistoryDetail = () => {
                 setCurrentPage(page);
                 setPageSize(size);
               },
-              showTotal: (total, range) =>
-                `Đang có ${range[0]}-${range[1]} / ${total} `,
+             
             }}
             rowKey='consignmentID'
           />

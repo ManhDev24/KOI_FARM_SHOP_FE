@@ -120,11 +120,11 @@ const BatchFishDetail = () => {
                 <>
                   <div className=''>
                     <div className="col-span-2">
-                      <div className='w-[300px] h-[350px] rounded-[10px] border-2 border-[#FA4444]'>
+                      <div className='w-[340px] h-[350px] rounded-[10px] border-2 border-[#FA4444]'>
                         <div className='text-center my-2 text-[#FA4444] font-bold'>
                           Lô {' '}
-                          {fishDetails.categoryName} {" "}  <br />
-                          {fishDetails.age} tuổi {" "}Kích thước trung bình{" "}
+                          {fishDetails.categoryName} {" "}
+                          {fishDetails.age} tuổi <br /> Số lượng {fishDetails.quantity} {" "}Kích thước trung bình{" "}
                           {fishDetails.avgSize}
                         </div>
                         <div className='ms-6'>
@@ -142,14 +142,20 @@ const BatchFishDetail = () => {
                             </div>
                           </div>
                           <div className='flex justify-center me-6'>
-                            <Link>
-                              <Button
-                                onClick={() => handleAddToCart(fishDetails)}
-                                className='w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]'
-                              >
-                                Đặt Mua
-                              </Button>
-                            </Link>
+                            {fishDetails.status === 2 ? '' :
+                            <>
+                                <Link>
+                                  <Button
+                                    onClick={() => handleAddToCart(fishDetails)}
+                                    className='w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]'
+                                  >
+                                    Đặt Mua
+                                  </Button>
+                                </Link>
+                              </>
+
+
+                            }
                           </div>
                         </div>
                       </div>

@@ -403,7 +403,7 @@ const RequestConsignment = () => {
             const formData = new FormData();
             formData.append('koiImg', selectedKoiImage);
             formData.append('certImg', selectedKoiCertificate);
-          
+
 
             Object.keys(values).forEach((key) => {
                 if (key !== 'koiImg' && key !== 'certImg' && key !== 'accountId') {
@@ -487,18 +487,21 @@ const RequestConsignment = () => {
     };
 
     const validateFile = (file) => {
-        const validTypes = ['image/jpeg', 'image/png'];
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
         if (!validTypes.includes(file.type)) {
             message.error('Định dạng file không hợp lệ. Chỉ chấp nhận JPEG hoặc PNG.');
             return false;
         }
-
+    
         if (file.size > 20000000) {
             message.error('File quá lớn. Kích thước tối đa là 20MB.');
             return false;
         }
+    
+       
         return true;
     };
+    
 
     const handleUploadBothFiles = async () => {
         if (!selectedKoiImage || !selectedKoiCertificate) {
@@ -1110,7 +1113,7 @@ const RequestConsignment = () => {
                                                     { required: true, message: 'Vui lòng nhập tuổi' },
                                                     {
                                                         pattern: /^[0-9]+$/,
-                                                        message: 'Tuổi phải là số!',
+                                                        message: 'Tuổi phải là số nguyên!',
                                                     },
                                                 ]}
                                             >
