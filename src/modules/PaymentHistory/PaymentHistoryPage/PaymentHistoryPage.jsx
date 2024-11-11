@@ -123,7 +123,7 @@ const PaymentHistoryPage = () => {
     },
   ];
   return (
-    <div className="m-5">
+    <div className="m-20">
       <div className="container flex justify-center items-center mx-auto flex-col">
         <div>
           <Table
