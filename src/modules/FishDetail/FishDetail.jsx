@@ -249,10 +249,10 @@ const FishDetail = () => {
               {fishDetails && (
                 <>
                   <div className="w-[592px] border-2 border-[#FA4444] ms-[12px] ">
-                    <div className="flex justify-center mt-4 font-bold ">
+                    <div className="flex w-full justify-center mt-4 font-bold ">
                       MÔ TẢ CHI TIẾT
                     </div>
-                    <div className="ms-3 font-bold">
+                    <div className="ms-3 font-bold me-[12px]">
                       <div>Giống: {fishDetails.category}</div>
                       <div>Tuổi: {fishDetails.age}</div>
                       <div>
@@ -266,8 +266,9 @@ const FishDetail = () => {
                       <div>Nhiệp độ nước: {fishDetails.temperature} &deg;C</div>
                       <div>Độ pH: {fishDetails.ph}</div>
                       <div>Sức khỏe: {fishDetails.health}</div>
-                      <div></div>
-                      <div></div>
+                      <div>Chứng chỉ:</div>
+                      <div><Image src={fishDetails.certificate.image} /></div>
+                      <div></div> 
                     </div>
                   </div>
                 </>

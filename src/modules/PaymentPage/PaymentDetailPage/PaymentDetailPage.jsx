@@ -19,9 +19,14 @@ const PaymentDetailPage = () => {
       },
     },
     {
-      title: "Hình Ảnh",
+      title: "Ảnh cá",
       dataIndex: "koiImg",
-      render: (image, record) => <img src={image || record?.batchImg} className="w-16 h-16" />,
+      render: (image, record) => <Image src={image || record?.batchImg} width={80} height={80} className="w-4 h-4" />,
+    },
+    {
+      title: "Ảnh chứng chỉ",
+      dataIndex: "koiImg",
+      render: (_, record) => <Image src={record.certification.image || record?.batchImg} width={80} height={80} className="w-4 h-4" />,
     },
     {
       title: "Chủng loại",

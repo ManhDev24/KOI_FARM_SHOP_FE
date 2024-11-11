@@ -95,7 +95,7 @@ const Profile = () => {
 
   const [oldPasswordCorrect, setOldPasswordCorrect] = useState(false);
   const [passwordChanged, setPasswordChanged] = useState(false);
-
+  const [pass, setPass] = useState();
 
 
   useEffect(() => {
@@ -105,7 +105,7 @@ const Profile = () => {
         if (dataProfile && dataProfile.email) {
           const profile = await AuthApi.userProfile(dataProfile.email);
           const profileData = profile.data;
-
+          setPass(profileData.password);
           setInitialData({
             fullName: profileData.fullName || '',
             email: profileData.email || '',
@@ -210,7 +210,7 @@ const Profile = () => {
     const file = e.target.files[0];
     if (file) {
 
-      const validTypes = ['image/jpeg', 'image/png'];
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
       if (!validTypes.includes(file.type)) {
         message.error('Định dạng file không hợp lệ. Chỉ chấp nhận JPEG hoặc PNG.');
         return;
@@ -490,7 +490,7 @@ const Profile = () => {
               {/* Mật khẩu */}
               <AntForm.Item label="Mật khẩu" className='w-[600px]' validateStatus={errors.password ? 'error' : ''} help={((errors.password?.message) === 'Nhập lại pass word') ? "Sai mật khẩu vui lòng thử lại!" : ' '}>
 
-                {initialData.password === '' ? (
+                {pass === null ? (
                   <div className="text-black text-xl font-['Arial']">
                     Tài khoản đăng nhập bằng Google
                   </div>
