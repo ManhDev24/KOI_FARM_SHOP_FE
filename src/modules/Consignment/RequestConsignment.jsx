@@ -1025,7 +1025,7 @@ const RequestConsignment = () => {
                                             pattern: /^(?!.*\s{2,}).*$/, // Ensures no consecutive spaces
                                             message: <span className='w-[500px] relative'>Ghi chú không được chứa khoảng trắng liên tiếp</span>
                                         },
-                                     
+
 
                                         ]}
                                     >
@@ -1120,10 +1120,12 @@ const RequestConsignment = () => {
                                                         message: 'Tuổi phải là số nguyên!',
                                                     },
                                                     {
-                                                        type: 'number',
-                                                        min: 0,
-                                                        max: 200,
-                                                        message: 'Tuổi phải nằm trong khoảng từ 0 đến 200!',
+                                                        validator: (_, value) => {
+                                                            if (value && (Number(value) < 0 || Number(value) > 200)) {
+                                                                return Promise.reject('Tuổi phải nằm trong khoảng từ 0 đến 200!');
+                                                            }
+                                                            return Promise.resolve();
+                                                        },
                                                     },
 
                                                 ]}
@@ -1429,50 +1431,50 @@ const RequestConsignment = () => {
 
 
                                     </Row>
-                                    <Row gutter={16}>
-                                        <Col xs={24} sm={12}>
-                                            <Form.Item
-                                                label="Giá bán (VND)"
-                                                name="price"
-                                                labelCol={{ span: 24 }}
-                                                wrapperCol={{ span: 24 }}
-                                                rules={[
-                                                    { required: true, message: 'Vui lòng nhập giá bán' },
-                                                    {
-                                                        pattern: /^[0-9]+$/,
-                                                        message: 'Giá bán phải là số!',
-                                                    },
-                                                    {
-                                                        validator: (_, value) => {
-                                                            if (!value) {
-                                                                return Promise.resolve();
-                                                            }
-                                                            if (value < 100000) {
-                                                                return Promise.reject('Giá bán phải lớn hơn hoặc bằng 100.000!');
-                                                            }
-                                                            if (value > 150000000) {
-                                                                return Promise.reject('Giá bán không được vượt quá 150.000.000!');
-                                                            }
-                                                            return Promise.resolve();
-                                                        },
-                                                    },
-                                                ]}
 
-                                            >
-                                                <Input
-                                                    placeholder="Nhập giá bán"
-                                                    value={inputPrice}
-                                                    onChange={handleInputPrice}
-                                                />
-                                            </Form.Item>
-                                        </Col>
-
-                                    </Row>
 
                                     {/* Conditional Fields for Price and Service Fee */}
                                     {SelectedConsignmentType === '1' ? (
                                         <>
+                                            <Row gutter={16}>
+                                                <Col xs={24} sm={12}>
+                                                    <Form.Item
+                                                        label="Giá bán (VND)"
+                                                        name="price"
+                                                        labelCol={{ span: 24 }}
+                                                        wrapperCol={{ span: 24 }}
+                                                        rules={[
+                                                            { required: true, message: 'Vui lòng nhập giá bán' },
+                                                            {
+                                                                pattern: /^[0-9]+$/,
+                                                                message: 'Giá bán phải là số!',
+                                                            },
+                                                            {
+                                                                validator: (_, value) => {
+                                                                    if (!value) {
+                                                                        return Promise.resolve();
+                                                                    }
+                                                                    if (value < 100000) {
+                                                                        return Promise.reject('Giá bán phải lớn hơn hoặc bằng 100.000!');
+                                                                    }
+                                                                    if (value > 150000000) {
+                                                                        return Promise.reject('Giá bán không được vượt quá 150.000.000!');
+                                                                    }
+                                                                    return Promise.resolve();
+                                                                },
+                                                            },
+                                                        ]}
 
+                                                    >
+                                                        <Input
+                                                            placeholder="Nhập giá bán"
+                                                            value={inputPrice}
+                                                            onChange={handleInputPrice}
+                                                        />
+                                                    </Form.Item>
+                                                </Col>
+
+                                            </Row>
 
 
 
@@ -1504,7 +1506,45 @@ const RequestConsignment = () => {
                                         SelectedConsignmentType === '0' ?
 
                                             <>
+                                                <Row gutter={16}>
+                                                    <Col xs={24} sm={12}>
+                                                        <Form.Item
+                                                            label="Giá bán (VND)"
+                                                            name="price"
+                                                            labelCol={{ span: 24 }}
+                                                            wrapperCol={{ span: 24 }}
+                                                            rules={[
+                                                                { required: true, message: 'Vui lòng nhập giá bán' },
+                                                                {
+                                                                    pattern: /^[0-9]+$/,
+                                                                    message: 'Giá bán phải là số!',
+                                                                },
+                                                                {
+                                                                    validator: (_, value) => {
+                                                                        if (!value) {
+                                                                            return Promise.resolve();
+                                                                        }
+                                                                        if (value < 100000) {
+                                                                            return Promise.reject('Giá bán phải lớn hơn hoặc bằng 100.000!');
+                                                                        }
+                                                                        if (value > 150000000) {
+                                                                            return Promise.reject('Giá bán không được vượt quá 150.000.000!');
+                                                                        }
+                                                                        return Promise.resolve();
+                                                                    },
+                                                                },
+                                                            ]}
 
+                                                        >
+                                                            <Input
+                                                                placeholder="Nhập giá bán"
+                                                                value={inputPrice}
+                                                                onChange={handleInputPrice}
+                                                            />
+                                                        </Form.Item>
+                                                    </Col>
+
+                                                </Row>
 
 
                                                 <Row >
