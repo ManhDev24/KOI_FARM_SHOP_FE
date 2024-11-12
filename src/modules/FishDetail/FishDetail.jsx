@@ -9,6 +9,7 @@ import fish from "/img/SOWA.webp";
 import LoadingModal from "../Modal/LoadingModal";
 import ComparisonModal from "../Modal/ComparisonModal";
 import { motion } from "framer-motion"
+import { toast } from "react-toastify";
 const FishDetail = () => {
   const { id } = useParams(); // Get the fish ID from the URL
   const dispatch = useDispatch();
@@ -24,9 +25,9 @@ const FishDetail = () => {
     ) {
       setSelectedItems([...selectedItems, item]);
     } else if (selectedItems.some((i) => i.id === item.id)) {
-      alert("This item has already been added to the comparison.");
+      toast.error("Koi này đã được thêm vào để so sánh");
     } else {
-      alert("You can only compare a maximum of 2 items.");
+      toast.error("Koi này đã được thêm vào để so sánh");
     }
   };
   const removeItemFromCompare = (itemToRemove) => {
@@ -41,7 +42,7 @@ const FishDetail = () => {
     if (selectedItems.length > 0) {
       setIsModalOpen(true);
     } else {
-      alert("Please select at least one fish to compare.");
+      toast.error("Hãy lựa chọn ít nhất 1 Koi để so sánh.");
     }
   };
 

@@ -57,7 +57,7 @@ const Profile = () => {
       .required('Vui lòng nhập địa chỉ')
       .transform(value => value?.trim()) // Ensure value is trimmed and handles undefined/null gracefully
       .min(10, 'Địa chỉ phải có ít nhất 10 ký tự')
-      .matches(/^[A-Za-z0-9À-ỹ\s]+$/, 'Địa chỉ không được chứa ký tự đặc biệt'),
+      .matches(/^[A-Za-z0-9À-ỹ\s,]+$/, 'Địa chỉ không được chứa ký tự đặc biệt'),
 
     phone: yup.string()
       .required('Vui lòng nhập số điện thoại')
