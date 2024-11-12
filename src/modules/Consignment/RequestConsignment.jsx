@@ -24,29 +24,34 @@ const validationSchema = Yup.object().shape({
     age: Yup.number()
         .integer('Tuổi phải là số nguyên và lớn hơn 0')
         .min(0, 'Tuổi không thể nhỏ hơn 0')
-        .max(100, 'Tuổi không thể lớn hơn 100')
+        .max(200, 'Tuổi không thể lớn hơn 200')
         .required('Tuổi là bắt buộc'),
     size: Yup.number()
         .min(10, 'Kích thước tối thiểu là 10 cm')
-        .max(100, 'Kích thước tối đa là 100 cm')
+        .max(200, 'Kích thước tối đa là 200 cm')
         .required('Kích thước là bắt buộc'),
     personality: Yup.string()
-        .required('Tính cách là bắt buộc'),
+        .required('Tính cách là bắt buộc')
+        .matches(/^[a-zA-Z0-9À-ỹ\s]+$/, 'Tính cách không được chứa ký tự đặc biệt'),
     price: Yup.number()
-        .min(1000, 'Giá tối thiểu là 1000 VND')
+        .min(10000, 'Giá tối thiểu là 1000 VND')
         .max(100000000, 'Giá tối đa là 100 triệu VND')
-        .required('Giá là bắt buộc'),
+        .required('Giá là bắt buộc và phải là số nguyên'),
     food: Yup.string()
-        .required('Thức ăn là bắt buộc'),
+        .required('Thức ăn là bắt buộc')
+        .matches(/^[a-zA-Z0-9À-ỹ\s]+$/, 'Tính cách không được chứa ký tự đặc biệt'),
     health: Yup.string()
-        .required('Tình trạng sức khỏe là bắt buộc'),
+        .required('Tình trạng sức khỏe là bắt buộc')
+        .matches(/^[a-zA-Z0-9À-ỹ\s]+$/, 'Tính cách không được chứa ký tự đặc biệt'),
     ph: Yup.string()
-        .required('pH là bắt buộc'),
+        .required('pH là bắt buộc')
+        .matches(/^[a-zA-Z0-9À-ỹ\s]+$/, 'Tính cách không được chứa ký tự đặc biệt'),
     temperature: Yup.string()
         .required('Nhiệt độ sống là bắt buộc ví dụ: 25 - 27')
         .matches(/^\d{1,3}\s*-\s*\d{1,3}$/, 'Nhiệt độ phải theo định dạng: ví dụ "25 - 27"'),
     water: Yup.string()
-        .required('Loại nước là bắt buộc'),
+        .required('Loại nước là bắt buộc')
+        .matches(/^[a-zA-Z0-9À-ỹ\s]+$/, 'Tính cách không được chứa ký tự đặc biệt'),
     pureBred: Yup.number()
         .min(0, 'Chỉ số thuần chủng tối thiểu là 0')
         .max(1, 'Chỉ số thuần chủng tối đa là 1')
@@ -54,12 +59,15 @@ const validationSchema = Yup.object().shape({
     categoryId: Yup.string()
         .required('Lựa chọn danh mục là bắt buộc'),
     name: Yup.string()
-        .required('Tên chứng chỉ là bắt buộc'),
+        .required('Tên chứng chỉ là bắt buộc')
+        .matches(/^[a-zA-Z0-9À-ỹ\s]+$/, 'Tính cách không được chứa ký tự đặc biệt'),
     notes: Yup.string()
-        .required('Ghi chú là bắt buộc'),
+        .required('Ghi chú là bắt buộc')
+        .matches(/^[a-zA-Z0-9À-ỹ\s]+$/, 'Tính cách không được chứa ký tự đặc biệt'),
     phoneNumber: Yup.string()
         .required('Số điện thoại là bắt buộc')
-        .matches(/^[0-9]{10,15}$/, 'Số điện thoại phải bao gồm 10 hoặc 15 chữ số'),
+        .matches(/^[0-9]{10,15}$/, 'Số điện thoại phải bao gồm 10 hoặc 15 chữ số')
+        .matches(/^[a-zA-Z0-9À-ỹ\s]+$/, 'Tính cách không được chứa ký tự đặc biệt'),
     consignmentType: Yup.boolean()
         .required('Loại ký gửi là bắt buộc'),
     duration: Yup.number()
@@ -321,7 +329,7 @@ const RequestConsignment = () => {
         },
 
     ];
-    
+
 
 
     const consignmentType = [
@@ -412,7 +420,7 @@ const RequestConsignment = () => {
             const x = serviceFee;
             formData.append('serviceFee', x);
             formData.append('online', 1);
-            formData.append('accountId', accountId);            
+            formData.append('accountId', accountId);
             formData.delete('duration');
             formData.append('duration', selectedPackages);
             if (selectedKoiImage instanceof File) {
@@ -426,7 +434,7 @@ const RequestConsignment = () => {
             }
 
             if (selectedKoiCertificate instanceof File) {
-            
+
                 formData.append('certImgURL', '');
             } else if (typeof selectedKoiCertificate === 'string') {
                 formData.delete('certImg')
@@ -475,16 +483,16 @@ const RequestConsignment = () => {
             message.error('Định dạng file không hợp lệ. Chỉ chấp nhận JPEG hoặc PNG.');
             return false;
         }
-    
+
         if (file.size > 20000000) {
             message.error('File quá lớn. Kích thước tối đa là 20MB.');
             return false;
         }
-    
-       
+
+
         return true;
     };
-    
+
 
     const handleUploadBothFiles = async () => {
         if (!selectedKoiImage || !selectedKoiCertificate) {
@@ -982,6 +990,10 @@ const RequestConsignment = () => {
                                         className='flex justify-center w-[350px]'
                                         rules={[{
                                             required: true, message: <span className=' relative '>Vui lòng điền tên chứng chỉ</span>
+
+                                        }, {
+                                            pattern: /^(?!.*\s{2,}).*$/, // Ensures no consecutive spaces
+                                            message: <span className='w-[500px] relative'>Độ pH không được chứa khoảng trắng liên tiếp</span>
                                         },
 
                                         ]}
@@ -1005,6 +1017,15 @@ const RequestConsignment = () => {
                                         rules={[{
                                             required: true, message: <span className='w-[500px] relative '>Vui lòng điền ghi chú</span>
                                         },
+                                        {
+                                            pattern: /^[a-zA-Z0-9À-ỹ\s,.-]+$/, // Allows letters, numbers, spaces, commas, periods, and hyphens
+                                            message: <span className='w-[500px] relative'>Ghi chú chỉ được chứa chữ, số, khoảng trắng, dấu phẩy (,), dấu chấm (.) và dấu gạch ngang (-)</span>
+                                        },
+                                        {
+                                            pattern: /^(?!.*\s{2,}).*$/, // Ensures no consecutive spaces
+                                            message: <span className='w-[500px] relative'>Ghi chú không được chứa khoảng trắng liên tiếp</span>
+                                        },
+                                     
 
                                         ]}
                                     >
@@ -1098,7 +1119,15 @@ const RequestConsignment = () => {
                                                         pattern: /^[0-9]+$/,
                                                         message: 'Tuổi phải là số nguyên!',
                                                     },
+                                                    {
+                                                        type: 'number',
+                                                        min: 0,
+                                                        max: 200,
+                                                        message: 'Tuổi phải nằm trong khoảng từ 0 đến 200!',
+                                                    },
+
                                                 ]}
+
                                             >
                                                 <Input placeholder="Nhập tuổi" />
                                             </Form.Item>
@@ -1137,6 +1166,10 @@ const RequestConsignment = () => {
                                         name="personality"
                                         rules={[
                                             { required: true, message: 'Vui lòng mô tả tính cách Koi của bạn' },
+                                            {
+                                                pattern: /^(?!.*\s{2,}).*$/, // Ensures no consecutive spaces
+                                                message: <span className='w-[500px] relative'>Tính cách không được chứa khoảng trắng liên tiếp</span>
+                                            },
                                         ]}
                                     >
                                         <TextArea
@@ -1153,6 +1186,10 @@ const RequestConsignment = () => {
                                         name="food"
                                         rules={[
                                             { required: true, message: 'Vui lòng điền thức ăn của Koi' },
+                                            {
+                                                pattern: /^(?!.*\s{2,}).*$/, // Ensures no consecutive spaces
+                                                message: <span className='w-[500px] relative'>Thức ăn chính không được chứa khoảng trắng liên tiếp</span>
+                                            },
                                         ]}
                                     >
                                         <TextArea
@@ -1169,6 +1206,10 @@ const RequestConsignment = () => {
                                         name="health"
                                         rules={[
                                             { required: true, message: 'Vui lòng điền trạng thái sức khỏe của Koi' },
+                                            {
+                                                pattern: /^(?!.*\s{2,}).*$/, // Ensures no consecutive spaces
+                                                message: <span className='w-[500px] relative'>Sức khỏe không được chứa khoảng trắng liên tiếp</span>
+                                            },
                                         ]}
                                     >
                                         <TextArea
@@ -1185,6 +1226,10 @@ const RequestConsignment = () => {
                                         name="ph"
                                         rules={[
                                             { required: true, message: 'Vui lòng điền độ pH thích hợp với Koi' },
+                                            {
+                                                pattern: /^(?!.*\s{2,}).*$/, // Ensures no consecutive spaces
+                                                message: <span className='w-[500px] relative'>Độ pH không được chứa khoảng trắng liên tiếp</span>
+                                            },
                                         ]}
                                     >
                                         <Input placeholder="7 - 7.5" />
@@ -1198,6 +1243,10 @@ const RequestConsignment = () => {
                                         name="temperature"
                                         rules={[
                                             { required: true, message: 'Vui lòng điền nhiệt độ phù hợp với Koi' },
+                                            {
+                                                pattern: /^(?!.*\s{2,}).*$/, // Ensures no consecutive spaces
+                                                message: <span className='w-[500px] relative'>Nhiệt độ không được chứa khoảng trắng liên tiếp</span>
+                                            },
                                         ]}
                                     >
                                         <Input placeholder="20 - 27" />
@@ -1211,6 +1260,10 @@ const RequestConsignment = () => {
                                         name="origin"
                                         rules={[
                                             { required: true, message: 'Vui lòng điền thông tin nguồn gốc' },
+                                            {
+                                                pattern: /^(?!.*\s{2,}).*$/, // Ensures no consecutive spaces
+                                                message: <span className='w-[500px] relative'>Nguồn gốc không được chứa khoảng trắng liên tiếp</span>
+                                            },
                                         ]}
                                     >
                                         <TextArea
@@ -1231,11 +1284,16 @@ const RequestConsignment = () => {
                                                 label="Độ cứng nước"
                                                 name="water"
                                                 rules={[
-                                                    { required: true, message: 'Vui điền độ cứng nước' },
+                                                    { required: true, message: 'Vui lòng điền độ cứng nước' },
+                                                    {
+                                                        pattern: /^(?!.*\s{2,}).*$/, // Ensures no consecutive spaces
+                                                        message: <span className='w-[500px] relative'>Độ cứng nước không được chứa khoảng trắng liên tiếp</span>
+                                                    },
+
                                                 ]}
                                             >
-                                                  <Input placeholder="Nước mềm" />
-                                               
+                                                <Input placeholder="Nước mềm" />
+
                                             </Form.Item>
                                         </Col>
 
