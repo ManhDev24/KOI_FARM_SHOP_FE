@@ -135,7 +135,7 @@ const ConsigmentManagement = () => {
       dataIndex: "action",
       key: "action",
       render: (_, record) => {
-        if (record.status === 3) {
+        if (record?.status === 3) {
           return (
             <Tooltip title="Đơn ký gửi đã bị hủy">
               <Button type="default" disabled>
@@ -143,7 +143,10 @@ const ConsigmentManagement = () => {
               </Button>
             </Tooltip>
           );
-        } else {
+        } else if (record?.status === 4) {
+          return <></>
+        }
+        else {
           return (
             <Link
               to={`/admin/consignment-management-detail/${record.consignmentID}`}
@@ -161,10 +164,10 @@ const ConsigmentManagement = () => {
     isLoading: isLoadingListConsignment,
     isError: isErrorListConsignment,
   } = useQuery({
-    queryKey: ["listOfConsignment",currentPage],
+    queryKey: ["listOfConsignment", currentPage],
     queryFn: () => ConsignmentApi.getAllConsignmentManagement(currentPage),
   });
-  
+
   const total = listOfConsignment?.data?.totalElements;
 
   return (
@@ -173,14 +176,14 @@ const ConsigmentManagement = () => {
         <Search
           placeholder="Nhập email để tìm kiếm..."
           value={[]}
-         
+
           style={{ width: 300 }}
           allowClear
         />
       </div>
       <div className="flex flex-col mt-2 w-full">
         <div className="w-full">
-      
+
         </div>
         <div className="mt-3">
           <Table

@@ -61,7 +61,7 @@ const ConsignmentManagementDetail = () => {
   } = useMutation({
     mutationFn: (data) => ConsignmentApi.rejectConsignment(consignmentId, data),
     onSuccess: () => {
-      message.success("Hủy đơn ký gữi thành cảnh");
+      message.success("Hủy đơn ký gửi thành công");
     },
     onError: (error) => {
       const errorMessage =
