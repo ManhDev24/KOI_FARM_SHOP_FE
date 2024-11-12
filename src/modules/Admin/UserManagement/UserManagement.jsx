@@ -151,7 +151,7 @@ const UserManagement = () => {
       render: (text, record) => (
         <Popconfirm
           title="Chặn người dùng này"
-          description="Bạn có chắc muốn chặn người dùng này"
+          description="Bạn có chắc chắn muốn không?"
           onConfirm={() => {
             onSubmitBanUser(record.id);
           }}
@@ -215,7 +215,7 @@ const UserManagement = () => {
   } = useMutation({
     mutationFn: (id) => AccountApi.banUser(id),
     onSuccess: () => {
-      message.success("Đã ban người dùng thành công");
+      message.success("Xử lí thành công");
       queryClient.refetchQueries({
         queryKey: ["ListUser"],
         type: "active",
