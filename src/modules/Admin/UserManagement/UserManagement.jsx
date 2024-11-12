@@ -97,7 +97,7 @@ const UserManagement = () => {
         return avatar ? (
           <Image src={avatar} alt="avatar" style={{ width: 50 }} />
         ) : (
-          "No Avatar"
+          "Không có"
         );
       },
     },
@@ -165,7 +165,7 @@ const UserManagement = () => {
             }}
             icon={<StopOutlined />}
           >
-            {record.status ? "Ban" : "Unban"}
+            {record.status ? "Chặn" : "Bỏ chặn"}
           </Button>
         </Popconfirm>
       ),
