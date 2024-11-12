@@ -73,21 +73,25 @@ const BatchComparisonModal = ({ isOpen, onClose, selectedBatches, setSelectedBat
                         removeBatch(batch);
                         setSelectedBatches(prevBatches => prevBatches.filter(b => b.batchID !== batch.batchID));
                       }}
-                      className="bg-red-500 absolute bottom-[508px] left-[202px] z-50  text-white font-bold py-1 px-4 rounded"
+                      className="bg-red-500 absolute bottom-[522px] left-[202px] z-50  text-white font-bold py-1 px-4 rounded"
                     >
                       Xóa
                     </button>
                   </Link>
                   <div className="flex justify-center mt-4">
-                    <Link>
+                    {
+                      batch.status === "1" || batch.status === 1 ?
+                        <Link>
+                          <Button
+                            onClick={() => handleAddToCart(batch)}
+                            className="w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]"
+                          >
+                            Đặt Mua
+                          </Button>
+                        </Link> :
+                       <></>
 
-                      <Button
-                        onClick={() => handleAddToCart(batch)}
-                        className="text-white bg-red-500 rounded px-4 py-1"
-                      >
-                        Đặt Mua
-                      </Button>
-                    </Link>
+                    }
                   </div>
                 </div>
               </Link>
