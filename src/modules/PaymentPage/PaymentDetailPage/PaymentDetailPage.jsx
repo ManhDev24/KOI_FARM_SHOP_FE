@@ -21,13 +21,9 @@ const PaymentDetailPage = () => {
     {
       title: "Ảnh cá",
       dataIndex: "koiImg",
-      render: (image, record) => <Image src={image || record?.batchImg} width={80} height={80} className="w-4 h-4" />,
+      render: (batchImg, record) => <Image src={batchImg || record?.batchImg} width={80} height={80} className="w-4 h-4" />,
     },
-    {
-      title: "Ảnh chứng chỉ",
-      dataIndex: "koiImg",
-      render: (_, record) => <Image src={record.certification.image || record?.batchImg} width={80} height={80} className="w-4 h-4" />,
-    },
+
     {
       title: "Chủng loại",
       dataIndex: "categoryName",
@@ -87,14 +83,7 @@ const PaymentDetailPage = () => {
       title: "Số lượng",
       dataIndex: "quantity",
     },
-    {
-      title: "Đăng ký ký gửi",
-      dataIndex: "action",
-      render: (_, record) => (
-        record.type === true ? <Button onClick={() => handleConsignment(record.koiFishId)}>Ký gửi</Button> : <></>
 
-      ),
-    }
   ];
   const navigate = useNavigate();
   // const { orderId } = useSelector((state) => state.order);
@@ -126,6 +115,37 @@ const PaymentDetailPage = () => {
     keepPreviousData: true,
   });
   const orderDetailData = orderDetail?.data;
+  console.log('orderDetailData: ', orderDetailData);
+  if (orderDetailData[0].type) {
+    const imageColumn = {
+      title: "Ảnh chứng chỉ",
+      dataIndex: "koiImg",
+      render: (_, record) => (
+        record?.certification?.image || record?.batchImg ? (
+          <Image
+            src={record.certification?.image || record?.batchImg}
+            width={80}
+            height={80}
+            className="w-4 h-4"
+          />
+        ) : (
+          <div style={{ width: 80, height: 80 }} className="flex items-center justify-center bg-gray-200">
+            No Image
+          </div>
+        )
+      ),
+    };
+    const registerConsigment = {
+      title: "Đăng ký ký gửi",
+      dataIndex: "action",
+      render: (_, record) => (
+        record.type === true ? <Button onClick={() => handleConsignment(record.koiFishId)}>Ký gửi</Button> : <></>
+
+      ),
+    }
+    columns.splice(2, 0, imageColumn);
+    columns.push(registerConsigment)
+  }
   if (orderDetailLoading) {
     return <LoadingModal />;
   }
