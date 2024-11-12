@@ -107,7 +107,7 @@ const Cart = () => {
     mutationFn: (amount) => CheckoutApi.payByVnPay(amount, "NCB", true),
 
     onSuccess: (data) => {
-      localStorage.setItem("typePayment",'true')
+      localStorage.setItem("typePayment", 'true')
       window.location.assign(data.data.paymentUrl);
     },
     onError: (error) => {
@@ -193,8 +193,8 @@ const Cart = () => {
           </h3>
           {!data.isBatch && (
             <>
-              <p>Giới tính: {data.gender ? "Nam" : "Nữ"}</p>
-              <p>Người bán: {data.seller}</p>
+              <p>Giới tính: {data.gender ? "Koi đực" : "Koi cái"}</p>
+              {data?.seller && <p>Người bán: {data.seller}</p>}
             </>
           )}
           <p>Nguồn gốc: {data.origin}</p>
@@ -261,7 +261,7 @@ const Cart = () => {
         },
       }),
       render: (data) => (
-        <div>
+        <div className="flex justify-center">
           <div
             onClick={() => handleDelete(data)}
             style={{ border: "1px solid #EA4444" }}
