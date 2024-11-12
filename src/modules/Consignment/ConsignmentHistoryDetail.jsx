@@ -192,7 +192,7 @@ const ConsignmentHistoryDetail = () => {
       align: 'center'
     },
     {
-      title: '',
+      title: 'Hành động',
       dataIndex: 'status',
       key: 'action',
       render: (status, record) => {
@@ -200,7 +200,7 @@ const ConsignmentHistoryDetail = () => {
           <button
             onClick={() => handleCancelClick(consignmentID)}
             disabled={isCancelConsignment}
-            className={`px-6 py-3 ${isCancelConsignment ? 'bg-gray-400' : 'bg-[#FA4444]'
+            className={`ms-4 px-6 py-3 ${isCancelConsignment ? 'bg-gray-400' : 'bg-[#FA4444]'
               } text-white rounded-md shadow hover:shadow-lg transition duration-200 hover:bg-red-600`}
             aria-label='Hủy ký gửi'
           >
