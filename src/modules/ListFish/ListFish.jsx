@@ -18,7 +18,7 @@ const ListFish = () => {
   const [selectStatus, setSelectStatus] = useState("");
   const [selectPrice, setSelectPrice] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [currentSize, setCurrentSize] = useState(100);
+  const [currentSize, setCurrentSize] = useState(200);
   const [currentPrice, setCurrentPrice] = useState(200000000);
   const [genderFilter, setGenderFilter] = useState(0);
   const [sortField, setSortField] = useState(0);
@@ -558,13 +558,15 @@ const ListFish = () => {
                   <div>
                     <div className="text-xl font-bold">Kích thước (cm)</div>
                     <Slider
+                      min={1}
+                      max={200}
+                      step={10}
                       marks={{
-                        0: "1 cm",
-                        20: "20 cm",
-                        40: "40 cm",
-                        60: "60 cm",
-                        80: "80 cm",
-                        100: "100 cm",
+                        20: { label: "20 cm", style: { marginLeft: '-10px' } }, // Adjust positioning as needed
+                        60: { label: "60 cm", style: { marginLeft: '-10px' } },
+                        100: { label: "100 cm", style: { marginLeft: '-10px' } },
+                        150: { label: "150 cm", style: { marginLeft: '-10px' } },
+                        200: { label: "200 cm", style: { marginLeft: '-20px' } }
                       }}
                       defaultValue={100}
                       trackStyle={{ backgroundColor: "#EA4444" }}
