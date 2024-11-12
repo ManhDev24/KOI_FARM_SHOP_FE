@@ -27,7 +27,7 @@ const FishDetail = () => {
     } else if (selectedItems.some((i) => i.id === item.id)) {
       toast.error("Koi này đã được thêm vào để so sánh");
     } else {
-      toast.error("Koi này đã được thêm vào để so sánh");
+      toast.error("Bạn chi có thể thêm tối đa 2 Koi");
     }
   };
   const removeItemFromCompare = (itemToRemove) => {
@@ -355,10 +355,7 @@ const FishDetail = () => {
                                   onClick={(e) => handleAddToCompare(card)}
                                   whileHover={{ scale: 1.1 }}
                                 >
-                                  <Button
-                                    onClick={(e) => {
-                                      handleAddToCompare(card);
-                                    }}
+                                  <Button                                   
                                     className="!p-0 !py-1 w-[100px] !border-0 h-fit hover:!border-[#FA4444] hover:!text-[#FA4444] flex justify-around"
                                   >
                                     <div className="flex justify-center items-center">

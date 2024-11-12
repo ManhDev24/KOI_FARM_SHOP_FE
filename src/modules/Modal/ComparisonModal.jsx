@@ -71,6 +71,7 @@ const ComparisonModal = ({ isOpen, onClose, selectedItems, setSelectedItems, rem
                     <p className="mb-2 ms-3">Tuổi: {item.age || "Không có thông tin"}</p>
                     <p className="mb-2 ms-3">Kích thước: {item.size || "Không có thông tin"} cm</p>
                     <p className="mb-2 ms-3">Nguồn gốc: {item.origin || "Không có thông tin"}</p>
+                   
                     <p className="mb-2 ms-3">Giống: {item.category || "Không có thông tin"}</p>
                    
                     <p className="font-bold text-lg text-center">
@@ -91,7 +92,7 @@ const ComparisonModal = ({ isOpen, onClose, selectedItems, setSelectedItems, rem
                       </button>
                     </Link>
                     {
-                      item.status === "1" ?
+                      item.status === "1" || item.status === 1 ?
                         <Link>
                           <Button
                             onClick={() => handleAddToCart(item)}
@@ -100,7 +101,7 @@ const ComparisonModal = ({ isOpen, onClose, selectedItems, setSelectedItems, rem
                             Đặt Mua
                           </Button>
                         </Link> :
-                        item.status === "3" ? <Link>
+                        item.status === "3" || item.status === 3 ? <Link>
                           <Button
                             onClick={() => handleAddToCart(item)}
                             className="w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]"

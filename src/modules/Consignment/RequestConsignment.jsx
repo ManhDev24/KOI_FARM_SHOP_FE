@@ -373,7 +373,7 @@ const RequestConsignment = () => {
             //   await new Promise((resolve) => setTimeout(resolve, 3000));
 
             const errorMessage =
-                error?.response?.data?.message || 'An error occurred, please try again!';
+                error?.response?.data?.message || 'đã có lỗi xảy ra vui lòng thử lại';
             message.error(errorMessage);
             setIsLoading(false);
         },
@@ -398,7 +398,7 @@ const RequestConsignment = () => {
             const dataProfile = JSON.parse(localStorage.getItem('user'));
             const accountId = dataProfile && dataProfile.id ? Number(dataProfile.id) : null;
             if (!accountId) {
-                throw new Error('Account ID not found in localStorage');
+                throw new Error('Không tìm thấy tài khoản');
             }
             const userAddress = dataProfile?.address;
 
@@ -437,8 +437,8 @@ const RequestConsignment = () => {
             handleConsignmentSubmit(formData);
 
         } catch (error) {
-            console.error('Error in form submission:', error);
-            toast.error('Error in form submission');
+            console.error('Lỗi nộp đơn lên hệ thống:', error);
+            toast.error('Lỗi nộp đơn lên hệ thống');
         }
     };
     const handleModalOk = () => {
