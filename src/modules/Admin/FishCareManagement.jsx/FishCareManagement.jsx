@@ -30,6 +30,7 @@ const validationSchema = yup.object().shape({
   growthStatus: yup
     .number()
     .typeError("Độ dài của cá phải là số")
+    .min(1, "Độ dài nhỏ nhất là 1").max(200, "Độ dài tối đa là 200")
     .required("Độ dài của cá khi nuôi không được để trống"),
   careEnvironment: yup
     .string()
