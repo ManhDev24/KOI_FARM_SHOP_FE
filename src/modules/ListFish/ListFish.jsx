@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux";
 import { addToCart } from "../../Redux/Slices/Cart_Slice";
 import ComparisonModal from "../Modal/ComparisonModal";
 import { motion } from 'framer-motion';
+import { toast } from "react-toastify";
 
 const ListFish = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -225,9 +226,9 @@ const ListFish = () => {
     ) {
       setSelectedItems([...selectedItems, item]);
     } else if (selectedItems.some((i) => i.id === item.id)) {
-      alert("Koi này đã được thêm vào để so sánh");
+      toast("Koi này đã được thêm vào để so sánh");
     } else {
-      alert("Bạn chi có thể thêm tối đa 2 Koi.");
+      toast.error("Bạn chi có thể thêm tối đa 2 Koi.");
     }
   };
   const removeItemFromCompare = (itemToRemove) => {
@@ -242,7 +243,7 @@ const ListFish = () => {
     if (selectedItems.length > 0) {
       setIsModalOpen(true);
     } else {
-      alert("Please select at least one fish to compare.");
+      toast.error("Hãy lựa chọn ít nhất 1 Koi để so sánh.");
     }
   };
 
@@ -716,15 +717,13 @@ const ListFish = () => {
                                       </Button>
                                       <Link>
                                         <div
-                                          className="absolute top-[3px] right-[-5px] z-50"
+                                          className="absolute top-[3px]  z-10 right-[-5px] "
                                           onClick={(e) => {
                                             handleAddToCompare(card);
                                           }}
                                         >
                                           <Button
-                                            onClick={(e) => {
-                                              handleAddToCompare(card);
-                                            }}
+                                           
                                             className="!p-0 !py-1 w-[100px] !border-0 h-fit hover:!border-[#FA4444] hover:!text-[#FA4444] flex justify-around"
                                           >
                                             <div className="flex justify-center items-center">

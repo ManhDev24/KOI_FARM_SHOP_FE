@@ -411,6 +411,7 @@ const RequestConsignment = () => {
 
             const x = serviceFee;
             formData.append('serviceFee', x);
+            formData.append('online', 1);
             formData.append('accountId', accountId);            
             formData.delete('duration');
             formData.append('duration', selectedPackages);
@@ -425,7 +426,7 @@ const RequestConsignment = () => {
             }
 
             if (selectedKoiCertificate instanceof File) {
-
+            
                 formData.append('certImgURL', '');
             } else if (typeof selectedKoiCertificate === 'string') {
                 formData.delete('certImg')

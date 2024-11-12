@@ -79,7 +79,7 @@ const Knowledge = () => {
     if (selectedItems.length > 0) {
       setIsModalOpen(true);
     } else {
-      alert('Please select at least one fish to compare.');
+      toast('Hãy lựa chọn ít nhất 1 cá.');
     }
   };
 
