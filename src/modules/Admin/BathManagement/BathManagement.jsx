@@ -33,9 +33,7 @@ import { getLocalStorage } from "../../../utils/LocalStorage";
 
 const validationSchema = yup.object().shape({
   categoryID: yup.string().required("Danh mục là bắt buộc"),
-  age: yup
-    .number()
-    .typeError("Tuổi phải là số")
+  age: yup.string()
     .required("Tuổi là bắt buộc")
     .min(0, "Tuổi không thể âm"),
   avgSize: yup.string().required("Kích thước là bắt buộc"),
@@ -50,7 +48,6 @@ const validationSchema = yup.object().shape({
     .typeError("Thuần chủng phải là số 0 hoặc 1")
     .oneOf([0, 1], "Thuần chủng phải là Thuẩn chủng hoặc F1")
     .required("Thuần chủng là bắt buộc"),
-
   food: yup.string().required("Đồ ăn là bắt buộc"),
   water: yup.string().required("Nước là bắt buộc"),
   health: yup.string().required("Sức khỏe là bắt buộc"),
@@ -314,7 +311,7 @@ const BathManagement = () => {
       dataIndex: "purebred",
       key: "purebred",
       render: (purebred) => {
-        return purebred ? "Thuần chủng" : "F1";
+        return purebred ? "F1" : "Thuần chủng";
       },
     },
     // {
@@ -603,7 +600,7 @@ const BathManagement = () => {
                 render={({ field }) => (
                   <Input
                     {...field}
-                    type="number"
+                    type="text"
                     placeholder="Nhập tuổi cá"
                     className="mt-1"
                     status={errors.age ? "error" : ""}
