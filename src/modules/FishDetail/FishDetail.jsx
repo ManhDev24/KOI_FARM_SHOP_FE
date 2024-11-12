@@ -261,7 +261,7 @@ const FishDetail = () => {
                       </div>
                       <div>Nguồn gốc: {fishDetails.origin}</div>
                       <div>Tính cách: {fishDetails.personality}</div>
-                      <div>Chế độ ăn:</div>
+                      <div>Chế độ ăn:{fishDetails.food}</div>
                       <div>Độ cứng nước: {fishDetails.water}</div>
                       <div>Nhiệp độ nước: {fishDetails.temperature} &deg;C</div>
                       <div>Độ pH: {fishDetails.ph}</div>

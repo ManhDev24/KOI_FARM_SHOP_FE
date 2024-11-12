@@ -321,24 +321,7 @@ const RequestConsignment = () => {
         },
 
     ];
-    const consignmentForm = [
-        {
-            key: "11",
-            label: "--Lựa chọn--",
-            value: "",
-        },
-        {
-            key: "12",
-            label: "Ký gửi Online",
-            value: "1",
-        },
-        {
-            key: "13",
-            label: "Ký gửi Offline",
-            value: "0",
-        },
-
-    ];
+    
 
 
     const consignmentType = [
@@ -428,8 +411,7 @@ const RequestConsignment = () => {
 
             const x = serviceFee;
             formData.append('serviceFee', x);
-            formData.append('accountId', accountId);
-            formData.append('water', 'lanh');
+            formData.append('accountId', accountId);            
             formData.delete('duration');
             formData.append('duration', selectedPackages);
             if (selectedKoiImage instanceof File) {
@@ -1245,22 +1227,14 @@ const RequestConsignment = () => {
                                             <Form.Item
                                                 labelCol={{ span: 24 }}
                                                 wrapperCol={{ span: 24 }}
-                                                label="Hình thức ký gửi"
-                                                name="online"
+                                                label="Độ cứng nước"
+                                                name="water"
                                                 rules={[
-                                                    { required: true, message: 'Vui lòng chọn hình thức ký gửi' },
+                                                    { required: true, message: 'Vui điền độ cứng nước' },
                                                 ]}
                                             >
-                                                <Select
-                                                    placeholder="Chọn hình thức ký gửi"
-                                                    onChange={handleSelectCategory}
-                                                >
-                                                    {consignmentForm.map((item) => (
-                                                        <Option key={item.key} value={item.value}>
-                                                            {item.label}
-                                                        </Option>
-                                                    ))}
-                                                </Select>
+                                                  <Input placeholder="Nước mềm" />
+                                               
                                             </Form.Item>
                                         </Col>
 
@@ -1520,7 +1494,7 @@ const RequestConsignment = () => {
                                     </Button>
                                 </Col>
                             </Row>
-                            <Row justify="center" className="mt-6">
+                            <Row justify="center" className="mt-6 mx-4">
                                 <Col>
                                     <Button
                                         onClick={() => handleDelForm()}
