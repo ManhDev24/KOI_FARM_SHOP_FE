@@ -330,8 +330,8 @@ const Profile = () => {
         setValue('password', '');
         message.success('Mật khẩu đã được cập nhật thành công');
       } catch (error) {
-      
-        
+
+
       }
     }
   };
@@ -417,206 +417,208 @@ const Profile = () => {
 
   return (
     <>
-      <div className="w-full">
-        <div className="w-[950px] mx-auto my-0">
-          <Breadcrumb separator=">" className="flex items-center font-bold text-lg m-3">
-            <Breadcrumb.Item>
-              <Link to="/" style={{ color: "#EA4444" }}>
-                Trang chủ
-              </Link>
-            </Breadcrumb.Item>
-            <Breadcrumb.Item>
-              <Link style={{ color: "#EA4444" }}>
-                Thông tin cá nhân
-              </Link>
-            </Breadcrumb.Item>
-          </Breadcrumb>
+      <div className='h-[80vh]'>
+        <div className="w-full h-[60vh">
+          <div className="w-[950px] mx-auto my-0">
+            <Breadcrumb separator=">" className="flex items-center font-bold text-lg m-3">
+              <Breadcrumb.Item>
+                <Link to="/" style={{ color: "#EA4444" }}>
+                  Trang chủ
+                </Link>
+              </Breadcrumb.Item>
+              <Breadcrumb.Item>
+                <Link style={{ color: "#EA4444" }}>
+                  Thông tin cá nhân
+                </Link>
+              </Breadcrumb.Item>
+            </Breadcrumb>
+          </div>
         </div>
-      </div>
 
-      <div className="w-full flex justify-center">
-        <div className="w-full max-w-5xl px-4 py-8 shadow flex flex-col md:flex-row justify-center items-start">
-          <div className="w-full h-full flex flex-col items-end pt-[15px] rounded-[10px]">
-            <div className="w-full h-[50px]">
-              <div className="text-black text-2xl h-[50px] flex items-center font-['Arial'] ps-2 shadow">
-                Ảnh Đại Diện
+        <div className="w-full flex justify-center">
+          <div className="w-full max-w-5xl px-4  py-8 shadow flex flex-col md:flex-row justify-center items-start">
+            <div className="w-full h-full flex flex-col items-end pt-[15px] rounded-[10px]">
+              <div className="w-full h-[50px]">
+                <div className="text-black text-2xl h-[50px] flex items-center font-['Arial'] ps-2 shadow">
+                  Ảnh Đại Diện
+                </div>
               </div>
-            </div>
-            <div className="w-full h-[315px] bg-white shadow flex justify-center items-center">
-              <div className="flex flex-col">
-                <Image
-                  style={{
-                    borderRadius: "200px",
-                    objectFit: "cover",
-                  }} shape="circle"
-                  src={avatarPreview}
-                  width={200}
-                  height={200} />
+              <div className="w-full h-[315px] bg-white shadow flex justify-center items-center">
+                <div className="flex flex-col">
+                  <Image
+                    style={{
+                      borderRadius: "200px",
+                      objectFit: "cover",
+                    }} shape="circle"
+                    src={avatarPreview}
+                    width={200}
+                    height={200} />
 
-                <div className="file-input-wrapped flex justify-center items-center mt-4">
-                  <input
-                    type="file"
-                    id="file-input"
-                    name="avatar"
-                    accept="image/jpeg,image/png"
-                    style={{ display: 'none' }}
-                    onChange={handleFileChange}
-                  />
-                  <label
-                    htmlFor="file-input"
-                    className="upload-button flex justify-center items-center px-2 rounded-[10px] bg-[#FFFFFF] border-2 border-[#FA4444] cursor-pointer"
-                  >
-                    <p>Cập nhật ảnh đại diện</p>
-                  </label>
+                  <div className="file-input-wrapped flex justify-center items-center mt-4">
+                    <input
+                      type="file"
+                      id="file-input"
+                      name="avatar"
+                      accept="image/jpeg,image/png"
+                      style={{ display: 'none' }}
+                      onChange={handleFileChange}
+                    />
+                    <label
+                      htmlFor="file-input"
+                      className="upload-button flex justify-center items-center px-2 rounded-[10px] bg-[#FFFFFF] border-2 border-[#FA4444] cursor-pointer"
+                    >
+                      <p>Cập nhật ảnh đại diện</p>
+                    </label>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Thông tin cá nhân */}
-          <div className="w-full flex flex-col items-center md:items-end pt-[15px] rounded-md">
-            <div className="w-[654px]">
-              <div className="text-black w-[600px] text-2xl h-[50px] flex items-center font-['Arial'] mb-4 ps-2 shadow">
-                Thông tin cá nhân
+            {/* Thông tin cá nhân */}
+            <div className="w-full flex flex-col items-center md:items-end pt-[15px] rounded-md">
+              <div className="w-[654px]">
+                <div className="text-black w-[600px] text-2xl h-[50px] flex items-center font-['Arial'] mb-4 ps-2 ">
+                  Thông tin cá nhân
+                </div>
               </div>
-            </div>
-            <AntForm className=' ms-10' >
-              {/* Họ và tên */}
-              {renderFormItem('Họ và tên', 'fullName', 'Nhập họ và tên')}
+              <AntForm className=' ms-10' >
+                {/* Họ và tên */}
+                {renderFormItem('Họ và tên', 'fullName', 'Nhập họ và tên')}
 
-              {/* Email */}
-              {renderFormItem('Email', 'email', 'Nhập email')}
+                {/* Email */}
+                {renderFormItem('Email', 'email', 'Nhập email')}
 
-              {/* Mật khẩu */}
-              <AntForm.Item label="Mật khẩu" className='w-[600px]' validateStatus={errors.password ? 'error' : ''} help={((errors.password?.message) === 'Nhập lại pass word') ? "Sai mật khẩu vui lòng thử lại!" : ' '}>
+                {/* Mật khẩu */}
+                <AntForm.Item label="Mật khẩu" className='w-[600px]' validateStatus={errors.password ? 'error' : ''} help={((errors.password?.message) === 'Nhập lại pass word') ? "Sai mật khẩu vui lòng thử lại!" : ' '}>
 
-                {pass === null ? (
-                  <div className="text-black text-xl font-['Arial']">
-                    Tài khoản đăng nhập bằng Google
-                  </div>
-                ) : (
-                  <>
-                    {!isEditing.password ? (
-                      <Button type="link" onClick={() => setIsEditing((prevState) => ({ ...prevState, password: true }))}>
-                        Chỉnh sửa mật khẩu
-                      </Button>
-                    ) : !oldPasswordCorrect ? (
-                      <>
-                        {!passwordChanged ? (
-                          <>
+                  {pass === null ? (
+                    <div className="text-black text-xl font-['Arial']">
+                      Tài khoản đăng nhập bằng Google
+                    </div>
+                  ) : (
+                    <>
+                      {!isEditing.password ? (
+                        <Button type="link" onClick={() => setIsEditing((prevState) => ({ ...prevState, password: true }))}>
+                          Chỉnh sửa mật khẩu
+                        </Button>
+                      ) : !oldPasswordCorrect ? (
+                        <>
+                          {!passwordChanged ? (
+                            <>
+                              <Controller
+                                name="password"
+
+                                control={control}
+                                render={({ field }) => (
+                                  <Input.Password
+                                    {...field}
+                                    className='w-64 flex'
+                                    placeholder="Nhập mật khẩu cũ"
+                                    iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                                  />
+
+                                )} onChange={(e) => {
+                                  field.onChange(e);
+                                  clearErrors('password'); // Xóa lỗi khi người dùng nhập
+                                }}
+
+                              />
+                              <Button
+                                type="primary"
+                                onClick={() => {
+                                  handleOldPasswordSubmit();
+
+                                  setValue('newPassword', null);   // Reset trường newPassword
+                                  setValue('confirmPassword', null);  // Reset trường confirmPassword
+                                }}>
+                                Xác nhận mật khẩu cũ
+                              </Button>
+
+                              <Button className='ms-1' onClick={() => {
+                                setValue('password', '')
+                                clearErrors('password');
+                                handleCancel('password')
+
+                              }}>Hủy</Button>
+                            </>
+                          ) : (
+                            <Button type="link" onClick={() => setPasswordChanged(false)}>
+                              Đổi mật khẩu
+                            </Button>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <AntForm.Item
+                            label="Mật khẩu mới"
+                            validateStatus={errors.newPassword ? 'error' : ''}
+                            help={<span className='absolute top-16 right-20 w-full'>{errors.newPassword?.message}</span>}
+                            className='h-16'
+                            labelCol={{ span: 4 }} // Adjusts label width
+                            wrapperCol={{ span: 16 }} // Adjusts input width
+                          >
                             <Controller
-                              name="password"
-
+                              name="newPassword"
                               control={control}
                               render={({ field }) => (
                                 <Input.Password
                                   {...field}
-                                  className='w-64 flex'
-                                  placeholder="Nhập mật khẩu cũ"
+                                  placeholder="Nhập mật khẩu mới"
+                                  className=' w-64 relative top-8 right-20 '
                                   iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
                                 />
-
-                              )} onChange={(e) => {
-                                field.onChange(e);
-                                clearErrors('password'); // Xóa lỗi khi người dùng nhập
-                              }}
-
+                              )}
                             />
-                            <Button
-                              type="primary"
-                              onClick={() => {
-                                handleOldPasswordSubmit();
+                          </AntForm.Item>
 
-                                setValue('newPassword', null);   // Reset trường newPassword
-                                setValue('confirmPassword', null);  // Reset trường confirmPassword
-                              }}>
-                              Xác nhận mật khẩu cũ
-                            </Button>
+                          <AntForm.Item
+                            label="Xác nhận mật khẩu mới"
+                            validateStatus={errors.confirmPassword ? 'error' : ''}
+                            help={<span className='absolute top-16 right-[154px] w-full'>{errors.confirmPassword?.message}</span>}
+                            className='h-16'
+                          >
+                            <Controller
+                              name="confirmPassword"
+                              control={control}
+                              render={({ field }) => (
+                                <Input.Password
+                                  {...field}
+                                  placeholder="Xác nhận mật khẩu mới"
+                                  className='w-64 relative top-8 right-[154px]'
+                                  iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+                                />
+                              )}
+                            />
+                          </AntForm.Item>
 
-                            <Button className='ms-1' onClick={() => {
-                              setValue('password', '')
-                              clearErrors('password');
-                              handleCancel('password')
+                          <Button className='ms-2' type="primary" onClick={() => {
+                            handleSavePassword();
 
-                            }}>Hủy</Button>
-                          </>
-                        ) : (
-                          <Button type="link" onClick={() => setPasswordChanged(false)}>
-                            Đổi mật khẩu
-                          </Button>
-                        )}
-                      </>
-                    ) : (
-                      <>
-                        <AntForm.Item
-                          label="Mật khẩu mới"
-                          validateStatus={errors.newPassword ? 'error' : ''}
-                          help={<span className='absolute top-16 right-20 w-full'>{errors.newPassword?.message}</span>}
-                          className='h-16'
-                          labelCol={{ span: 4 }} // Adjusts label width
-                          wrapperCol={{ span: 16 }} // Adjusts input width
-                        >
-                          <Controller
-                            name="newPassword"
-                            control={control}
-                            render={({ field }) => (
-                              <Input.Password
-                                {...field}
-                                placeholder="Nhập mật khẩu mới"
-                                className=' w-64 relative top-8 right-20 '
-                                iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-                              />
-                            )}
-                          />
-                        </AntForm.Item>
+                          }}>Lưu thay đổi</Button>
 
-                        <AntForm.Item
-                          label="Xác nhận mật khẩu mới"
-                          validateStatus={errors.confirmPassword ? 'error' : ''}
-                          help={<span className='absolute top-16 right-[154px] w-full'>{errors.confirmPassword?.message}</span>}
-                          className='h-16'
-                        >
-                          <Controller
-                            name="confirmPassword"
-                            control={control}
-                            render={({ field }) => (
-                              <Input.Password
-                                {...field}
-                                placeholder="Xác nhận mật khẩu mới"
-                                className='w-64 relative top-8 right-[154px]'
-                                iconRender={visible => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
-                              />
-                            )}
-                          />
-                        </AntForm.Item>
-
-                        <Button className='ms-2' type="primary" onClick={() => {
-                          handleSavePassword();
-                          
-                        }}>Lưu thay đổi</Button>
-
-                        <Button className='ms-1' onClick={() => {
-                          handleCancel('password');
-                          clearErrors('newPassword')
-                          clearErrors('confirmPassword')
-                          setValue('password', '');
-                        }}>Hủy</Button>
-                      </>
-                    )}
-                  </>
-                )}
-              </AntForm.Item>
+                          <Button className='ms-1' onClick={() => {
+                            handleCancel('password');
+                            clearErrors('newPassword')
+                            clearErrors('confirmPassword')
+                            setValue('password', '');
+                          }}>Hủy</Button>
+                        </>
+                      )}
+                    </>
+                  )}
+                </AntForm.Item>
 
 
-              {/* Địa chỉ */}
-              {renderFormItem('Địa chỉ', 'address', 'Nhập địa chỉ')}
+                {/* Địa chỉ */}
+                {renderFormItem('Địa chỉ', 'address', 'Nhập địa chỉ')}
 
-              {/* Số điện thoại */}
-              {renderFormItem('Số điện thoại', 'phone', 'Nhập số điện thoại')}
-            </AntForm>
+                {/* Số điện thoại */}
+                {renderFormItem('Số điện thoại', 'phone', 'Nhập số điện thoại')}
+              </AntForm>
+            </div>
           </div>
-        </div>
-      </div >
+        </div >
+      </div>
     </>
   );
 };

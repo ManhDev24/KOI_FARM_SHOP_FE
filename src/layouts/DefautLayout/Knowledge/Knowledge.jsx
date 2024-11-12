@@ -56,7 +56,7 @@ const Knowledge = () => {
       toast('Bạn chỉ có thể so sánh tối đa 2 mục.');
     }
   };
-  
+
 
   const handleAddToCart = (fish) => {
     dispatch(
@@ -161,7 +161,7 @@ const Knowledge = () => {
                               <div className="my-[10px] text-[20px] font-bold">
                                 {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(card.price)}
                               </div>
-                              <Link>
+                              {card.status === 1 ? <Link>
                                 <Button
                                   onClick={() => {
                                     handleAddToCart(card);
@@ -170,11 +170,20 @@ const Knowledge = () => {
                                 >
                                   Đặt Mua
                                 </Button>
-                              </Link>
+                              </Link> : card.status === 3 ? <Link>
+                                <Button
+                                  onClick={() => {
+                                    handleAddToCart(card);
+                                  }}
+                                  className="w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]"
+                                >
+                                  Đặt Mua
+                                </Button>
+                              </Link> : <></>}
                               <Link>
                                 <div
-                                  className="absolute top-[10px] right-[10px] z-50"
-                                  
+                                  className="absolute top-[10px] right-[10px] z-10"
+
                                 >
                                   <Button
                                     onClick={() => {
@@ -210,7 +219,7 @@ const Knowledge = () => {
                   </Link>
                 ))
               ) : (
-                <p>No Koi fish data in this category.</p>
+                <p>Cá tạm thời không khả dụng.</p>
               )}
             </Row>
           </Flex>
@@ -220,7 +229,7 @@ const Knowledge = () => {
 
       {/* Comparison Modal */}
       <ComparisonModal
-       
+
         isOpen={isModalOpen}
         onClose={handleModalClose}
         selectedItems={selectedItems}

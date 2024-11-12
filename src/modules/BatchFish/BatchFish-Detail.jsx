@@ -110,7 +110,7 @@ const BatchFishDetail = () => {
                     <Image
                       src={selectedImage}
                       width={250}
-                      height={350}
+                      height={400}
                       // {selectedImage}  // Use the selected image from the carousel
                       className="w-[250px] h-[350px] rounded-[10px]"
                       alt={fishDetails.category || 'Koi Fish'}
@@ -120,7 +120,7 @@ const BatchFishDetail = () => {
                 <>
                   <div className=''>
                     <div className="col-span-2">
-                      <div className='w-[340px] h-[350px] rounded-[10px] border-2 border-[#FA4444]'>
+                      <div className='w-[340px] h-[400px] rounded-[10px] border-2 border-[#FA4444]'>
                         <div className='text-center my-2 text-[#FA4444] font-bold'>
                           Lô {' '}
                           {fishDetails.categoryName} {" "}
@@ -132,6 +132,7 @@ const BatchFishDetail = () => {
                           <div className='mb-2'>Giống: {fishDetails.categoryName}</div>
                           <div className='mb-2'>Tuổi: {fishDetails.age}</div>
                           <div className='mb-2'>Kích thước: {fishDetails.avgSize} </div>
+                          <div className='mb-2'>Số lượng: {fishDetails.quantity} </div>
                           <div className='mb-2'>Thức ăn: {fishDetails.food || 'Không có thông tin'}</div>
                           <div className=''>Nguồn gốc: {fishDetails.origin}</div>
                           <div className=''>

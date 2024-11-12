@@ -257,7 +257,7 @@ const Navbar = () => {
     <>
       {/* navbar */}
       <div
-        className="Navbar md:h-[450px] h-[450px] sm:h-[450px]    lg:h-[150px] xl:grid-cols-10  grid lg:grid-cols-10  2xl:grid-cols-10   
+        className="Navbar md:h-[450px] h-[450px] sm:h-[450px]  z-50  lg:h-[150px] xl:grid-cols-10  grid lg:grid-cols-10  2xl:grid-cols-10   
       w-full   lg:w-full xl:h-[150px]  2xl:h-[150px]   sm:col-span-12"
       >
         {/* logo */}
