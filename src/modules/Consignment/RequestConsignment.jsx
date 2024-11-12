@@ -205,7 +205,7 @@ const RequestConsignment = () => {
 
                     const pureBredValue = koiData.purebred?.toString() || '';
                     setSelectedPureBred(pureBredValue);
-                    setInputPrice(koiData.price);
+                    
 
                     setImageSrc(koiData.koiImage);
                     setImageSrcCer(certificate.data.image);
@@ -227,7 +227,7 @@ const RequestConsignment = () => {
                         health: koiData.health,
                         ph: koiData.ph,
                         temperature: koiData.temperature,
-                        price: koiData.price,
+                        
                         name: certificate.data.name,
                     });
                 } catch (error) {
