@@ -115,8 +115,11 @@ const PaymentDetailPage = () => {
     keepPreviousData: true,
   });
   const orderDetailData = orderDetail?.data;
-  console.log('orderDetailData: ', orderDetailData);
-  if (orderDetailData[0].type) {
+  console.log('orderDetail: ', orderDetail);
+  const checkType = orderDetail?.data[0]?.type
+
+  console.log('checkType: ', checkType);
+  if (checkType) {
     const imageColumn = {
       title: "Ảnh chứng chỉ",
       dataIndex: "koiImg",
@@ -156,7 +159,7 @@ const PaymentDetailPage = () => {
 
   return (
     <div>
-      <div className="container flex justify-center items-center mx-auto">
+      <div className="container flex justify-center items-center mx-auto m-20">
         <Table columns={columns} dataSource={orderDetailData} />
       </div>
     </div>
