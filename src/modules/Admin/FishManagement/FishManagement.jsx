@@ -36,8 +36,8 @@ import _ from "lodash";
 
 const validationSchema = yup.object().shape({
   category: yup.string().required("Danh mục là bắt buộc"),
-  age: yup.number().typeError("Tuổi phải là số").required("Tuổi là bắt buộc").min(0, "Tuổi không thể âm").max(200,"Tuổi tối đa là 200 tuổi"),
-  size: yup.number().typeError("Kích thước phải là số").required("Kích thước là bắt buộc").min(0, "Kích thước không thể âm").max(200,"Kích thước tối đa là 200 cm"),
+  age: yup.number().typeError("Tuổi phải là số").required("Tuổi là bắt buộc").min(0, "Tuổi không thể âm").max(200, "Tuổi tối đa là 200 tuổi"),
+  size: yup.number().typeError("Kích thước phải là số").required("Kích thước là bắt buộc").min(0, "Kích thước không thể âm").max(200, "Kích thước tối đa là 200 cm"),
   personality: yup.string().required("Tính cách là bắt buộc"),
   origin: yup.string().required("Nguồn gốc là bắt buộc"),
   price: yup.number().typeError("Giá phải là số").required("Giá là bắt buộc").min(0, "Giá không thể âm"),
@@ -49,6 +49,8 @@ const validationSchema = yup.object().shape({
   health: yup.string().required("Sức khỏe là bắt buộc"),
   temperature: yup.string().required("Nhiệt độ nước là bắt buộc"),
   ph: yup.string().required("pH nước là bắt buộc"),
+  koiImage: yup.mixed().required("Hình ảnh Koi là bắt buộc")
+
 });
 
 const FishManagement = () => {
@@ -495,7 +497,6 @@ const FishManagement = () => {
       temperature: record.temperature,
       ph: record.ph,
       certificate: record.certificate,
-      koiImage: record?.koiImage,
     });
   };
 
@@ -761,18 +762,18 @@ const FishManagement = () => {
               <Controller
                 name="category"
                 control={control}
-                defaultValue="" 
+                defaultValue=""
                 render={({ field }) => (
                   <Select
                     {...field}
-                    value={field.value === "" ? undefined : field.value} 
+                    value={field.value === "" ? undefined : field.value}
                     style={{ width: "100%", marginTop: "8px" }}
                     placeholder="--Danh mục--"
                     options={ListCategory?.map((item) => ({
                       value: item.id,
-                      label: item.categoryName, 
+                      label: item.categoryName,
                     }))}
-                    allowClear 
+                    allowClear
                   />
                 )}
               />
