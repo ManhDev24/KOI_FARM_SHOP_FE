@@ -261,7 +261,7 @@ const Cart = () => {
         },
       }),
       render: (data) => (
-        <div>
+        <div className="flex justify-center">
           <div
             onClick={() => handleDelete(data)}
             style={{ border: "1px solid #EA4444" }}
