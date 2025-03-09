@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import './introduction.css';
-import { Link } from 'react-router-dom';
-import FishApi from '../../../apis/Fish.api';
-import ComparisonModal from '../../../modules/Modal/ComparisonModal';
-import { Button, Col, Flex, Row } from 'antd';
-import { useDispatch } from 'react-redux';
-import { addToCart } from '../../../Redux/Slices/Cart_Slice';
-import LoadingModal from '../../../modules/Modal/LoadingModal';
-import { motion } from 'framer-motion'
-import { toast } from 'react-toastify';
+import React, { useState, useEffect } from "react";
+import "./introduction.css";
+import { Link } from "react-router-dom";
+import FishApi from "../../../apis/Fish.api";
+import ComparisonModal from "../../../modules/Modal/ComparisonModal";
+import { Button, Col, Flex, Row } from "antd";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../../../Redux/Slices/Cart_Slice";
+import LoadingModal from "../../../modules/Modal/LoadingModal";
+import { motion } from "framer-motion";
+import { toast } from "react-toastify";
 const Knowledge = () => {
   const [categoryResponses, setCategoryResponses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,8 +20,8 @@ const Knowledge = () => {
 
   // Helper function to handle image paths
   const getImageUrl = (imgPath) => {
-    if (!imgPath) return '/img/default-banner.jpg'; // Default image if there's no cateImg
-    return imgPath.startsWith('http') ? imgPath : imgPath.replace('./', '/');
+    if (!imgPath) return "/img/default-banner.jpg"; // Default image if there's no cateImg
+    return imgPath.startsWith("http") ? imgPath : imgPath.replace("./", "/");
   };
 
   // Fetch fish data from API
@@ -32,12 +32,12 @@ const Knowledge = () => {
 
         const categoryResponses = data.categoryReponses;
         if (!Array.isArray(categoryResponses)) {
-          throw new Error('categoryReponses không phải là mảng');
+          throw new Error("categoryReponses không phải là mảng");
         }
         setCategoryResponses(categoryResponses);
       } catch (error) {
-        console.error('Lỗi khi lấy dữ liệu từ API:', error);
-        setError(error.message || 'Đã xảy ra lỗi khi lấy danh mục.');
+        console.error("Lỗi khi lấy dữ liệu từ API:", error);
+        setError(error.message || "Đã xảy ra lỗi khi lấy danh mục.");
       } finally {
         setLoading(false);
       }
@@ -46,17 +46,18 @@ const Knowledge = () => {
     fetchKoiFishData();
   }, []);
 
-
   const handleAddToCompare = (item) => {
-    if (selectedItems.length < 2 && !selectedItems.some((i) => i.id === item.id)) {
+    if (
+      selectedItems.length < 2 &&
+      !selectedItems.some((i) => i.id === item.id)
+    ) {
       setSelectedItems([...selectedItems, item]); // Thêm mục vào danh sách so sánh
     } else if (selectedItems.some((i) => i.id === item.id)) {
-      toast('Mục này đã được thêm vào danh sách so sánh.');
+      toast("Mục này đã được thêm vào danh sách so sánh.");
     } else {
-      toast('Bạn chỉ có thể so sánh tối đa 2 mục.');
+      toast("Bạn chỉ có thể so sánh tối đa 2 mục.");
     }
   };
-
 
   const handleAddToCart = (fish) => {
     dispatch(
@@ -68,21 +69,20 @@ const Knowledge = () => {
     );
   };
 
-
   const removeItemFromCompare = (itemToRemove) => {
-    const updatedItems = selectedItems.filter((item) => item.id !== itemToRemove.id);
+    const updatedItems = selectedItems.filter(
+      (item) => item.id !== itemToRemove.id
+    );
     setSelectedItems(updatedItems);
   };
-
 
   const handleCompare = () => {
     if (selectedItems.length > 0) {
       setIsModalOpen(true);
     } else {
-      toast('Hãy lựa chọn ít nhất 1 cá.');
+      alert("Please select at least one fish to compare.");
     }
   };
-
 
   const handleModalClose = () => {
     setIsModalOpen(false);
@@ -93,31 +93,39 @@ const Knowledge = () => {
   }
 
   return (
-    <div className='group'>
+    <div className="group">
       {/* Title */}
-      <Row justify='center'>
-        <div className='w-[950px] h-[50px] bg-white text-[36px] text-[#FA4444] text-center border border-3 border-[#FA4444] my-[80px]'>
-          <span className='h-[38px]' style={{ fontFamily: 'Merriweather, serif' }}>KIẾN THỨC CÁ KOI</span>
+      <Row justify="center">
+        <div className="w-[950px] h-[50px] bg-white text-[36px] text-[#FA4444] text-center border border-3 border-[#FA4444] my-[80px]">
+          <span
+            className="h-[38px]"
+            style={{ fontFamily: "Merriweather, serif" }}
+          >
+            KIẾN THỨC CÁ KOI
+          </span>
         </div>
       </Row>
 
       {/* Display each category with a banner and Koi fish list */}
       {categoryResponses.map((category, index) => (
-        <div key={index} className='group'>
+        <div key={index} className="group">
           {/* Banner for each category */}
-          <Row justify='center' style={{ marginBottom: '80px' }}>
+          <Row justify="center" style={{ marginBottom: "80px" }}>
             <Col>
               <img
                 src={getImageUrl(category.cateImg)}
                 alt={`Banner ${index}`}
-                className='w-[2000px] h-[525px]'
+                className="w-[2000px] h-[525px]"
               />
             </Col>
           </Row>
 
-          {/* Koi fish list in the category */}
           <Flex horizontal className="justify-center">
-            <Row gutter={[16, 16]} justify="center" className="w-[950px] grid grid-cols-3">
+            <Row
+              gutter={[16, 16]}
+              justify="center"
+              className="w-[950px] grid grid-cols-3"
+            >
               {category.koiFishList && category.koiFishList.length > 0 ? (
                 category.koiFishList.map((card) => (
                   <Link to={`/fish-detail/${card.id}`} key={card.id}>
@@ -132,7 +140,11 @@ const Knowledge = () => {
                         <div className="relative w-[250px]">
                           {/* Tag */}
                           <div className="absolute w-[86px] bg-[#FFFFFF] rounded-ee-[10px] rounded-tl-[5px] border-[#FA4444] border-2 text-center text-[#FA4444]">
-                            {card.status === 1 ? 'Đang bán' : card.status === 3 ? 'ký gửi' : 'Đã bán'}
+                            {card.status === 1
+                              ? "Đang bán"
+                              : card.status === 3
+                              ? "ký gửi"
+                              : "Đã bán"}
                           </div>
                           {/* Koi fish image */}
                           <div className="rounded-[10px]">
@@ -150,41 +162,55 @@ const Knowledge = () => {
                           </h1>
                           <div className="my-[10px] mx-[10px]">
                             <div className="flex flex-col">
-                              <div className="h-7">Người bán: {card.origin}</div>
-                              <div className="h-6">Giới tính: {card.gender ? "Koi Cái" : "Koi đực"}</div>
+                              <div className="h-7">
+                                Người bán: {card.origin}
+                              </div>
+                              <div className="h-6">
+                                Giới tính: {card.gender ? "Koi Cái" : "Koi đực"}
+                              </div>
                               <div className="h-6">Tuổi: {card.age}</div>
-                              <div className="h-6">Kích thước: {card.size}cm</div>
-                              <div className="h-6">Nguồn gốc: {card.origin}</div>
+                              <div className="h-6">
+                                Kích thước: {card.size}cm
+                              </div>
+                              <div className="h-6">
+                                Nguồn gốc: {card.origin}
+                              </div>
                               <div className="h-6">Giống: {card.category}</div>
                             </div>
                             <div className="text-center">
                               <div className="my-[10px] text-[20px] font-bold">
-                                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(card.price)}
+                                {new Intl.NumberFormat("vi-VN", {
+                                  style: "currency",
+                                  currency: "VND",
+                                }).format(card.price)}
                               </div>
-                              {card.status === 1 ? <Link>
-                                <Button
-                                  onClick={() => {
-                                    handleAddToCart(card);
-                                  }}
-                                  className="w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]"
-                                >
-                                  Đặt Mua
-                                </Button>
-                              </Link> : card.status === 3 ? <Link>
-                                <Button
-                                  onClick={() => {
-                                    handleAddToCart(card);
-                                  }}
-                                  className="w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]"
-                                >
-                                  Đặt Mua
-                                </Button>
-                              </Link> : <></>}
+                              {card.status === 1 ? (
+                                <Link>
+                                  <Button
+                                    onClick={() => {
+                                      handleAddToCart(card);
+                                    }}
+                                    className="w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]"
+                                  >
+                                    Đặt Mua
+                                  </Button>
+                                </Link>
+                              ) : card.status === 3 ? (
+                                <Link>
+                                  <Button
+                                    onClick={() => {
+                                      handleAddToCart(card);
+                                    }}
+                                    className="w-[138px] h-[40px] text-[#FFFFFF] bg-[#FA4444] rounded-[10px]"
+                                  >
+                                    Đặt Mua
+                                  </Button>
+                                </Link>
+                              ) : (
+                                <></>
+                              )}
                               <Link>
-                                <div
-                                  className="absolute top-[10px] right-[10px] z-10"
-
-                                >
+                                <div className="absolute top-[10px] right-[10px] z-50">
                                   <Button
                                     onClick={() => {
                                       handleAddToCompare(card);
@@ -206,7 +232,9 @@ const Knowledge = () => {
                                           />
                                         </g>
                                       </svg>
-                                      <h5 className="mx-1 my-0 !text-center">So sánh</h5>
+                                      <h5 className="mx-1 my-0 !text-center">
+                                        So sánh
+                                      </h5>
                                     </div>
                                   </Button>
                                 </div>
@@ -224,12 +252,10 @@ const Knowledge = () => {
             </Row>
           </Flex>
         </div>
-      ))
-      }
+      ))}
 
       {/* Comparison Modal */}
       <ComparisonModal
-
         isOpen={isModalOpen}
         onClose={handleModalClose}
         selectedItems={selectedItems}
@@ -239,12 +265,14 @@ const Knowledge = () => {
 
       <Button
         onClick={handleCompare}
-        className={`bg-[#FA4444] text-white fixed z-50 left-[100px] top-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${selectedItems.length === 0 ? 'disabled' : ''}`}
+        className={`bg-[#FA4444] text-white fixed z-50 left-[100px] top-[200px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${
+          selectedItems.length === 0 ? "disabled" : ""
+        }`}
         disabled={selectedItems.length === 0}
       >
         Xem So Sánh ({selectedItems.length}) Cá Koi
       </Button>
-    </div >
+    </div>
   );
 };
 
