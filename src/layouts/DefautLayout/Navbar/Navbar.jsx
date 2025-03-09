@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-
-import { Button, Dropdown, Menu, Modal } from "antd";
+import { Button, Dropdown, Modal } from "antd";
 import "./navbar.css";
 import { Link, useNavigate } from "react-router-dom";
 import { getLocalStorage } from "../../../utils/LocalStorage";
@@ -11,9 +10,7 @@ import logo from "/img/logo.png";
 import Vector from "/img/Vector.png";
 import { AuthApi } from "../../../apis/Auth.api";
 import { setSelectedCategory } from "../../../Redux/Slices/FishList_Slice";
-import { data } from "autoprefixer";
 import LoadingModal from "../../../modules/Modal/LoadingModal";
-import { motion } from "framer-motion";
 import { jwtDecode } from "jwt-decode";
 import { useQuery } from "@tanstack/react-query";
 
@@ -29,11 +26,15 @@ const Navbar = () => {
       return null;
     }
   };
-  const { data: checkRoleUser, isLoading: isCheckRoleLoading, isError: isErrorCheckRole } = useQuery({
-    queryKey: ['checkRole'],
-    queryFn: () => AuthApi.checkRoleOfUser()
-  })
-  console.log('checkRoleUser: ', checkRoleUser);
+  const {
+    data: checkRoleUser,
+    isLoading: isCheckRoleLoading,
+    isError: isErrorCheckRole,
+  } = useQuery({
+    queryKey: ["checkRole"],
+    queryFn: () => AuthApi.checkRoleOfUser(),
+  });
+  console.log("checkRoleUser: ", checkRoleUser);
   const token = user?.accessToken;
 
   let decoded = null;
@@ -45,7 +46,6 @@ const Navbar = () => {
       console.error("Invalid token", error);
     }
   }
-
 
   const [profileData, setProfileData] = useState(null);
 
@@ -115,6 +115,9 @@ const Navbar = () => {
     fetchKoiCategories();
     handleCategorySelection();
   }, []);
+  const handlePreload = () => {
+    import("../../../modules/ListFish/ListFish");
+  };
 
   if (loading) return LoadingModal;
   if (error) return <p>Error: {error}</p>;
@@ -122,7 +125,12 @@ const Navbar = () => {
     {
       key: "9",
       label: (
-        <Link to="/koiList" target="_self" rel="noopener noreferrer">
+        <Link
+          onMouseMove={handlePreload}
+          to="/koiList"
+          target="_self"
+          rel="noopener noreferrer"
+        >
           Cá Koi Nhật
         </Link>
       ),
@@ -138,12 +146,10 @@ const Navbar = () => {
   ];
 
   const newsMenuItems = [
-
     {
       key: "2",
       label: <Link to={"/list-blog"}>Tin tức cá Koi</Link>,
     },
-
   ];
 
   const profileMenuItems = [
@@ -159,14 +165,13 @@ const Navbar = () => {
       key: "6",
       label: <Link to="/payment-history">Lịch sử mua hàng</Link>,
     },
-    ...(checkRoleUser?.data
-      === "manager" || checkRoleUser?.data === "staff"
+    ...(checkRoleUser?.data === "manager" || checkRoleUser?.data === "staff"
       ? [
-        {
-          key: "8",
-          label: <Link to="/admin">Quản lý</Link>,
-        },
-      ]
+          {
+            key: "8",
+            label: <Link to="/admin">Quản lý</Link>,
+          },
+        ]
       : []),
 
     {
@@ -180,7 +185,6 @@ const Navbar = () => {
   };
 
   const handleOk = () => {
-
     setIsModalVisible(false);
     navigate("/login");
   };
@@ -188,15 +192,13 @@ const Navbar = () => {
     setIsModalVisible(false);
   };
 
-
-
   const consignmentID = localStorage.getItem("consignmentID");
   const consignmentMenuitems = [
     {
       key: "8",
       label: (
         <Link
-          to={(consignmentID) ? "/status-consignment" : "/request-consignment"}
+          to={consignmentID ? "/status-consignment" : "/request-consignment"}
           onClick={(e) => {
             if (!user) {
               e.preventDefault(); // Prevent navigation if not logged in
@@ -244,14 +246,13 @@ const Navbar = () => {
     },
   ];
 
-
   const handleSignOut = () => {
     localStorage.removeItem("consignmentID");
     dispatch(signOut());
     window.location.reload();
   };
 
-  const userlogged = getLocalStorage('user')
+  const userlogged = getLocalStorage("user");
 
   return (
     <>
@@ -293,19 +294,24 @@ const Navbar = () => {
          lg:col-span-3 lg:ms-10 lg:flex lg:items-center lg:justify-start lg:h-[150px]
          xl:grid xl:grid-cols-1 xl:ms-[50px] xl:col-span-3  
          2xl:col-span-3"
-
         >
           <ul className="flex flex-col sm:flex-row items-center justify-start sm:justify-center sm:h-[150px] lg:h-[150px]">
-
-
             {/* Combined "Danh mục" dropdown for xs and lg screens */}
             <li className="me-x  xs:block lg:block sm:hidden md:hidden xl:hidden 2xl:hidden">
               <Dropdown
                 menu={{
                   items: [
-                    { key: 'koi', label: 'Cá Koi Nhật', children: dropdownFish },
-                    { key: 'news', label: 'Tin tức', children: newsMenuItems },
-                    { key: 'consignment', label: 'Ký gửi', children: consignmentMenuitems },
+                    {
+                      key: "koi",
+                      label: "Cá Koi Nhật",
+                      children: dropdownFish,
+                    },
+                    { key: "news", label: "Tin tức", children: newsMenuItems },
+                    {
+                      key: "consignment",
+                      label: "Ký gửi",
+                      children: consignmentMenuitems,
+                    },
                   ],
                 }}
                 trigger={["hover"]}
@@ -323,7 +329,10 @@ const Navbar = () => {
                     viewBox="0 0 20 20"
                     fill="none"
                   >
-                    <path d="M10.0002 12.5L5.8335 8.33331H14.1668L10.0002 12.5Z" fill="#EA4444" />
+                    <path
+                      d="M10.0002 12.5L5.8335 8.33331H14.1668L10.0002 12.5Z"
+                      fill="#EA4444"
+                    />
                   </svg>
                 </Button>
               </Dropdown>
@@ -345,7 +354,10 @@ const Navbar = () => {
                     viewBox="0 0 20 20"
                     fill="none"
                   >
-                    <path d="M10.0002 12.5L5.8335 8.33331H14.1668L10.0002 12.5Z" fill="#EA4444" />
+                    <path
+                      d="M10.0002 12.5L5.8335 8.33331H14.1668L10.0002 12.5Z"
+                      fill="#EA4444"
+                    />
                   </svg>
                 </Button>
               </Dropdown>
@@ -366,14 +378,20 @@ const Navbar = () => {
                     viewBox="0 0 20 20"
                     fill="none"
                   >
-                    <path d="M10.0002 12.5L5.8335 8.33331H14.1668L10.0002 12.5Z" fill="#EA4444" />
+                    <path
+                      d="M10.0002 12.5L5.8335 8.33331H14.1668L10.0002 12.5Z"
+                      fill="#EA4444"
+                    />
                   </svg>
                 </Button>
               </Dropdown>
             </li>
 
             <li className="me-x hidden xs:hidden lg:hidden sm:block md:block xl:block 2xl:block">
-              <Dropdown menu={{ items: consignmentMenuitems }} trigger={["hover"]}>
+              <Dropdown
+                menu={{ items: consignmentMenuitems }}
+                trigger={["hover"]}
+              >
                 <Button
                   type="primary"
                   danger
@@ -387,7 +405,10 @@ const Navbar = () => {
                     viewBox="0 0 20 20"
                     fill="none"
                   >
-                    <path d="M10.0002 12.5L5.8335 8.33331H14.1668L10.0002 12.5Z" fill="#EA4444" />
+                    <path
+                      d="M10.0002 12.5L5.8335 8.33331H14.1668L10.0002 12.5Z"
+                      fill="#EA4444"
+                    />
                   </svg>
                 </Button>
               </Dropdown>
@@ -422,9 +443,6 @@ const Navbar = () => {
             </li>
           </ul>
         </div>
-
-
-
 
         {/* //search */}
         <div
@@ -461,8 +479,6 @@ const Navbar = () => {
             </svg>
           </span>
         </div>
-
-
 
         {/* //button login,signup */}
         <div className="w-full  h-full flex justify-end lg:flex lg:justify-end items-center sm:justify-center md:justify-center  col-span-5 lg:h-[150px] sm:col-span-12 md:col-span-12 lg:col-span-2 xl:col-span-3 2xl:col-span-3">

@@ -1,21 +1,22 @@
-import React, { useEffect } from "react";
+import React, { lazy, Suspense } from "react";
 import Banner from "../../layouts/DefautLayout/Banner/Banner";
 import Introduction from "../../layouts/DefautLayout/Introduction/Introduction";
 import Categories from "../../layouts/DefautLayout/Categories/Categories";
-import Knowledge from "../../layouts/DefautLayout/Knowledge/Knowledge";
-import { getLocalStorage } from "../../utils/LocalStorage";
-import { useNavigate } from "react-router-dom";
+import LoadingModal from "../../modules/Modal/LoadingModal";
+const Knowledge = lazy(() =>
+  import("../../layouts/DefautLayout/Knowledge/Knowledge")
+);
 
 const HomePage = () => {
- 
   return (
     <>
-      <div 
-      >
+      <div>
         <Banner />
         <Introduction />
         <Categories />
-        <Knowledge />
+        <Suspense fallback={<LoadingModal isLoading={true} />}>
+          <Knowledge />
+        </Suspense>
       </div>
     </>
   );
