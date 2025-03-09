@@ -3,15 +3,12 @@ import fetcher from "./Fetcher";
 import { getLocalStorage } from "../utils/LocalStorage";
 import url from "../constant/constant";
 
-const user = getLocalStorage('user')
-const accessToken = user?.accessToken
+const user = getLocalStorage("user");
+const accessToken = user?.accessToken;
 export const AuthApi = {
   login: async (data) => {
     try {
-      const response = await fetcher.post(
-        `${url}/login/signin`,
-        data
-      );
+      const response = await fetcher.post(`${url}/login/signin`, data);
       return response.data;
     } catch (error) {
       throw Error(error.response.data.message);
@@ -19,10 +16,7 @@ export const AuthApi = {
   },
   register: async (data) => {
     try {
-      const response = await fetcher.post(
-        `${url}/account/register`,
-        data
-      );
+      const response = await fetcher.post(`${url}/account/register`, data);
       return response.data;
     } catch (error) {
       throw Error(error.response.data.message);
@@ -50,10 +44,7 @@ export const AuthApi = {
   },
   loginWithGoogle: async (data) => {
     try {
-      const response = await fetcher.post(
-        `${url}/login/signingoogle`,
-        data
-      );
+      const response = await fetcher.post(`${url}/login/signingoogle`, data);
       return response.data;
     } catch (error) {
       throw new Error(error.response.data.message);
@@ -79,9 +70,7 @@ export const AuthApi = {
   },
   resendOtp: async (email) => {
     try {
-      const response = await fetcher.post(
-        `${url}/resend-otp?email=${email}`
-      );
+      const response = await fetcher.post(`${url}/resend-otp?email=${email}`);
       return response.data;
     } catch (error) {
       throw new Error(error.response.data.message);
@@ -89,9 +78,7 @@ export const AuthApi = {
   },
   userProfile: async (email) => {
     try {
-      const response = await fetcher.get(
-        `${url}/account/profile/${email}`
-      );
+      const response = await fetcher.get(`${url}/account/profile/${email}`);
 
       return response.data;
     } catch (error) {
@@ -106,8 +93,8 @@ export const AuthApi = {
         updatedData, // Truyền dữ liệu cần cập nhật (name, address, phone)
         {
           headers: {
-            'Content-Type': 'application/json', // Xác định kiểu dữ liệu là JSON
-            'Authorization': `Bearer ${accessToken}`, // Thêm accessToken vào headers để xác thực
+            "Content-Type": "application/json", // Xác định kiểu dữ liệu là JSON
+            Authorization: `Bearer ${accessToken}`, // Thêm accessToken vào headers để xác thực
           },
         }
       );
@@ -115,8 +102,13 @@ export const AuthApi = {
       const data = response.data;
       return data; // Trả về dữ liệu sau khi cập nhật thành công
     } catch (error) {
-      console.error('Lỗi khi cập nhật hồ sơ:', error.response?.data?.message || error.message);
-      throw new Error(error.response?.data?.message || 'Lỗi khi cập nhật hồ sơ');
+      console.error(
+        "Lỗi khi cập nhật hồ sơ:",
+        error.response?.data?.message || error.message
+      );
+      throw new Error(
+        error.response?.data?.message || "Lỗi khi cập nhật hồ sơ"
+      );
     }
   },
 
@@ -129,7 +121,7 @@ export const AuthApi = {
       );
       return response.data; // Trả về dữ liệu phản hồi từ API
     } catch (error) {
-      throw new Error(error.response?.data?.message || 'Lỗi xác thực mật khẩu');
+      throw new Error(error.response?.data?.message || "Lỗi xác thực mật khẩu");
     }
   },
   updatePassword: async (id, accessToken, password) => {
@@ -139,13 +131,13 @@ export const AuthApi = {
         { password }, // Gửi mật khẩu trong body của yêu cầu
         {
           headers: {
-            'Authorization': `Bearer ${accessToken}`, // Truyền accessToken trong headers
+            Authorization: `Bearer ${accessToken}`, // Truyền accessToken trong headers
           },
         }
       );
       return response.data; // Trả về dữ liệu phản hồi từ API
     } catch (error) {
-      throw new Error(error.response?.data?.message || 'Lỗi cập nhật mật khẩu');
+      throw new Error(error.response?.data?.message || "Lỗi cập nhật mật khẩu");
     }
   },
 
@@ -155,37 +147,43 @@ export const AuthApi = {
     }
 
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
 
     try {
-      const response = await fetch(`${url}/account/profile/updateAvatar/${id}`, {
-        method: 'POST',
+      const response = await fetch(
+        `${url}/account/profile/updateAvatar/${id}`,
+        {
+          method: "POST",
 
-        body: formData, // Gửi formData trực tiếp
-      });
+          body: formData, // Gửi formData trực tiếp
+        }
+      );
 
       return response.data;
     } catch (error) {
-
-      console.error('Error uploading avatar:', error.response?.data || error.message);
-      throw new Error(error.response?.data?.message || 'Lỗi cập nhật ảnh');
+      console.error(
+        "Error uploading avatar:",
+        error.response?.data || error.message
+      );
+      throw new Error(error.response?.data?.message || "Lỗi cập nhật ảnh");
     }
   },
   checkRoleOfUser: async () => {
     try {
-      const response = await fetcher.get(`${url}/account/profile/checkRole/`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-
+      const response = await fetcher.post(
+        `${url}/account/profile/checkRole/`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
         }
-      })
-      return response.data
+      );
+      return response.data;
     } catch (error) {
-      throw new Error(error.response.data.message);
-
+      throw new Error(
+        error.response?.data?.message || "Failed to check user role"
+      );
     }
-  }
-
-
-
+  },
 };
